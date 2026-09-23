@@ -1,0 +1,404 @@
+{
+ "pacientes": {
+  "MX9001": {
+   "ciclos": [
+    {
+     "codigo": "MX9001",
+     "data": "2026-08-12T14:20:00.000Z",
+     "dataBR": "12/08/2026",
+     "dataLocal": "2026-08-12",
+     "tipo": "reav",
+     "demo": true,
+     "linha": "DUO",
+     "protocolo": "DUO-3",
+     "kitCodes": [
+      "SP-DUO",
+      "NOITE-1"
+     ],
+     "iief": 14,
+     "pedt": 11,
+     "labs": {
+      "tTotal": 512,
+      "lh": "4,1"
+     },
+     "adesao": "total",
+     "satisf": 8,
+     "biotens": 38
+    }
+   ]
+  },
+  "MX9002": {
+   "ciclos": [
+    {
+     "codigo": "MX9002",
+     "data": "2026-08-12T14:20:00.000Z",
+     "dataBR": "12/08/2026",
+     "dataLocal": "2026-08-12",
+     "tipo": "reav",
+     "demo": true,
+     "linha": "DE",
+     "protocolo": "DE-2",
+     "kitCodes": [
+      "BASE-T5",
+      "NOITE-1"
+     ],
+     "iief": 16,
+     "labs": {
+      "tTotal": 655,
+      "lh": "3,4"
+     },
+     "adesao": "parcial",
+     "satisf": 6,
+     "biotens": 14
+    }
+   ]
+  },
+  "MX9003": {
+   "ciclos": [
+    {
+     "codigo": "MX9003",
+     "data": "2026-08-12T14:20:00.000Z",
+     "dataBR": "12/08/2026",
+     "dataLocal": "2026-08-12",
+     "tipo": "reav",
+     "demo": true,
+     "linha": "EP",
+     "protocolo": "EP-2",
+     "kitCodes": [
+      "MOD-DAPO-30",
+      "NOITE-1"
+     ],
+     "pedt": 15,
+     "adesao": "baixa",
+     "satisf": 4,
+     "biotens": 7
+    }
+   ]
+  },
+  "MX9004": {
+   "ciclos": [
+    {
+     "codigo": "MX9004",
+     "data": "2026-08-12T14:20:00.000Z",
+     "dataBR": "12/08/2026",
+     "dataLocal": "2026-08-12",
+     "tipo": "reav",
+     "demo": true,
+     "linha": "DE",
+     "protocolo": "DE-3",
+     "kitCodes": [
+      "BASE-T10-I",
+      "NOITE-2"
+     ],
+     "iief": 9,
+     "labs": {
+      "tTotal": 288,
+      "lh": "2,8"
+     },
+     "adesao": "total",
+     "satisf": 5,
+     "biotens": 24
+    }
+   ]
+  },
+  "MX9005": {
+   "ciclos": [
+    {
+     "codigo": "MX9005",
+     "data": "2026-08-12T14:20:00.000Z",
+     "dataBR": "12/08/2026",
+     "dataLocal": "2026-08-12",
+     "tipo": "reav",
+     "demo": true,
+     "linha": "DUO",
+     "protocolo": "DUO-4",
+     "kitCodes": [
+      "SP-DE",
+      "RET-1",
+      "NOITE-1"
+     ],
+     "iief": 18,
+     "pedt": 12,
+     "adesao": "parcial",
+     "satisf": 7
+    }
+   ]
+  },
+  "MX9006": {
+   "ciclos": [
+    {
+     "codigo": "MX9006",
+     "data": "2026-08-12T14:20:00.000Z",
+     "dataBR": "12/08/2026",
+     "dataLocal": "2026-08-12",
+     "tipo": "reav",
+     "demo": true,
+     "linha": "EP",
+     "protocolo": "EP-3",
+     "kitCodes": [
+      "SP-DUO",
+      "NOITE-1"
+     ],
+     "iief": 21,
+     "pedt": 10,
+     "labs": {
+      "tTotal": 430,
+      "lh": "5,2"
+     },
+     "adesao": "total",
+     "satisf": 9,
+     "biotens": 31
+    }
+   ]
+  }
+ },
+ "recepcao": [
+  {
+   "data": "2026-09-23T08:20:00.000Z",
+   "dataBR": "23/09/2026",
+   "dataLocal": "2026-09-23",
+   "tipo": "recepcao",
+   "linha": "recepcao",
+   "demo": true,
+   "codigo": "MX9001",
+   "hora": "08:20",
+   "queixaRecepcao": "ambos",
+   "iief": 19,
+   "pedt": 7,
+   "retorno": true,
+   "usoRelatado": "total",
+   "efeitoRelatado": "nao",
+   "satisfRelatada": 8,
+   "iniciais": "R.A.M.",
+   "telefone": "(21)99999-8888",
+   "email": "",
+   "respostas": {
+    "i0": 4,
+    "i1": 4,
+    "i2": 4,
+    "i3": 4,
+    "i4": 3,
+    "p0": 2,
+    "p1": 2,
+    "p2": 1,
+    "p3": 1,
+    "p4": 1
+   },
+   "medidas": {
+    "idade": 54,
+    "peso": 84,
+    "altura": 178,
+    "imc": 26.5
+   }
+  },
+  {
+   "data": "2026-09-23T08:45:00.000Z",
+   "dataBR": "23/09/2026",
+   "dataLocal": "2026-09-23",
+   "tipo": "recepcao",
+   "linha": "recepcao",
+   "demo": true,
+   "codigo": "MX9002",
+   "hora": "08:45",
+   "queixaRecepcao": "de",
+   "iief": 13,
+   "retorno": true,
+   "revisar": true,
+   "usoRelatado": "parcial",
+   "efeitoRelatado": "leve",
+   "satisfRelatada": 6,
+   "iniciais": "J.P.S.",
+   "telefone": "(21)98888-7777",
+   "email": "jps@exemplo.com",
+   "respostas": {
+    "i0": 3,
+    "i1": 3,
+    "i2": 3,
+    "i3": 2,
+    "i4": 2
+   },
+   "medidas": {
+    "idade": 61,
+    "peso": 96,
+    "altura": 174,
+    "imc": 31.7
+   }
+  },
+  {
+   "data": "2026-09-23T09:05:00.000Z",
+   "dataBR": "23/09/2026",
+   "dataLocal": "2026-09-23",
+   "tipo": "recepcao",
+   "linha": "recepcao",
+   "demo": true,
+   "codigo": "MX9007",
+   "hora": "09:05",
+   "queixaRecepcao": "de",
+   "iief": 11,
+   "retorno": false,
+   "iniciais": "C.M.L.",
+   "telefone": "",
+   "email": "cml@exemplo.com",
+   "respostas": {
+    "i0": 3,
+    "i1": 2,
+    "i2": 2,
+    "i3": 2,
+    "i4": 2
+   },
+   "medidas": {
+    "idade": 47,
+    "peso": 91,
+    "altura": 181,
+    "imc": 27.8
+   }
+  },
+  {
+   "data": "2026-09-23T09:30:00.000Z",
+   "dataBR": "23/09/2026",
+   "dataLocal": "2026-09-23",
+   "tipo": "recepcao",
+   "linha": "recepcao",
+   "demo": true,
+   "codigo": "MX9004",
+   "hora": "09:30",
+   "queixaRecepcao": "libido",
+   "iief": 12,
+   "retorno": true,
+   "usoRelatado": "total",
+   "efeitoRelatado": "nao",
+   "satisfRelatada": 5,
+   "iniciais": "F.T.A.",
+   "telefone": "(21)97777-6666",
+   "email": "fta@exemplo.com",
+   "adam": [
+    "a1",
+    "a2",
+    "a7"
+   ],
+   "respostas": {
+    "i0": 3,
+    "i1": 3,
+    "i2": 2,
+    "i3": 2,
+    "i4": 2
+   },
+   "medidas": {
+    "idade": 58,
+    "peso": 102,
+    "altura": 176,
+    "imc": 32.9
+   }
+  },
+  {
+   "data": "2026-09-23T10:00:00.000Z",
+   "dataBR": "23/09/2026",
+   "dataLocal": "2026-09-23",
+   "tipo": "recepcao",
+   "linha": "recepcao",
+   "demo": true,
+   "codigo": "MX9006",
+   "hora": "10:00",
+   "queixaRecepcao": "ep",
+   "iief": 22,
+   "pedt": 6,
+   "retorno": true,
+   "usoRelatado": "total",
+   "efeitoRelatado": "nao",
+   "satisfRelatada": 9,
+   "iniciais": "L.B.N.",
+   "telefone": "(21)96666-5555",
+   "email": "lbn@exemplo.com",
+   "respostas": {
+    "i0": 5,
+    "i1": 5,
+    "i2": 4,
+    "i3": 4,
+    "i4": 4,
+    "p0": 2,
+    "p1": 1,
+    "p2": 1,
+    "p3": 1,
+    "p4": 1
+   },
+   "medidas": {
+    "idade": 43,
+    "peso": 79,
+    "altura": 183,
+    "imc": 23.6
+   }
+  },
+  {
+   "data": "2026-09-23T10:20:00.000Z",
+   "dataBR": "23/09/2026",
+   "dataLocal": "2026-09-23",
+   "tipo": "recepcao",
+   "linha": "recepcao",
+   "demo": true,
+   "codigo": "MX9008",
+   "hora": "10:20",
+   "queixaRecepcao": "preench",
+   "retorno": false,
+   "iniciais": "D.R.C.",
+   "telefone": "(21)95555-4444",
+   "email": "",
+   "leuTermo": true,
+   "medidas": {
+    "idade": 39,
+    "peso": 88,
+    "altura": 179,
+    "imc": 27.5
+   }
+  }
+ ],
+ "codigos": [
+  {
+   "codigo": "MX9001",
+   "demo": true
+  },
+  {
+   "codigo": "MX9002",
+   "demo": true
+  },
+  {
+   "codigo": "MX9003",
+   "demo": true
+  },
+  {
+   "codigo": "MX9004",
+   "demo": true
+  },
+  {
+   "codigo": "MX9005",
+   "demo": true
+  },
+  {
+   "codigo": "MX9006",
+   "demo": true
+  },
+  {
+   "codigo": "MX9001",
+   "demo": true
+  },
+  {
+   "codigo": "MX9002",
+   "demo": true
+  },
+  {
+   "codigo": "MX9007",
+   "demo": true
+  },
+  {
+   "codigo": "MX9004",
+   "demo": true
+  },
+  {
+   "codigo": "MX9006",
+   "demo": true
+  },
+  {
+   "codigo": "MX9008",
+   "demo": true
+  }
+ ]
+}

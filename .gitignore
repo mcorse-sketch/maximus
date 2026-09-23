@@ -1,0 +1,6 @@
+node_modules/
+relatorio.json
+*.bak
+.DS_Store
+banco_triagem.json
+backups/

@@ -1,0 +1,13 @@
+{
+  "name": "maximus-tests",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Suite de testes dos apps da Clinica Maximus",
+  "scripts": {
+    "clinico": "node teste100.js ../apps/triagem.html 100",
+    "recepcao": "node teste_kiosk.js ../apps/recepcao.html 100",
+    "modulos": "node teste_modulos.js ../apps/triagem.html 12",
+    "integracao": "node teste_integracao.js ../apps/triagem.html"
+  },
+  "dependencies": { "jsdom": "^24.0.0" }
+}

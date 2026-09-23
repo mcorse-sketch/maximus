@@ -1,0 +1,1513 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+
+
+<style>
+/* blocos do totem que nunca tiveram regra */
+.klab{font-size:15.5px;color:#2b3644;margin:18px 0 7px;font-weight:600}
+.kfld-num{text-align:left;font-size:20px;letter-spacing:normal;padding:16px 18px}
+.krol{position:relative;height:280px;max-width:340px;margin:6px auto 2px}
+.krol .band{position:absolute;left:0;right:0;top:112px;height:56px;border-radius:14px;border:3px solid #0e5e6f;pointer-events:none}
+.krol .lista{height:280px;overflow-y:auto;scroll-snap-type:y mandatory;padding:112px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.krol .lista::-webkit-scrollbar{display:none}
+.krol .it{height:56px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-size:30px;color:#8d9ba0;font-variant-numeric:tabular-nums}
+.krol .it.on{color:#141413;font-weight:700;font-size:36px}
+.krol .un{position:absolute;right:14px;top:128px;font-size:18px;color:#6b6a66}
+.kcontato .klab{margin-top:14px}
+.kcontato .kaviso{font-size:15px;color:#8a5a0b;margin-top:10px;line-height:1.5}
+.kfld-falta{border-color:#8a5a0b!important}
+
+.kjornada{counter-reset:j;list-style:none;margin:20px 0 0;padding:0}
+.kjornada li{counter-increment:j;position:relative;padding:14px 0 14px 46px;font-size:16.5px;
+  line-height:1.5;color:#2b3644;border-top:1px solid #dfdcd3}
+.kjornada li::before{content:counter(j);position:absolute;left:0;top:13px;width:30px;height:30px;
+  border-radius:50%;background:#0b1f3b;color:#fff;font-size:15px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.kobs{margin-top:22px;padding:14px 16px;border-left:4px solid #8a6d12;background:#f2efe6;
+  font-size:16px;color:#2b3644;line-height:1.5;border-radius:0 10px 10px 0}
+.kobs2{font-size:15.5px;color:#3a4453;margin-top:14px;text-align:center;line-height:1.5}
+.kentrega{margin:22px 0 6px;padding:22px;border-radius:16px;background:#0b1f3b;color:#fff;
+  font-size:21px;font-weight:600;text-align:center;line-height:1.35}
+.ktermo{max-height:52vh;overflow-y:auto;padding:16px 18px;border:2px solid #b9c0cb;
+  border-radius:14px;background:#fff;-webkit-overflow-scrolling:touch}
+.ktermo p{font-size:15px;line-height:1.55;color:#2b3644;margin:0 0 12px;text-align:justify}
+.kescala{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:8px}
+.knum{padding:20px 0;font-size:19px;font-weight:600;border-radius:14px;cursor:pointer;
+  font-family:inherit;background:#fff;border:2px solid #b9c0cb;color:#14181f}
+.knum.nr{border-color:#c98f8a}
+.knum.ny{border-color:#c9a227}
+.knum.ng{border-color:#7fa98a}
+.knum.sel{background:#0b1f3b;color:#fff;border-color:#0b1f3b}
+@media (max-width:420px){ .kescala{grid-template-columns:repeat(4,1fr)} }
+</style>
+</head><body>
+<title>Questionário — Clínica Maximus</title>
+<style>
+  :root{
+    --navy-900:#0D1B2A;
+    --navy-800:#11253E;
+    --navy-700:#1B3654;
+    --gold:#C9A961;
+    --gold-soft:#E7D9B8;
+    --cream:#FBF8F2;
+    --cream-dim:#F1ECE1;
+    --graphite:#3A3A3A;
+    --graphite-soft:#767268;
+    --line:#E4DFD2;
+
+    --sev-none:#3D8361;
+    --sev-mild:#8AA05B;
+    --sev-midmod:#D6A63B;
+    --sev-mod:#D97D3D;
+    --sev-severe:#C0483A;
+
+    --bg:var(--cream);
+    --surface:#ffffff;
+    --ink:var(--graphite);
+    --ink-soft:var(--graphite-soft);
+    --accent:var(--gold);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--navy-900);
+    color:var(--ink);
+    font-family:"Montserrat",-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  h1,h2,h3,.num-display{
+    font-family:"Playfair Display",Georgia,"Times New Roman",serif;
+    text-wrap:balance;
+  }
+
+  /* ---------- HEADER ---------- */
+  header.brand{
+    background:linear-gradient(160deg,var(--navy-900),var(--navy-800));
+    border-bottom:2px solid var(--gold);
+    padding:22px clamp(16px,4vw,40px);
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .knight{
+    width:42px;height:42px;flex:0 0 auto;
+    display:block;
+  }
+  .brand-text{display:flex;flex-direction:column;line-height:1.15;}
+  .brand-text .wordmark{
+    font-family:"Montserrat",sans-serif;
+    font-weight:700;
+    letter-spacing:0.06em;
+    color:#fff;
+    font-size:15px;
+  }
+  .brand-text .sub{
+    font-family:"Montserrat",sans-serif;
+    font-weight:400;
+    letter-spacing:0.10em;
+    color:var(--gold-soft);
+    font-size:9.5px;
+    text-transform:uppercase;
+  }
+  header.brand .tool-title{
+    margin-left:auto;
+    text-align:right;
+    color:#fff;
+  }
+  header.brand .tool-title .t1{
+    font-size:clamp(15px,2.4vw,19px);
+    font-weight:600;
+  }
+  header.brand .tool-title .t2{
+    font-family:"Montserrat",sans-serif;
+    font-size:10.5px;
+    color:var(--gold-soft);
+    letter-spacing:0.03em;
+  }
+
+  /* ---------- MAIN ---------- */
+  main{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    padding:clamp(20px,4vw,48px) 16px 40px;
+  }
+  .stage{
+    width:100%;
+    max-width:620px;
+  }
+
+  .card{
+    background:var(--surface);
+    border-radius:18px;
+    box-shadow:0 24px 60px -28px rgba(13,27,42,0.55);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+
+  /* progress */
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:20px clamp(18px,4vw,32px) 0;
+  }
+  .progress-row .step-label{
+    font-size:11px;
+    letter-spacing:0.09em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .dots{display:flex;gap:6px;flex:1;}
+  .dots i{
+    flex:1;
+    height:4px;
+    border-radius:3px;
+    background:var(--cream-dim);
+    display:block;
+    position:relative;
+    overflow:hidden;
+  }
+  .dots i.done, .dots i.active{background:var(--gold);}
+  .dots i.active::after{
+    content:"";position:absolute;inset:0;
+    background:var(--navy-800);
+    animation:none;
+  }
+
+  /* question */
+  .q-wrap{padding:26px clamp(18px,4vw,32px) 30px;}
+  .q-eyebrow{
+    font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;margin-bottom:10px;
+  }
+  .q-text{
+    font-size:clamp(18px,2.6vw,21px);
+    font-weight:600;
+    color:var(--navy-900);
+    line-height:1.4;
+    margin:0 0 22px;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .opt{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    text-align:left;
+    width:100%;
+    padding:14px 16px;
+    border-radius:12px;
+    border:1.5px solid var(--line);
+    background:var(--cream);
+    cursor:pointer;
+    font:inherit;
+    color:var(--ink);
+    font-size:14.5px;
+    font-weight:500;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .opt:hover{border-color:var(--gold);background:#fff;}
+  .opt:active{transform:scale(0.99);}
+  .opt .badge{
+    flex:0 0 auto;
+    width:28px;height:28px;
+    border-radius:50%;
+    border:1.5px solid var(--graphite-soft);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:12.5px;color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;
+    transition:all .15s ease;
+  }
+  .opt.selected{
+    border-color:var(--navy-800);
+    background:var(--navy-900);
+    color:#fff;
+  }
+  .opt.selected .badge{
+    border-color:var(--gold);
+    background:var(--gold);
+    color:var(--navy-900);
+  }
+
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 clamp(18px,4vw,32px) 26px;
+    gap:12px;
+  }
+  button{font:inherit;}
+  .btn{
+    appearance:none;border:none;cursor:pointer;
+    border-radius:10px;
+    padding:12px 22px;
+    font-weight:600;
+    font-size:13.5px;
+    letter-spacing:0.01em;
+    transition:opacity .15s ease, transform .1s ease;
+  }
+  .btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .btn:active:not(:disabled){transform:scale(0.98);}
+  .btn-ghost{background:transparent;color:var(--ink-soft);}
+  .btn-ghost:hover:not(:disabled){color:var(--navy-900);}
+  .btn-primary{background:var(--navy-900);color:#fff;}
+  .btn-primary:hover:not(:disabled){background:var(--navy-800);}
+  .btn-gold{background:var(--gold);color:var(--navy-900);}
+  .btn-gold:hover{background:#d8bd80;}
+
+  /* ---------- RESULTS ---------- */
+  .results{padding:30px clamp(18px,4vw,34px) 32px;}
+  .result-top{
+    display:flex;
+    gap:26px;
+    align-items:center;
+    flex-wrap:wrap;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:24px;
+  }
+  .gauge-wrap{position:relative;width:132px;height:132px;flex:0 0 auto;}
+  .gauge-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .gauge-wrap .track{fill:none;stroke:var(--cream-dim);stroke-width:10;}
+  .gauge-wrap .fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .7s cubic-bezier(.4,0,.2,1), stroke .3s ease;}
+  .gauge-center{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .gauge-center .num{font-size:34px;font-weight:700;color:var(--navy-900);line-height:1;font-variant-numeric:tabular-nums;}
+  .gauge-center .den{font-size:11px;color:var(--ink-soft);letter-spacing:0.04em;margin-top:2px;}
+
+  .result-meta{flex:1;min-width:200px;}
+  .result-meta .eyebrow{
+    font-size:11px;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:6px;
+  }
+  .class-pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 14px 6px 10px;
+    border-radius:100px;
+    font-weight:700;font-size:14px;
+    color:#fff;
+    margin-bottom:10px;
+  }
+  .class-pill .dot{width:8px;height:8px;border-radius:50%;background:#fff;}
+  .result-meta p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.5;max-width:34ch;}
+
+  .section-title{
+    font-size:11px;letter-spacing:0.09em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;margin:0 0 14px;
+  }
+
+  .kit-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .kit-card{
+    border:1.5px solid var(--line);
+    border-top:3px solid var(--gold);
+    border-radius:12px;
+    padding:13px 12px 14px;
+    background:var(--cream);
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    min-height:120px;
+  }
+  .kit-card .kc-role{
+    font-size:9.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-soft);display:flex;align-items:center;gap:6px;
+  }
+  .kit-card .kc-role .kc-icon{font-size:15px;}
+  .kit-card .kc-code{
+    font-family:"Playfair Display",serif;font-weight:700;font-size:16.5px;color:var(--navy-900);
+  }
+  .kit-card .kc-formula{font-size:10.6px;color:var(--ink);line-height:1.42;}
+  .kit-card.empty{
+    border-top-color:var(--line);
+    background:transparent;
+    border-style:dashed;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .kit-card.empty .kc-code{color:var(--ink-soft);font-size:12.5px;font-family:"Montserrat",sans-serif;font-weight:600;}
+  .kit-card.wide{grid-column:1 / -1;flex-direction:row;align-items:center;gap:10px;min-height:0;padding:12px 14px;}
+  .kit-card.wide .kc-code{font-size:13px;color:var(--ink-soft);font-family:"Montserrat",sans-serif;font-weight:600;}
+
+  .alt-note{
+    font-size:11.5px;color:var(--ink-soft);line-height:1.55;
+    background:var(--cream-dim);
+    border-left:3px solid var(--navy-700);
+    border-radius:8px;
+    padding:11px 13px;
+    margin-bottom:18px;
+  }
+  .alt-note b{color:var(--ink);}
+
+  .reco-box{
+    background:var(--cream);
+    border:1.5px solid var(--gold-soft);
+    border-left:5px solid var(--gold);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:18px;
+  }
+  .reco-box .reco-line{
+    font-weight:700;color:var(--navy-900);font-size:14.5px;margin-bottom:6px;
+  }
+  .reco-box p{margin:0;font-size:13px;color:var(--ink);line-height:1.55;}
+
+  .breakdown{
+    display:flex;flex-direction:column;gap:6px;margin-bottom:22px;
+  }
+  .breakdown .row{
+    display:flex;justify-content:space-between;gap:10px;
+    font-size:12.5px;color:var(--ink-soft);
+    padding:7px 0;border-bottom:1px dashed var(--line);
+  }
+  .breakdown .row span:first-child{max-width:78%;color:var(--ink);}
+  .breakdown .row b{color:var(--navy-900);font-variant-numeric:tabular-nums;}
+
+  .disclaimer{
+    font-size:11px;color:var(--ink-soft);line-height:1.6;
+    background:var(--cream-dim);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:20px;
+  }
+  .disclaimer b{color:var(--ink);}
+
+  footer.brand-footer{
+    text-align:center;
+    padding:16px;
+    color:var(--gold-soft);
+    font-size:10.5px;
+    letter-spacing:0.03em;
+  }
+
+  @media (max-width:460px){
+    .kit-grid{grid-template-columns:1fr;}
+    .kit-card.wide{flex-direction:column;align-items:flex-start;}
+    .result-top{gap:18px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<header class="brand">
+  <img class="knight" alt="Maximus" src="data:image/png;base64,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">
+  <div class="brand-text">
+    <span class="wordmark">MAXIMUS</span>
+    <span class="sub">Medicina Masculina</span>
+  </div>
+  <div class="tool-title">
+    <div class="t1">Question&aacute;rio</div>
+    <div class="t2">Recep&ccedil;&atilde;o</div>
+  </div>
+</header>
+
+
+<style>
+  .fld{width:100%;box-sizing:border-box;padding:14px 16px;font-size:17px;border-radius:12px;
+       border:1px solid rgba(11,31,59,.18);background:#fff;color:#0b1f3b;font-family:inherit;margin-bottom:10px;}
+  .fld:focus{outline:2px solid #c9a227;outline-offset:1px;}
+  .fld-hint{font-size:13px;opacity:.65;margin:-4px 0 14px;}
+  .fld-err{font-size:13px;color:#b3261e;margin:-4px 0 12px;display:none;}
+  .scale{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .scale button{padding:12px 0;font-size:16px;border-radius:10px;border:1px solid rgba(11,31,59,.18);
+       background:#fff;color:#0b1f3b;cursor:pointer;font-family:inherit;}
+  .scale button.selected{background:#0b1f3b;color:#fff;border-color:#0b1f3b;}
+  .rep{margin-top:18px;border-top:1px solid rgba(11,31,59,.15);padding-top:16px;}
+  .rep h4{font-size:14px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin:16px 0 8px;}
+  .rep table{width:100%;border-collapse:collapse;font-size:14px;}
+  .rep td{padding:5px 0;vertical-align:top;border-bottom:1px solid rgba(11,31,59,.08);}
+  .rep td:first-child{opacity:.65;width:46%;}
+  .dbtag{font-size:12px;opacity:.6;margin-top:8px;}
+  @media print{
+    body *{visibility:hidden!important;}
+    #printArea,#printArea *{visibility:visible!important;}
+    #printArea{position:absolute;left:0;top:0;width:100%;padding:0 8mm;}
+    .noprint{display:none!important;}
+    @page{margin:12mm;}
+  }
+</style>
+
+
+<style>
+  .fld{width:100%;box-sizing:border-box;padding:14px 16px;font-size:17px;border-radius:12px;
+       border:1px solid rgba(11,31,59,.18);background:#fff;color:#0b1f3b;font-family:inherit;margin-bottom:10px;}
+  .fld:focus{outline:2px solid #c9a227;outline-offset:1px;}
+  .fld-hint{font-size:13px;opacity:.65;margin:-4px 0 14px;}
+  .fld-err{font-size:13px;color:#b3261e;margin:-4px 0 12px;display:none;}
+  .scale{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .scale button{padding:12px 0;font-size:16px;border-radius:10px;border:1px solid rgba(11,31,59,.18);
+       background:#fff;color:#0b1f3b;cursor:pointer;font-family:inherit;}
+  .scale button.selected{background:#0b1f3b;color:#fff;border-color:#0b1f3b;}
+  .rep{margin-top:18px;border-top:1px solid rgba(11,31,59,.15);padding-top:16px;}
+  .rep h4{font-size:14px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin:16px 0 8px;}
+  .rep table{width:100%;border-collapse:collapse;font-size:14px;}
+  .rep td{padding:5px 0;vertical-align:top;border-bottom:1px solid rgba(11,31,59,.08);}
+  .rep td:first-child{opacity:.65;width:46%;}
+  .dbtag{font-size:12px;opacity:.6;margin-top:8px;}
+  @media print{
+    body *{visibility:hidden!important;}
+    #printArea,#printArea *{visibility:visible!important;}
+    #printArea{position:absolute;left:0;top:0;width:100%;padding:0 8mm;}
+    .noprint{display:none!important;}
+    @page{margin:12mm;}
+  }
+</style>
+
+
+<style>
+  .fld{width:100%;box-sizing:border-box;padding:14px 16px;font-size:17px;border-radius:12px;
+       border:1px solid rgba(11,31,59,.18);background:#fff;color:#0b1f3b;font-family:inherit;margin-bottom:10px;}
+  .fld:focus{outline:2px solid #c9a227;outline-offset:1px;}
+  .fld-hint{font-size:13px;opacity:.65;margin:-4px 0 14px;}
+  .fld-err{font-size:13px;color:#b3261e;margin:-4px 0 12px;display:none;}
+  .scale{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .scale button{padding:12px 0;font-size:16px;border-radius:10px;border:1px solid rgba(11,31,59,.18);
+       background:#fff;color:#0b1f3b;cursor:pointer;font-family:inherit;}
+  .scale button.selected{background:#0b1f3b;color:#fff;border-color:#0b1f3b;}
+  .rep{margin-top:18px;border-top:1px solid rgba(11,31,59,.15);padding-top:16px;}
+  .rep h4{font-size:14px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin:16px 0 8px;}
+  .rep table{width:100%;border-collapse:collapse;font-size:14px;}
+  .rep td{padding:5px 0;vertical-align:top;border-bottom:1px solid rgba(11,31,59,.08);}
+  .rep td:first-child{opacity:.65;width:46%;}
+  .dbtag{font-size:12px;opacity:.6;margin-top:8px;}
+  @media print{
+    body *{visibility:hidden!important;}
+    #printArea,#printArea *{visibility:visible!important;}
+    #printArea{position:absolute;left:0;top:0;width:100%;padding:0 8mm;}
+    .noprint{display:none!important;}
+    @page{margin:12mm;}
+  }
+</style>
+
+
+<style>
+  .fld{width:100%;box-sizing:border-box;padding:14px 16px;font-size:17px;border-radius:12px;
+       border:1px solid rgba(11,31,59,.18);background:#fff;color:#0b1f3b;font-family:inherit;margin-bottom:10px;}
+  .fld:focus{outline:2px solid #c9a227;outline-offset:1px;}
+  .fld-hint{font-size:13px;opacity:.65;margin:-4px 0 14px;}
+  .fld-err{font-size:13px;color:#b3261e;margin:-4px 0 12px;display:none;}
+  .scale{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+  .scale button{padding:12px 0;font-size:16px;border-radius:10px;border:1px solid rgba(11,31,59,.18);
+       background:#fff;color:#0b1f3b;cursor:pointer;font-family:inherit;}
+  .scale button.selected{background:#0b1f3b;color:#fff;border-color:#0b1f3b;}
+  .esc button.nr{border-color:rgba(179,38,30,.35)} .esc button.ny{border-color:rgba(201,162,39,.5)}
+  .esc button.ng{border-color:rgba(46,94,58,.4)}
+  .esc button.nr.selected{background:#b3261e;border-color:#b3261e;color:#fff}
+  .esc button.ny.selected{background:#c9a227;border-color:#c9a227;color:#fff}
+  .esc button.ng.selected{background:#2e5e3a;border-color:#2e5e3a;color:#fff}
+  .escleg{display:flex;gap:10px;font-size:11px;margin:5px 0 12px;opacity:.7}
+  .escleg .lr{color:#b3261e} .escleg .ly{color:#8a6d12} .escleg .lg{color:#2e5e3a}
+  .gopts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .gop{flex:1 1 auto;min-width:96px;padding:10px 12px;font-size:13.5px;border-radius:10px;
+       border:1px solid rgba(11,31,59,.18);background:#fff;color:#0b1f3b;cursor:pointer;font-family:inherit;text-align:left}
+  .gop.selected{background:#0b1f3b;color:#fff;border-color:#0b1f3b}
+  #notasMais details{margin-top:10px;border:1px solid rgba(11,31,59,.14);border-radius:12px;padding:10px 14px;background:#fff}
+  #notasMais summary{cursor:pointer;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;
+                     color:rgba(16,24,38,.55);font-weight:600}
+  #notasMais details[open] summary{margin-bottom:8px}
+  #notasMais p{font-size:13.5px;line-height:1.5;margin:0 0 8px}
+  .rep{margin-top:18px;border-top:1px solid rgba(11,31,59,.15);padding-top:16px;}
+  .rep h4{font-size:14px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin:16px 0 8px;}
+  .rep table{width:100%;border-collapse:collapse;font-size:14px;}
+  .rep td{padding:5px 0;vertical-align:top;border-bottom:1px solid rgba(11,31,59,.08);}
+  .rep td:first-child{opacity:.65;width:46%;}
+  .dbtag{font-size:12px;opacity:.6;margin-top:8px;}
+  .fld-lab{font-size:12.5px;letter-spacing:.04em;opacity:.7;margin:2px 0 4px;}
+  .atual{margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(11,31,59,.05);
+         border-left:3px solid #c9a227;font-size:12.5px;line-height:1.5;}
+  .rac{margin-top:2px}
+  .rac h5{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin:15px 0 7px;font-weight:600}
+  .rac ul{margin:0;padding:0;list-style:none}
+  .rac li{font-size:13.5px;line-height:1.5;padding:5px 0 5px 15px;position:relative}
+  .rac li::before{content:'';position:absolute;left:0;top:12px;width:5px;height:5px;border-radius:50%;background:#c9a227}
+  .rac li b{font-weight:600}
+  .rac .fora li::before{background:rgba(11,31,59,.25)}
+  .atual b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:3px;}
+  #quizCard[data-q="iief"] .q-eyebrow{color:#1c6b63;}
+  #quizCard[data-q="iief"]{box-shadow:inset 5px 0 0 #1c6b63;}
+  #quizCard[data-q="pedt"] .q-eyebrow{color:#8a4b12;}
+  #quizCard[data-q="pedt"]{box-shadow:inset 5px 0 0 #d98324;}
+  .marcador{font-size:12.5px;opacity:.75;margin-top:6px;line-height:1.45;}
+  #printPaciente,#printPos,#printTermo{display:none;}
+  .pac{font-size:11.6px;line-height:1.42;color:#101826;}
+  .pac .cab{display:flex;justify-content:space-between;align-items:flex-end;
+            border-bottom:2px solid #0b1f3b;padding-bottom:7px;margin-bottom:9px;}
+  .pac .cab .m{font-size:13px;letter-spacing:.2em;font-weight:700;color:#0b1f3b;}
+  .pac .cab .m small{display:block;font-size:8px;letter-spacing:.16em;font-weight:400;opacity:.65;}
+  .pac .cab .d{font-size:10px;text-align:right;opacity:.7;}
+  .pac h3{font-size:14px;margin:0 0 3px;}
+  .pac .sub{font-size:10.5px;opacity:.7;margin-bottom:8px;}
+  .pac h4{font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;
+          margin:9px 0 4px;border-bottom:1px solid rgba(11,31,59,.15);padding-bottom:2px;}
+  .pac .med{margin-bottom:5px;padding-left:9px;border-left:2px solid #c9a227;}
+  .pac .med b{font-size:11.6px;}
+  .pac .med .como{display:block;}
+  .pac .med .pq{display:block;opacity:.68;font-size:10.6px;font-style:italic;}
+  .pac ul{margin:0;padding-left:15px;} .pac li{margin-bottom:2px;}
+  .pac .box{border:1px solid rgba(11,31,59,.25);border-radius:6px;padding:7px 9px;margin-top:7px;}
+  .pac .alerta{border:1.5px solid #7b1e24;background:rgba(123,30,36,.05);}
+  .pac .alerta b{color:#7b1e24;}
+  .pac .linha{border-bottom:1px solid rgba(11,31,59,.35);display:inline-block;min-width:130px;margin:0 5px;}
+  .pac .termo p{margin:0 0 6px;text-align:justify;}
+  .pac .assin{margin-top:22px;font-size:11px;}
+  .termo{font-size:10.6px;line-height:1.45;text-align:justify}
+  .termo p{margin:0 0 6px}
+  .termo .assin{margin-top:20px}
+  .pac .verso{page-break-before:always;break-before:page;padding-top:4px;}
+  .pac .termo p{margin:0 0 6px;text-align:justify;}
+  .pac .assin{margin-top:22px;font-size:11px;}
+  .termo{font-size:10.6px;line-height:1.45;text-align:justify}
+  .termo p{margin:0 0 6px}
+  .termo .assin{margin-top:20px}
+  .pac .verso{page-break-before:always;break-before:page;padding-top:4px;}
+  .pac .rodape{margin-top:10px;padding-top:6px;border-top:1px solid rgba(11,31,59,.15);
+               font-size:9px;opacity:.6;text-align:center;}
+  @media print{
+    body *{visibility:hidden!important;}
+    body.pp #printPaciente{display:block!important;}
+    body.pp #printPaciente,body.pp #printPaciente *{visibility:visible!important;}
+    body.pp #printPaciente{position:absolute;left:0;top:0;width:100%;}
+    body.pc #printArea,body.pc #printArea *{visibility:visible!important;}
+    body.pc #printArea{position:absolute;left:0;top:0;width:100%;padding:0 8mm;}
+    body.po #printPos{display:block!important;}
+    body.po #printPos,body.po #printPos *{visibility:visible!important;}
+    body.po #printPos{position:absolute;left:0;top:0;width:100%;}
+    body.pt #printTermo{display:block!important;}
+    body.pt #printTermo,body.pt #printTermo *{visibility:visible!important;}
+    body.pt #printTermo{position:absolute;left:0;top:0;width:100%;}
+    body.pt #printTermo{display:block!important;}
+    body.pt #printTermo,body.pt #printTermo *{visibility:visible!important;}
+    body.pt #printTermo{position:absolute;left:0;top:0;width:100%;}
+    .noprint{display:none!important;}
+    @page{margin:11mm;}
+  }
+</style>
+
+
+<style>
+  body{font-size:17px}
+  .kwrap{max-width:720px;margin:0 auto;padding:0 18px 60px}
+  .kbar{height:5px;background:rgba(11,31,59,.10);border-radius:99px;margin:6px 0 20px;overflow:hidden}
+  .kbar i{display:block;height:100%;background:#c9a227;transition:width .3s;border-radius:99px}
+  .kpasso{font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.5}
+  .keyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#c9a227;margin:16px 0 8px;font-weight:600}
+  .kpergunta{font-size:25px;line-height:1.3;font-weight:600;margin:0 0 24px;color:#0b1f3b}
+  .kopt{display:block;width:100%;text-align:left;padding:20px 22px;margin-bottom:11px;font-size:18px;
+        border:2px solid rgba(11,31,59,.14);border-radius:16px;background:#fff;color:#0b1f3b;
+        cursor:pointer;font-family:inherit;line-height:1.35;transition:.12s}
+  .kopt:active{transform:scale(.99)}
+  .kopt.sel{background:#0b1f3b;color:#fff;border-color:#0b1f3b}
+  .kfld{width:100%;box-sizing:border-box;padding:22px;font-size:24px;text-align:center;letter-spacing:.06em;
+        border:2px solid rgba(11,31,59,.18);border-radius:16px;font-family:inherit;color:#0b1f3b}
+  .kfld-erro{border-color:#8c2f26!important}
+  .kerro{font-size:15px;color:#8c2f26;margin-top:12px;line-height:1.4;font-weight:600}
+  .khint{font-size:14.5px;opacity:.62;margin-top:14px;line-height:1.45}
+  .knav{display:flex;gap:12px;margin-top:24px}
+  .kbtn{flex:1;padding:20px;font-size:18px;font-weight:600;border-radius:16px;border:0;cursor:pointer;font-family:inherit}
+  .kprim{background:#c9a227;color:#0b1f3b}
+  .kprim:disabled{background:rgba(11,31,59,.10);color:rgba(11,31,59,.35);cursor:default}
+  .kghost{background:transparent;color:rgba(11,31,59,.55);border:2px solid rgba(11,31,59,.14);flex:0 0 120px}
+  .kfim{text-align:center;padding:60px 20px}
+  .kfim .check{font-size:60px;margin-bottom:18px}
+  .kfim h2{font-size:27px;margin:0 0 14px;color:#0b1f3b}
+  .kfim p{font-size:18px;line-height:1.6;opacity:.75}
+  .kcod{display:inline-block;margin-top:22px;padding:12px 26px;border-radius:99px;
+        background:rgba(11,31,59,.06);font-size:20px;letter-spacing:.1em;font-weight:600}
+</style>
+
+<main>
+  <div class="kwrap">
+    <div id="quiz">
+      <div class="kpasso" id="passo"></div>
+      <div class="kbar"><i id="barra"></i></div>
+      <div class="keyebrow" id="eyebrow"></div>
+      <p class="kpergunta" id="pergunta"></p>
+      <div id="opcoes"></div>
+      <div class="knav">
+        <button class="kbtn kghost" id="voltar">Voltar</button>
+        <button class="kbtn kprim" id="avancar" disabled>Continuar</button>
+      </div>
+    </div>
+    <div id="fim" style="display:none;">
+      <div class="kfim">
+        <div class="check">&#10003;</div>
+        <h2>Obrigado!</h2>
+        <p id="fimTxt"></p>
+        <div class="kcod" id="fimCod"></div>
+        <div style="margin-top:40px;" id="acoesFim"><button class="kbtn kghost" id="novo" style="flex:none;padding:14px 28px;">Novo paciente</button></div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="brand-footer">Cl&iacute;nica Maximus Medicina Masculina</footer>
+<script>
+(function(){
+  const LS = { get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},
+               set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}} };
+
+  const Store = {
+    modo:'carregando', db:null, api:null,
+    async init(){
+      try { if (window.claude && claude.use){ this.db = await claude.use('db'); } } catch(e){}
+      if (this.db){ this.modo='claude'; return; }
+      let base = LS.get('maximus_api');
+      if (!base && location.protocol.indexOf('http')===0) base = location.origin;
+      if (base){
+        try{
+          const r = await fetch(base.replace(/\/+$/,'') + '/api/health', {cache:'no-store'});
+          if (r.ok){ this.api = base.replace(/\/+$/,''); this.modo='rede'; return; }
+        }catch(e){}
+      }
+      this.modo='manual';
+    },
+    async historico(cod){
+      try{
+        if (this.modo==='claude'){
+          const r=await this.db.collection('pacientes/'+cod+'/ciclos').orderBy('data','asc').get();
+          return (r.docs||[]).map(d=>d.data());
+        }
+        if (this.modo==='rede'){
+          const r=await fetch(this.api+'/api/historico/'+encodeURIComponent(cod),{cache:'no-store'});
+          if(r.ok){ const j=await r.json(); return j.ciclos||[]; }
+        }
+      }catch(e){}
+      return [];
+    },
+    async salvarRecepcao(reg){
+      if (this.modo==='claude'){
+        try{ await this.db.collection('recepcao').add(reg);
+             await this.db.collection('pacientes/'+reg.codigo+'/ciclos').add(reg); return true; }catch(e){ return false; }
+      }
+      if (this.modo==='rede'){
+        try{ const r=await fetch(this.api+'/api/ciclo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reg)}); return r.ok; }catch(e){ return false; }
+      }
+      return false;
+    },
+    async triagensHoje(){
+      // dia LOCAL, não UTC — no fuso do Rio o dia UTC vira às 21h e a fila
+      // sumiria com a clínica ainda aberta
+      const diaLocal = d => { const x=new Date(d); return isNaN(x) ? '' :
+        x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
+      const hoje = diaLocal(new Date());
+      const ehHoje = r => (r.dataLocal||diaLocal(r.data))===hoje;
+      try{
+        if (this.modo==='rede'){
+          const r=await fetch(this.api+'/api/triagens-hoje',{cache:'no-store'});
+          if(r.ok){ const j=await r.json(); return (j.triagens||[]).filter(ehHoje); }
+        }
+        if (this.modo==='claude'){
+          const r=await this.db.collection('recepcao').orderBy('data','desc').limit(60).get();
+          return (r.docs||[]).map(d=>d.data()).filter(ehHoje);
+        }
+      }catch(e){}
+      return [];
+    },
+    async proximoCodigo(){
+      let n=0;
+      try{
+        if (this.modo==='rede'){
+          const r=await fetch(this.api+'/api/proximo-codigo',{cache:'no-store'});
+          if(r.ok){ const j=await r.json(); return j.codigo; }
+        }
+        if (this.modo==='claude'){
+          const r=await this.db.collection('codigos').get();
+          (r.docs||[]).forEach(d=>{ const m=String(d.data().codigo||'').match(/(\d+)\s*$/); if(m) n=Math.max(n,parseInt(m[1],10)); });
+          if (!n){
+            const t=await this.db.collection('recepcao').orderBy('data','desc').limit(200).get();
+            (t.docs||[]).forEach(d=>{ const m=String(d.data().codigo||'').match(/(\d+)\s*$/); if(m) n=Math.max(n,parseInt(m[1],10)); });
+          }
+        }
+      }catch(e){}
+      return 'MX'+String(n+1).padStart(4,'0');
+    },
+    async ultimo(cod){
+      if (this.modo==='claude'){
+        try{ const s=await this.db.collection('pacientes/'+cod+'/ciclos').orderBy('data','desc').limit(1).get();
+             return (s.docs&&s.docs.length)?s.docs[0].data():null; }catch(e){ return null; }
+      }
+      if (this.modo==='rede'){
+        try{ const r=await fetch(this.api+'/api/paciente/'+encodeURIComponent(cod),{cache:'no-store'});
+             if(!r.ok) return null; const j=await r.json(); return (j&&j.ciclo)?j.ciclo:null; }catch(e){ return null; }
+      }
+      return null;
+    },
+    async salvar(reg){
+      if (this.modo==='claude'){
+        try{ await this.db.collection('pacientes/'+reg.codigo+'/ciclos').add(reg); return true; }catch(e){ return false; }
+      }
+      if (this.modo==='rede'){
+        try{ const r=await fetch(this.api+'/api/ciclo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reg)});
+             return r.ok; }catch(e){ return false; }
+      }
+      return false;
+    },
+    rotulo(){
+      if (this.modo==='claude') return 'Banco Claude conectado — histórico salvo pelo código do paciente.';
+      if (this.modo==='rede')   return 'Servidor da clínica conectado ('+this.api+') — histórico salvo pelo código.';
+      if (this.modo==='carregando') return 'Verificando banco de dados…';
+      return 'Sem banco nesta máquina — escores anteriores podem ser digitados manualmente.';
+    }
+  };
+
+  function pintaStatus(extra){
+    const t=document.getElementById('dbTag'); if(!t) return;
+    t.innerHTML = (extra||Store.rotulo()) + ' &middot; <a href="#" id="cfgLink" style="text-decoration:underline;">configurar servidor</a>';
+    const a=document.getElementById('cfgLink');
+    if (a) a.onclick=(e)=>{
+      e.preventDefault();
+      const v = prompt('Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.', LS.get('maximus_api')||'');
+      if (v===null) return;
+      LS.set('maximus_api', (v||'').trim());
+      const storePronto = Store.init().then(()=>pintaStatus());
+    };
+  }
+  const storePronto = Store.init().then(()=>pintaStatus());
+
+  function norm(c){ return (c||'').trim().toUpperCase().replace(/\s+/g,''); }
+  async function carregarPaciente(cod){ return await Store.ultimo(norm(cod)); }
+  async function salvarCiclo(reg){ return await Store.salvar(reg); }
+  const OPT_IIEF=[{v:0,label:'Não tive atividade sexual'},{v:1,label:'Quase nunca ou nunca'},{v:2,label:'Poucas vezes'},{v:3,label:'Algumas vezes'},{v:4,label:'Na maioria das vezes'},{v:5,label:'Quase sempre ou sempre'}];
+  const OPT_FREQ=[{v:0,label:'Nunca ou quase nunca'},{v:1,label:'Menos da metade das vezes'},{v:2,label:'Cerca de metade das vezes'},{v:3,label:'Mais da metade das vezes'},{v:4,label:'Quase sempre ou sempre'}];
+  const OPT_GRAU=[{v:0,label:'Nem um pouco'},{v:1,label:'Um pouco'},{v:2,label:'Moderadamente'},{v:3,label:'Muito'},{v:4,label:'Extremamente'}];
+  const Q_IIEF=[
+    {id:'i0',text:'Como você classifica sua confiança de que conseguiria obter e manter uma ereção?',options:[{v:1,label:'Muito baixa'},{v:2,label:'Baixa'},{v:3,label:'Moderada'},{v:4,label:'Alta'},{v:5,label:'Muito alta'}]},
+    {id:'i1',text:'Quando teve ereções com estímulo sexual, com que frequência elas ficaram rígidas o suficiente para a penetração?',options:OPT_IIEF},
+    {id:'i2',text:'Durante a relação, com que frequência conseguiu manter a ereção depois de penetrar?',options:OPT_IIEF},
+    {id:'i3',text:'Durante a relação, qual foi a dificuldade para manter a ereção até o final?',options:[{v:0,label:'Não tentei ter relação'},{v:1,label:'Extremamente difícil'},{v:2,label:'Muito difícil'},{v:3,label:'Difícil'},{v:4,label:'Um pouco difícil'},{v:5,label:'Não foi difícil'}]},
+    {id:'i4',text:'Quando tentou ter relação, com que frequência ela foi satisfatória para você?',options:OPT_IIEF}];
+  const Q_PEDT=[
+    {id:'p0',text:'Você tem dificuldade em retardar a ejaculação?',options:OPT_FREQ},
+    {id:'p1',text:'Você ejacula antes do que gostaria?',options:OPT_FREQ},
+    {id:'p2',text:'Você ejacula com pouco estímulo?',options:OPT_FREQ},
+    {id:'p3',text:'Você se sente frustrado por ejacular antes do que gostaria?',options:OPT_GRAU},
+    {id:'p4',text:'Você se preocupa que o tempo até ejacular deixe sua parceria insatisfeita?',options:OPT_GRAU}];
+  const ADAM=[
+    {v:'a1',label:'Diminuição do desejo sexual'},{v:'a2',label:'Falta de energia'},
+    {v:'a3',label:'Diminuição de força ou resistência'},{v:'a4',label:'Perda de altura'},
+    {v:'a5',label:'Redução da alegria de viver'},{v:'a6',label:'Tristeza ou mau humor frequentes'},
+    {v:'a7',label:'Ereções menos fortes'},{v:'a8',label:'Piora recente no esporte'},
+    {v:'a9',label:'Sono logo após o jantar'},{v:'a10',label:'Piora recente no trabalho'}];
+
+
+  const TERMO_PAC = `
+    <p>Eu, ________________________________________________________________________, autorizo o Dr. Marco Antonio Corsetti e equipe a realizar o(s) procedimento(s) descrito(s) em “Tratamentos Realizados”, bem como os demais procedimentos pré e pós-operatórios recomendados;</p>
+    <p>Declaro estar ciente de que não há garantias de resultado, pois este depende de fatores tais como minhas características fisiológicas, minhas condições clínicas pré-cirúrgicas, da ausência de intercorrência durante o procedimento e da observação dos cuidados pós-operatórios;</p>
+    <p>Declaro que fui informado suficientemente para entender o propósito deste(s) procedimento(s), que seus benefícios são limitados e dependentes de fatores como os já mencionados, e que sempre haverá o risco de complicações, em qualquer procedimento médico, independente de sua extensão e gravidade;</p>
+    <p>Igualmente fui informado que poderá haver, como resultado, uma cicatriz, que se procurará encobrir, e que poderão ocorrer desconfortos, inchaços, alterações de sensibilidade, manchas e equimoses, por um período de tempo variável;</p>
+    <p>Comprometo-me a seguir todas as prescrições e cuidados indicados, oralmente ou por escrito, pois, do contrário, poderei pôr minha saúde ou bem-estar em perigo, ou ainda ocasionar sequelas temporárias ou permanentes;</p>
+    <p>Declaro, em prontuário, informações sobre uso de drogas, alergias, tabagismo e outras informações que sejam importantes. Se fumante, fui esclarecido sobre as complicações decorrentes deste fato;</p>
+    <p>Tenho conhecimento que qualquer omissão da minha parte poderá trazer-me prejuízos, comprometer o procedimento a que me submeto, causar sequelas ou acarretar danos à minha saúde;</p>
+    <p>Fui informado e autorizo que, durante o procedimento, podem ser necessários, a critério médico, procedimentos adicionais ou diferentes daqueles originalmente previstos;</p>
+    <p>Autorizo a realização e divulgação de fotos pré, trans e pós-operatórias, para fins científicos e profissionais, desde que meu nome não seja revelado.</p>`;
+
+  const S={}; let telas=[], i=0, salvo=false;
+
+  // ---- rascunho da sessão: sobrevive a refresh ou tablet reiniciado
+  const RASC='maximus_rascunho';
+  const podeSalvar=(()=>{ try{ sessionStorage.setItem('__t','1'); sessionStorage.removeItem('__t'); return true; }catch(e){ return false; } })();
+  function salvarRascunho(){
+    if(!podeSalvar||salvo) return;
+    if(!S.codigo) return;   // nada a retomar antes de identificar o paciente
+    try{ sessionStorage.setItem(RASC, JSON.stringify({S:S, i:i, em:Date.now()})); }catch(e){}
+  }
+  function limparRascunho(){ if(podeSalvar){ try{ sessionStorage.removeItem(RASC); }catch(e){} } }
+  function lerRascunho(){
+    if(!podeSalvar) return null;
+    try{
+      const r=JSON.parse(sessionStorage.getItem(RASC)||'null');
+      if(!r||!r.S) return null;
+      // rascunho de mais de 3 h é de outro paciente
+      if(Date.now()-(r.em||0) > 3*3600*1000){ limparRascunho(); return null; }
+      if(!r.S.codigo) return null;
+      return r;
+    }catch(e){ return null; }
+  }
+
+  const el=id=>document.getElementById(id);
+  const ok=v=>!(v===undefined||v===null||String(v).trim()==='');
+  const RE_COD=/^MX[0-9]{4}$/;
+  const codValido = ()=> RE_COD.test(norm(S.codigo||''));
+
+  const FORMATO=/^MX\d{4}$/;
+  const codOK=v=>FORMATO.test(norm(v||''));
+
+  function saudacao(){ const h=new Date().getHours(); return h<12?'Bom dia':(h<18?'Boa tarde':'Boa noite'); }
+
+  function monta(){
+    const t=[];
+    t.push({id:'codigo',kind:'text',eyebrow:'Recepção',text:'Código do paciente',
+      hint: (S.sugerido ? 'Sugerido: '+S.sugerido+' — o próximo disponível. Toque em continuar para usar. '
+                        : 'Preenchido pela recepção, antes de entregar o tablet. ')
+            + 'Formato MX e 4 números. Para retorno, digite o código do paciente.',
+      ph: S.sugerido || 'MX0001'});
+    t.push({id:'tipoVisita',kind:'opts',eyebrow:'Recepção',
+      text:'Este é um paciente novo ou um retorno?',
+      hint:'Depois desta tela, entregue o tablet ao paciente.',
+      options:[{v:'novo',label:'Paciente novo — primeira vez na clínica'},
+               {v:'retorno',label:'Retorno — já é paciente da casa'}]});
+    if (!S.tipoVisita){ telas=t; if(i>=telas.length) i=telas.length-1; return; }
+
+    // confere o que a recepção disse contra o que existe no banco
+    if (S.achou!==undefined && S.conflito){
+      t.push({id:'corrigir',kind:'corrigir',eyebrow:'Chame a recepção',text:'Vamos conferir o código'});
+      telas=t; if(i>=telas.length) i=telas.length-1; return;
+    }
+
+    t.push({id:'contato',kind:'contato',eyebrow:'Recepção',
+      text: S.contatoDoBanco ? 'Confira os dados de contato'
+           : (S.contatoFaltando ? 'Ainda não temos o contato deste paciente' : 'Como falamos com ele depois'),
+      hint: S.contatoDoBanco
+        ? 'Leia em voz alta e confirme com o paciente. Corrija o que mudou — é por aqui que as orientações e a receita são enviadas depois.'
+        : (S.contatoFaltando
+           ? 'Ele já é paciente da casa, mas o cadastro dele é anterior a estes campos. Peça uma vez e nas próximas visitas já vem preenchido.'
+           : 'Peça os dois. Um deles já libera o tablet, mas sem email não dá para enviar orientações e receita depois da consulta.')});
+
+    t.push({id:'entrega',kind:'entrega',eyebrow:'Recepção',text:'Tudo certo por aqui'});
+
+    const volta = S.tipoVisita==='retorno' && !!S.achou;
+    t.push({id:'inicio',kind:'intro',
+      eyebrow:saudacao()+'!',
+      text: volta ? 'Que bom ver você de novo' : 'Bem-vindo à Clínica Maximus'});
+    const NOME_Q={de:'a ereção',ep:'ejaculação rápida',ambos:'ereção e ejaculação',
+                  libido:'falta de vontade e energia',preench:'aumento peniano',clinica:'consulta de rotina'};
+    const TODAS=[{v:'de',label:'A ereção não está como eu queria'},
+                 {v:'ep',label:'Acabo mais rápido do que gostaria'},
+                 {v:'ambos',label:'As duas coisas'},
+                 {v:'libido',label:'Falta de vontade, energia ou disposição'},
+                 {v:'preench',label:'Quero saber sobre aumento peniano'},
+                 {v:'emag',label:'Quero emagrecer — protocolo com o especialista'},
+                 {v:'clinica',label:'Consulta de rotina ou outro assunto'}];
+
+    if (volta && S.queixaAnterior && S.novaQueixa!=='sim'){
+      const op=[{v:'mesmo',label:'Sim, o mesmo assunto'}];
+      if (S.fezPreench) op.push({v:'procedimento',label:'Vim para o retorno do procedimento que fiz'});
+      op.push({v:'outro',label:'Não, quero falar de outra coisa'});
+      t.push({id:'confirmaAssunto',kind:'opts',eyebrow:'Para começar',
+        text:'Na última vez você veio falar sobre '+(NOME_Q[S.queixaAnterior]||S.queixaAnterior)+'. É sobre isso hoje?',
+        hint:'Se for outra coisa, sem problema — a gente mostra as opções.',
+        options:op});
+      if (S.confirmaAssunto==='mesmo'){ S.queixa = S.queixaAnterior; S.fezPreenchAtivo = false; }
+      else if (S.confirmaAssunto==='procedimento'){ S.queixa = 'preench'; }
+      else if (S.confirmaAssunto==='outro'){ S.novaQueixa='sim'; return monta(); }
+      else { telas=t; if(i>=telas.length) i=telas.length-1; return; }
+    }
+    else if (volta && S.novaQueixa==='sim'){
+      t.push({id:'confirmaAssunto',kind:'opts',eyebrow:'Para começar',
+        text:'Na última vez você veio falar sobre '+(NOME_Q[S.queixaAnterior]||S.queixaAnterior)+'. É sobre isso hoje?',
+        options:[{v:'mesmo',label:'Sim, o mesmo assunto'},{v:'outro',label:'Não, quero falar de outra coisa'}]});
+      t.push({id:'queixa',kind:'opts',eyebrow:'Para começar',
+        text:'Sobre o que você gostaria de conversar hoje?',
+        hint:'Não existe resposta errada. Se for mais de uma coisa, escolha a que mais incomoda.',
+        options:TODAS.filter(o=>o.v!==S.queixaAnterior)});
+    }
+    else {
+      t.push({id:'queixa',kind:'opts',eyebrow:'Para começar',
+        text:'O que você gostaria de conversar com o médico hoje?',
+        hint:'Não existe resposta errada. Se for mais de uma coisa, escolha a que mais incomoda.',
+        options:TODAS});
+    }
+
+    const temDE=S.queixa==='de'||S.queixa==='ambos';
+    const temEP=S.queixa==='ep'||S.queixa==='ambos';
+    const temAD=temDE||S.queixa==='libido';
+    const temForm=temDE||temEP||temAD;
+
+    if (S.queixa==='preench' && volta && S.fezPreench){
+      t.push({id:'preIntro',kind:'preintro',eyebrow:'Seu retorno',text:'Como foi desde o procedimento'});
+      t.push({id:'reacaoPre',kind:'multi',eyebrow:'Depois do procedimento',
+        text:'Você notou alguma destas coisas?',
+        hint:'Marque tudo o que aconteceu. Se não houve nada, toque na última opção.',
+        options:[{v:'inchaco',label:'Inchaço ou roxo nos primeiros dias'},
+                 {v:'nodulo',label:'Caroço ou endurecimento'},
+                 {v:'irregular',label:'Região ficou irregular ao toque'},
+                 {v:'dor',label:'Dor ou desconforto'},
+                 {v:'assimetria',label:'Um lado ficou diferente do outro'},
+                 {v:'nenhuma',label:'Não notei nada disso'}]});
+      t.push({id:'descPre',kind:'opts',eyebrow:'Depois do procedimento',
+        text:'Sentiu algum desconforto no dia a dia?',
+        options:[{v:'nao',label:'Não, nenhum'},
+                 {v:'leve',label:'Um pouco nos primeiros dias, depois passou'},
+                 {v:'persiste',label:'Ainda sinto algo'}]});
+      t.push({id:'satisfPre',kind:'escala',eyebrow:'Depois do procedimento',
+        text:'De 0 a 10, quanto você está satisfeito com o resultado?',
+        hint:'0 é nada satisfeito, 10 é muito satisfeito.'});
+      t.push({id:'fimPre',kind:'prefim',eyebrow:'Antes da consulta',text:'O que vem agora'});
+    }
+    else if (S.queixa==='preench'){
+      t.push({id:'jornada',kind:'jornada',eyebrow:'Aumento peniano',text:'Como funciona aqui'});
+      t.push({id:'verTermo',kind:'opts',eyebrow:'Se quiser adiantar',
+        text:'Quer dar uma olhada no termo de consentimento agora?',
+        hint:'É o documento que você assinaria caso decidisse fazer o procedimento. Ler antes costuma deixar a conversa com o médico mais produtiva. Você não assina nada aqui.',
+        options:[{v:'sim',label:'Sim, quero ler agora'},
+                 {v:'nao',label:'Prefiro ver com o médico'}]});
+      if (S.verTermo==='sim')
+        t.push({id:'termoLido',kind:'termo',eyebrow:'Termo de consentimento',text:'Leia com calma'});
+    }
+
+    if (volta && S.queixa && S.queixa!=='preench'){
+      t.push({id:'usoTrat',kind:'opts',eyebrow:'Sobre o seu tratamento',
+        text:'Você conseguiu usar o tratamento como foi combinado?',
+        hint:'Responda com sinceridade. Não tem problema nenhum se não deu — o médico precisa saber para ajustar.',
+        options:[{v:'total',label:'Sim, usei todos os dias'},
+                 {v:'parcial',label:'Usei quase sempre, falhei alguns dias'},
+                 {v:'baixa',label:'Falhei bastante'},
+                 {v:'parou',label:'Parei de usar'}]});
+      t.push({id:'efeitoPac',kind:'opts',eyebrow:'Sobre o seu tratamento',
+        text:'Sentiu algum efeito indesejado?',
+        options:[{v:'nao',label:'Não senti nada'},
+                 {v:'leve',label:'Senti algo leve, mas deu para continuar'},
+                 {v:'atrap',label:'Senti algo que atrapalhou o uso'}]});
+      t.push({id:'satisfPacRec',kind:'escala',eyebrow:'Sobre o seu tratamento',
+        text:'De 0 a 10, quanto você está satisfeito com o resultado até agora?',
+        hint:'0 é nada satisfeito, 10 é muito satisfeito.'});
+    }
+    if (S.queixa && S.queixa!=='preench')
+      t.push({id:'medidas',kind:'campos',eyebrow:'Duas medidas rápidas',
+        text:'Seu peso e sua altura',
+        hint: (S.pesoAnt ? 'Na última visita: '+S.pesoAnt+' kg'+(S.alturaAnt?' e '+S.alturaAnt+' cm':'')+'. ' : '')
+              + 'Ajudam o médico a avaliar fatores que afetam a circulação e os hormônios. Se não souber de cabeça, pode seguir sem preencher.',
+        campos:[{id:'idade',label:'Idade (anos)',ph:'ex.: 48',min:18,max:99,inicio:45,unidade:'anos'},
+                {id:'peso',label:'Peso (kg)',ph:'ex.: 82',min:40,max:180,inicio:80,unidade:'kg'},
+                {id:'altura',label:'Altura (cm)',ph:'ex.: 176',min:140,max:210,inicio:172,unidade:'cm'},
+]});
+
+    if (temDE) Q_IIEF.forEach((q,k)=>t.push(Object.assign({},q,{kind:'opts',
+      eyebrow:'Sobre a ereção · pense nos últimos 6 meses', passo:'Pergunta '+(k+1)+' de 5'})));
+    if (temEP) Q_PEDT.forEach((q,k)=>t.push(Object.assign({},q,{kind:'opts',
+      eyebrow:'Sobre a ejaculação · pense nas últimas semanas', passo:'Pergunta '+(k+1)+' de 5'})));
+    if (temAD) t.push({id:'adam',kind:'multi',eyebrow:'Como você tem se sentido',
+      text:'Marque tudo o que você tem notado nos últimos meses',
+      hint:'Toque em quantas opções quiser. Se não for nenhuma, toque em "Nenhuma delas".',
+      options:ADAM.concat([{v:'nenhuma',label:'Nenhuma delas'}])});
+    if (S.queixa==='clinica'){
+      t.push({id:'comorbPac',kind:'multi',eyebrow:'Sua saúde',
+        text:'Você tem alguma destas condições?',
+        hint:'Marque quantas quiser. Se não tiver nenhuma, toque na última opção.',
+        options:[{v:'has',label:'Pressão alta'},{v:'dm',label:'Diabetes'},
+                 {v:'colesterol',label:'Colesterol alto'},{v:'coracao',label:'Problema no coração ou nas artérias'},
+                 {v:'tabag',label:'Fumo atualmente'},{v:'apneia',label:'Apneia do sono ou ronco forte'},
+                 {v:'tireoide',label:'Problema de tireoide'},{v:'depressao',label:'Depressão ou ansiedade em tratamento'},
+                 {v:'nenhuma',label:'Nenhuma dessas'}]});
+      t.push({id:'medsPac',kind:'multi',eyebrow:'Sua saúde',
+        text:'Você usa algum destes remédios?',
+        hint:'São os que mais interferem na ereção e no desejo. Se não usa nenhum, toque na última opção.',
+        options:[{v:'pressao',label:'Remédio para pressão alta'},
+                 {v:'antidep',label:'Antidepressivo'},
+                 {v:'prostata',label:'Remédio para próstata ou para queda de cabelo'},
+                 {v:'dormir',label:'Remédio para dormir ou calmante'},
+                 {v:'dor',label:'Remédio forte para dor, de uso contínuo'},
+                 {v:'testo',label:'Testosterona ou anabolizante'},
+                 {v:'nenhuma',label:'Nenhum desses'}]});
+      t.push({id:'alergPac',kind:'multi',eyebrow:'Sua saúde',
+        text:'Você tem alergia a algum remédio?',
+        hint:'Se souber o nome, conte ao médico na consulta. Aqui marque o que se aplica.',
+        options:[{v:'sim',label:'Sim, tenho alergia a algum remédio'},
+                 {v:'anest',label:'Sim, a anestésico'},
+                 {v:'nao',label:'Não tenho alergia conhecida'},
+                 {v:'nsei',label:'Não sei dizer'}]});
+    }
+    if (temForm) t.push({id:'dificuldade',kind:'opts',eyebrow:'Última pergunta',
+      text:'Alguma pergunta foi confusa ou deixou você em dúvida?',
+      hint:'É comum acontecer. O médico revisa com você na consulta — não atrapalha em nada.',
+      options:[{v:'nao',label:'Não, respondi tudo tranquilo'},
+               {v:'sim',label:'Sim, fiquei em dúvida em alguma'},
+               {v:'muito',label:'Sim, achei várias confusas'}]});
+
+    telas=t; if(i>=telas.length) i=telas.length-1;
+  }
+
+  function pinta(){
+    const sc=telas[i];
+    const mostraBarra = sc.kind!=='intro' && sc.kind!=='jornada' && sc.id!=='codigo';
+    el('passo').textContent = mostraBarra ? (sc.passo || (i+' de '+(telas.length-1))) : '';
+    el('barra').style.width = Math.round((i/Math.max(1,telas.length-1))*100)+'%';
+    el('barra').parentElement.style.visibility = mostraBarra?'visible':'hidden';
+    el('eyebrow').textContent=sc.eyebrow||'';
+    el('pergunta').textContent=sc.text;
+    const w=el('opcoes'); w.innerHTML='';
+
+    if (sc.kind==='intro' && S.achou){
+      const q=S.diasUlt;
+      const quando = q===0 ? 'hoje mesmo' : (q===1 ? 'ontem' : (q<45 ? 'há '+q+' dias' : (q<400 ? 'há cerca de '+Math.round(q/30)+' meses' : 'há mais de um ano')));
+      w.innerHTML='<div class="kintro">'
+        +'<p>Sua última visita foi <b>'+quando+'</b>, em '+S.dataUlt+'.</p>'
+        +'<p>Como você já é nosso paciente, as perguntas são <b>mais curtas</b>. Queremos saber como foi desde então.</p>'
+        +'<ul class="kpontos">'
+        +'<li><b>Menos de 2 minutos.</b></li>'
+        +'<li>Os mesmos questionários de antes, para o médico comparar com a última vez.</li>'
+        +'<li>Três perguntas rápidas sobre como foi usar o tratamento.</li>'
+        +'</ul></div>';
+    } else if (sc.kind==='intro'){
+      w.innerHTML='<div class="kintro">'
+        +'<p>Antes da sua consulta, vamos fazer <b>algumas perguntas rápidas</b> sobre o que trouxe você aqui.</p>'
+        +'<p>Suas respostas vão direto para o médico e fazem a consulta render mais — ele não precisa perguntar tudo de novo, e sobra tempo para conversar sobre o tratamento.</p>'
+        +'<ul class="kpontos">'
+        +'<li><b>Leva cerca de 3 minutos.</b></li>'
+        +'<li>Se alguma pergunta for confusa, responda o que achar mais próximo. No final você pode avisar que ficou em dúvida.</li>'
+        +'<li>Só a equipe da clínica vê o que você responder.</li>'
+        +'</ul></div>';
+    } else if (sc.kind==='jornada'){
+      w.innerHTML='<div class="kintro">'
+        +'<p>Você não precisa responder nenhum questionário agora. O que vem a seguir é uma conversa.</p>'
+        +'<ol class="kjornada">'
+        +'<li><b>Avaliação com o médico.</b> Ele examina, tira as medidas e explica o que é possível no seu caso.</li>'
+        +'<li><b>Expectativa alinhada.</b> Vocês combinam o resultado esperado antes de qualquer decisão, e são feitas fotos padronizadas para comparar depois.</li>'
+        +'<li><b>A decisão é sua.</b> Se quiser seguir, você assina um termo de consentimento e o procedimento pode ser feito no mesmo dia.</li>'
+        +'<li><b>Retorno em 3 semanas.</b> O resultado leva algumas semanas para assentar. Nesse retorno o médico reavalia e ajusta se precisar.</li>'
+        +'</ol>'
+        +'<div class="kobs"><b>Quer ver uma simulação do resultado?</b><br>'
+        +'Temos um programa que mostra uma prévia do que se espera do procedimento. Se tiver interesse, é só pedir ao médico na consulta.</div>'
+        +'<p class="kobs2">Leve suas dúvidas para a consulta. Nada é decidido hoje sem você querer.</p></div>';
+    } else if (sc.kind==='corrigir'){
+      w.innerHTML='<div class="kintro">'
+        +'<p>'+(S.motivoConflito||'Há uma divergência no código.')+'</p>'
+        +'<p><b>Confira o número na recepção antes de continuar.</b> '
+        +(S.achou?'Se for mesmo um retorno, marque "retorno" na tela anterior. Se for paciente novo, use outro código.'
+                 :'Se for mesmo um paciente novo, marque "paciente novo" na tela anterior. Se for retorno, corrija o código.')+'</p>'
+        +'</div>';
+    } else if (sc.kind==='entrega'){
+      w.innerHTML='<div class="kintro">'
+        +'<p><b>'+norm(S.codigo)+'</b> · '+(S.tipoVisita==='retorno'?'retorno':'paciente novo')
+        +(S.tipoVisita==='retorno'&&S.dataUlt?' · última visita em '+S.dataUlt:'')+'</p>'
+        +'<div class="kentrega">Agora entregue o tablet ao paciente</div>'
+        +'<p class="kobs2">Ele vê uma saudação e responde sozinho. Você não precisa acompanhar.</p></div>';
+    } else if (sc.kind==='preintro'){
+      w.innerHTML='<div class="kintro">'
+        +'<p>Seu procedimento foi em <b>'+(S.preenchData||'—')+'</b>'
+        +(S.preenchDias!=null?', há '+S.preenchDias+' dias':'')+'.</p>'
+        +'<p>São <b>três perguntas rápidas</b> sobre como foi desde então. O médico usa isso para comparar com o que foi registrado no dia.</p>'
+        +'</div>';
+    } else if (sc.kind==='prefim'){
+      w.innerHTML='<div class="kintro">'
+        +'<p>Na consulta, o médico vai <b>examinar, medir novamente e fotografar</b> — do mesmo jeito que fez no dia do procedimento.</p>'
+        +'<p>É assim que dá para comparar o antes e o depois com precisão, em vez de depender só da impressão.</p>'
+        +'<div class="kobs">Se você notou algo que não estava na lista, conte ao médico. Nenhum detalhe é bobagem aqui.</div>'
+        +'</div>';
+    } else if (sc.kind==='termo'){
+      w.innerHTML='<div class="ktermo">'+TERMO_PAC+'</div>'
+        +'<div class="kobs">Você <b>não assina nada agora</b>. Se decidir fazer o procedimento, o termo é impresso e assinado na consulta.</div>';
+    } else if (sc.kind==='escala'){
+      const g=document.createElement('div'); g.className='kescala';
+      for(let n=0;n<=10;n++){
+        const b=document.createElement('button'); b.type='button'; b.textContent=n;
+        b.className='knum'+(n<=6?' nr':(n<=8?' ny':' ng'))+(S[sc.id]===n?' sel':'');
+        b.onclick=()=>{ S[sc.id]=n; monta();
+          setTimeout(()=>{ if(i<telas.length-1){ i++; pinta(); } else enviar(); },160); };
+        g.appendChild(b);
+      }
+      w.appendChild(g);
+    } else if (sc.kind==='contato'){
+      const box=document.createElement('div'); box.className='kcontato';
+      const campos=[{id:'iniciais',label:'Iniciais do paciente',ph:'ex.: RAM',modo:'text'},
+                    {id:'telefone',label:'Telefone com DDD',ph:'(21)99999-9999',modo:'tel'},
+                    {id:'email',label:'Email',ph:'nome@email.com',modo:'email'}];
+      const aviso=document.createElement('div'); aviso.className='kaviso';
+      function pinta_aviso(){
+        const t=[];
+        if (ok(S.telefone) && !telOK(S.telefone)) t.push('Telefone incompleto: precisa de DDD e 8 ou 9 números.');
+        if (ok(S.email) && !emailOK(S.email)) t.push('Email em formato inválido.');
+        if (!ok(S.telefone) && !ok(S.email)) t.push('Preencha pelo menos telefone ou email para entregar o tablet.');
+        else if (!ok(S.email)) t.push('Sem email: orientações e receita só poderão ir por WhatsApp.');
+        aviso.innerHTML = t.join('<br>');
+      }
+      if (S.contatoDoBanco){
+        const cab=document.createElement('div'); cab.className='kobs';
+        cab.innerHTML='Estes dados vieram do cadastro. <b>Confirme com o paciente</b> e corrija o que tiver mudado.';
+        box.appendChild(cab);
+      } else if (S.contatoFaltando){
+        const cab=document.createElement('div'); cab.className='kobs';
+        cab.innerHTML='Não achamos telefone nem email no histórico dele. <b>Peça uma vez</b> — a partir da próxima visita já vem preenchido.';
+        box.appendChild(cab);
+      }
+      campos.forEach(c=>{
+        const l=document.createElement('div'); l.className='klab'; l.textContent=c.label; box.appendChild(l);
+        const inp=document.createElement('input'); inp.className='kfld'; inp.type='text';
+        if (c.modo==='tel') inp.inputMode='tel'; if (c.modo==='email') inp.inputMode='email';
+        inp.placeholder=c.ph||'';
+        inp.value = c.id==='telefone' ? fmtTel(S.telefone) : (S[c.id]||'');
+        inp.oninput=()=>{
+          if (c.id==='iniciais'){ S.iniciais=fmtIniciais(inp.value); inp.value=S.iniciais; }
+          else if (c.id==='telefone'){ S.telefone=fmtTel(inp.value); inp.value=S.telefone; }
+          else S.email=inp.value.trim();
+          const erro = (c.id==='telefone' && ok(S.telefone) && !telOK(S.telefone))
+                    || (c.id==='email' && ok(S.email) && !emailOK(S.email))
+                    || (c.id!=='iniciais' && !ok(S.telefone) && !ok(S.email));
+          inp.classList.toggle('kfld-falta', !!erro);
+          pinta_aviso(); sync();
+        };
+        box.appendChild(inp);
+      });
+      pinta_aviso();
+      box.appendChild(aviso);
+      w.appendChild(box);
+    } else if (sc.kind==='campos'){
+      sc.campos.forEach(c=>{
+        const l=document.createElement('div'); l.className='klab'; l.textContent=c.label; w.appendChild(l);
+        if (c.min!==undefined && c.max!==undefined){ w.appendChild(montaRoleta(c)); return; }
+        const inp=document.createElement('input'); inp.className='kfld kfld-num'; inp.type='text';
+        inp.inputMode='decimal'; inp.placeholder=c.ph||''; inp.value=S[c.id]||'';
+        inp.oninput=()=>{S[c.id]=inp.value; sync();};
+        w.appendChild(inp);
+      });
+    } else if (sc.kind==='text'){
+      const inp=document.createElement('input'); inp.className='kfld'; inp.placeholder=sc.ph||'';
+      inp.value=S[sc.id]||'';
+      const err=document.createElement('div'); err.className='kerro'; err.id='kerro';
+      err.textContent='O código precisa ser MX seguido de 4 números. Exemplo: MX0042.';
+      err.style.display='none';
+      inp.oninput=()=>{ S[sc.id]=inp.value;
+        if (sc.id==='codigo'){
+          const cheio=String(inp.value||'').trim().length>0;
+          err.style.display = (cheio && !codValido()) ? 'block' : 'none';
+          inp.classList.toggle('kfld-erro', cheio && !codValido());
+        }
+        sync(); };
+      w.appendChild(inp);
+      if (sc.id==='codigo') w.appendChild(err);
+    } else {
+      sc.options.forEach(o=>{
+        const b=document.createElement('button'); b.type='button';
+        const sel = sc.kind==='multi' ? (S[sc.id]||[]).includes(o.v) : S[sc.id]===o.v;
+        b.className='kopt'+(sel?' sel':''); b.textContent=o.label;
+        b.onclick=()=>{
+          if (sc.id==='tipoVisita'){
+            S[sc.id]=o.v; pinta();
+            (async()=>{
+              const b=el('avancar'); b.style.display='block'; b.disabled=true; b.textContent='Verificando…';
+              await buscarPaciente();
+              monta(); i=Math.min(i+1, telas.length-1); pinta();
+            })();
+            return;
+          }
+          if (sc.kind==='multi'){
+            let a=S[sc.id]||[];
+            if (o.v==='nenhuma') a=['nenhuma'];
+            else { a=a.filter(x=>x!=='nenhuma'); a=a.includes(o.v)?a.filter(x=>x!==o.v):a.concat([o.v]); }
+            S[sc.id]=a; pinta();
+          } else {
+            S[sc.id]=o.v; monta();
+            setTimeout(()=>{ if(i<telas.length-1){ i++; pinta(); } else enviar(); },160);
+          }
+        };
+        w.appendChild(b);
+      });
+    }
+    if (sc.hint){ const h=document.createElement('div'); h.className='khint'; h.textContent=sc.hint; w.appendChild(h); }
+    el('voltar').style.visibility = i===0?'hidden':'visible';
+    salvarRascunho();
+    sync();
+  }
+
+  function fmtIniciais(v){
+    return String(v||'').toUpperCase().replace(/[^A-ZÀ-Ý ]/g,'').replace(/\s+/g,' ').slice(0,6);
+  }
+  function soDigitos(v){ return String(v||'').replace(/\D/g,'').slice(0,11); }
+  function fmtTel(v){
+    const d = soDigitos(v);
+    if (!d) return '';
+    if (d.length<=2) return '('+d;
+    const ddd=d.slice(0,2), r=d.slice(2);
+    if (r.length<=4) return '('+ddd+')'+r;
+    if (r.length<=8) return '('+ddd+')'+r.slice(0,4)+'-'+r.slice(4);
+    return '('+ddd+')'+r.slice(0,5)+'-'+r.slice(5);
+  }
+  function telOK(v){ const d=soDigitos(v); return d.length===10 || d.length===11; }
+  function emailOK(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v||'').trim()); }
+  function temContatoValido(){
+    return (ok(S.telefone) && telOK(S.telefone)) || (ok(S.email) && emailOK(S.email));
+  }
+  function contatoSemErro(){
+    if (ok(S.telefone) && !telOK(S.telefone)) return false;
+    if (ok(S.email) && !emailOK(S.email)) return false;
+    return true;
+  }
+
+  function montaRoleta(c){
+    const min=+c.min, max=+c.max, H=56;
+    const inicio = ok(S[c.id]) ? Math.min(max, Math.max(min, Math.round(parseFloat(String(S[c.id]).replace(',','.'))))) : (c.inicio||Math.round((min+max)/2));
+    const box=document.createElement('div'); box.className='krol';
+    const band=document.createElement('div'); band.className='band';
+    const lista=document.createElement('div'); lista.className='lista'; lista.tabIndex=0;
+    lista.setAttribute('role','listbox'); lista.setAttribute('aria-label', c.label||c.id);
+    let html='';
+    for(let v=min; v<=max; v++) html += '<div class="it" data-v="'+v+'">'+v+'</div>';
+    lista.innerHTML=html;
+    const un=document.createElement('div'); un.className='un'; un.textContent=c.unidade||'';
+    let atual=null, raf=0;
+    function marca(v){
+      const antigo = lista.querySelector('.it.on'); if (antigo) antigo.classList.remove('on');
+      const novo = lista.children[v-min]; if (novo) novo.classList.add('on');
+      atual=v;
+    }
+    lista.addEventListener('scroll', ()=>{
+      cancelAnimationFrame(raf);
+      raf=requestAnimationFrame(()=>{
+        const v=Math.min(max, Math.max(min, min+Math.round(lista.scrollTop/H)));
+        marca(v); S[c.id]=String(v); sync();
+      });
+    }, {passive:true});
+    lista.addEventListener('click', e=>{
+      const it=e.target.closest('.it'); if(!it) return;
+      const v=+it.dataset.v;
+      marca(v); S[c.id]=String(v); sync();
+      try{ lista.scrollTo({top:(v-min)*H, behavior:'smooth'}); }catch(err){ lista.scrollTop=(v-min)*H; }
+    });
+    lista.addEventListener('keydown', e=>{
+      if (e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault();
+        const v=Math.min(max, Math.max(min, (atual||inicio)+(e.key==='ArrowDown'?1:-1)));
+        lista.scrollTop=(v-min)*H; }
+    });
+    box.appendChild(band); box.appendChild(lista); box.appendChild(un);
+    setTimeout(()=>{ lista.scrollTop=(inicio-min)*H; marca(inicio); }, 0);
+    return box;
+  }
+
+  function respondida(sc){
+    if (sc.id==='codigo') return true;   // vazio significa aceitar o sugerido
+    if (sc.kind==='contato') return temContatoValido() && contatoSemErro();
+    if (['intro','jornada','campos','termo','entrega','preintro','prefim'].indexOf(sc.kind)>=0) return true;
+    if (sc.kind==='corrigir') return false;
+    if (sc.kind==='multi') return (S[sc.id]||[]).length>0;
+    if (sc.kind==='escala') return S[sc.id]!==undefined;
+    if (sc.id==='codigo') return codValido();
+    return ok(S[sc.id]);
+  }
+  function sync(){
+    const sc=telas[i], fim=i===telas.length-1, b=el('avancar');
+    // nas telas de toque único o próprio toque avança, então o botão não existe
+    b.style.display = (sc.kind==='opts'||sc.kind==='escala') ? 'none' : 'block';
+    b.disabled = !respondida(sc);
+    if (sc.kind==='corrigir'){ b.style.display='none'; el('voltar').style.visibility='visible'; }
+    b.textContent = sc.kind==='entrega' ? 'Entregar ao paciente'
+                  : sc.kind==='preintro' ? 'Começar'
+                  : sc.kind==='prefim' ? 'Enviar respostas'
+                  : sc.kind==='intro' ? 'Começar'
+                  : (sc.kind==='jornada' ? 'Entendi'
+                  : (sc.kind==='termo' ? 'Terminei de ler'
+                  : (fim ? 'Enviar respostas' : 'Continuar')));
+  }
+  async function buscarPaciente(){
+    const cod=norm(S.codigo);
+    S.achou=null; S.conflito=false;
+    try{
+      const r = await Store.ultimo(cod);
+      // o adaptador pode devolver o ciclo direto ou {ciclo,total,ultimaData}
+      const ciclo = r ? (r.ciclo || (r.data || r.protocolo ? r : null)) : null;
+      if (ciclo){
+        S.achou = ciclo;
+        S.totalCiclos = (r && r.total) || 1;
+        const d = new Date((r && r.ultimaData) || ciclo.data || Date.now());
+        S.diasUlt = Math.max(0, Math.round((Date.now()-d.getTime())/86400000));
+        S.dataUlt = d.toLocaleDateString('pt-BR');
+        const m = ciclo.medidas || ciclo.medidasRecepcao || {};
+        S.pesoAnt = m.peso||null; S.alturaAnt = m.altura||null;
+      }
+      // queixa anterior e se já houve procedimento de preenchimento
+      try{
+        const todos = await Store.historico(cod);
+        const recs = (todos||[]).filter(x=>x.queixaRecepcao);
+        if (recs.length) S.queixaAnterior = recs[recs.length-1].queixaRecepcao;
+        // contato já cadastrado: a recepção confirma em vez de digitar de novo
+        // contato do cadastro: pega o mais recente de cada campo, não só do último registro
+        const ordenados = (todos||[]).slice().sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
+        const ultimoCom = campo => {
+          for (let i=ordenados.length-1;i>=0;i--){ const v=ordenados[i][campo]; if (v) return v; }
+          return null;
+        };
+        const ini = ultimoCom('iniciais'), tel = ultimoCom('telefone'), mail = ultimoCom('email');
+        if (!ok(S.iniciais) && ini) S.iniciais = fmtIniciais(ini);
+        if (!ok(S.telefone) && tel) S.telefone = fmtTel(tel);
+        if (!ok(S.email) && mail) S.email = String(mail).trim();
+        S.contatoDoBanco = !!(ini || tel || mail);
+        S.contatoFaltando = !!S.achou && !S.contatoDoBanco;
+        const pre = (todos||[]).filter(x=>x.preench && (x.preench.mlUsado || x.preench.marca));
+        if (pre.length){
+          S.fezPreench = true;
+          const u = pre[pre.length-1];
+          const d = new Date(u.data||Date.now());
+          S.preenchData = d.toLocaleDateString('pt-BR');
+          S.preenchDias = Math.max(0, Math.round((Date.now()-d.getTime())/86400000));
+        }
+      }catch(e){}
+      if (ciclo){
+      }
+    }catch(e){}
+    S.conflito = (S.tipoVisita==='novo' && !!S.achou) || (S.tipoVisita==='retorno' && !S.achou);
+  }
+
+
+  el('avancar').onclick=async()=>{
+    const sc=telas[i];
+    if(!respondida(sc)) return;
+    if (sc.id==='codigo'){
+      if (!ok(S.codigo) && S.sugerido) S.codigo = S.sugerido;
+      if (!codOK(S.codigo)){
+        const e=el('kerro');
+        if(e) e.style.display='block';
+        const inp=el('opcoes').querySelector('input');
+        if(inp) inp.classList.add('kfld-erro');
+        return;
+      }
+      S.codigo = norm(S.codigo);
+    }
+    monta();
+    if(i<telas.length-1){ i++; pinta(); return; }
+    await enviar();
+  };
+  el('voltar').onclick=()=>{
+    if (telas[i] && telas[i].kind==='corrigir'){
+      delete S.achou; delete S.conflito; delete S.motivoConflito; delete S.tipoVisita;
+      i=1; monta(); i=1; pinta(); return;
+    }
+    if(i>0){ i--; monta(); pinta(); }
+  };
+
+  async function enviar(){
+    if (salvo) return;
+    const b=el('avancar'); b.style.display='block'; b.disabled=true; b.textContent='Enviando…';
+    const iief = Q_IIEF.every(q=>ok(S[q.id])) ? Q_IIEF.reduce((a,q)=>a+Number(S[q.id]),0) : null;
+    const pedt = Q_PEDT.every(q=>ok(S[q.id])) ? Q_PEDT.reduce((a,q)=>a+Number(S[q.id]),0) : null;
+    const adam = (S.adam||[]).filter(v=>v!=='nenhuma');
+    const nm = x => parseFloat(String(x||'').replace(',','.')) || null;
+    const peso=nm(S.peso), altura=nm(S.altura), cintura=nm(S.cintura);
+    const imc = (peso&&altura) ? +(peso/Math.pow(altura/100,2)).toFixed(1) : null;
+    const agora=new Date();
+    const hora=agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const diaLocal = agora.getFullYear()+'-'+String(agora.getMonth()+1).padStart(2,'0')+'-'+String(agora.getDate()).padStart(2,'0');
+    const reg={data:agora.toISOString(), hora, dataBR:agora.toLocaleDateString('pt-BR'), dataLocal:diaLocal,
+      codigo:norm(S.codigo), tipo:'recepcao', linha:'recepcao',
+      iniciais:(S.iniciais||'').trim()||null,
+      telefone:(S.telefone? fmtTel(S.telefone):'')||null,
+      email:(S.email||'').trim()||null,
+      queixaRecepcao:S.queixa, iief, pedt, adam,
+      dificuldade:S.dificuldade||null, revisar:(S.dificuldade==='sim'||S.dificuldade==='muito'),
+      medidas:{idade:(S.idade?parseInt(S.idade,10):null), peso, altura, cintura, imc},
+      leuTermo:(S.verTermo==='sim'),
+      retornoPreench: (S.queixa==='preench' && S.fezPreench) ? {
+        reacoes:(S.reacaoPre||[]).filter(v=>v!=='nenhuma'),
+        desconforto:S.descPre||null,
+        satisfacao:(S.satisfPre===undefined?null:S.satisfPre),
+        diasDesdeProcedimento:S.preenchDias!=null?S.preenchDias:null
+      } : null,
+      retorno:!!S.achou, diasDesdeUltima:(S.achou?S.diasUlt:null),
+      usoRelatado:S.usoTrat||null, efeitoRelatado:S.efeitoPac||null,
+      satisfRelatada:(S.satisfPacRec===undefined?null:S.satisfPacRec),
+      autorrelato:(S.queixa==='clinica') ? {
+        comorbidades:(S.comorbPac||[]).filter(v=>v!=='nenhuma'),
+        medicacoes:(S.medsPac||[]).filter(v=>v!=='nenhuma'),
+        alergias:(S.alergPac||[]).filter(v=>v!=='nao')
+      } : null,
+      respostas:{i0:S.i0,i1:S.i1,i2:S.i2,i3:S.i3,i4:S.i4,p0:S.p0,p1:S.p1,p2:S.p2,p3:S.p3,p4:S.p4}};
+    const okSalvo = await Store.salvarRecepcao(reg);
+    salvo=true; limparRascunho();
+    el('quiz').style.display='none'; el('fim').style.display='block';
+    const extra = S.queixa==='preench'
+      ? 'O médico vai conversar com você sobre a avaliação.'
+      : (reg.revisar ? '<span class="kpend">Você avisou que ficou em dúvida em alguma pergunta — o médico vai revisar com você na consulta.</span>' : '');
+    el('fimTxt').innerHTML = okSalvo
+      ? (S.queixa==='preench' ? 'Tudo certo!' : 'Suas respostas já estão com o médico.')
+        + (extra ? '<br>'+extra : '')
+        + '<br><br><b>Pode devolver o tablet à recepção.</b>'
+      : 'Não conseguimos enviar automaticamente.<br><b>Avise a recepção e mostre esta tela para ela.</b>';
+    el('fimCod').innerHTML = norm(S.codigo) + '<span class="khora">' + hora + '</span>';
+  }
+  el('novo').onclick=()=>{ limparRascunho(); Object.keys(S).forEach(k=>delete S[k]); i=0; salvo=false;
+    el('fim').style.display='none'; el('quiz').style.display='block'; monta(); pinta(); };
+
+  (async()=>{
+    try{ await storePronto; const c=await Store.proximoCodigo();
+      if (c && !S.codigo){ S.codigoSugerido=c; S.codigo=c; monta(); pinta(); }
+    }catch(e){}
+  })();
+
+  const rascunho = lerRascunho();
+  if (rascunho){
+    const min = Math.max(1, Math.round((Date.now()-rascunho.em)/60000));
+    el('quiz').style.display='none';
+    el('fim').style.display='block';
+    el('fimTxt').innerHTML = 'Encontramos um questionário em andamento de <b>'+String(rascunho.S.codigo||'').toUpperCase()+'</b>,'
+      + ' interrompido há '+min+(min===1?' minuto':' minutos')+'.<br>O que você quer fazer?';
+    el('fimCod').innerHTML = '';
+    const b1=document.createElement('button'); b1.className='kbtn kprim'; b1.textContent='Continuar de onde parou';
+    b1.style.marginBottom='10px'; b1.style.width='100%';
+    b1.onclick=()=>{ Object.assign(S, rascunho.S); i=Math.min(rascunho.i||0, 99);
+      el('fim').style.display='none'; el('quiz').style.display='block';
+      monta(); if(i>=telas.length) i=telas.length-1; pinta(); };
+    const b2=document.createElement('button'); b2.className='kbtn kghost'; b2.textContent='Começar um novo questionário';
+    b2.style.width='100%'; b2.style.flex='none';
+    b2.onclick=()=>{ Object.keys(S).forEach(k=>delete S[k]); i=0; limparRascunho();
+      el('fim').style.display='none'; el('quiz').style.display='block';
+      monta(); pinta(); limparRascunho(); iniciarSugestao(); };
+    const cx=el('acoesFim')||el('novo').parentElement; cx.innerHTML=''; cx.appendChild(b1); cx.appendChild(b2);
+  }
+
+  function iniciarSugestao(){
+    (async()=>{
+      try{ await storePronto; S.sugerido = await Store.proximoCodigo(); }catch(e){}
+      if (i===0){ monta(); pinta(); }
+    })();
+  }
+  if (!rascunho) iniciarSugestao();
+
+  monta(); pinta();
+
+})();
+</script>
+<style>
+  header .t2{color:#e8eaee!important;opacity:1!important}
+  /* contraste revisado — todas as razões medidas sobre #faf9f5 */
+  body{font-size:17px;background:#faf9f5;color:#14181f}
+  .kpasso{color:#4a5464;opacity:1;font-weight:600}
+  .keyebrow{color:#6b5310;opacity:1;font-weight:700}
+  .kpergunta{color:#0b1f3b}
+  .kopt{border:2px solid #b9c0cb;color:#14181f;background:#fff}
+  .kopt:hover{border-color:#0b1f3b}
+  .kopt.sel{background:#0b1f3b;color:#fff;border-color:#0b1f3b;font-weight:600}
+  .kopt.sel::after{content:'  ✓';font-weight:700}
+  .kfld{border:2px solid #b9c0cb;color:#14181f;background:#fff}
+  .kfld::placeholder{color:#7b8595}
+  .khint{color:#44505f;opacity:1}
+  .kprim{background:#c9a227;color:#0b1f3b;font-weight:700}
+  .kprim:disabled{background:#e4e2db;color:#4a5260;border:2px dashed #9aa3b0}
+  .kghost{color:#2b3644;border:2px solid #b9c0cb}
+  .kfim h2{color:#0b1f3b}
+  .kfim p{color:#2b3644;opacity:1}
+  .kfim .check{color:#2e5e3a}
+  .kcod{background:#0b1f3b;color:#fff}
+  .brand-footer{color:#4a5464!important;opacity:1!important}
+  .kbar{background:#d8d5cc}
+
+  .kintro p{font-size:18px;line-height:1.6;color:#2b3644;margin:0 0 16px}
+  .kpontos{list-style:none;margin:22px 0 0;padding:0}
+  .kpontos li{font-size:16.5px;line-height:1.5;color:#2b3644;padding:12px 0 12px 32px;position:relative;
+    border-top:1px solid #dfdcd3}
+  .kpontos li::before{content:'•';position:absolute;left:8px;top:11px;color:#8a6d12;font-size:22px}
+  .kpend{font-size:15px;color:#3a4453;display:inline-block;margin-top:10px;line-height:1.5}
+  .khora{display:block;font-size:13px;letter-spacing:.06em;opacity:.75;margin-top:4px;font-weight:400}
+
+  @media (prefers-contrast: more){
+    .kopt{border-color:#0b1f3b} .khint{color:#14181f}
+  }
+</style>
+</body></html>
