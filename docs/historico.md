@@ -32,6 +32,14 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
 - **Gravação falhando em silêncio** — `catch` vazio. Hoje existe confirmação
   visível, fila de reenvio e identificador de operação contra duplicata.
 
+- **Pergunta de testosterona nunca era feita** — com libido baixa no ADAM na
+  primeira consulta, sem exame no banco, a pergunta entrava no fluxo tarde
+  demais (o `build()` lia `S.libido` antes de recalculá-la) e num módulo que o
+  "Continuar" do panorama não visitava. A conduta saía sem ela, e o ramo com
+  ioimbina ficava inalcançável. Hoje a libido é calculada logo após o ADAM e
+  a conduta só é gerada com todas as obrigatórias respondidas. Achado pela
+  regressão clínica (LIM-020 a LIM-023).
+
 ## Navegação e interface
 
 - **Botão Próxima desaparecendo** — o palco tinha largura máxima de 620 px e,
@@ -64,6 +72,9 @@ Cada ampliação veio de um caso real:
 - Rastreador de módulos: nasceu do bug do módulo 1; abre todos os módulos em
   várias profundidades, nas oito linhas.
 - Integração: nasceu da perda do esquema anterior e da ficha do paciente.
+- Regressão clínica: 59 pacientes nos cortes exatos, contra baseline. No
+  primeiro dia achou a pergunta de testosterona que nunca era feita; num teste
+  de mutação, acusou a mudança do corte IIEF 17 → 18 no paciente exato.
 - Vigia e contrato de telas: pegaram sozinhos duas telas fora de módulo antes
   de qualquer publicação.
 

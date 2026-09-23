@@ -12,19 +12,17 @@ Alvo: `src/logic.js` (motor de decisão, sem DOM), `src/ui.js`, `src/store.js`
 compartilhado pelos três apps, e um `build.js` que gera os HTML autocontidos.
 O motor sem DOM é o que destrava o item 2.
 
-## 2. Regressão clínica com pacientes-limite
+## 2. Regressão clínica com pacientes-limite — feita, falta aprovação
 
-A suíte atual garante que o app não trava e que as telas certas aparecem. Não
-garante que a **conduta** continua a mesma. Falta reconstruir:
+Em `tests/regressao/` (etapa 6 do `testar.sh`): 25 pacientes-limite (IIEF
+7/8, 11/12, 16/17, 17/18, 21/22; PEDT 8/9, 10/11, 15/16; biotensiômetro
+9/10, 20/21; testosterona 335/340 e ramo da ioimbina), 29 caminhos clínicos e
+5 reavaliações.
 
-- pacientes `TEST-001..044` cobrindo os caminhos clínicos;
-- pacientes `LIM-001..017` exatamente nos limites de cada faixa de corte
-  (IIEF 7/8, 17/18, testosterona 340, PEDT 8/9, hematócrito 52, PSA);
-- reavaliações `R1..R9`;
-- baseline aprovada pelo médico, com `--aprovar` para gravar nova baseline
-  quando a mudança for intencional.
-
-Sem isso, mudar uma regra pode alterar silenciosamente a conduta de outra.
+**Pendente:** o médico conferir `tests/regressao/REVISAO.md`. A baseline foi
+gravada a partir do comportamento atual do app — ela garante que nada muda
+sem aviso, mas só vira referência clínica depois de conferida. Faltam também
+hematócrito 52 e PSA, que dependem do fluxo de hipogonadismo em reavaliação.
 
 ## 3. Perfis de acesso por rota
 

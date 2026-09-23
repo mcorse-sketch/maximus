@@ -136,9 +136,20 @@ cd tests && npm install          # jsdom
 cd .. && ./scripts/testar.sh 100 # roda tudo
 ```
 
-Cinco etapas: sintaxe dos apps, 100 pacientes sintéticos no clínico, 100 na
-recepção, rastreador de módulos nas oito linhas de queixa, e integração
-recepção → consultório.
+Seis etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
+recepção, rastreador de módulos nas oito linhas de queixa, integração
+recepção → consultório, e **regressão clínica**.
+
+A regressão (`tests/regressao.js`) leva os pacientes de
+`tests/regressao/pacientes.js` até a conduta e compara protocolo, kit, escores
+e texto com `tests/regressao/baseline.json`. Conduta que muda derruba a
+bateria. Se a mudança foi intencional e o médico conferiu
+`tests/regressao/REVISAO.md`, regrave com `node regressao.js --aprovar`.
+Regra nova entra como paciente novo, no limite exato, e — se for regra do
+CLAUDE.md — com `espera`, que vale mesmo com `--aprovar`.
+
+O teste acha cada pergunta pelo atributo `data-tela` do `#quizCard` e cada
+opção por `data-v` / `data-campo`. Não remova essas marcações.
 
 Dentro do app há duas camadas que os testes leem:
 

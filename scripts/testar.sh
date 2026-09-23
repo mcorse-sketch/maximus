@@ -6,12 +6,13 @@ N="${1:-100}"
 RAIZ="$(cd "$(dirname "$0")/.." && pwd)"
 CLIN="$RAIZ/apps/triagem.html"
 RECEP="$RAIZ/apps/recepcao.html"
+FIN="$RAIZ/apps/financeiro.html"
 cd "$RAIZ/tests" || exit 2
 falhas=0
 linha(){ printf '\n──────────── %s ────────────\n' "$1"; }
 
 linha "1. sintaxe do JavaScript"
-for f in "$CLIN" "$RECEP"; do
+for f in "$CLIN" "$RECEP" "$FIN"; do
   node -e "
     const fs=require('fs');
     const s=fs.readFileSync('$f','utf8');
@@ -31,6 +32,9 @@ node teste_modulos.js "$CLIN" 12 || falhas=$((falhas+1))
 
 linha "5. integração recepção → consultório"
 node teste_integracao.js "$CLIN" || falhas=$((falhas+1))
+
+linha "6. regressão clínica — pacientes-limite contra a baseline"
+node regressao.js "$CLIN" || falhas=$((falhas+1))
 
 linha "resumo"
 if [ "$falhas" -eq 0 ]; then

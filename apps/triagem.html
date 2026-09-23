@@ -1079,7 +1079,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
             aoMudar:()=>{ nextBtn.disabled = sc.optional ? false : !val(sc); }}));
           return;
         }
-        const i=document.createElement('input'); i.className='fld'; i.type='text'; i.inputMode='decimal';
+        const i=document.createElement('input'); i.className='fld'; i.type='text'; i.inputMode='decimal'; i.dataset.campo = f.id;
         i.placeholder=f.ph||''; i.value=S[f.id]||'';
         i.oninput=()=>{ S[f.id]=i.value; nextBtn.disabled = sc.optional ? false : !val(sc); };
         optsWrap.appendChild(i);
@@ -1090,7 +1090,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     } else if (sc.kind==='escalas'){
       sc.fields.forEach(f=>{
         const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=f.label; optsWrap.appendChild(lab);
-        const g=document.createElement('div'); g.className='scale esc';
+        const g=document.createElement('div'); g.className='scale esc'; g.dataset.campo = f.id;
         for(let n=0;n<=10;n++){
           const b=document.createElement('button'); b.type='button'; b.textContent=n;
           b.className='n'+(n<=6?'r':(n<=8?'y':'g'))+(S[f.id]===n?' selected':'');
@@ -1106,9 +1106,9 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     } else if (sc.kind==='grupo'){
       sc.fields.forEach(f=>{
         const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=f.label; optsWrap.appendChild(lab);
-        const g=document.createElement('div'); g.className='gopts';
+        const g=document.createElement('div'); g.className='gopts'; g.dataset.campo = f.id;
         f.options.forEach(o=>{
-          const b=document.createElement('button'); b.type='button';
+          const b=document.createElement('button'); b.type='button'; b.dataset.v = String(o.v);
           b.className='gop'+(S[f.id]===o.v?' selected':'');
           b.textContent=o.label;
           b.onclick=()=>{S[f.id]=o.v;paint();};
@@ -1137,7 +1137,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       sc.options.forEach(o=>{
         const b=document.createElement('button'); b.type='button';
         const sel = sc.multi ? (S[sc.id]||[]).includes(o.v) : S[sc.id]===o.v;
-        b.className='opt'+(sel?' selected':'');
+        b.className='opt'+(sel?' selected':''); b.dataset.v = String(o.v);
         b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${o.label}</span>`;
         b.onclick=()=>{
           if (sc.multi){ const a=S[sc.id]||[]; S[sc.id] = a.includes(o.v)?a.filter(x=>x!==o.v):a.concat([o.v]); }
@@ -1148,6 +1148,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       });
     }
     quizCard.setAttribute('data-q', sc.qtipo || '');
+    // marcacao para a regressao clinica (tests/regressao.js); nao muda comportamento
+    quizCard.setAttribute('data-tela', sc.id);
     pintaBarraAtual();
     pintaCopiloto();
     const painel = document.getElementById('painelCard');
@@ -1463,7 +1465,17 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     hist.push(sc.id);
     build();
     const parcial = screens.some(x=>x.parcial);
-    if (si>=screens.length-1 && !parcial){ showResults(); return; }
+    if (si>=screens.length-1 && !parcial){
+      // conduta só com todas as obrigatórias respondidas: uma pergunta que entrou
+      // no fluxo em outro módulo (ex.: testosterona depois do ADAM) não pode ser pulada
+      const pend = screens.findIndex(x=>!x.plumb && !x.optional && !val(x));
+      if (pend>=0){
+        si = pend;
+        if (S.codigo||S.daFila) mostrarPanorama(); else paint();
+        return;
+      }
+      showResults(); return;
+    }
     const pos = screens.findIndex(x=>x.id===sc.id);
     // se a tela atual deixou de existir (ex.: trocar a queixa), a substituta
     // ocupa o mesmo lugar — então não avançamos
@@ -1896,7 +1908,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     const menos=document.createElement('button'); menos.type='button'; menos.textContent='\u2212'; menos.setAttribute('aria-label','Diminuir');
     const mais=document.createElement('button');  mais.type='button';  mais.textContent='+';       mais.setAttribute('aria-label','Aumentar');
     const r=document.createElement('input'); r.type='range'; r.min=min; r.max=max; r.step=passo;
-    r.value = inicial; r.setAttribute('aria-label', cfg.label||cfg.id);
+    r.value = inicial; r.setAttribute('aria-label', cfg.label||cfg.id); r.dataset.campo = cfg.id;
     let atual = inicial;
     function aplica(n){
       v.classList.remove('sugerido');
@@ -2727,6 +2739,9 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       if (!(S.filaAplicada && S.refazer!=='sim' && (S.adam||[]).length)) s.push({id:'adam',kind:'opts',multi:true,step:D,eyebrow:'Questionário ADAM',
         text:'Marque todos os sintomas que o paciente apresenta:',
         options:ADAM.map(a=>({v:a.v,badge:a.chave?'★':'•',label:a.label}))});
+      // a libido sai do ADAM respondido agora: sem recalcular aqui, a pergunta de
+      // testosterona entrava no fluxo tarde demais e nunca era feita
+      S.libido = (S.adam||[]).filter(v=>v!=='nenhum').indexOf('a1')>=0 ? 'sim' : 'nao';
       const dec0=x=>parseFloat(String(x||'').replace(',','.'));
       const ttPrev = S.tTotal ? dec0(S.tTotal) : ((prev && prev.labs && prev.labs.tTotal) ? dec0(prev.labs.tTotal) : null);
       if (S.libido==='sim' && ttPrev===null) s.push({id:'testo',kind:'opts',step:D,eyebrow:'Libido',text:'Testosterona total e livre estão normais? (corte de normalidade para total: acima de 340 ng/dL)',
