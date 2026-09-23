@@ -294,6 +294,6 @@ async function rodaPaciente(i, mem) {
   comVigia.slice(0,5).forEach(r=>console.log('   - paciente', r.i, ':', r.vigia.join(' | ')));
   console.log('falhas de panorama:', panFalhas.length);
   panFalhas.slice(0, 6).forEach(f => console.log('   - paciente', f.i, ':', f.panorama));
-  fs.writeFileSync('/home/claude/v2/relatorio.json', JSON.stringify({ erros, rels }, null, 1));
+  fs.writeFileSync(path.join(__dirname, 'relatorio.json'), JSON.stringify({ erros, rels }, null, 1));
   process.exit(falhas.length || erros.length ? 1 : 0);
 })();

@@ -1,7 +1,7 @@
 // Integração: o que a recepção coletou aparece no resumo do consultório.
 const fs = require('fs');
 const { JSDOM, VirtualConsole } = require('jsdom');
-const HTML_CLIN = fs.readFileSync('/home/claude/v2/triagem-v2.html', 'utf8');
+const HTML_CLIN = fs.readFileSync(process.argv[2] || '../apps/triagem.html', 'utf8');
 
 const erros = [];
 process.on('unhandledRejection', e => erros.push('rejeicao: ' + (e && e.message ? e.message : e)));
