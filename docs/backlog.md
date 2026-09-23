@@ -24,11 +24,16 @@ gravada a partir do comportamento atual do app — ela garante que nada muda
 sem aviso, mas só vira referência clínica depois de conferida. Faltam também
 hematócrito 52 e PSA, que dependem do fluxo de hipogonadismo em reavaliação.
 
-## 3. Perfis de acesso por rota
+## 3. Perfis de acesso por rota — senha feita; faltam dois pontos
 
-Recepção, médico e financeiro com senha própria; sessão do tablet expurgada ao
-entregar; política de retenção escrita. São dados de saúde — é a primeira
-coisa que uma auditoria externa vai cobrar.
+Feito: senha por perfil no servidor e nos três apps, permissões por rota,
+bloqueio de tentativas (ver `docs/arquitetura.md`).
+
+Falta: expurgar a sessão do tablet ao entregá-lo ao paciente (hoje a sessão
+da recepção fica aberta no iPad enquanto a aba estiver aberta), e escrever a
+política de retenção dos dados. O perfil Recepção ainda lê o histórico clínico
+completo (`/api/historico`), porque o app usa essa rota para o contato e a
+queixa anterior; uma rota só de cadastro fecharia isso.
 
 ## 4. Demonstração separada de produção
 

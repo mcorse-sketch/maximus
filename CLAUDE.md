@@ -24,7 +24,10 @@ independente da Claude**: em produção roda contra o servidor local, offline.
 
 O servidor (`servidor_maximus.py`, na raiz) serve os três apps a partir de
 `apps/` e grava `banco_triagem.json` e `backups/` ao lado dele (ambos fora do
-git). Rotas e detalhes em `docs/arquitetura.md`.
+git). **Exige senha por perfil** (médico, recepção, financeiro): cada app pede
+a sua ao abrir, e o servidor só libera o que o perfil pode (`PERMISSOES`).
+O bloco `Sessao` que faz isso nos apps é idêntico nos três — mude nos três.
+Rotas, permissões e detalhes em `docs/arquitetura.md`.
 
 ---
 

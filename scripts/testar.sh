@@ -36,6 +36,14 @@ node teste_integracao.js "$CLIN" || falhas=$((falhas+1))
 linha "6. regressão clínica — pacientes-limite contra a baseline"
 node regressao.js "$CLIN" || falhas=$((falhas+1))
 
+linha "7. tela de senha dos três apps"
+node teste_sessao.js || falhas=$((falhas+1))
+
+linha "8. servidor — acesso por perfil e rotas"
+python3 teste_servidor.py 2>&1 | tail -3
+[ "${PIPESTATUS[0]}" -eq 0 ] || falhas=$((falhas+1))
+rm -rf "$RAIZ/__pycache__" "$RAIZ/tests/__pycache__"
+
 linha "resumo"
 if [ "$falhas" -eq 0 ]; then
   echo "tudo verde — revise no navegador antes de publicar."

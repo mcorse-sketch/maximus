@@ -1,0 +1,187 @@
+"""Testes do servidor_maximus.py: acesso por perfil, bloqueio de tentativas
+e as rotas de dados. Sobe o servidor numa pasta temporaria, numa porta livre;
+o banco real nunca e tocado.
+
+Uso:  python3 tests/teste_servidor.py
+"""
+import json, os, shutil, sys, tempfile, threading, unittest, urllib.request, urllib.error
+from http.server import ThreadingHTTPServer
+
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, RAIZ)
+import servidor_maximus as srv  # noqa: E402
+
+SENHAS = {"medico": "senha-medico-1", "recepcao": "senha-recepcao-1", "financeiro": "senha-financeiro-1"}
+
+
+class Servidor(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.mkdtemp(prefix="mxteste-")
+        srv.BANCO = os.path.join(cls.tmp, "banco_triagem.json")
+        srv.BACKUPS = os.path.join(cls.tmp, "backups")
+        srv.SENHAS = os.path.join(cls.tmp, "senhas.json")
+        srv.ITERACOES = 1000  # so para o teste ser rapido
+        srv.print = lambda *a, **k: None              # silencia o servidor
+        srv.Handler.log_message = lambda *a, **k: None
+        for p, s in SENHAS.items():
+            srv.definir_senha(p, s)
+        cls.httpd = ThreadingHTTPServer(("127.0.0.1", 0), srv.Handler)
+        cls.base = "http://127.0.0.1:%d" % cls.httpd.server_address[1]
+        threading.Thread(target=cls.httpd.serve_forever, daemon=True).start()
+        cls.tok = {p: cls.entra(p, s) for p, s in SENHAS.items()}
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.httpd.shutdown()
+        shutil.rmtree(cls.tmp)
+
+    def setUp(self):
+        srv._falhas.clear()
+
+    # ---- utilitarios
+    @classmethod
+    def req(cls, metodo, rota, corpo=None, token=None):
+        dados = json.dumps(corpo).encode() if corpo is not None else None
+        r = urllib.request.Request(cls.base + rota, data=dados, method=metodo)
+        if dados is not None:
+            r.add_header("Content-Type", "application/json")
+        if token:
+            r.add_header("Authorization", "Bearer " + token)
+        try:
+            with urllib.request.urlopen(r) as resp:
+                bruto = resp.read()
+                ctype = resp.headers.get("Content-Type", "")
+                return resp.status, (json.loads(bruto) if "json" in ctype else bruto)
+        except urllib.error.HTTPError as e:
+            bruto = e.read()
+            try:
+                return e.code, json.loads(bruto)
+            except Exception:
+                return e.code, bruto
+
+    @classmethod
+    def entra(cls, perfil, senha):
+        st, j = cls.req("POST", "/api/login", {"perfil": perfil, "senha": senha})
+        assert st == 200, (perfil, st, j)
+        return j["token"]
+
+    # ---- senhas e sessao
+    def test_senha_guardada_so_como_hash(self):
+        with open(srv.SENHAS) as f:
+            conteudo = f.read()
+        for s in SENHAS.values():
+            self.assertNotIn(s, conteudo)
+        self.assertEqual(oct(os.stat(srv.SENHAS).st_mode & 0o777), "0o600")
+
+    def test_health_e_paginas_sem_senha(self):
+        self.assertEqual(self.req("GET", "/api/health")[0], 200)
+        for rota in ("/", "/recepcao", "/financeiro"):
+            self.assertEqual(self.req("GET", rota)[0], 200, rota)
+
+    def test_dados_exigem_senha(self):
+        for metodo, rota, corpo in [("GET", "/api/paciente/MX0001", None), ("GET", "/api/historico/MX0001", None),
+                                    ("GET", "/api/triagens-hoje", None), ("GET", "/api/proximo-codigo", None),
+                                    ("GET", "/api/export", None), ("POST", "/api/ciclo", {"codigo": "MX1"}),
+                                    ("PUT", "/api/triagem/MX1/nota", {"nota": "x"})]:
+            self.assertEqual(self.req(metodo, rota, corpo)[0], 401, rota)
+            self.assertEqual(self.req(metodo, rota, corpo, token="token-inventado")[0], 401, rota)
+
+    def test_senha_errada_e_perfil_errado(self):
+        self.assertEqual(self.req("POST", "/api/login", {"perfil": "medico", "senha": "errada"})[0], 401)
+        # senha certa de outro perfil nao serve
+        self.assertEqual(self.req("POST", "/api/login", {"perfil": "medico", "senha": SENHAS["recepcao"]})[0], 401)
+        self.assertEqual(self.req("POST", "/api/login", {"perfil": "admin", "senha": "x"})[0], 401)
+
+    def test_bloqueio_apos_tentativas(self):
+        for _ in range(srv.TENTATIVAS):
+            self.assertEqual(self.req("POST", "/api/login", {"perfil": "medico", "senha": "errada"})[0], 401)
+        # bloqueado: nem a senha certa entra
+        self.assertEqual(self.req("POST", "/api/login", {"perfil": "medico", "senha": SENHAS["medico"]})[0], 429)
+
+    def test_sessao_e_saida(self):
+        tok = self.entra("financeiro", SENHAS["financeiro"])
+        st, j = self.req("GET", "/api/sessao", token=tok)
+        self.assertEqual((st, j["perfil"]), (200, "financeiro"))
+        self.req("POST", "/api/logout", {}, token=tok)
+        self.assertEqual(self.req("GET", "/api/sessao", token=tok)[0], 401)
+
+    def test_sessao_expira(self):
+        tok = self.entra("medico", SENHAS["medico"])
+        perfil, _ = srv._sessoes[tok]
+        srv._sessoes[tok] = (perfil, 0)
+        self.assertEqual(self.req("GET", "/api/triagens-hoje", token=tok)[0], 401)
+
+    # ---- permissoes por perfil
+    def test_permissoes(self):
+        casos = [
+            ("GET", "/api/triagens-hoje", None, {"medico": 200, "recepcao": 200, "financeiro": 200}),
+            ("GET", "/api/historico/MX0001", None, {"medico": 200, "recepcao": 200, "financeiro": 200}),
+            ("GET", "/api/proximo-codigo", None, {"medico": 200, "recepcao": 200, "financeiro": 403}),
+            ("GET", "/api/export", None, {"medico": 200, "recepcao": 403, "financeiro": 403}),
+            ("POST", "/api/ciclo", {"codigo": "MX0100", "tipo": "primeira", "linha": "DE"},
+             {"medico": 200, "recepcao": 403, "financeiro": 403}),
+            ("POST", "/api/ciclo", {"codigo": "MX0101", "tipo": "recepcao", "linha": "recepcao"},
+             {"medico": 200, "recepcao": 200, "financeiro": 403}),
+        ]
+        for metodo, rota, corpo, esperado in casos:
+            for perfil, codigo in esperado.items():
+                st, _ = self.req(metodo, rota, corpo, token=self.tok[perfil])
+                self.assertEqual(st, codigo, "%s %s como %s" % (metodo, rota, perfil))
+
+    def test_recepcao_nao_disfarca_ciclo_clinico(self):
+        # tipo de recepcao com linha clinica (ou o contrario) nao passa
+        for reg in ({"codigo": "MX0102", "tipo": "recepcao", "linha": "DE"},
+                    {"codigo": "MX0102", "tipo": "primeira", "linha": "recepcao"}):
+            self.assertEqual(self.req("POST", "/api/ciclo", reg, token=self.tok["recepcao"])[0], 403)
+
+    # ---- dados
+    def test_fluxo_de_dados(self):
+        m = self.tok["medico"]
+        self.req("POST", "/api/ciclo", {"codigo": "mx0200", "tipo": "primeira", "linha": "DE", "protocolo": "DE-2"}, token=m)
+        import datetime
+        hoje = datetime.date.today().isoformat()
+        self.req("POST", "/api/ciclo", {"codigo": "MX0200", "tipo": "recepcao", "linha": "recepcao",
+                                        "dataLocal": hoje}, token=self.tok["recepcao"])
+        st, j = self.req("GET", "/api/paciente/MX0200", token=m)
+        self.assertEqual((st, j["total"]), (200, 2))
+        st, j = self.req("GET", "/api/triagens-hoje", token=m)
+        self.assertIn("MX0200", [t["codigo"] for t in j["triagens"]])
+        # nota vai para o ciclo clinico, nunca para o registro de recepcao
+        st, j = self.req("PUT", "/api/triagem/MX0200/nota", {"nota": "retorno em 60 dias"}, token=m)
+        self.assertEqual(st, 200)
+        st, j = self.req("GET", "/api/historico/MX0200", token=m)
+        clin = [c for c in j["ciclos"] if c["tipo"] != "recepcao"][0]
+        self.assertEqual(clin["notasMedicas"][0]["texto"], "retorno em 60 dias")
+        self.assertEqual(self.req("PUT", "/api/triagem/MX0200/nota", {"nota": "x"}, token=self.tok["recepcao"])[0], 403)
+
+    def test_pagina_inexistente_responde_404(self):
+        # o log quebrava ao registrar o erro e a conexao caia sem resposta
+        self.assertEqual(self.req("GET", "/favicon.ico")[0], 404)
+        self.assertEqual(self.req("GET", "/api/nao-existe", token=self.tok["medico"])[0], 404)
+
+    def test_demo_no_formato_do_servidor(self):
+        banco_real = srv.BANCO
+        srv.BANCO = os.path.join(self.tmp, "demo.json")
+        try:
+            n = srv.carregar_demo(os.path.join(RAIZ, "data", "banco_demonstracao.json"))
+            self.assertGreaterEqual(n, 6)
+            with open(srv.BANCO) as f:
+                dados = json.load(f)
+            self.assertTrue(all(isinstance(v, list) for v in dados["pacientes"].values()))
+            import datetime
+            hoje = datetime.date.today().isoformat()
+            fila = [c for v in dados["pacientes"].values() for c in v if c.get("tipo") == "recepcao"]
+            self.assertTrue(fila and all(c["dataLocal"] == hoje for c in fila))
+            # nunca sobrescreve um banco existente
+            with self.assertRaises(SystemExit):
+                srv.carregar_demo(os.path.join(RAIZ, "data", "banco_demonstracao.json"))
+        finally:
+            srv.BANCO = banco_real
+
+    def test_codigo_invalido(self):
+        self.assertEqual(self.req("GET", "/api/paciente/..%2Fetc", token=self.tok["medico"])[0], 400)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=1)

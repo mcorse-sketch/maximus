@@ -67,13 +67,37 @@ Na raiz do repositório; serve as páginas a partir de `apps/`. Python stdlib ap
 porta 8080, `threading.Lock()`, gravação atômica (tmp + fsync + os.replace),
 backup diário por 60 dias.
 
-Rotas: `/`, `/recepcao`, `/financeiro`, `/api/health`,
-`/api/paciente/<cod>`, `/api/historico/<cod>`, `/api/triagens-hoje`,
-`/api/proximo-codigo`, `/api/export`, `POST /api/ciclo`,
-`PUT /api/triagem/<cod>/nota`.
+Rotas livres: `/`, `/recepcao`, `/financeiro` (as páginas não trazem dado de
+paciente), `/api/health`, `POST /api/login`, `POST /api/logout`,
+`/api/sessao`.
 
-Banco: `pacientes/<COD>/ciclos`, `recepcao`, `codigos`.
+Rotas com senha, por perfil (`PERMISSOES` no servidor):
 
-**Atenção ao portar:** `/api/paciente/<cod>` deve devolver o último ciclo
-**clínico**, ignorando registros de recepção — o app já protege contra isso,
-mas o servidor deveria fazer o mesmo.
+| Rota | Médico | Recepção | Financeiro |
+|---|---|---|---|
+| `/api/paciente/<cod>`, `/api/historico/<cod>`, `/api/triagens-hoje` | ✓ | ✓ | ✓ |
+| `/api/proximo-codigo` | ✓ | ✓ | — |
+| `POST /api/ciclo` | ✓ | só `tipo` e `linha` = `recepcao` | — |
+| `PUT /api/triagem/<cod>/nota`, `/api/export` | ✓ | — | — |
+
+Sessão: token aleatório no cabeçalho `Authorization: Bearer`, guardado em
+`sessionStorage` (some ao fechar a aba), válido por 12 horas, só na memória do
+servidor — reiniciar o servidor desconecta todos. Senhas em `senhas.json`
+como PBKDF2-SHA256 com sal, permissão 600. Cinco erros seguidos bloqueiam o
+endereço por 5 minutos. CORS continua aberto: sem o token, que outro site não
+consegue ler, a chamada não passa.
+
+Nos apps, o bloco `Sessao` (idêntico nos três — `tests/teste_sessao.js`
+confere) só age no modo `rede`: põe o token nas chamadas `/api/` e, se a
+sessão expira, pede a senha e repete a chamada.
+
+Banco do servidor: `{"pacientes": {"<COD>": [ciclos...]}}`, com os registros
+da recepção dentro da lista do paciente. O modo Claude usa outra forma
+(coleções `pacientes/<COD>/ciclos`, `recepcao`, `codigos`) — por isso o banco
+de demonstração passa por `--carregar-demo`.
+
+**`/api/paciente/<cod>` devolve o último registro, inclusive o da recepção.**
+De propósito: o app de recepção usa essa rota para saber se o paciente existe e
+para trazer peso e altura, que ficam no registro da recepção. O app clínico
+filtra do lado dele (`Store.ehClinico`) e busca o último ciclo clínico no
+histórico.

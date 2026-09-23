@@ -40,6 +40,13 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   a conduta só é gerada com todas as obrigatórias respondidas. Achado pela
   regressão clínica (LIM-020 a LIM-023).
 
+- **Servidor derrubava a conexão em qualquer 404** — o log quebrava ao
+  registrar o erro (o navegador pede `/favicon.ico` sempre), e a resposta não
+  saía. Achado ao rodar o servidor de verdade no navegador.
+- **Banco de demonstração incompatível com o servidor** — estava no formato do
+  modo Claude; seguindo o README, a fila dava erro 500 e os pacientes de
+  demonstração apareciam como desconhecidos. Hoje entra por `--carregar-demo`.
+
 ## Navegação e interface
 
 - **Botão Próxima desaparecendo** — o palco tinha largura máxima de 620 px e,
