@@ -67,6 +67,13 @@ Na raiz do repositório; serve as páginas a partir de `apps/`. Python stdlib ap
 porta 8080, `threading.Lock()`, gravação atômica (tmp + fsync + os.replace),
 backup diário por 60 dias.
 
+Backup externo: quando nasce o backup local do dia, uma cópia criptografada
+(`openssl enc -aes-256-cbc -pbkdf2`, o LibreSSL do macOS) vai para
+`~/Library/Mobile Documents/com~apple~CloudDocs/Maximus backups`, 60 dias. A
+senha vem do Chaveiro (serviço `maximus-backup`); `MAXIMUS_SENHA_BACKUP` a
+substitui, para testes ou para restaurar em outro Mac. Falha no backup externo
+é avisada no terminal e nunca impede a gravação.
+
 Rotas livres: `/`, `/recepcao`, `/financeiro` (as páginas não trazem dado de
 paciente), `/api/health`, `POST /api/login`, `POST /api/logout`,
 `/api/sessao`.

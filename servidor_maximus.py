@@ -24,7 +24,7 @@ Nao precisa instalar nada alem do Python. Nao usa internet.
 """
 
 import json, os, re, shutil, socket, sys, threading, datetime
-import getpass, hashlib, hmac, secrets, time
+import getpass, hashlib, hmac, secrets, subprocess, time
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 PORTA = 8080
@@ -34,6 +34,12 @@ BANCO = os.path.join(PASTA, "banco_triagem.json")
 BACKUPS = os.path.join(PASTA, "backups")
 
 SENHAS = os.path.join(PASTA, "senhas.json")
+
+# copia diaria criptografada fora do computador, no iCloud Drive. A senha fica
+# no Chaveiro do macOS (servico abaixo); sem ela o backup nao abre.
+ICLOUD = os.path.expanduser("~/Library/Mobile Documents/com~apple~CloudDocs/Maximus backups")
+CHAVEIRO = "maximus-backup"
+BACKUP_DIAS = 60
 
 _lock = threading.Lock()
 COD_OK = re.compile(r"^[A-Z0-9._\-]{1,40}$")
@@ -143,6 +149,8 @@ def backup_do_dia():
     alvo = os.path.join(BACKUPS, "banco_" + hoje + ".json")
     if not os.path.exists(alvo):
         shutil.copy2(BANCO, alvo)
+        motivo = backup_fora(alvo, hoje)
+        print("  backup do dia no iCloud: " + ("ok" if not motivo else "NAO FEITO — " + motivo))
         # mantem os 60 backups mais recentes
         arqs = sorted(os.listdir(BACKUPS))
         for velho in arqs[:-60]:
@@ -176,6 +184,76 @@ def carregar_demo(origem):
         ciclos.sort(key=lambda c: str(c.get("data", "")))
     gravar({"pacientes": pacientes})
     return len(pacientes)
+
+
+def senha_backup():
+    # MAXIMUS_SENHA_BACKUP serve aos testes e a quem restaura em outro Mac
+    s = os.environ.get("MAXIMUS_SENHA_BACKUP")
+    if s:
+        return s
+    try:
+        r = subprocess.run(["security", "find-generic-password", "-s", CHAVEIRO, "-a", "backup", "-w"],
+                           capture_output=True, text=True, timeout=15)
+        return r.stdout.rstrip("\n") if r.returncode == 0 and r.stdout.strip() else None
+    except Exception:
+        return None
+
+
+def _openssl(decifrar, senha, entrada, saida):
+    cmd = ["openssl", "enc"] + (["-d"] if decifrar else ["-salt"]) + [
+        "-aes-256-cbc", "-pbkdf2", "-iter", "200000", "-in", entrada, "-out", saida, "-pass", "stdin"]
+    try:
+        r = subprocess.run(cmd, input=senha + "\n", capture_output=True, text=True, timeout=300)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def backup_fora(origem, dia):
+    """Copia criptografada de 'origem' para o iCloud. Devolve None se deu certo,
+    ou o motivo. Nunca levanta excecao: backup falho nao pode travar a gravacao."""
+    try:
+        if not os.path.isdir(os.path.dirname(ICLOUD)):
+            return "iCloud Drive nao encontrado neste Mac"
+        senha = senha_backup()
+        if not senha:
+            return "senha do backup nao definida (python3 servidor_maximus.py --definir-senha-backup)"
+        os.makedirs(ICLOUD, exist_ok=True)
+        alvo = os.path.join(ICLOUD, "banco_%s.json.enc" % dia)
+        tmp = alvo + ".tmp"
+        if not _openssl(False, senha, origem, tmp):
+            if os.path.exists(tmp):
+                os.remove(tmp)
+            return "falha ao criptografar (openssl)"
+        os.replace(tmp, alvo)
+        antigos = sorted(f for f in os.listdir(ICLOUD) if re.match(r"^banco_\d{4}-\d{2}-\d{2}\.json\.enc$", f))
+        for velho in antigos[:-BACKUP_DIAS]:
+            try:
+                os.remove(os.path.join(ICLOUD, velho))
+            except OSError:
+                pass
+        return None
+    except Exception as e:
+        return "erro inesperado: %s" % e
+
+
+def restaurar_backup(arquivo, destino, senha):
+    """Decifra um backup do iCloud para 'destino' e confere que e um banco valido."""
+    if os.path.exists(destino):
+        raise SystemExit("%s ja existe. Escolha outro destino; a restauracao nunca sobrescreve." % destino)
+    tmp = destino + ".tmp"
+    ok = _openssl(True, senha, arquivo, tmp)
+    try:
+        with open(tmp, "r", encoding="utf-8") as f:
+            dados = json.load(f) if ok else None
+    except Exception:
+        dados = None
+    if not isinstance(dados, dict) or "pacientes" not in dados:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        raise SystemExit("Nao foi possivel abrir o backup: senha errada ou arquivo danificado.")
+    os.replace(tmp, destino)
+    return len(dados["pacientes"])
 
 
 def ip_da_rede():
@@ -496,6 +574,26 @@ def main():
         print("Senha de '%s' gravada. Quem estiver conectado com esse perfil continua" % perfil)
         print("ate a sessao expirar; reinicie o servidor para desconectar todos agora.")
         return
+    if len(sys.argv) == 2 and sys.argv[1] == "--definir-senha-backup":
+        print("A senha do backup fica no Chaveiro deste Mac e o servidor a usa sozinho.")
+        print("ANOTE-A FORA DO COMPUTADOR: sem ela, nenhum backup do iCloud abre —")
+        print("nem para restaurar num Mac novo se este quebrar.\n")
+        # o proprio 'security' pede a senha no terminal: ela nao passa por este programa
+        r = subprocess.call(["security", "add-generic-password", "-U", "-s", CHAVEIRO, "-a", "backup",
+                             "-l", "Maximus — backup do banco", "-w"])
+        print("Senha do backup gravada no Chaveiro." if r == 0 else "Nada foi gravado.")
+        return
+    if len(sys.argv) == 2 and sys.argv[1] == "--backup-agora":
+        if not os.path.exists(BANCO):
+            raise SystemExit("Nao ha banco para copiar em %s." % BANCO)
+        motivo = backup_fora(BANCO, datetime.date.today().isoformat())
+        print("Backup criptografado gravado em %s" % ICLOUD if not motivo else "Backup NAO feito: " + motivo)
+        sys.exit(1 if motivo else 0)
+    if len(sys.argv) == 4 and sys.argv[1] == "--restaurar-backup":
+        senha = senha_backup() or getpass.getpass("Senha do backup: ")
+        n = restaurar_backup(sys.argv[2], sys.argv[3], senha)
+        print("Backup restaurado em %s: %d pacientes. Confira antes de usar como banco." % (sys.argv[3], n))
+        return
     if len(sys.argv) == 2 and sys.argv[1] == "--carregar-demo":
         n = carregar_demo(os.path.join(PASTA, "data", "banco_demonstracao.json"))
         print("Banco de demonstracao criado em %s: %d pacientes, fila da recepcao com data de hoje." % (BANCO, n))
@@ -521,6 +619,12 @@ def main():
     print()
     print(" Banco:   %s" % BANCO)
     print(" Backups: %s (diario, 60 dias)" % BACKUPS)
+    if not os.path.isdir(os.path.dirname(ICLOUD)):
+        print(" iCloud:  INATIVO — iCloud Drive nao encontrado neste Mac")
+    elif not senha_backup():
+        print(" iCloud:  INATIVO — defina a senha: python3 servidor_maximus.py --definir-senha-backup")
+    else:
+        print(" iCloud:  %s (criptografado, diario, %d dias)" % (ICLOUD, BACKUP_DIAS))
     print()
     print(" Deixe esta janela aberta. Fechar derruba o servico.")
     print(" Para parar: Ctrl+C")

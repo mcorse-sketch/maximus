@@ -44,6 +44,26 @@ dura 12 horas ou até a aba ser fechada. Cinco senhas erradas seguidas bloqueiam
 aquele aparelho por 5 minutos. Os apps publicados como artifact na Claude não
 passam pelo servidor e não pedem senha.
 
+**Backup fora do computador.** Além dos backups locais, o servidor manda uma
+cópia criptografada (AES-256) por dia para `iCloud Drive/Maximus backups`,
+guardando 60 dias. A senha fica no Chaveiro do Mac; defina uma vez:
+
+```bash
+python3 servidor_maximus.py --definir-senha-backup
+```
+
+**Anote essa senha fora do computador** — sem ela nenhum backup abre, nem num
+Mac novo. Para conferir na hora e para restaurar:
+
+```bash
+python3 servidor_maximus.py --backup-agora
+python3 servidor_maximus.py --restaurar-backup "<arquivo .json.enc>" restaurado.json
+```
+
+A restauração nunca sobrescreve um arquivo existente e confere que o
+resultado é um banco válido. A abertura do servidor diz se o backup no iCloud
+está ativo.
+
 **Demonstração.** Para um banco de teste, numa pasta sem `banco_triagem.json`:
 
 ```bash

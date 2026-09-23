@@ -22,6 +22,11 @@ class Servidor(unittest.TestCase):
         srv.BACKUPS = os.path.join(cls.tmp, "backups")
         srv.SENHAS = os.path.join(cls.tmp, "senhas.json")
         srv.ITERACOES = 1000  # so para o teste ser rapido
+        # backup externo numa pasta temporaria, com senha de teste: o Chaveiro
+        # e o iCloud de verdade nunca sao tocados
+        os.makedirs(os.path.join(cls.tmp, "nuvem"))
+        srv.ICLOUD = os.path.join(cls.tmp, "nuvem", "Maximus backups")
+        os.environ["MAXIMUS_SENHA_BACKUP"] = "senha-do-backup-teste"
         srv.print = lambda *a, **k: None              # silencia o servidor
         srv.Handler.log_message = lambda *a, **k: None
         for p, s in SENHAS.items():
@@ -178,6 +183,61 @@ class Servidor(unittest.TestCase):
                 srv.carregar_demo(os.path.join(RAIZ, "data", "banco_demonstracao.json"))
         finally:
             srv.BANCO = banco_real
+
+    # ---- backup criptografado fora do computador
+    def test_backup_do_dia_vai_criptografado_para_a_nuvem(self):
+        import datetime
+        hoje = datetime.date.today().isoformat()
+        # o backup copia o banco de antes da gravacao: com o banco ainda vazio
+        # nao ha o que copiar, entao sao duas gravacoes
+        for cod in ("MX0300", "MX0301"):
+            self.req("POST", "/api/ciclo", {"codigo": cod, "tipo": "primeira", "linha": "DE"}, token=self.tok["medico"])
+        enc = os.path.join(srv.ICLOUD, "banco_%s.json.enc" % hoje)
+        self.assertTrue(os.path.exists(enc))
+        with open(enc, "rb") as f:
+            bruto = f.read()
+        self.assertTrue(bruto.startswith(b"Salted__"))
+        self.assertNotIn(b"pacientes", bruto)
+
+    def test_backup_ida_e_volta(self):
+        enc = os.path.join(self.tmp, "ida.json.enc")
+        banco_ref = os.path.join(self.tmp, "ref.json")
+        with open(banco_ref, "w", encoding="utf-8") as f:
+            json.dump({"pacientes": {"MX0001": [{"codigo": "MX0001", "nota": "acentuação"}]}}, f, ensure_ascii=False)
+        self.assertTrue(srv._openssl(False, "senha-do-backup-teste", banco_ref, enc))
+        destino = os.path.join(self.tmp, "volta.json")
+        self.assertEqual(srv.restaurar_backup(enc, destino, "senha-do-backup-teste"), 1)
+        with open(destino, encoding="utf-8") as a, open(banco_ref, encoding="utf-8") as b:
+            self.assertEqual(json.load(a), json.load(b))
+        # nunca sobrescreve, e senha errada nao abre nem deixa lixo
+        with self.assertRaises(SystemExit):
+            srv.restaurar_backup(enc, destino, "senha-do-backup-teste")
+        errado = os.path.join(self.tmp, "errado.json")
+        with self.assertRaises(SystemExit):
+            srv.restaurar_backup(enc, errado, "outra-senha")
+        self.assertFalse(os.path.exists(errado) or os.path.exists(errado + ".tmp"))
+
+    def test_backup_sem_senha_ou_sem_icloud_avisa_sem_travar(self):
+        orig_senha, orig_icloud = srv.senha_backup, srv.ICLOUD
+        try:
+            srv.senha_backup = lambda: None
+            self.assertIn("senha do backup", srv.backup_fora(srv.BANCO, "2000-01-01"))
+            srv.senha_backup = orig_senha
+            srv.ICLOUD = os.path.join(self.tmp, "nao-existe", "Maximus backups")
+            self.assertIn("iCloud", srv.backup_fora(srv.BANCO, "2000-01-01"))
+        finally:
+            srv.senha_backup, srv.ICLOUD = orig_senha, orig_icloud
+
+    def test_backup_guarda_so_os_ultimos_60(self):
+        os.makedirs(srv.ICLOUD, exist_ok=True)
+        import datetime
+        base = datetime.date(2001, 1, 1)
+        for k in range(70):
+            open(os.path.join(srv.ICLOUD, "banco_%s.json.enc" % (base + datetime.timedelta(days=k))), "w").close()
+        self.assertIsNone(srv.backup_fora(srv.BANCO, "2099-12-31"))
+        restantes = [f for f in os.listdir(srv.ICLOUD) if f.endswith(".json.enc")]
+        self.assertEqual(len(restantes), srv.BACKUP_DIAS)
+        self.assertIn("banco_2099-12-31.json.enc", restantes)
 
     def test_codigo_invalido(self):
         self.assertEqual(self.req("GET", "/api/paciente/..%2Fetc", token=self.tok["medico"])[0], 400)
