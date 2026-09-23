@@ -20,7 +20,14 @@ python3 -m http.server 8000
 
 Sem o servidor da clínica, o `Store` cai no modo manual: os apps funcionam,
 mas não persistem nada. Com o `servidor_maximus.py` rodando na porta 8080, os
-três apps compartilham o mesmo banco — é assim que roda na clínica.
+três apps compartilham o mesmo banco — é assim que roda na clínica:
+
+```bash
+python3 servidor_maximus.py
+# http://localhost:8080/            triagem
+# http://localhost:8080/recepcao    recepção
+# http://localhost:8080/financeiro  financeiro
+```
 
 Para popular um banco de teste, use `data/banco_demonstracao.json` (renomeie
 para `banco_triagem.json` na pasta do servidor). São seis pacientes,

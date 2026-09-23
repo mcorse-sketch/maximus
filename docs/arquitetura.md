@@ -63,7 +63,7 @@ retorno com a medida anterior ao procedimento.
 
 ## Servidor local (`servidor_maximus.py`)
 
-Não está neste repositório. Características conhecidas: Python stdlib apenas,
+Na raiz do repositório; serve as páginas a partir de `apps/`. Python stdlib apenas,
 porta 8080, `threading.Lock()`, gravação atômica (tmp + fsync + os.replace),
 backup diário por 60 dias.
 

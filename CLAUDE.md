@@ -22,9 +22,9 @@ adaptador `Store`, que opera em três modos — `claude` (banco do artifact),
 `rede` (servidor local) e `manual` (sem persistência). **O sistema é
 independente da Claude**: em produção roda contra o servidor local, offline.
 
-O servidor (`servidor_maximus.py`) não está neste repositório — recupere a
-versão que roda no Mac da clínica ou reconstrua a partir da descrição em
-`docs/servidor.md`.
+O servidor (`servidor_maximus.py`, na raiz) serve os três apps a partir de
+`apps/` e grava `banco_triagem.json` e `backups/` ao lado dele (ambos fora do
+git). Rotas e detalhes em `docs/arquitetura.md`.
 
 ---
 
