@@ -256,6 +256,79 @@ def restaurar_backup(arquivo, destino, senha):
     return len(dados["pacientes"])
 
 
+def _itens(total, n_itens, teto, minimo_primeiro):
+    base, resto = divmod(total, n_itens)
+    v = [min(teto, base + (1 if k < resto else 0)) for k in range(n_itens)]
+    v[0] = max(minimo_primeiro, v[0])
+    return v
+
+
+def fila_ficticia(n, sorteio=None):
+    """Poe n pacientes ficticios (demo) na fila da recepcao de hoje, como se
+    tivessem acabado de responder o questionario no tablet."""
+    import random
+    sorteio = sorteio or random.Random()
+    hoje = datetime.date.today()
+    with _lock:
+        dados = carregar()
+        ja = {c.get("codigo") for v in dados["pacientes"].values() for c in v
+              if c.get("tipo") == "recepcao" and c.get("dataLocal") == hoje.isoformat()}
+        candidatos = [cod for cod, v in dados["pacientes"].items()
+                      if cod not in ja and v and all(c.get("demo") for c in v)]
+        if len(candidatos) < n:
+            raise SystemExit("Ha so %d pacientes ficticios fora da fila de hoje." % len(candidatos))
+        escolhidos = sorteio.sample(sorted(candidatos), n)
+        linha_para_queixa = {"DE": "de", "EP": "ep", "DUO": "ambos", "hipogonadismo": "libido",
+                             "preenchimento": "preench", "uro": "clinica", "emagrecimento": "emag"}
+        for k, cod in enumerate(escolhidos):
+            ciclos = dados["pacientes"][cod]
+            rec_ant = [c for c in ciclos if c.get("tipo") == "recepcao"]
+            clin = [c for c in ciclos if c.get("tipo") != "recepcao"]
+            ult = clin[-1] if clin else {}
+            queixa = (rec_ant[-1].get("queixaRecepcao") if rec_ant else None) or \
+                linha_para_queixa.get(ult.get("linha"), "de")
+            quando = datetime.datetime.combine(hoje, datetime.time(8, 0)) + datetime.timedelta(minutes=35 * k)
+            reg = {"codigo": cod, "tipo": "recepcao", "linha": "recepcao", "demo": True,
+                   "data": quando.isoformat(), "dataLocal": hoje.isoformat(), "dataBR": hoje.strftime("%d/%m/%Y"),
+                   "hora": quando.strftime("%H:%M"), "queixaRecepcao": queixa, "retorno": True,
+                   "diasDesdeUltima": (hoje - datetime.date.fromisoformat(str(ult.get("dataLocal") or hoje))).days,
+                   "usoRelatado": sorteio.choice(["total", "total", "parcial", "baixa"]),
+                   "efeitoRelatado": sorteio.choice(["nao", "nao", "leve", "atrap"]),
+                   "satisfRelatada": sorteio.randint(3, 10), "revisar": sorteio.random() < 0.15,
+                   "dificuldade": None, "leuTermo": False, "retornoPreench": None, "adam": [],
+                   "iief": None, "pedt": None, "respostas": {}}
+            for campo in ("iniciais", "telefone", "email", "medidas"):
+                reg[campo] = rec_ant[-1].get(campo) if rec_ant else None
+            if queixa in ("de", "ambos", "libido"):
+                t = sorteio.randint(8, 22)
+                reg["iief"] = t
+                reg["respostas"].update(zip(["i0", "i1", "i2", "i3", "i4"], _itens(t, 5, 5, 1)))
+            if queixa in ("ep", "ambos"):
+                t = sorteio.randint(5, 17)
+                reg["pedt"] = t
+                reg["respostas"].update(zip(["p0", "p1", "p2", "p3", "p4"], _itens(t, 5, 4, 0)))
+            ciclos.append(reg)
+        gravar(dados)
+    return escolhidos
+
+
+def apagar_ficticios():
+    """Remove todo registro com demo:true e os pacientes que ficarem vazios.
+    Guarda uma copia do banco antes, ao lado dele."""
+    with _lock:
+        dados = carregar()
+        shutil.copy2(BANCO, BANCO + ".antes-de-apagar-ficticios")
+        removidos = 0
+        for cod in list(dados["pacientes"]):
+            antes = len(dados["pacientes"][cod])
+            dados["pacientes"][cod] = [c for c in dados["pacientes"][cod] if not c.get("demo")]
+            removidos += antes - len(dados["pacientes"][cod])
+            if not dados["pacientes"][cod]:
+                del dados["pacientes"][cod]
+        gravar(dados)
+    return removidos, len(dados["pacientes"])
+
+
 def ip_da_rede():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -593,6 +666,17 @@ def main():
         senha = senha_backup() or getpass.getpass("Senha do backup: ")
         n = restaurar_backup(sys.argv[2], sys.argv[3], senha)
         print("Backup restaurado em %s: %d pacientes. Confira antes de usar como banco." % (sys.argv[3], n))
+        return
+    if len(sys.argv) == 3 and sys.argv[1] == "--fila-ficticia":
+        cods = fila_ficticia(int(sys.argv[2]))
+        print("Fila da recepcao de hoje: %s" % ", ".join(cods))
+        return
+    if len(sys.argv) == 2 and sys.argv[1] == "--apagar-ficticios":
+        if not os.path.exists(BANCO):
+            raise SystemExit("Nao ha banco em %s." % BANCO)
+        n, restam = apagar_ficticios()
+        print("%d registros ficticios apagados; restam %d pacientes reais." % (n, restam))
+        print("Copia do banco anterior: %s.antes-de-apagar-ficticios" % BANCO)
         return
     if len(sys.argv) == 2 and sys.argv[1] == "--carregar-demo":
         n = carregar_demo(os.path.join(PASTA, "data", "banco_demonstracao.json"))

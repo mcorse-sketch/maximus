@@ -1237,6 +1237,9 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     quizCard.setAttribute('data-tela', sc.id);
     pintaBarraAtual();
     pintaCopiloto();
+    // sem paciente carregado não há módulo a mostrar: Panorama fica desativado
+    const pbt = document.getElementById('panBtn');
+    if (pbt){ pbt.disabled = !temPaciente(); pbt.title = pbt.disabled ? 'Escolha ou identifique um paciente primeiro' : 'Ver todos os módulos'; }
     const painel = document.getElementById('painelCard');
     const cop = document.getElementById('copiloto');
     const bar = document.getElementById('barraAtual');
@@ -1583,7 +1586,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (e.key==='Escape'){
       const pan = document.getElementById('panoramaCard');
       if (pan && pan.style.display==='block'){ const c=document.getElementById('panSeguir'); if(c) c.click(); }
-      else if (S.codigo||S.daFila) mostrarPanorama();
+      else if (temPaciente()) mostrarPanorama();
       return;
     }
     if (digitando) return;
@@ -1689,6 +1692,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     'NOITE-1','NOITE-2','FERT-SUP','SP-DE','SP-DUO','RET-1','PRESERV','ICI','ONDAS'];
 
   function escondeRetomar(){ const b=document.getElementById('retomarBar'); if(b) b.style.display='none'; }
+  // paciente carregado = histórico já buscado pelo código ou pela fila
+  function temPaciente(){ return !!S.codigoBuscado; }
   function limparPaciente(novoCodigo, alvo){
     escondeRetomar();
     // troca de código ou volta para antes da identificação: o paciente

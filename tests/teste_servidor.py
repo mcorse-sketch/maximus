@@ -239,6 +239,35 @@ class Servidor(unittest.TestCase):
         self.assertEqual(len(restantes), srv.BACKUP_DIAS)
         self.assertIn("banco_2099-12-31.json.enc", restantes)
 
+    def test_ficticios_fila_e_apagar(self):
+        import datetime, random
+        banco_real = srv.BANCO
+        srv.BANCO = os.path.join(self.tmp, "ficticio.json")
+        try:
+            hoje = datetime.date.today().isoformat()
+            pac = {"MX%04d" % k: [{"codigo": "MX%04d" % k, "tipo": "recepcao", "linha": "recepcao", "demo": True,
+                                   "dataLocal": "2025-01-01", "iniciais": "AB", "telefone": "(21)99999-0001",
+                                   "queixaRecepcao": "de", "medidas": {"idade": 40}},
+                                  {"codigo": "MX%04d" % k, "tipo": "primeira", "linha": "DE", "demo": True,
+                                   "dataLocal": "2025-01-01", "protocolo": "DE-2"}] for k in range(1, 11)}
+            pac["MX0500"] = [{"codigo": "MX0500", "tipo": "primeira", "linha": "DE", "dataLocal": "2025-01-01"}]
+            srv.gravar({"pacientes": pac})
+            cods = srv.fila_ficticia(6, random.Random(1))
+            self.assertEqual(len(set(cods)), 6)
+            self.assertNotIn("MX0500", cods)  # paciente real nunca entra na fila ficticia
+            with open(srv.BANCO) as f:
+                d = json.load(f)["pacientes"]
+            fila = [c for v in d.values() for c in v if c.get("tipo") == "recepcao" and c.get("dataLocal") == hoje]
+            self.assertEqual(len(fila), 6)
+            self.assertTrue(all(c["demo"] and c["retorno"] and c["iniciais"] == "AB" and c["iief"] for c in fila))
+            n, restam = srv.apagar_ficticios()
+            with open(srv.BANCO) as f:
+                d = json.load(f)["pacientes"]
+            self.assertEqual((restam, list(d)), (1, ["MX0500"]))
+            self.assertTrue(os.path.exists(srv.BANCO + ".antes-de-apagar-ficticios"))
+        finally:
+            srv.BANCO = banco_real
+
     def test_codigo_invalido(self):
         self.assertEqual(self.req("GET", "/api/paciente/..%2Fetc", token=self.tok["medico"])[0], 400)
 

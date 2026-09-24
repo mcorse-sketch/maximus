@@ -71,6 +71,10 @@ function fakeDb(m) {
   const painel0 = doc.getElementById('painelCard');
   checa.push(['sem paciente, o questionario ocupa a largura toda', !!linha0 && !linha0.classList.contains('com-painel')]);
   checa.push(['sem paciente, o painel nem aparece', !painel0 || painel0.style.display === 'none']);
+  const pan0 = doc.getElementById('panBtn');
+  checa.push(['sem paciente, o botao panorama fica desativado', !!pan0 && pan0.disabled]);
+  doc.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  checa.push(['sem paciente, Esc nao abre o panorama', doc.getElementById('panoramaCard').style.display !== 'block']);
   const fila = opts().find(b => /fila/i.test(b.textContent));
   checa.push(['tela de abertura oferece a fila', !!fila]);
   if (fila) { fila.click(); await espera(60); doc.getElementById('nextBtn').click(); await espera(120); }
@@ -203,6 +207,7 @@ function fakeDb(m) {
 
   const pan = doc.getElementById('panBtn');
   checa.push(['botao panorama existe', !!pan]);
+  checa.push(['com paciente, o botao panorama fica ativo', !!pan && !pan.disabled]);
   if (pan) {
     pan.click(); await espera(80);
     const card = doc.getElementById('panoramaCard');

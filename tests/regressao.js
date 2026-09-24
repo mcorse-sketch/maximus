@@ -15,7 +15,8 @@ const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
 const PACIENTES = require('./regressao/pacientes');
 
-const args = process.argv.slice(2);
+const COMO_MODULO = require.main !== module;   // tests/ficticios.js reusa roda()
+const args = COMO_MODULO ? [] : process.argv.slice(2);
 const APROVAR = args.includes('--aprovar');
 const soIdx = args.indexOf('--so');
 const SO = soIdx >= 0 ? new Set(args[soIdx + 1].split(',')) : null;
@@ -118,9 +119,12 @@ function preenche(doc, win, tela, resp) {
   }
   if (escala) { [...escala.querySelectorAll('button')][resp !== undefined ? resp : 8].click(); return; }
   if (opts.length) {
+    // opção já marcada não é clicada de novo: em marcação múltipla, o clique
+    // desmarcaria (acontece quando o panorama volta a uma tela já respondida)
+    const marca = b => { if (!b.classList.contains('selected')) b.click(); };
     const lista = Array.isArray(resp) ? resp : (resp === undefined ? PADRAO_MULTI[tela] : null);
-    if (lista) lista.forEach(v => escolhe(q('.opt'), v).click());
-    else escolhe(opts, resp).click();
+    if (lista) lista.forEach(v => marca(escolhe(q('.opt'), v)));
+    else marca(escolhe(opts, resp));
     return;
   }
   if (texto) {
@@ -132,7 +136,9 @@ function preenche(doc, win, tela, resp) {
 }
 
 // ---- um paciente do início à conduta -------------------------------------
-async function roda(p) {
+// tolerante: não acusa resposta declarada que nenhuma tela pediu (pacientes
+// sorteados declaram de tudo; os da regressão não podem)
+async function roda(p, tolerante) {
   const mem = montaBanco(p);
   const erros = [];
   const vc = new VirtualConsole();
@@ -184,10 +190,10 @@ async function roda(p) {
   const usadas = new Set(caminho);
   const campoDe = { i0: 1, i1: 1, i2: 1, i3: 1, i4: 1, p0: 1, p1: 1, p2: 1, p3: 1, p4: 1 };
   const naoUsadas = Object.keys(p.respostas || {}).filter(k => !usadas.has(k) && !(k in campoDe && usadas.has(k)));
-  if (!falha && naoUsadas.length) falha = 'respostas declaradas que nenhuma tela pediu: ' + naoUsadas.join(', ');
+  if (!falha && !tolerante && naoUsadas.length) falha = 'respostas declaradas que nenhuma tela pediu: ' + naoUsadas.join(', ');
   win.close();
   return {
-    falha, erros, vigia, caminho,
+    falha, erros, vigia, caminho, salvo,
     conduta: salvo ? {
       protocolo: salvo.protocolo || null,
       kit: salvo.kitCodes || [],
@@ -204,6 +210,8 @@ function diffTexto(a, b) {
   return la.filter(l => !sb.has(l)).map(l => '      - ' + l)
     .concat(lb.filter(l => !sa.has(l)).map(l => '      + ' + l));
 }
+
+if (COMO_MODULO) { module.exports = { roda }; return; }
 
 (async () => {
   const lista = PACIENTES.filter(p => !SO || SO.has(p.id));

@@ -64,7 +64,30 @@ A restauração nunca sobrescreve um arquivo existente e confere que o
 resultado é um banco válido. A abertura do servidor diz se o backup no iCloud
 está ativo.
 
-**Demonstração.** Para um banco de teste, numa pasta sem `banco_triagem.json`:
+**Pacientes fictícios para teste.** O banco de teste tem 200 pacientes
+fictícios (`MX0001` a `MX0200`, todos com `demo: true`), atendidos pelo próprio
+app com respostas sorteadas — cerca de um terço com reavaliação —, mais 6 na
+fila da recepção. A fila vale só para o dia; para pôr 6 novos na fila de hoje:
+
+```bash
+python3 servidor_maximus.py --fila-ficticia 6
+```
+
+Para gerar de novo (substitui o banco atual; precisa do `npm install` em
+`tests/`):
+
+```bash
+node tests/ficticios.js 200 --substituir
+```
+
+**Antes de lançar a versão definitiva**, apague os fictícios — o comando
+guarda uma cópia do banco antes e mantém qualquer registro real:
+
+```bash
+python3 servidor_maximus.py --apagar-ficticios
+```
+
+**Demonstração antiga.** Para um banco de teste menor, numa pasta sem `banco_triagem.json`:
 
 ```bash
 python3 servidor_maximus.py --carregar-demo
