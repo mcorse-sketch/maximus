@@ -7,6 +7,8 @@ errada, o erro é do app — corrija o app, não esta folha.
 |---|---|---|---|---|---|
 | LIM-001 | IIEF 7 — faixa severa | INTRACAVERNOSA | ICI, NOITE-1, TEFI | 7 | — |
 | LIM-002 | IIEF 8 — faixa moderada | DE-3 | BASE-T20, NOITE-1, SP-DE | 8 | — |
+| LIM-030 | IIEF 7 sem nenhum item em 0 — grave de fato, sem alerta de ausência de tentativa | INTRACAVERNOSA | ICI, NOITE-1, TEFI | 7 | — |
+| LIM-031 | IIEF 7 com três itens em 0 (sem tentativa) — alerta de ausência de tentativa | INTRACAVERNOSA | ICI, NOITE-1, TEFI | 7 | — |
 | LIM-003 | IIEF 11 — topo da moderada | DE-3 | BASE-T20, NOITE-1, SP-DE | 11 | — |
 | LIM-004 | IIEF 12 — base da leve a moderada | DE-2 | BASE-T10, NOITE-1, SP-DE | 12 | — |
 | LIM-005 | IIEF 16 — topo da leve a moderada | DE-2 | BASE-T10, NOITE-1, SP-DE | 16 | — |

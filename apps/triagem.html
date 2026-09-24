@@ -3754,6 +3754,12 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     const bEP=S.hasEP?(BANDS_EP.find(b=>sPEDT>=b.min&&sPEDT<=b.max)||BANDS_EP[BANDS_EP.length-1]):null;
     let lvlDE=bDE?bDE.lvl:0; const lvlEP=bEP?bEP.lvl:0;
     const notas=[]; let mudanca=null, travado=false;
+    // IIEF-5, itens 2 a 5: "0" é "sem atividade sexual / não tentou relação".
+    // Um total baixo com esses zeros pode ser falta de tentativa, não gravidade.
+    const iiefSemTentativa = (S.hasDE && iiefCompleto) ? ['i1','i2','i3','i4'].filter(k=>S[k]===0).length : 0;
+    if (iiefSemTentativa) notas.push('<b>ALERTA — IIEF-5 com '+iiefSemTentativa+(iiefSemTentativa>1?' itens':' item')+' em 0 — sem atividade sexual ou sem tentativa de relação.</b> '
+      + 'O total de '+sIIEF+' pode refletir ausência de tentativa nos últimos 6 meses, e não a gravidade real da disfunção erétil. '
+      + 'Confirmar com o paciente antes de classificar pela faixa.');
 
     const reav = S.visita==='reav';
     if (reav && prev){

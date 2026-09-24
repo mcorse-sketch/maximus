@@ -56,6 +56,9 @@ Esse aviso só aparece em linha que envolve ejaculação.
 
 **IIEF-5 (Rosen, 1999):** 22–25 sem DE, 17–21 leve, 12–16 leve a moderada,
 8–11 moderada, 5–7 grave. Corte diagnóstico **≤ 21**; IIEF ≤ 7 → intracavernosa.
+Nos itens 2 a 5, "0" é "sem atividade sexual / não tentou relação": havendo
+algum, a conduta traz alerta de que o total pode refletir ausência de
+tentativa, e não gravidade.
 Esses cortes são testados e críticos — qualquer mudança exige paciente-teste
 no limite exato.
 

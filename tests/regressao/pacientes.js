@@ -11,11 +11,13 @@
 // `espera` é regra clínica escrita à mão, a partir do CLAUDE.md: vale mesmo
 // quando a baseline é regravada com --aprovar.
 
-// IIEF-5: i0 vai de 1 a 5, i1..i4 de 0 a 5
+// IIEF-5: i0 vai de 1 a 5, i1..i4 de 0 a 5. Os pontos se espalham por igual,
+// sem item em 0 — "0" é "sem atividade/tentativa" e dispara alerta próprio;
+// quem quer esse caso declara os itens à mão (LIM-031).
 function iief(total) {
-  if (total < 1 || total > 25) throw new Error('IIEF fora de 1..25: ' + total);
-  const v = [1, 0, 0, 0, 0]; let resto = total - 1;
-  for (let k = 0; k < 5 && resto > 0; k++) { const add = Math.min(5 - v[k], resto); v[k] += add; resto -= add; }
+  if (total < 5 || total > 25) throw new Error('IIEF fora de 5..25: ' + total);
+  const base = Math.floor(total / 5), resto = total % 5;
+  const v = [0, 1, 2, 3, 4].map(k => base + (k < resto ? 1 : 0));
   return { i0: v[0], i1: v[1], i2: v[2], i3: v[3], i4: v[4] };
 }
 // PEDT: p0..p4 de 0 a 4
@@ -39,6 +41,10 @@ module.exports = [
   // ---- IIEF-5: todas as fronteiras de faixa ---------------------------------
   P('LIM-001', 'IIEF 7 — faixa severa', de(7), { espera: { protocolo: 'INTRACAVERNOSA', iief: 7 } }),
   P('LIM-002', 'IIEF 8 — faixa moderada', de(8), { espera: { iief: 8 } }),
+  P('LIM-030', 'IIEF 7 sem nenhum item em 0 — grave de fato, sem alerta de ausência de tentativa',
+    { queixa: 'de', i0: 1, i1: 2, i2: 2, i3: 1, i4: 1 }, { espera: { protocolo: 'INTRACAVERNOSA', iief: 7 } }),
+  P('LIM-031', 'IIEF 7 com três itens em 0 (sem tentativa) — alerta de ausência de tentativa',
+    { queixa: 'de', i0: 5, i1: 2, i2: 0, i3: 0, i4: 0 }, { espera: { protocolo: 'INTRACAVERNOSA', iief: 7 } }),
   P('LIM-003', 'IIEF 11 — topo da moderada', de(11)),
   P('LIM-004', 'IIEF 12 — base da leve a moderada', de(12)),
   P('LIM-005', 'IIEF 16 — topo da leve a moderada', de(16)),
