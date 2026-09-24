@@ -26,10 +26,10 @@ function pedt(total) {
   return { p0: v[0], p1: v[1], p2: v[2], p3: v[3], p4: v[4] };
 }
 
-let n = 0;
-const cod = () => 'RG' + String(++n).padStart(4, '0');
+// o código sai do id: inserir paciente no meio da lista não muda os outros
+const cod = id => 'RG' + id.replace(/-/g, '');
 const P = (id, descricao, respostas, extra) =>
-  Object.assign({ id, descricao, codigo: cod(), respostas: Object.assign({ visita: 'primeira' }, respostas) }, extra || {});
+  Object.assign({ id, descricao, codigo: cod(id), respostas: Object.assign({ visita: 'primeira' }, respostas) }, extra || {});
 
 const de = (total, mais) => Object.assign({ queixa: 'de' }, iief(total), mais || {});
 const ep = (total, mais) => Object.assign({ queixa: 'ep' }, pedt(total), mais || {});
@@ -42,10 +42,10 @@ module.exports = [
   P('LIM-003', 'IIEF 11 — topo da moderada', de(11)),
   P('LIM-004', 'IIEF 12 — base da leve a moderada', de(12)),
   P('LIM-005', 'IIEF 16 — topo da leve a moderada', de(16)),
-  P('LIM-006', 'IIEF 17 — base da leve', de(17)),
-  P('LIM-007', 'IIEF 18 — acima do corte 17/18 do CLAUDE.md', de(18)),
-  P('LIM-008', 'IIEF 21 — topo da leve', de(21)),
-  P('LIM-009', 'IIEF 22 — sem disfunção', de(22)),
+  P('LIM-006', 'IIEF 17 — base da leve', de(17), { espera: { protocolo: 'DE-1' } }),
+  P('LIM-007', 'IIEF 18 — meio da leve', de(18)),
+  P('LIM-008', 'IIEF 21 — topo da leve, ainda no corte diagnóstico', de(21), { espera: { protocolo: 'DE-1' } }),
+  P('LIM-009', 'IIEF 22 — sem disfunção, fora do corte', de(22), { espera: { protocolo: 'SEM DIAGNÓSTICO FORMAL' } }),
 
   // ---- PEDT: todas as fronteiras de faixa -----------------------------------
   P('LIM-010', 'PEDT 8 — EP improvável', ep(8, { freq: 'baixa' })),
@@ -78,6 +78,13 @@ module.exports = [
     Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'], contraIoim: 'nao' })),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12, labs: { tTotal: '340' } }],
       espera: { protocolo: 'DE-2L' } }),
+
+  // ---- ADAM (Morley): chave 1 ou 7, ou 3+ das outras -------------------------
+  P('LIM-026', 'ADAM sem nenhum sintoma', de(14, { adam: ['nenhum'] })),
+  P('LIM-027', 'ADAM com 2 sintomas não-chave — negativo', de(14, { adam: ['a2', 'a3'] })),
+  P('LIM-028', 'ADAM com 3 sintomas não-chave — positivo', de(14, { adam: ['a2', 'a3', 'a9'] })),
+  P('LIM-029', 'ADAM: marca libido e depois "nenhum" — fica só o nenhum, sem ramo libido', de(14, { adam: ['a1', 'nenhum'] }),
+    { espera: { protocolo: 'DE-2' } }),
 
   // ---- ondas de choque: só com doença arterial e/ou diabetes ----------------
   P('TEST-001', 'DE com diabetes — ondas no protocolo', de(14, { comorb: ['dm'] })),

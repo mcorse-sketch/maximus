@@ -1220,7 +1220,12 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         b.className='opt'+(sel?' selected':''); b.dataset.v = String(o.v);
         b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${o.label}</span>`;
         b.onclick=()=>{
-          if (sc.multi){ const a=S[sc.id]||[]; S[sc.id] = a.includes(o.v)?a.filter(x=>x!==o.v):a.concat([o.v]); }
+          if (sc.multi){
+            const a=S[sc.id]||[], nada=['nenhum','nenhuma'];
+            if (a.includes(o.v)) S[sc.id]=a.filter(x=>x!==o.v);
+            // "nenhum" exclui os demais itens, e marcar um item tira o "nenhum"
+            else S[sc.id] = nada.includes(o.v) ? [o.v] : a.filter(x=>!nada.includes(x)).concat([o.v]);
+          }
           else S[sc.id]=o.v;
           paint();
         };
@@ -2690,7 +2695,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       s.push({id:'refazer',kind:'opts',step:'Questionários',eyebrow:'Respondido na recepção',
         text:'Questionários já preenchidos pelo paciente',
         hint:[si5!==null?('IIEF-5: '+si5+' de 25'):'', sp5!==null?('PEDT: '+sp5+' de 20'):'',
-              (S.adam&&S.adam.length)?('ADAM: '+S.adam.length+' sintoma'+(S.adam.length>1?'s':'')+' marcado'+(S.adam.length>1?'s':'')):''].filter(Boolean).join(' · '),
+              ((a=>a.length?('ADAM: '+a.length+' sintoma'+(a.length>1?'s':'')+' marcado'+(a.length>1?'s':'')):'')((S.adam||[]).filter(v=>v!=='nenhum')))].filter(Boolean).join(' · '),
         options:[{v:'nao',badge:'✓',label:'Confirmar e seguir'},{v:'sim',badge:'↻',label:'Refazer os questionários agora'}]});
     } else if (S.filaAplicada && S.refazer!=='sim' && S.usarTotaisRec!=='nao'
                && ((S.hasDE && (S.fila||[]).find(x=>x.codigo===S.daFila) && ((S.fila||[]).find(x=>x.codigo===S.daFila).iief!=null))
@@ -2818,7 +2823,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         options:[{v:'nao',badge:'—',label:'Não — dose baixa, poucas tentativas ou sem estímulo'},{v:'sim',badge:'!',label:'Sim — dose plena, 6+ tentativas'}]});
       if (!(S.filaAplicada && S.refazer!=='sim' && (S.adam||[]).length)) s.push({id:'adam',kind:'opts',multi:true,step:D,eyebrow:'Questionário ADAM',
         text:'Marque todos os sintomas que o paciente apresenta:',
-        options:ADAM.map(a=>({v:a.v,badge:a.chave?'★':'•',label:a.label}))});
+        options:ADAM.map(a=>({v:a.v,badge:a.chave?'★':'•',label:a.label})).concat([{v:'nenhum',badge:'—',label:'Nenhum destes sintomas'}])});
       // a libido sai do ADAM respondido agora: sem recalcular aqui, a pergunta de
       // testosterona entrava no fluxo tarde demais e nunca era feita
       S.libido = (S.adam||[]).filter(v=>v!=='nenhum').indexOf('a1')>=0 ? 'sim' : 'nao';
@@ -3913,8 +3918,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     let ramoL=false, pedirLabs=false;
     const ttConhecida = (S.tTotal ? parseFloat(String(S.tTotal).replace(',','.')) : ((prev&&prev.labs&&prev.labs.tTotal)?parseFloat(String(prev.labs.tTotal).replace(',','.')):null));
     if (S.adam && S.adam.length){
-      const chave = (S.adam||[]).filter(x=>x==='a1'||x==='a7');
-      notas.push('<b>ADAM '+(adamPositivo(S.adam)?'positivo':'negativo')+'</b> — '+(S.adam||[]).length+' de 10 sintomas marcados'+(chave.length?', incluindo '+chave.length+' sintoma-chave':'')+'. '+(adamPositivo(S.adam)?'Rastreio sugestivo de hipogonadismo, o que indica dosagem hormonal antes de atribuir a queixa a outra causa. Lembrar que o ADAM tem boa sensibilidade e baixa especificidade — ele levanta a hipótese, não fecha o diagnóstico.':'Rastreio não sugestivo de deficiência androgênica.'));
+      const chave = adamSet.filter(x=>x==='a1'||x==='a7');
+      notas.push('<b>ADAM '+(adamPositivo(adamSet)?'positivo':'negativo')+'</b> — '+adamSet.length+' de 10 sintomas marcados'+(chave.length?', incluindo '+chave.length+' sintoma-chave':'')+'. '+(adamPositivo(S.adam)?'Rastreio sugestivo de hipogonadismo, o que indica dosagem hormonal antes de atribuir a queixa a outra causa. Lembrar que o ADAM tem boa sensibilidade e baixa especificidade — ele levanta a hipótese, não fecha o diagnóstico.':'Rastreio não sugestivo de deficiência androgênica.'));
     }
     if (S.libido==='sim' && ttConhecida!==null)
       notas.push('Testosterona total já registrada ('+ttConhecida+' ng/dL) — a pergunta foi respondida automaticamente pelo sistema, com corte em 340.');
@@ -4294,7 +4299,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       add('Adesão',{total:'Todos os dias',parcial:'Falhou alguns dias',baixa:'Falhou muitos dias',parou:'Parou de tomar'}[S.adesao]||'—');
       if (S.motivo) add('Motivo',{ea:'Efeito adverso',esq:'Esquecimento',naoprec:'Achou que não precisava',outro:'Outro'}[S.motivo]);
       add('Efeitos adversos',{nao:'Nenhum',leve:'Leves, toleráveis',atrap:'Atrapalharam o uso'}[S.ea]||'—');
-      if (S.adam) add('ADAM', (adamPositivo(S.adam)?'POSITIVO':'negativo')+' — '+(S.adam||[]).length+'/10 sintomas');
+      if (S.adam){ const a=(S.adam||[]).filter(v=>v!=='nenhum'); add('ADAM', (adamPositivo(a)?'POSITIVO':'negativo')+' — '+a.length+'/10 sintomas'); }
     if (alg.length) add('Alergias', alg.map(v=>({tada:'PDE5',clomi:'tricíclico',parox:'ISRS',dapo:'dapoxetina',anest:'anestésico local',ioim:'ioimbina',fito:'fitoterápico'}[v])).join('; '));
     if (S.hasDE && (S.adam||[]).length) add('ADAM', (S.adamPos?'POSITIVO':'negativo')+' — '+(adamSet.length?adamSet.map(v=>(ADAM.find(a=>a.v===v)||{}).label).filter(Boolean).join('; '):'nenhum sintoma'));
     if (comorb.length) add('Comorbidades',comorb.map(v=>({has:'HAS',dm:'Diabetes',disl:'Dislipidemia',vasc:'Doença arterial',tabag:'Tabagismo',obes:'Obesidade',alcool:'Álcool',drogas:'Drogas recreacionais'}[v])).join('; ')+({sim:' · controladas',parcial:' · controle parcial',nao:' · NÃO controladas'}[S.comorbCtrl]||'')+({sim:' · com acompanhamento',nao:' · SEM acompanhamento'}[S.comorbMed]||''));

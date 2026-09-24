@@ -54,9 +54,14 @@ prescrever por omissão quando a testosterona é desconhecida.
 combinação serotoninérgica prevista é EP-4 / DUO-4, com limite de 1 jato.
 Esse aviso só aparece em linha que envolve ejaculação.
 
-**Corte IIEF 17/18** separa leve de normal; IIEF ≤ 7 → intracavernosa.
+**IIEF-5 (Rosen, 1999):** 22–25 sem DE, 17–21 leve, 12–16 leve a moderada,
+8–11 moderada, 5–7 grave. Corte diagnóstico **≤ 21**; IIEF ≤ 7 → intracavernosa.
 Esses cortes são testados e críticos — qualquer mudança exige paciente-teste
 no limite exato.
+
+**ADAM (Morley, 2000):** positivo com "sim" na 1 (libido) ou na 7 (ereções),
+ou em 3 ou mais das outras. "Nenhum destes sintomas" é resposta válida e
+exclui as demais.
 
 **Preenchimento usa circunferência, não diâmetro.**
 

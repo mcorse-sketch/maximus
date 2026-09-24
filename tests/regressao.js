@@ -24,9 +24,8 @@ const HTML = fs.readFileSync(ARQ, 'utf8');
 const BASELINE = path.join(__dirname, 'regressao', 'baseline.json');
 
 const PREFERIDOS = ['nao', 'nenhuma', 'nenhum', 'ok', 'fixa', 'medio', 'total', 'ambos', 'sim'];
-// telas de marcação múltipla sem opção "nenhum": um item que não muda a conduta
-// (no ADAM, um sintoma que não é chave não torna o rastreio positivo)
-const PADRAO_MULTI = { adam: ['a2'] };
+// telas de marcação múltipla sem opção "nenhum" recebem aqui um padrão neutro
+const PADRAO_MULTI = {};
 const espera = ms => new Promise(r => setTimeout(r, ms));
 const visivel = el => el && el.style.display !== 'none' && !el.hidden;
 

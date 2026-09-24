@@ -11,9 +11,9 @@ errada, o erro é do app — corrija o app, não esta folha.
 | LIM-004 | IIEF 12 — base da leve a moderada | DE-2 | BASE-T10, NOITE-1, SP-DE | 12 | — |
 | LIM-005 | IIEF 16 — topo da leve a moderada | DE-2 | BASE-T10, NOITE-1, SP-DE | 16 | — |
 | LIM-006 | IIEF 17 — base da leve | DE-1 | BASE-T5, NOITE-1, SP-DE | 17 | — |
-| LIM-007 | IIEF 18 — acima do corte 17/18 do CLAUDE.md | DE-1 | BASE-T5, NOITE-1, SP-DE | 18 | — |
-| LIM-008 | IIEF 21 — topo da leve | DE-1 | BASE-T5, NOITE-1, SP-DE | 21 | — |
-| LIM-009 | IIEF 22 — sem disfunção | SEM DIAGNÓSTICO FORMAL | NOITE-1, SP-DE | 22 | — |
+| LIM-007 | IIEF 18 — meio da leve | DE-1 | BASE-T5, NOITE-1, SP-DE | 18 | — |
+| LIM-008 | IIEF 21 — topo da leve, ainda no corte diagnóstico | DE-1 | BASE-T5, NOITE-1, SP-DE | 21 | — |
+| LIM-009 | IIEF 22 — sem disfunção, fora do corte | SEM DIAGNÓSTICO FORMAL | NOITE-1, SP-DE | 22 | — |
 | LIM-010 | PEDT 8 — EP improvável | SEM DIAGNÓSTICO FORMAL | NOITE-1, SP-DUO | — | 8 |
 | LIM-011 | PEDT 9 — EP provável | EP-1 | SP-DUO, NOITE-1 | — | 9 |
 | LIM-012 | PEDT 10 — topo da provável | EP-1 | SP-DUO, NOITE-1 | — | 10 |
@@ -30,6 +30,10 @@ errada, o erro é do app — corrija o app, não esta folha.
 | LIM-023 | Libido baixa, testosterona normal, mas ansiedade/ISRS — sem ioimbina | DE-2 | BASE-T10, NOITE-1, SP-DE, LABS | 14 | — |
 | LIM-024 | Reavaliação, libido baixa, testosterona 335 no banco — abaixo do corte | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS, LABS | 14 | — |
 | LIM-025 | Reavaliação, libido baixa, testosterona 340 no banco — no corte, conta como normal | DE-2L | BASE-T10-I, NOITE-2, SP-DE, ONDAS | 14 | — |
+| LIM-026 | ADAM sem nenhum sintoma | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
+| LIM-027 | ADAM com 2 sintomas não-chave — negativo | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
+| LIM-028 | ADAM com 3 sintomas não-chave — positivo | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
+| LIM-029 | ADAM: marca libido e depois "nenhum" — fica só o nenhum, sem ramo libido | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
 | TEST-001 | DE com diabetes — ondas no protocolo | DE-2 | BASE-T10, NOITE-1, SP-DE, TEFI, ONDAS | 14 | — |
 | TEST-002 | DE com doença arterial — ondas no protocolo | DE-2 | BASE-T10, NOITE-1, SP-DE, TEFI, ONDAS | 14 | — |
 | TEST-003 | DE com hipertensão isolada — ondas só como complemento | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 14 | — |
