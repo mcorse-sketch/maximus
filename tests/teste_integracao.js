@@ -19,7 +19,7 @@ function mem() {
       queixaRecepcao: 'ambos', iniciais: 'R.A.M.', telefone: '21999998888',
       medidas: { idade: 54, peso: 84, altura: 178, imc: 26.5 }
     }, {
-      codigo: 'MX0042', data: ant.toISOString(), dataLocal: dia(ant), tipo: 'reav', linha: 'DUO',
+      codigo: 'MX0042', data: ant.toISOString(), dataLocal: dia(ant), tipo: 'reavaliacao', linha: 'DUO',
       protocolo: 'DUO-3', kitCodes: ['SP-DUO', 'NOITE-1'], iief: 14, pedt: 11,
       labs: { tTotal: 512, lh: '4.1' }, adesao: 'total', satisf: 8, biotens: 38
     }],

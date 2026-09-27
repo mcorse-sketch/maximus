@@ -28,7 +28,7 @@ function memoria() {
     const ant = new Date(hoje.getTime() - intBetween(40, 90) * 86400000);
     mem['pacientes/' + cod + '/ciclos'] = [
       { codigo: cod, data: ant.toISOString(), dataBR: ant.toLocaleDateString('pt-BR'), dataLocal: dia(ant),
-        tipo: 'reav', linha: pick(['DE', 'EP', 'DUO']), protocolo: pick(['DE-2', 'EP-3', 'DUO-3']),
+        tipo: 'reavaliacao', linha: pick(['DE', 'EP', 'DUO']), protocolo: pick(['DE-2', 'EP-3', 'DUO-3']),
         kitCodes: ['SP-DUO', 'NOITE-1'], iief: intBetween(8, 22), pedt: intBetween(2, 16),
         labs: { tTotal: intBetween(250, 700), lh: '4,0' }, adesao: 'total', satisf: 7 },
       { codigo: cod, data: hoje.toISOString(), dataLocal: dia(hoje), tipo: 'recepcao', linha: 'recepcao',
