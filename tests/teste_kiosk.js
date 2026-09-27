@@ -22,7 +22,7 @@ function memoria() {
     const cod = 'MX' + String(i).padStart(4, '0');
     const d = new Date(hoje.getTime() - intBetween(40, 120) * 86400000);
     mem['pacientes/' + cod + '/ciclos'] = [{
-      codigo: cod, data: d.toISOString(), dataLocal: dia(d), tipo: 'reav',
+      codigo: cod, data: d.toISOString(), dataLocal: dia(d), tipo: 'reavaliacao',
       queixaRecepcao: pick(['de', 'ep', 'ambos', 'libido', 'clinica']),
       protocolo: 'DUO-3', kitCodes: ['SP-DUO', 'NOITE-1'],
       iniciais: i % 2 ? 'ABC' : '', telefone: i % 3 === 0 ? '(21)99999-1234' : '',

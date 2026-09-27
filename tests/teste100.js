@@ -33,7 +33,7 @@ function semente() {
       const d = new Date(hoje.getTime() - (nCiclos - c) * intBetween(35, 90) * 86400000);
       ciclos.push({
         codigo: cod, data: d.toISOString(), dataLocal: diaLocal(d),
-        tipo: c === 0 ? 'primeira' : 'reav', linha: pick(LINHAS),
+        tipo: c === 0 ? 'primeira' : 'reavaliacao', linha: pick(LINHAS),
         protocolo: pick(PROTOS), kitCodes: pick(KITS).slice(),
         iief: intBetween(5, 24), pedt: intBetween(0, 19),
         labs: rnd() < 0.7 ? { tTotal: intBetween(180, 820), lh: (rnd() * 8).toFixed(1) } : null,

@@ -2345,20 +2345,25 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     S.tefiBanco = await buscarPorTipo(S.codigo,'tefi');
     const r = await carregarPaciente(S.codigo);
     prev = r ? r.ciclo : null; S.hist = r;
+    let todos = [];
     // contato do cadastro: o mais recente de cada campo, em qualquer registro
     try{
-      const todos = (await Store.todosCiclos(norm(S.codigo)))||[];
+      todos = (await Store.todosCiclos(norm(S.codigo)))||[];
       const ord = todos.slice().sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
       const ult = k => { for (let i=ord.length-1;i>=0;i--){ if (ord[i][k]) return ord[i][k]; } return null; };
       S.contatoBanco = {iniciais:ult('iniciais'), telefone:ult('telefone'), email:ult('email')};
     }catch(e){}
     if (r){
-      const n = (r.total||0) + 1;
+      // número da reavaliação: só contam primeira e reavaliações. Recepção, TEFI,
+      // preenchimento, hipogonadismo etc. não são reavaliação (r.total conta tudo)
+      const nReav = todos.filter(c=>c && (c.tipo==='primeira' || c.tipo==='reavaliacao')).length;
       const ult = new Date(r.ultimaData || r.ciclo.data);
       const dias = Math.max(0, Math.round((Date.now()-ult.getTime())/86400000));
-      S.nReav = n - 1; S.diasDesde = dias; S.semHistorico = false;
-      S.resumoHist = n===2 ? ('1ª reavaliação — a avaliação inicial foi há '+dias+' dias, em '+ult.toLocaleDateString('pt-BR')+'.')
-                           : ((n-1)+'ª reavaliação — a última foi há '+dias+' dias, em '+ult.toLocaleDateString('pt-BR')+'.');
+      const quando = dias+' dias, em '+ult.toLocaleDateString('pt-BR')+'.';
+      const ultTipo = r.ciclo.tipo==='primeira' ? 'a avaliação inicial foi há '
+                    : r.ciclo.tipo==='reavaliacao' ? 'a última foi há ' : 'o último atendimento foi há ';
+      S.nReav = nReav; S.diasDesde = dias; S.semHistorico = false;
+      S.resumoHist = nReav ? (nReav+'ª reavaliação — '+ultTipo+quando) : ('Retorno — '+ultTipo+quando);
       if (dias > 90) S.resumoHist += ' Intervalo acima do previsto de 2 meses — o paciente pulou pelo menos um retorno.';
       if (dias < 40) S.resumoHist += ' Intervalo abaixo do previsto de 2 meses — retorno antecipado.';
     } else {

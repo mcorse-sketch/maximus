@@ -140,6 +140,66 @@ const tela = doc => doc.getElementById('quizCard').getAttribute('data-tela');
     ok(!erros.length, 'sem erro de JS');
   }
 
+  // ---- número da reavaliação: só primeira e reavaliações contam ---------------
+  // recepção, TEFI, preenchimento etc. ficam em pacientes/<COD>/ciclos, mas não
+  // são reavaliação; antes o app usava o total de registros e inflava o número
+  console.log('número da reavaliação');
+  const DE2 = { protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12 };
+  const reav = (id, ciclos) => roda({ id, codigo: id, respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'de' }, iief14),
+    ciclos }, true);
+  {
+    // limite: primeira + TEFI — o TEFI não pode virar a 1ª reavaliação
+    const r = await reav('JRN001', [Object.assign({ tipo: 'primeira', linha: 'DE' }, DE2), { tipo: 'tefi', linha: 'tefi', protocolo: 'TEFI' }]);
+    ok(!r.falha && r.salvo && r.salvo.numeroReavaliacao === 1, 'primeira + TEFI: esta é a 1ª reavaliação (gravado ' + (r.salvo && r.salvo.numeroReavaliacao) + ')');
+    const r2 = await reav('JRN002', [
+      { tipo: 'recepcao', linha: 'recepcao' },
+      Object.assign({ tipo: 'primeira', linha: 'DE' }, DE2),
+      { tipo: 'recepcao', linha: 'recepcao' },
+      { tipo: 'tefi', linha: 'tefi', protocolo: 'TEFI' },
+      { tipo: 'preench-inicial', linha: 'preenchimento', protocolo: 'PREENCH' },
+      Object.assign({ tipo: 'reavaliacao', linha: 'DE' }, DE2),
+      Object.assign({ tipo: 'reavaliacao', linha: 'DE' }, DE2)]);
+    ok(!r2.falha && r2.salvo && r2.salvo.numeroReavaliacao === 3,
+      'primeira + TEFI + preenchimento + 2 reavaliações + recepções: esta é a 3ª (gravado ' + (r2.salvo && r2.salvo.numeroReavaliacao) + ')');
+    ok(/^Tipo de visita: 3ª reavaliação$/m.test(r2.texto || ''), 'o texto do prontuário traz "3ª reavaliação"');
+  }
+  {
+    // modo rede: /api/paciente devolve total = len(ciclos), com a recepção dentro
+    const agora = Date.now(), dia = 86400000;
+    const ciclos = [
+      Object.assign({ codigo: 'MX0900', tipo: 'primeira', linha: 'DE', data: new Date(agora - 240 * dia).toISOString() }, DE2),
+      { codigo: 'MX0900', tipo: 'recepcao', linha: 'recepcao', data: new Date(agora - 180 * dia).toISOString() },
+      Object.assign({ codigo: 'MX0900', tipo: 'reavaliacao', linha: 'DE', data: new Date(agora - 180 * dia).toISOString() }, DE2),
+      { codigo: 'MX0900', tipo: 'recepcao', linha: 'recepcao', data: new Date(agora - 120 * dia).toISOString() },
+      { codigo: 'MX0900', tipo: 'tefi', linha: 'tefi', protocolo: 'TEFI', data: new Date(agora - 120 * dia).toISOString() },
+      Object.assign({ codigo: 'MX0900', tipo: 'reavaliacao', linha: 'DE', data: new Date(agora - 60 * dia).toISOString() }, DE2)];
+    const resp = (status, obj) => ({ ok: status < 300, status, json: async () => obj });
+    const fetchFalso = async url => {
+      const u = String(url).replace(/^https?:\/\/[^/]+/, '');
+      if (u === '/api/health') return resp(200, { ok: true, versao: 2, senha: true });
+      if (u === '/api/sessao') return resp(200, { perfil: 'medico' });
+      if (u === '/api/triagens-hoje') return resp(200, { triagens: [] });
+      if (u === '/api/pacientes') return resp(200, { pacientes: [{ codigo: 'MX0900' }] });
+      if (u === '/api/historico/MX0900') return resp(200, { ciclos });
+      // como servidor_maximus.py: último ciclo e total de TODOS os registros
+      if (u === '/api/paciente/MX0900') return resp(200, { ciclo: ciclos[ciclos.length - 1], total: ciclos.length, ultimaData: ciclos[ciclos.length - 1].data });
+      return resp(404, {});
+    };
+    const { doc, erros } = await abreApp({}, w => {
+      delete w.claude; w.fetch = fetchFalso;
+      w.sessionStorage.setItem('maximus_sessao_medico', 'tok-teste');
+    }, 'http://clinica.local:8080/');
+    clica(doc, 'novo'); await avanca(doc);
+    clica(doc, 'reav'); await avanca(doc);
+    const inp = doc.querySelector('#optsWrap input.fld');
+    inp.value = 'MX0900'; inp.dispatchEvent(new doc.defaultView.Event('input')); await avanca(doc);
+    const card = doc.getElementById('quizCard');
+    ok(tela(doc) === 'confirmHist' && /3ª reavaliação — a última foi há 60 dias/.test(card.textContent),
+      'modo rede: 1 primeira + 2 reavaliações + TEFI + 2 recepções → "3ª reavaliação" (servidor diz total ' + ciclos.length + ')');
+    ok(/3ª reavaliação/.test(doc.getElementById('painelCard').textContent), 'o painel do paciente mostra a 3ª reavaliação');
+    ok(!erros.length, 'sem erro de JS' + (erros.length ? ' — ' + erros[0] : ''));
+  }
+
   // ---- descartar atendimento interrompido ------------------------------------
   console.log('descartar atendimento interrompido');
   {
