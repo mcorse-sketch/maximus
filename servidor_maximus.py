@@ -55,6 +55,7 @@ ITERACOES = 200000
 # recepcao em do_POST: ela so grava o proprio registro, nunca ciclo clinico.
 PERMISSOES = {
     ("GET", "paciente"):       {"medico", "recepcao", "financeiro"},
+    ("GET", "pacientes"):      {"medico", "recepcao"},
     ("GET", "historico"):      {"medico", "recepcao", "financeiro"},
     ("GET", "triagens-hoje"):  {"medico", "recepcao", "financeiro"},
     ("GET", "proximo-codigo"): {"medico", "recepcao"},
@@ -509,6 +510,22 @@ class Handler(BaseHTTPRequestHandler):
                         fila.append(c)
             fila.sort(key=lambda x: x.get("data", ""))
             self._json({"triagens": fila})
+            return
+
+        if caminho == "/api/pacientes":
+            # lista para escolher o paciente no retorno: codigo, iniciais mais
+            # recentes, data do ultimo registro e quantos ciclos clinicos tem
+            with _lock:
+                dados = carregar()
+            lista = []
+            for cod, ciclos in dados["pacientes"].items():
+                ord_ = sorted(ciclos, key=lambda c: str(c.get("data", "")))
+                ini = next((c.get("iniciais") for c in reversed(ord_) if c.get("iniciais")), None)
+                clin = [c for c in ord_ if c.get("tipo") != "recepcao" and c.get("linha") != "recepcao"]
+                lista.append({"codigo": cod, "iniciais": ini, "clinicos": len(clin),
+                              "ultimaData": ord_[-1].get("data") if ord_ else None})
+            lista.sort(key=lambda p: p["codigo"])
+            self._json({"pacientes": lista})
             return
 
         if caminho == "/api/proximo-codigo":

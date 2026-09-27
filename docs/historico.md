@@ -70,6 +70,17 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
 - **Limpeza de CSS órfão quebrou o layout** do kiosk e do financeiro; revertido
   a partir de backup, com as melhorias da mesma rodada preservadas à mão.
 
+- **Aviso de ISRS em emagrecimento** — voltou a vazar. Hoje depende só do
+  kit: aparece apenas com paroxetina e clomipramina na mesma prescrição.
+- **"Imprimir relatório" sem ação** — `window.print()` na própria página nem
+  sempre abria o diálogo, e a ficha saía em branco (a regra de impressão
+  escondia tudo fora da área impressa). Hoje imprime numa aba própria.
+- **"Descartar" da faixa de retomada sem ação** — dependia de `confirm()`.
+- **Ids duplicados** (`termoBtn`, `printTermo`) no HTML — removidos.
+- **Dois botões de continuar no panorama** — ficou um só.
+- **Ficha sem os dados do atendimento em curso** — hoje mostra tudo o que foi
+  respondido.
+
 ## Sobre os testes
 
 A suíte nasceu depois de o médico encontrar erros que os testes não pegavam.

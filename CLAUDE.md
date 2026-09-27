@@ -52,7 +52,9 @@ prescrever por omissão quando a testosterona é desconhecida.
 
 **Nunca associar paroxetina diária e dapoxetina** (ambos ISRS). A única
 combinação serotoninérgica prevista é EP-4 / DUO-4, com limite de 1 jato.
-Esse aviso só aparece em linha que envolve ejaculação.
+O aviso de ISRS na conduta **só aparece quando a prescrição associa
+paroxetina e clomipramina** no mesmo paciente (kit com item `PAROX` e item
+`SP-DUO`). Em nenhuma outra linha — o médico já reclamou duas vezes.
 
 **IIEF-5 (Rosen, 1999):** 22–25 sem DE, 17–21 leve, 12–16 leve a moderada,
 8–11 moderada, 5–7 grave. Corte diagnóstico **≤ 21**; IIEF ≤ 7 → intracavernosa.
@@ -85,7 +87,10 @@ mediano em cinza; nada é registrado sem gesto do usuário.
 
 **Panorama e módulos.** O atendimento é uma grade de módulos numerados, não uma
 fila de telas. Contorno verde = módulo completo. Ao terminar um módulo, o app
-avisa e volta ao panorama com o próximo módulo destacado.
+avisa e volta ao panorama com o próximo módulo destacado; se não falta nada
+obrigatório, vai direto para a nota final. O panorama tem um só botão
+"Continuar o atendimento" (no topo). Sem paciente carregado, o botão Panorama
+fica escondido e Esc não o abre.
 
 **Telas de navegação** (`origem`, `daFila`, `filaVazia`) levam `plumb:true`:
 não pertencem a módulo nenhum, não aparecem no panorama, e abrir um módulo
@@ -99,12 +104,32 @@ panorama aberto. Só existe quando há paciente; sem paciente o questionário
 ocupa a largura inteira (`.stage.largo` / `.linha.com-painel`).
 
 **Ficha completa** (botão "Ficha" ou tecla F): documento em pop-up com tudo o
-que se sabe do paciente, incluindo evolução de IIEF e PEDT comparando
+que se sabe do paciente — inclusive tudo o que já foi respondido no atendimento
+em curso ("Registrado neste atendimento") —, incluindo evolução de IIEF e PEDT comparando
 prontuário com hoje, e ganho do preenchimento em cm e em porcentagem.
 
 **Identificação:** obrigatórios o código e telefone **ou** email. Telefone é
 formatado como `(21)99999-9999` e validado; iniciais em maiúsculas sem pontos.
-No retorno, os três campos vêm do banco e a recepção apenas confirma.
+No retorno, os três campos vêm do banco e a recepção apenas confirma. Se nem
+a recepção nem o cadastro têm telefone ou email, o consultório pergunta na tela
+`contato` (módulo Identificação). No retorno, o campo do código abre a lista
+de todos os pacientes do banco (`/api/pacientes`), filtrável por código ou
+iniciais.
+
+**Nota final.** Todo caminho termina na tela opcional `notaFinal` (módulo
+"Escolha da conduta"), gravada no registro como `notaAtendimento` e levada ao
+texto do prontuário.
+
+**Texto do prontuário** (`montarTextoCopia`): só dados — cabeçalho com código
+e data, "Rótulo: valor", conduta, protocolo com composição, cronograma
+laboratorial, pendências e nota do médico. Nada de racional, explicação,
+assinatura ou código repetido.
+
+**Impressão** abre o documento numa aba própria (`imprimeEmAba`), que chama a
+impressão; se o navegador bloquear a aba, imprime pela própria página.
+
+**Descartar** o atendimento interrompido confirma na própria faixa, nunca com
+`confirm()` nativo (pode estar bloqueado).
 
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
@@ -147,9 +172,11 @@ cd tests && npm install          # jsdom
 cd .. && ./scripts/testar.sh 100 # roda tudo
 ```
 
-Seis etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
+Nove etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
 recepção, rastreador de módulos nas oito linhas de queixa, integração
-recepção → consultório, e **regressão clínica**.
+recepção → consultório, **regressão clínica**, jornada do médico
+(`teste_jornada.js`: contato, nota final, aviso de ISRS, texto, ficha,
+impressão, lista de pacientes, descartar), tela de senha e servidor.
 
 A regressão (`tests/regressao.js`) leva os pacientes de
 `tests/regressao/pacientes.js` até a conduta e compara protocolo, kit, escores

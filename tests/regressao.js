@@ -27,6 +27,8 @@ const BASELINE = path.join(__dirname, 'regressao', 'baseline.json');
 const PREFERIDOS = ['nao', 'nenhuma', 'nenhum', 'ok', 'fixa', 'medio', 'total', 'ambos', 'sim'];
 // telas de marcação múltipla sem opção "nenhum" recebem aqui um padrão neutro
 const PADRAO_MULTI = {};
+// telas que pedem um valor válido mesmo sem declaração no paciente
+const PADRAO_TELA = { contato: { telefone: '21999990000' } };
 const espera = ms => new Promise(r => setTimeout(r, ms));
 const visivel = el => el && el.style.display !== 'none' && !el.hidden;
 
@@ -74,8 +76,15 @@ function ajustaSlider(win, r, valor) {
 
 function preenche(doc, win, tela, resp) {
   const wrap = doc.getElementById('optsWrap');
+  if (resp === undefined && PADRAO_TELA[tela]) resp = PADRAO_TELA[tela];
   const r = resp === undefined ? {} : resp;
   const q = s => [...wrap.querySelectorAll(s)];
+  const area = wrap.querySelector('textarea');
+  if (area) {
+    // nota livre, opcional: só escreve se o paciente declarou
+    if (resp !== undefined) { area.value = String(resp); area.dispatchEvent(new win.Event('input', { bubbles: true })); }
+    return;
+  }
 
   const sliders = q('input[type=range][data-campo]');
   const grupos = q('.gopts[data-campo]');
@@ -138,8 +147,12 @@ function preenche(doc, win, tela, resp) {
 // ---- um paciente do início à conduta -------------------------------------
 // tolerante: não acusa resposta declarada que nenhuma tela pediu (pacientes
 // sorteados declaram de tudo; os da regressão não podem)
-async function roda(p, tolerante) {
+// opcoes.manter: não fecha a janela e a devolve (tests/teste_jornada.js inspeciona)
+// opcoes.antes(win): roda antes do app, para instrumentar a janela
+async function roda(p, tolerante, opcoes) {
+  opcoes = opcoes || {};
   const mem = montaBanco(p);
+  if (p.memExtra) for (const k in p.memExtra) mem[k] = (mem[k] || []).concat(p.memExtra[k]);
   const erros = [];
   const vc = new VirtualConsole();
   vc.on('jsdomError', e => erros.push('jsdomError: ' + (e && e.message)));
@@ -150,6 +163,7 @@ async function roda(p, tolerante) {
       w.onerror = (m) => { erros.push('window.onerror: ' + m); };
       w.addEventListener('unhandledrejection', ev => erros.push('rejeicao: ' + ev.reason));
       w.print = () => {}; w.open = () => null; w.scrollTo = () => {};
+      if (opcoes.antes) opcoes.antes(w);
     }
   });
   const win = dom.window, doc = win.document;
@@ -191,8 +205,9 @@ async function roda(p, tolerante) {
   const campoDe = { i0: 1, i1: 1, i2: 1, i3: 1, i4: 1, p0: 1, p1: 1, p2: 1, p3: 1, p4: 1 };
   const naoUsadas = Object.keys(p.respostas || {}).filter(k => !usadas.has(k) && !(k in campoDe && usadas.has(k)));
   if (!falha && !tolerante && naoUsadas.length) falha = 'respostas declaradas que nenhuma tela pediu: ' + naoUsadas.join(', ');
-  win.close();
+  if (!opcoes.manter) win.close();
   return {
+    win: opcoes.manter ? win : null, mem,
     falha, erros, vigia, caminho, salvo,
     conduta: salvo ? {
       protocolo: salvo.protocolo || null,
@@ -211,7 +226,7 @@ function diffTexto(a, b) {
     .concat(lb.filter(l => !sa.has(l)).map(l => '      + ' + l));
 }
 
-if (COMO_MODULO) { module.exports = { roda }; return; }
+if (COMO_MODULO) { module.exports = { roda, preenche, espera }; return; }
 
 (async () => {
   const lista = PACIENTES.filter(p => !SO || SO.has(p.id));

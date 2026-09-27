@@ -137,7 +137,7 @@ function preencheTela(doc, win) {
   if (inputs.length) {
     inputs.forEach(i => {
       const numerico = i.inputMode === 'decimal';
-      i.value = numerico ? String(intBetween(1, 30)) : 'teste';
+      i.value = numerico ? String(intBetween(1, 30)) : (i.inputMode === 'tel' ? '21999990000' : (i.type === 'email' ? 'paciente@exemplo.com' : 'teste'));
       i.dispatchEvent(new win.Event('input', { bubbles: true }));
     });
     return 'campos';

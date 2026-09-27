@@ -117,6 +117,7 @@ CLAUDE.md    regras do projeto — leia antes de editar
 | `tests/teste_modulos.js` | abre todos os módulos do panorama, em várias profundidades, nas oito linhas |
 | `tests/teste_integracao.js` | recepção → consultório: painel, ficha, panorama, retomada de sessão |
 | `tests/regressao.js` | conduta de 59 pacientes-limite contra a baseline aprovada (`tests/regressao/`) |
+| `tests/teste_jornada.js` | jornada do médico: contato, nota final, aviso de ISRS, texto do prontuário, ficha, impressão, lista de pacientes, descartar |
 | `tests/teste_sessao.js` | tela de senha dos três apps contra um servidor falso |
 | `tests/teste_servidor.py` | servidor: senhas, permissões por perfil, bloqueio, rotas de dados |
 

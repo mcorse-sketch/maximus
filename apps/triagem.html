@@ -30,6 +30,12 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 .ficha-corpo .vazio{color:#6b6a66}
 .ficha-corpo .pend{color:#8a5a0b}
 @media print{ .ficha-overlay{position:static;background:none;padding:0} .ficha-top{display:none} }
+.lista-pac{margin-top:6px;max-height:280px;overflow-y:auto;border:1px solid #d9d4c7;border-radius:10px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.lista-pac button{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;padding:10px 14px;border:0;border-bottom:1px solid #f0ede5;background:none;font:inherit;color:#14181f;cursor:pointer}
+.lista-pac button:hover,.lista-pac button:focus{background:#f7f3e8;outline:none}
+.lista-pac button span{margin-left:auto;font-size:12px;color:#5b6570}
+.lista-pac .vazio{padding:10px 14px;font-size:13px;color:#5b6570}
+.fld-nota{min-height:130px;resize:vertical;font:inherit;line-height:1.5}
 .retomar{display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
   background:#f7edd9;color:#5c3d08;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px}
 .retomar .rb-acoes{display:flex;gap:8px;flex-wrap:wrap}
@@ -753,14 +759,12 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         <div class="rep" id="report"></div>
         <div class="disclaimer">
           <b>Sugest&atilde;o de conduta, n&atilde;o prescri&ccedil;&atilde;o.</b> N&atilde;o substitui avalia&ccedil;&atilde;o cl&iacute;nica individualizada. Este registro guarda apenas o c&oacute;digo do paciente, escores e protocolo &mdash; n&atilde;o &eacute; prontu&aacute;rio.
-          <span class="warn" id="avisoISRS">Nunca associar paroxetina di&aacute;ria e dapoxetina: ambos s&atilde;o ISRS. A &uacute;nica combina&ccedil;&atilde;o serotonin&eacute;rgica prevista &eacute; o EP-4 (paroxetina 20 mg di&aacute;ria + spray com tadalafila 50 mg/mL e clomipramina 75 mg/mL) / DUO-4 (a mesma associa&ccedil;&atilde;o, somada &agrave; c&aacute;psula matinal de tadalafila), com limite de 1 jato.</span>
+          <span class="warn" id="avisoISRS" style="display:none;">Nunca associar paroxetina di&aacute;ria e dapoxetina: ambos s&atilde;o ISRS. A &uacute;nica combina&ccedil;&atilde;o serotonin&eacute;rgica prevista &eacute; o EP-4 (paroxetina 20 mg di&aacute;ria + spray com tadalafila 50 mg/mL e clomipramina 75 mg/mL) / DUO-4 (a mesma associa&ccedil;&atilde;o, somada &agrave; c&aacute;psula matinal de tadalafila), com limite de 1 jato.</span>
         </div>
       </div>
       <div id="printPaciente"></div>
       <div id="printPos"></div>
       <div id="printTermo"></div>
-      <div id="printTermo"></div>
-      <button class="btn btn-ghost noprint" id="termoBtn" style="width:100%;margin-bottom:10px;display:none;">Imprimir termo de consentimento</button>
       <div id="envioBox" class="noprint">
         <h4>Enviar ao paciente</h4>
         <label><input type="checkbox" id="envOri" checked> Orienta&ccedil;&otilde;es espec&iacute;ficas deste atendimento</label>
@@ -948,6 +952,20 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     // um registro da recepção não é ciclo clínico: se entrar aqui, o app perde
     // o esquema anterior e volta a perguntar tudo de novo
     ehClinico(c){ return !!c && c.tipo!=='recepcao' && c.linha!=='recepcao'; },
+    // lista para escolher o paciente no retorno: código, iniciais, última data
+    async listaPacientes(){
+      try{
+        if (this.modo==='rede'){
+          const r=await fetch(this.api+'/api/pacientes',{cache:'no-store'});
+          if (r.ok){ const j=await r.json(); return j.pacientes||[]; }
+        }
+        if (this.modo==='claude'){
+          const s=await this.db.collection('codigos').get();
+          return (s.docs||[]).map(d=>({codigo:d.data().codigo})).filter(p=>p.codigo);
+        }
+      }catch(e){}
+      return [];
+    },
     async ultimo(cod){
       if (this.modo==='claude'){
         try{ const s=await this.db.collection('pacientes/'+cod+'/ciclos').orderBy('data','desc').get();
@@ -1099,6 +1117,13 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   }
   function avisaFalhaAoSalvar(){ marcaSalvo(false); }
   async function salvarCiclo(reg){
+    // contato registrado aqui (a recepção não coletou) fica no registro: a
+    // recepção o encontra no próximo retorno
+    ['iniciais','telefone','email'].forEach(k=>{
+      if (preenchido(S[k]) && reg[k]===undefined)
+        reg[k] = k==='telefone' ? fmtTel(S[k]) : (k==='iniciais' ? fmtIniciais(S[k]) : String(S[k]).trim());
+    });
+    if (preenchido(S.notaFinal) && reg.notaAtendimento===undefined) reg.notaAtendimento = String(S.notaFinal).trim();
     // identificador único do atendimento: reenvio nunca duplica ciclo
     if (!reg.opId) reg.opId = (norm(reg.codigo)||'SEMCOD')+'-'+(reg.tipo||reg.linha||'ciclo')+'-'+(reg.data||new Date().toISOString());
     try {
@@ -1117,12 +1142,71 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 
   function preenchido(v){ return !(v===undefined || v===null || String(v).trim()===''); }
   function val(sc){
+    if (sc.kind==='nota') return true;
+    if (sc.kind==='contato') return (preenchido(S.telefone) && telOK(S.telefone)) || (preenchido(S.email) && emailOK(S.email));
     if (sc.kind==='campos')  return (sc.fields||[]).some(f=>preenchido(S[f.id]));
     if (sc.kind==='escalas') return (sc.fields||[]).every(f=>preenchido(S[f.id]));
     if (sc.kind==='grupo')   return (sc.fields||[]).every(f=>preenchido(S[f.id]));
     if (sc.multi) return (S[sc.id]||[]).length>0;
     return preenchido(S[sc.id]);
   }
+
+  function escH(t){ return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  // contato: mesma formatação e validação da recepção
+  function fmtIniciais(v){ return String(v||'').toUpperCase().replace(/[^A-ZÀ-Ý ]/g,'').replace(/\s+/g,' ').slice(0,6); }
+  function soDigitos(v){ return String(v||'').replace(/\D/g,'').slice(0,11); }
+  function fmtTel(v){
+    const d = soDigitos(v);
+    if (!d) return '';
+    if (d.length<=2) return '('+d;
+    const ddd=d.slice(0,2), r=d.slice(2);
+    if (r.length<=4) return '('+ddd+')'+r;
+    if (r.length<=8) return '('+ddd+')'+r.slice(0,4)+'-'+r.slice(4);
+    return '('+ddd+')'+r.slice(0,5)+'-'+r.slice(5);
+  }
+  function telOK(v){ const d=soDigitos(v); return d.length===10 || d.length===11; }
+  function emailOK(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v||'').trim()); }
+  function filaDoPaciente(){ return (S.fila||[]).find(x=>x.codigo===S.daFila) || null; }
+  // contato conhecido: veio da recepção hoje ou está no cadastro
+  function contatoConhecido(){
+    const f=filaDoPaciente(), b=S.contatoBanco||{};
+    return !!((f && (f.telefone||f.email)) || b.telefone || b.email);
+  }
+  function contatoAtual(){
+    const f=filaDoPaciente()||{}, b=S.contatoBanco||{};
+    return { iniciais: f.iniciais||S.iniciais||b.iniciais||null, telefone: f.telefone||S.telefone||b.telefone||null,
+             email: f.email||S.email||b.email||null };
+  }
+  // retorno: além de digitar o código, escolher o paciente numa lista de rolagem
+  async function montaListaPacientes(inp, sc){
+    const caixa=document.createElement('div'); caixa.className='lista-pac'; caixa.setAttribute('role','listbox');
+    caixa.style.display='none'; inp.setAttribute('autocomplete','off');
+    inp.insertAdjacentElement('afterend', caixa);
+    if (!S.listaPacientes) S.listaPacientes = await Store.listaPacientes();
+    const todos = S.listaPacientes||[];
+    if (!todos.length) return;
+    const pinta = ()=>{
+      const q = norm(inp.value);
+      const itens = todos.filter(p=>!q || norm(p.codigo).indexOf(q)>=0 || norm(p.iniciais||'').indexOf(q)>=0);
+      caixa.innerHTML = itens.length
+        ? itens.map(p=>'<button type="button" role="option" data-cod="'+escH(p.codigo)+'"><b>'+escH(p.codigo)+'</b>'
+            + (p.iniciais?' · '+escH(p.iniciais):'')
+            + (p.ultimaData?'<span>última consulta '+new Date(p.ultimaData).toLocaleDateString('pt-BR')+'</span>':'')+'</button>').join('')
+        : '<div class="vazio">Nenhum paciente com esse código ou iniciais.</div>';
+      [...caixa.querySelectorAll('button')].forEach(b=>b.onclick=()=>{
+        inp.value=b.dataset.cod; S[sc.id]=b.dataset.cod; caixa.style.display='none';
+        nextBtn.disabled=!val(sc); nextBtn.focus();
+      });
+    };
+    const abre = ()=>{ pinta(); caixa.style.display='block'; };
+    inp.addEventListener('focus', abre); inp.addEventListener('click', abre); inp.addEventListener('input', abre);
+    if (document.activeElement===inp) abre();
+  }
+  document.addEventListener('mousedown', ev=>{
+    document.querySelectorAll('.lista-pac').forEach(c=>{
+      if (!c.contains(ev.target) && c.previousElementSibling!==ev.target) c.style.display='none';
+    });
+  });
 
   function paint(){
     const sc = screens[si];
@@ -1147,8 +1231,35 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       if (sc.min!==undefined) i.min=sc.min; if (sc.max!==undefined) i.max=sc.max;
       i.oninput=()=>{ S[sc.id]=i.value; const e=el('fldErr'); if(e) e.style.display='none'; nextBtn.disabled = sc.optional ? false : !val(sc); };
       optsWrap.appendChild(i);
+      if (sc.lista) montaListaPacientes(i, sc);
       if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=explicaSiglas(sc.hint); optsWrap.appendChild(h); }
       const e=document.createElement('div'); e.className='fld-err'; e.id='fldErr'; e.textContent='Preencha este campo para continuar'; optsWrap.appendChild(e);
+    } else if (sc.kind==='contato'){
+      const ca=contatoAtual();
+      if (!preenchido(S.iniciais) && ca.iniciais) S.iniciais=fmtIniciais(ca.iniciais);
+      [['iniciais','Iniciais do paciente','ex.: RAM',fmtIniciais,'text'],
+       ['telefone','Telefone com DDD','(21)99999-9999',fmtTel,'tel'],
+       ['email','Email','nome@email.com',v=>String(v||'').trim(),'email']].forEach(([id,rot,ph,fmt,tipo])=>{
+        const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=rot; optsWrap.appendChild(lab);
+        const i=document.createElement('input'); i.className='fld'; i.type=(tipo==='email'?'email':'text');
+        if (tipo==='tel') i.inputMode='tel';
+        i.dataset.campo=id; i.placeholder=ph; i.value=S[id]||''; i.setAttribute('autocomplete','off');
+        i.oninput=()=>{
+          const v=fmt(i.value); if (tipo!=='email' && v!==i.value) i.value=v;
+          S[id]=v; nextBtn.disabled=!val(sc);
+          const e=el('fldErr'); if(e) e.style.display='none';
+        };
+        i.onblur=()=>{ if (typeof pintaCopiloto==='function') pintaCopiloto(); };
+        optsWrap.appendChild(i);
+      });
+      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=sc.hint; optsWrap.appendChild(h); }
+      const e=document.createElement('div'); e.className='fld-err'; e.id='fldErr'; e.textContent='Informe um telefone com DDD ou um email válido'; optsWrap.appendChild(e);
+    } else if (sc.kind==='nota'){
+      const t=document.createElement('textarea'); t.className='fld fld-nota'; t.rows=5; t.dataset.campo=sc.id;
+      t.placeholder='Opcional. Ex.: combinado retorno antecipado; orientação dada fora do protocolo.';
+      t.value=S[sc.id]||''; t.oninput=()=>{ S[sc.id]=t.value; };
+      optsWrap.appendChild(t);
+      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=sc.hint; optsWrap.appendChild(h); }
     } else if (sc.kind==='campos'){
       sc.fields.forEach(f=>{
         const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=f.label;
@@ -1239,7 +1350,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     pintaCopiloto();
     // sem paciente carregado não há módulo a mostrar: Panorama fica desativado
     const pbt = document.getElementById('panBtn');
-    if (pbt){ pbt.disabled = !temPaciente(); pbt.title = pbt.disabled ? 'Escolha ou identifique um paciente primeiro' : 'Ver todos os módulos'; }
+    // sem paciente não há módulo a mostrar: o botão nem aparece
+    if (pbt){ pbt.disabled = !temPaciente(); pbt.style.visibility = pbt.disabled ? 'hidden' : ''; }
     const painel = document.getElementById('painelCard');
     const cop = document.getElementById('copiloto');
     const bar = document.getElementById('barraAtual');
@@ -1307,12 +1419,21 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       paint();
     };
     document.getElementById('rbNovo').onclick = ()=>{ limpaSessao(); barra.style.display='none'; };
+    // confirmação na própria faixa: o confirm() nativo pode ser bloqueado pelo
+    // navegador, e aí o botão parecia não fazer nada
     document.getElementById('rbDescartar').onclick = ()=>{
-      if (!confirm('Descartar o atendimento interrompido de '+(cod||'este paciente')+'? Nada do que foi preenchido será guardado.')) return;
-      limpaSessao();
-      Object.keys(S).forEach(k=>delete S[k]);
-      barra.style.display='none';
-      build(); si=0; paint();
+      barra.innerHTML = '<span>Descartar o atendimento de <b>'+(cod||'paciente sem código')+'</b>? Nada do que foi preenchido será guardado.</span>'
+        + '<span class="rb-acoes"><button type="button" class="btn btn-primary" id="rbConfirma">Sim, descartar</button>'
+        + '<button type="button" class="btn btn-ghost" id="rbCancela">Cancelar</button></span>';
+      document.getElementById('rbCancela').onclick = ()=>ofereceRetomar();
+      document.getElementById('rbConfirma').onclick = ()=>{
+        limpaSessao();
+        const fila=S.fila, filaEstado=S.filaEstado;
+        Object.keys(S).forEach(k=>delete S[k]);
+        S.fila=fila; S.filaEstado=filaEstado;
+        prev=null; barra.style.display='none';
+        build(); si=0; paint(); mostrarQuiz();
+      };
     };
   }
 
@@ -1385,10 +1506,10 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     let h = '';
     h += '<h4>Identificação</h4><table>'
       + linhaFicha('Código', cod)
-      + linhaFicha('Iniciais', (f&&f.iniciais)||null)
+      + linhaFicha('Iniciais', escH(contatoAtual().iniciais||'')||null)
       + linhaFicha('Idade', (m.idade? m.idade+' anos':null))
-      + linhaFicha('Telefone', (f&&f.telefone)||null)
-      + linhaFicha('Email', (f&&f.email)||'<span class="pend">não informado</span>')
+      + linhaFicha('Telefone', escH(contatoAtual().telefone||'')||null)
+      + linhaFicha('Email', escH(contatoAtual().email||'')||'<span class="pend">não informado</span>')
       + linhaFicha('Medidas', (m.peso&&m.altura)? (m.peso+' kg · '+m.altura+' cm'+(m.imc?' · IMC '+m.imc:'')) : null)
       + '</table>';
 
@@ -1406,6 +1527,11 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
           +(f.satisfRelatada!=null?' · satisfação '+f.satisfRelatada+'/10':''):null)
       + linhaFicha('Sinalizou dúvida', (f&&f.revisar)?'<span class="pend">sim, revisar as respostas com ele</span>':null)
       + '</table>';
+
+    const hojeR = respostasDeHoje();
+    h += '<h4>Registrado neste atendimento</h4>' + (hojeR.length
+      ? '<table>'+hojeR.map(([a,b])=>'<tr><td>'+escH(a)+'</td><td>'+escH(b)+'</td></tr>').join('')+'</table>'
+      : '<p class="vazio">Nada respondido ainda neste atendimento.</p>');
 
     if (prev){
       h += '<h4>Protocolo em uso</h4><table>'
@@ -1472,6 +1598,32 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     const fechar = document.getElementById('fichaFechar');
     if (fechar) fechar.focus();
   }
+  // tudo o que já foi respondido nesta sessão, tela a tela, com o rótulo da opção
+  function respostasDeHoje(){
+    const tira = x => String(x==null?'':x).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    const rotOpt = (ops, v) => { const o=(ops||[]).find(o=>o.v===v); return o ? tira(o.label) : String(v); };
+    const un = id => (FAIXAS[id] && FAIXAS[id][3]) ? ' '+FAIXAS[id][3] : '';
+    const num = (id, v) => String(v).replace('.',',') + un(id);
+    const linhas=[];
+    (screens||[]).forEach(sc=>{
+      if (sc.plumb || ['visita','codigo','confirmHist'].indexOf(sc.id)>=0) return;
+      const q = tira(sc.short || sc.text), rot = q.length>90 ? q.slice(0,87)+'…' : q;
+      if (sc.kind==='campos'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), num(f.id,S[f.id])]); }); return; }
+      if (sc.kind==='grupo'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), rotOpt(f.options,S[f.id])]); }); return; }
+      if (sc.kind==='escalas'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), S[f.id]+'/10']); }); return; }
+      if (sc.kind==='contato'){ [['iniciais','Iniciais'],['telefone','Telefone'],['email','Email']].forEach(([k,r])=>{ if (preenchido(S[k])) linhas.push([r, S[k]]); }); return; }
+      if (sc.kind==='nota'){ if (preenchido(S[sc.id])) linhas.push(['Nota do atendimento', S[sc.id]]); return; }
+      const v=S[sc.id];
+      if (!preenchido(v) || (Array.isArray(v) && !v.length)) return;
+      let r;
+      if (sc.kind==='opts') r = Array.isArray(v) ? v.map(x=>rotOpt(sc.options,x)).join(', ') : rotOpt(sc.options,v);
+      else if (sc.kind==='scale') r = v+'/10';
+      else if (sc.kind==='num' || sc.kind==='text') r = num(sc.id, v);
+      else r = String(v);
+      linhas.push([rot, r]);
+    });
+    return linhas;
+  }
   function fechaFicha(){ const ov=document.getElementById('fichaOverlay'); if(ov) ov.style.display='none'; }
 
   // ---- vigia: invariantes conferidos a cada pintura ----
@@ -1494,7 +1646,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   }
   function verificaTelaAtual(sc){
     if (!sc) return;
-    const temAcao = optsWrap.querySelector('.opt, .gop, .scale button, input, select, .selnum')
+    const temAcao = optsWrap.querySelector('.opt, .gop, .scale button, input, select, textarea, .selnum')
                  || (nextBtn && !nextBtn.disabled);
     if (!temAcao) registraVigia('tela sem nenhuma ação possível ('+sc.id+')');
     const cop = document.getElementById('copiloto');
@@ -1572,7 +1724,12 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     const modDepois = modDeTela(screens[si]);
     paint();
     // terminou o módulo: avisa e volta ao panorama para escolher o próximo
+    // terminou um módulo: volta ao panorama com o próximo destacado. Se não
+    // sobrou nada obrigatório, segue direto para a nota de encerramento.
     if (modAntes!==undefined && modDepois!==modAntes && moduloCompleto(modAntes) && (S.codigo||S.daFila)){
+      const falta = screens.some(x=>!x.plumb && !x.optional && !val(x));
+      const nota = screens.findIndex(x=>x.id==='notaFinal');
+      if (!falta && nota>=0){ si = nota; paint(); return; }
       mostrarPanorama((MODS[modAntes]||{}).n);
     }
   }
@@ -1835,7 +1992,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   function rotuloBiotens(v){ v=+v; if(!(v>=0)) return ''; if (v<10) return 'abaixo de 10'; if (v<=20) return 'faixa 10 a 20'; return 'acima de 20'; }
 
   const MODS = [
-    {n:'Identifica\u00e7\u00e3o', ids:['origem','filaVazia','daFila','visita','codigo','confirmHist','trocarQueixa']},
+    {n:'Identifica\u00e7\u00e3o', ids:['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa']},
     {n:'Queixa e protocolo', ids:['queixa','confirma','confirmaEstavel','tempo','parceira','caracteriza','mast','matinal','previa','adequado','protAnt','formulasAnt','iciUso','iciAnt','iciAntDose','iciQual','iciQualidade','iciTempo','iciFreq','iciDoseAtual','refazer']},
     {n:'Antecedentes', ids:['comorb','comorbCtrl','comorbMed','contra','contraIoim','depre','adam','reversiveis','duasDosagens','sintomas','convive','contexto']},
     {n:'Medica\u00e7\u00f5es e alergias', ids:['medsRisco','alergia','parox','topico','freq','fert','querFilho','trtPrevio','contraind','pref','experiencia']},
@@ -1843,7 +2000,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       'i0','i1','i2','i3','i4','p0','p1','p2','p3','p4','p5','refazer','usarTotaisRec']},
     {n:'Exames', ids:['labs','tTotal','tLivre','shbg','lh','fsh','prolactina','estradiol','ht','psa','testo','biotens','idade','examesFeitos','tefiFeito','tefiResp','tefiDoppler','tefiConduta','tefiMed','tefiDose','t10grau','t20grau','doseComp','doseCompML','t30grau','tefiFinal','dorGrau','dorQuando','curvGrau','dopplerFeito','doppler','psv','edv','ir','iciFormula','iciDose']},
     {n:'Procedimento', ids:['tipoPenis','medPre','compFlac','diamFlac','prepucio','retracao','plano','previsaoML','planoBotox','concordou','termo','medPos','compPos','diamPos','mlUsado','botox','marcaAH','notaMedico','medRet','compRet','diamRet','retracaoRet','nodulos','notaMedicoRet','satisfPac','conduta','botoxUI','mlRetoque','marcaRetoque','aplicacao','mlHialuro']},
-    {n:'Escolha da conduta', ids:['escolha']}
+    {n:'Escolha da conduta', ids:['escolha','notaFinal']}
   ];
   const MOD_DE = {};
   MODS.forEach((m,k)=>m.ids.forEach(id=>{ MOD_DE[id]=k; }));
@@ -1907,17 +2064,15 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     gs.forEach((gr,k)=>{ if (primeiroPendente<0 && gr.telas.filter(t=>!t.sc.optional).some(t=>!val(t.sc))) primeiroPendente=k; });
     const fim = S.moduloConcluido ? '<div class="pan-fim">✓ Módulo concluído: '+S.moduloConcluido+'</div>' : '';
     p.innerHTML = fim + '<div class="pan-top"><span class="pan-cod">'+cod+'</span>'+tag
-      + '<button type="button" class="btn btn-primary pan-topo-btn" id="panSeguirTopo">Continuar o atendimento</button></div>'
+      + '<button type="button" class="btn btn-primary pan-topo-btn" id="panSeguir">Continuar o atendimento</button></div>'
       + '<p class="pan-sub">Caminho de revis\u00e3o sugerido, nesta ordem. Contorno verde: m\u00f3dulo completo. Toque em um m\u00f3dulo para abrir onde ele parou.</p>'
       + '<div class="pan-grid">'+cards+'</div>'
-      + '<div class="pan-cont"><button type="button" class="btn btn-primary" id="panSeguir">Continuar de onde parou</button>'
-      + '<button type="button" class="btn btn-ghost" id="panTrocar">Trocar de paciente</button></div>';
+      + '<div class="pan-cont"><button type="button" class="btn btn-ghost" id="panTrocar">Trocar de paciente</button></div>';
     if (primeiroPendente>=0){ const alvo=p.querySelectorAll('.pan-mod')[primeiroPendente]; if (alvo) alvo.classList.add('proximo'); }
     aplicaTooltips(p);
     [...p.querySelectorAll('.pan-mod')].forEach(b=>{
       b.onclick = ()=>{ S.moduloConcluido=null; si = Math.min(+b.dataset.ir, screens.length-1); mostrarQuiz(); };
     });
-    const contTopo = document.getElementById('panSeguirTopo');
     const troca = document.getElementById('panTrocar');
     if (troca) troca.onclick = ()=>{
       if (typeof limparPaciente==='function') limparPaciente(null, 'origem');
@@ -1928,7 +2083,6 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       paint();
     };
     const cont = document.getElementById('panSeguir');
-    if (contTopo) contTopo.onclick = ()=>{ if (cont) cont.click(); };
     if (cont) cont.onclick = ()=>{
       if (primeiroPendente>=0){
         const gr = grupos()[primeiroPendente];
@@ -2062,7 +2216,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (S.visita==='reav') tags.push((S.nReav?S.nReav+'\u00aa ':'')+'reavalia\u00e7\u00e3o');
     else if (S.visita==='primeira') tags.push('1\u00aa avalia\u00e7\u00e3o');
     if (f) tags.push('recep\u00e7\u00e3o '+(f.hora||''));
-    if (f && (f.iniciais||f.nome)) tags.push(String(f.iniciais||f.nome));
+    { const cc=contatoAtual(); if (cc.iniciais || (f&&f.nome)) tags.push(String(cc.iniciais||f.nome)); }
     if (S.revisarRec || (f&&f.revisar)) tags.push({t:'d\u00favida no question\u00e1rio',a:true});
 
     const B=[];
@@ -2070,9 +2224,11 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     const lin=(t,cls)=>'<span class="lin'+(cls?' '+cls:'')+'">'+t+'</span>';
 
     // contato
-    const ct=[];
-    if (f && f.telefone) ct.push(lin(f.telefone));
-    if (f && f.email) ct.push(lin(f.email)); else if (f) ct.push(lin('email n\u00e3o informado','ambar'));
+    const ct=[], cc=contatoAtual();
+    if (cc.telefone) ct.push(lin(escH(cc.telefone)));
+    if (cc.email) ct.push(lin(escH(cc.email)));
+    else if (f || cc.telefone) ct.push(lin('email n\u00e3o informado','ambar'));
+    if (!cc.telefone && !cc.email && S.codigoBuscado) ct.push(lin('contato n\u00e3o informado','ambar'));
     bloco('Contato', ct);
 
     // consulta anterior
@@ -2183,12 +2339,19 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   }
 
   async function carregarHistorico(origem){
-    S.hist = null; S.resumoHist = ''; S.tefiBanco = null;
+    S.hist = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null;
     S.codigoBuscado = norm(S.codigo);
     if (S.visita !== 'reav'){ prev = null; return; }
     S.tefiBanco = await buscarPorTipo(S.codigo,'tefi');
     const r = await carregarPaciente(S.codigo);
     prev = r ? r.ciclo : null; S.hist = r;
+    // contato do cadastro: o mais recente de cada campo, em qualquer registro
+    try{
+      const todos = (await Store.todosCiclos(norm(S.codigo)))||[];
+      const ord = todos.slice().sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
+      const ult = k => { for (let i=ord.length-1;i>=0;i--){ if (ord[i][k]) return ord[i][k]; } return null; };
+      S.contatoBanco = {iniciais:ult('iniciais'), telefone:ult('telefone'), email:ult('email')};
+    }catch(e){}
     if (r){
       const n = (r.total||0) + 1;
       const ult = new Date(r.ultimaData || r.ciclo.data);
@@ -2208,6 +2371,13 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     }
   }
 
+  // última tela de todo caminho: nota livre do médico, opcional, salva no registro
+  function telaNota(s){
+    if (!temPaciente()) return;
+    s.push({id:'notaFinal',kind:'nota',optional:true,step:'Encerramento',eyebrow:'Nota do atendimento',
+      text:'Deseja registrar alguma observação?',
+      hint:'Opcional. Fica salva junto com o registro do paciente e entra no texto do prontuário.'});
+  }
   function build(){
     const s=[];
     // abertura: sempre presente no fluxo, para a navegação não perder o lugar
@@ -2298,7 +2468,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       ph:'MX0001',
       hint: S.visita==='primeira'
         ? 'Sugerido automaticamente'+(S.codigoSug?' ('+S.codigoSug+')':'')+'. Pode ser alterado. Sem nome ou documento — a ligação com o paciente fica no prontuário.'
-        : 'Digite o código usado nas consultas anteriores.',
+        : 'Digite o código ou toque no campo para escolher na lista de pacientes.',
+      lista: S.visita==='reav',
       esperando: (S.visita==='reav' ? 'Buscando…' : null),
       after: async () => { await carregarHistorico('manual'); }});
 
@@ -2313,6 +2484,10 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         : [{v:'ok',badge:'✓',label:'Confirmar e continuar'},
            {v:'rever',badge:'↻',label:'Corrigir protocolo ou escores anteriores'}]});
     if (S.confirmHist==='rever') S.revisarCiclo='sim';
+    // contato: se a recepção não coletou e o cadastro não tem, registra-se aqui
+    if (temPaciente() && !contatoConhecido()) s.push({id:'contato',kind:'contato',step:'Abertura',eyebrow:'Identificação',
+      text:'Contato do paciente',
+      hint:'Não veio da recepção nem está no cadastro. Telefone ou email é obrigatório — é por aqui que orientações e receita são enviadas.'});
 
     if (MODE==='uni' && S.trocarQueixa==='sim' && !S.queixaConfirmada){ S.queixa=undefined; S.queixaConfirmada=true; }
     if (MODE==='uni' && S.filaAplicada && S.queixa && S.trocarQueixa!=='sim'){
@@ -2332,7 +2507,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     S.hasEP = MODE==='ep' || (MODE==='uni' && (S.queixa==='ep'||S.queixa==='ambos'));
     S.hasPre = (MODE==='uni' && S.queixa==='preench');
 
-    if (MODE==='uni' && (S.queixa==='uro'||S.queixa==='emag')){ screens=s; verificaContrato(screens); if(si>=screens.length) si=screens.length-1; return; }
+    if (MODE==='uni' && (S.queixa==='uro'||S.queixa==='emag')){ telaNota(s); screens=s; verificaContrato(screens); if(si>=screens.length) si=screens.length-1; return; }
     S.hasHipo = (MODE==='uni' && S.queixa==='hipo');
     if (S.hasHipo){
     s.push({id:'confirma',kind:'grupo',step:'Hipogonadismo',eyebrow:'Confirmação diagnóstica',
@@ -2418,7 +2593,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         options:[{v:'adiar',badge:'—',label:'Confirmo — adiar o início'}]});
     }
 
-      screens = s; verificaContrato(screens);
+      telaNota(s); screens = s; verificaContrato(screens);
       if (si>=screens.length) si=screens.length-1;
       return;
     }
@@ -2458,7 +2633,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         fields:[{id:'psv',label:'PSV — pico sistólico (cm/s)   ·   normal > 30',ph:'ex.: 34'},
                 {id:'edv',label:'EDV — diastólico final (cm/s)   ·   normal < 3',ph:'ex.: 2'},
                 {id:'ir',label:'IR — índice de resistividade   ·   normal > 0,80',ph:'ex.: 0,92'}]});
-      screens = s; verificaContrato(screens);
+      telaNota(s); screens = s; verificaContrato(screens);
       if (si>=screens.length) si=screens.length-1;
       return;
     }
@@ -2564,7 +2739,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
           hint:'Diluição padrão da clínica: 3.000 UI em 3 mL, ou seja 1.000 UI por mL.',
           list:['0,5 mL','1 mL','1,5 mL','2 mL','2,5 mL','3 mL']});
       }
-      screens = s; verificaContrato(screens);
+      telaNota(s); screens = s; verificaContrato(screens);
       if (si>=screens.length) si=screens.length-1;
       return;
     }
@@ -2870,7 +3045,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       const kc = (prev && prev.kitCodes) ? prev.kitCodes : [];
       S.parox = kc.indexOf('MOD-PAROX-20')>=0 ? 'sim' : 'nao';
     }
-    screens = s; verificaContrato(screens);
+    telaNota(s); screens = s; verificaContrato(screens);
     if (si>=screens.length) si=screens.length-1;
   }
 
@@ -3120,6 +3295,9 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 
   async function showResults(){
     const hoje=new Date().toLocaleDateString('pt-BR');
+    // o aviso de ISRS só aparece quando a prescrição associa paroxetina e
+    // clomipramina; em qualquer outro caminho ele fica escondido
+    { const a=el('avisoISRS'); if (a) a.style.display='none'; }
 
 
     if (S.hasHipo){
@@ -3749,8 +3927,6 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       return;
     }
 
-    const avISRS = el('avisoISRS');
-    if (avISRS) avISRS.style.display = S.hasEP ? '' : 'none';
     const iiefCompleto = Q_IIEF.every(q=>typeof S[q.id]==='number');
     const pedtCompleto = Q_PEDT.every(q=>typeof S[q.id]==='number');
     const sIIEF=S.hasDE?(iiefCompleto?Q_IIEF.reduce((a,q)=>a+S[q.id],0):(S.iiefTotalRec!=null?S.iiefTotalRec:null)):null;
@@ -4200,6 +4376,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (tefi) marc.push('TEFI a agendar');
     el('marcador').textContent = marc.join(' · ');
     el('recoLine').textContent=explicaSiglas(reco); el('recoText').textContent=explicaSiglas(recoText);
+    { const cs=kit.map(e=>Array.isArray(e)?e[0]:e), a=el('avisoISRS');
+      if (a) a.style.display = (cs.some(c=>/PAROX/.test(c)) && cs.some(c=>/^SP-DUO/.test(c))) ? '' : 'none'; }
     renderKit(kit);
     const CUS = custoDoCiclo(kit);
     const barras = '█'.repeat(CUS.idx) + '░'.repeat(10-CUS.idx);
@@ -4457,25 +4635,88 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   }
 
 
+  // Texto para colar no prontuário: identificação, dados clínicos, conduta com
+  // a composição de cada fórmula, pendências e a nota do médico. Sem racional
+  // nem explicações — esses ficam na tela e no relatório impresso.
+  // Impressão numa aba própria, só com o documento pedido. Funciona também onde
+  // o diálogo de impressão da página não abre (janelas embutidas, diálogos
+  // bloqueados): a aba fica aberta, pronta para imprimir ou salvar em PDF.
+  function imprimeEmAba(conteudo, titulo, classe){
+    if (!conteudo) return;
+    const w = window.open('', '_blank');
+    if (!w){ document.body.classList.add(classe); window.print(); setTimeout(()=>document.body.classList.remove(classe),400); return; }
+    const estilos = [...document.querySelectorAll('style')].map(n=>n.outerHTML).join('');
+    w.document.open();
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+escH(titulo)+'</title>'+estilos
+      + '<style>html,body{background:#fff!important;color:#101826}body{padding:10mm;margin:0}'
+      + 'body *{visibility:visible!important}.noprint,.ficha-top,button{display:none!important}'
+      + '.impresso{display:block!important;position:static!important;max-width:190mm;margin:0 auto}'
+      + '.impresso .ficha-doc,.ficha-doc.impresso{box-shadow:none;max-height:none;overflow:visible}</style></head>'
+      + '<body class="'+classe+'"><div class="impresso">'+conteudo.innerHTML+'</div></body></html>');
+    w.document.close();
+    w.focus();
+    setTimeout(()=>{ try{ w.print(); }catch(e){} }, 350);
+  }
+
   function montarTextoCopia(){
-    const lim = h => h.replace(/<br\s*\/?>/gi,'\n').replace(/<\/(p|div|tr|li|h4|h5)>/gi,'\n')
-                      .replace(/<li>/gi,'- ').replace(/<[^>]+>/g,'')
-                      .replace(/&nbsp;/g,' ').replace(/&middot;/g,'·').replace(/&mdash;/g,'—')
-                      .replace(/\n{3,}/g,'\n\n').replace(/[ \t]+\n/g,'\n').trim();
-    const partes=[];
-    partes.push('CLÍNICA MAXIMUS MEDICINA MASCULINA — TRIAGEM');
-    partes.push(el('classLabel').textContent);
-    const mc = el('marcador').textContent; if (mc) partes.push(mc);
-    partes.push('');
-    partes.push(el('recoLine').textContent);
-    partes.push(el('recoText').textContent);
-    const rep = lim(el('report').innerHTML);
-    if (rep) { partes.push(''); partes.push(rep); }
-    const rac = lim(el('racBox').innerHTML);
-    if (rac) { partes.push(''); partes.push('RACIONAL DA CONDUTA'); partes.push(rac); }
-    const nts = lim(el('altNote').innerHTML);
-    if (nts) { partes.push(''); partes.push('NOTAS E ALERTAS'); partes.push(nts); }
-    window.__textoCopia = partes.join('\n').replace(/\n{3,}/g,'\n\n');
+    const txt = n => (n ? n.textContent : '').replace(/\s+/g,' ').trim();
+    const tira = h => String(h||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&middot;/g,'·')
+                        .replace(/&mdash;/g,'—').replace(/\s+/g,' ').replace(/\s+([,.;:])/g,'$1').trim();
+    // só a primeira frase: o dado fica, a explicação sai
+    const frase1 = t => { const m = t.match(/^(.+?[.!?])\s+(?=[A-ZÀ-Ý])/); return m ? m[1] : t; };
+    const L = [];
+    L.push('MAXIMUS MEDICINA MASCULINA · ' + (norm(S.codigo)||'sem código') + ' · ' + new Date().toLocaleDateString('pt-BR'));
+    const cl = txt(el('classLabel')), mc = txt(el('marcador'));
+    // título todo em maiúsculas vira frase normal no prontuário
+    if (cl) L.push(cl===cl.toUpperCase() ? cl.charAt(0)+cl.slice(1).toLowerCase() : cl);
+    // o marcador às vezes repete código e data, que já estão no cabeçalho
+    const mcLimpo = mc.replace(/^Código\s+\S+\s*(·\s*\d{2}\/\d{2}\/\d{4}\s*)?(·\s*)?/,'').trim();
+    if (mcLimpo) L.push(mcLimpo);
+
+    // dados: tabelas do relatório como "Rótulo: valor"; seções de texto como lista
+    const MANTER = /^(Relatório da consulta|Registro da passagem|Relatório do teste|Protocolo prescrito|Cronograma laboratorial)$/;
+    const PULAR = /^(·|Código do paciente$|Data$|Custo estimado)/;
+    let secao = null, temPrescricao = false;
+    const dados = [], blocos = [];
+    [...el('report').children].forEach(n=>{
+      if (n.tagName==='H4'){ secao = txt(n); return; }
+      if (!secao || !MANTER.test(secao)) return;
+      if (n.tagName==='TABLE'){
+        const principal = /^(Relatório|Registro)/.test(secao);
+        if (!principal) blocos.push('', secao.toUpperCase());
+        [...n.querySelectorAll('tr')].forEach(tr=>{
+          const td=[...tr.children].map(txt);
+          if (!td[0] || PULAR.test(td[0])) return;
+          const v = frase1(td.slice(1).join(' '));
+          (principal ? dados : blocos).push(td.length>1 ? td[0]+': '+v : td[0]);
+        });
+        return;
+      }
+      const inteiro = secao==='Protocolo prescrito';
+      const itens = n.innerHTML.split(/<br\s*\/?>/i).map(tira).filter(Boolean)
+        .map(t=>'- '+(inteiro ? t : frase1(t)).replace(/^•\s*/,''));
+      if (!itens.length) return;
+      if (secao==='Protocolo prescrito') temPrescricao = true;
+      blocos.push('', secao.toUpperCase()); itens.forEach(t=>blocos.push(t));
+    });
+    if (dados.length){ L.push(''); dados.forEach(t=>L.push(t)); }
+    if (temPrescricao){ const rl = txt(el('recoLine')); if (rl){ L.push(''); L.push('CONDUTA: ' + rl); } }
+    blocos.forEach(t=>L.push(t));
+
+    // pendências: só a frase-título de cada alerta, e os itens de lista
+    const alertas = [];
+    [...el('altNote').querySelectorAll('p')].forEach(p=>{
+      const partes = p.innerHTML.split(/<br\s*\/?>/i).map(tira).filter(Boolean);
+      if (!partes.length) return;
+      const b = p.querySelector('b'), negrito = b ? txt(b) : '';
+      let cab = negrito.length>=25 ? negrito : partes[0].split(/(?<=[.!])\s/)[0];
+      alertas.push('- ' + cab.replace(/[:.]\s*$/,''));
+      partes.slice(1).filter(t=>/^•/.test(t)).forEach(t=>alertas.push('  ' + t.replace(/^•\s*/,'• ')));
+    });
+    if (alertas.length){ L.push(''); L.push('PENDÊNCIAS E ALERTAS'); alertas.forEach(t=>L.push(t)); }
+
+    if (preenchido(S.notaFinal)){ L.push(''); L.push('NOTA DO MÉDICO'); L.push(String(S.notaFinal).trim()); }
+    window.__textoCopia = L.join('\n').replace(/\n{3,}/g,'\n\n').trim();
   }
 
   el('copyBtn').onclick = async () => {
@@ -4493,12 +4734,11 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       setTimeout(()=>b.textContent='Copiar relatório para o prontuário',3000);
     }
   };
-  el('termoBtn').onclick=()=>{document.body.classList.add('pt');window.print();setTimeout(()=>document.body.classList.remove('pt'),400);};
-  el('posBtn').onclick=()=>{document.body.classList.add('po');window.print();setTimeout(()=>document.body.classList.remove('po'),400);};
-  el('termoBtn').onclick=()=>{document.body.classList.add('pt');window.print();setTimeout(()=>document.body.classList.remove('pt'),400);};
+  el('posBtn').onclick=()=>imprimeEmAba(el('printPos'),'Orientações pós-procedimento','po');
+  el('termoBtn').onclick=()=>imprimeEmAba(el('printTermo'),'Termo de consentimento','pt');
 
-  el('printBtn').onclick=()=>{document.body.classList.add('pc');window.print();setTimeout(()=>document.body.classList.remove('pc'),400);};
-  el('printPacBtn').onclick=()=>{document.body.classList.add('pp');window.print();setTimeout(()=>document.body.classList.remove('pp'),400);};
+  el('printBtn').onclick=()=>imprimeEmAba(el('printArea'),'Relatório da clínica — '+norm(S.codigo||''),'pc');
+  el('printPacBtn').onclick=()=>imprimeEmAba(el('printPaciente'),'Orientações do paciente','pp');
   el('restartBtn').onclick=()=>{
     Object.keys(S).forEach(k=>delete S[k]);
     si=0; prev=null; resultsCard.style.display='none';
@@ -4519,7 +4759,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     const fFechar = document.getElementById('fichaFechar');
     if (fFechar) fFechar.onclick = ()=>fechaFicha();
     const fImp = document.getElementById('fichaImprimir');
-    if (fImp) fImp.onclick = ()=>window.print();
+    if (fImp) fImp.onclick = ()=>imprimeEmAba(document.querySelector('.ficha-doc'), (document.getElementById('fichaTitulo')||{}).textContent||'Ficha do paciente', 'pf');
     const fCop = document.getElementById('fichaCopiar');
     if (fCop) fCop.onclick = ()=>{
       const t=(document.getElementById('fichaCorpo').innerText||'');

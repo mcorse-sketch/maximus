@@ -123,6 +123,7 @@ class Servidor(unittest.TestCase):
             ("GET", "/api/triagens-hoje", None, {"medico": 200, "recepcao": 200, "financeiro": 200}),
             ("GET", "/api/historico/MX0001", None, {"medico": 200, "recepcao": 200, "financeiro": 200}),
             ("GET", "/api/proximo-codigo", None, {"medico": 200, "recepcao": 200, "financeiro": 403}),
+            ("GET", "/api/pacientes", None, {"medico": 200, "recepcao": 200, "financeiro": 403}),
             ("GET", "/api/export", None, {"medico": 200, "recepcao": 403, "financeiro": 403}),
             ("POST", "/api/ciclo", {"codigo": "MX0100", "tipo": "primeira", "linha": "DE"},
              {"medico": 200, "recepcao": 403, "financeiro": 403}),
@@ -159,6 +160,12 @@ class Servidor(unittest.TestCase):
         clin = [c for c in j["ciclos"] if c["tipo"] != "recepcao"][0]
         self.assertEqual(clin["notasMedicas"][0]["texto"], "retorno em 60 dias")
         self.assertEqual(self.req("PUT", "/api/triagem/MX0200/nota", {"nota": "x"}, token=self.tok["recepcao"])[0], 403)
+        # lista de pacientes para o retorno: iniciais mais recentes, contagem clinica
+        self.req("POST", "/api/ciclo", {"codigo": "MX0200", "tipo": "recepcao", "linha": "recepcao",
+                                        "iniciais": "RAM", "dataLocal": hoje}, token=self.tok["recepcao"])
+        st, j = self.req("GET", "/api/pacientes", token=m)
+        p = [x for x in j["pacientes"] if x["codigo"] == "MX0200"][0]
+        self.assertEqual((p["iniciais"], p["clinicos"]), ("RAM", 1))
 
     def test_pagina_inexistente_responde_404(self):
         # o log quebrava ao registrar o erro e a conexao caia sem resposta

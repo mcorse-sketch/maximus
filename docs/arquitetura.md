@@ -84,6 +84,7 @@ Rotas com senha, por perfil (`PERMISSOES` no servidor):
 |---|---|---|---|
 | `/api/paciente/<cod>`, `/api/historico/<cod>`, `/api/triagens-hoje` | ✓ | ✓ | ✓ |
 | `/api/proximo-codigo` | ✓ | ✓ | — |
+| `/api/pacientes` (lista para o retorno: código, iniciais, última data) | ✓ | ✓ | — |
 | `POST /api/ciclo` | ✓ | só `tipo` e `linha` = `recepcao` | — |
 | `PUT /api/triagem/<cod>/nota`, `/api/export` | ✓ | — | — |
 

@@ -72,7 +72,7 @@ function fakeDb(m) {
   checa.push(['sem paciente, o questionario ocupa a largura toda', !!linha0 && !linha0.classList.contains('com-painel')]);
   checa.push(['sem paciente, o painel nem aparece', !painel0 || painel0.style.display === 'none']);
   const pan0 = doc.getElementById('panBtn');
-  checa.push(['sem paciente, o botao panorama fica desativado', !!pan0 && pan0.disabled]);
+  checa.push(['sem paciente, o botao panorama fica desativado e escondido', !!pan0 && pan0.disabled && pan0.style.visibility === 'hidden']);
   doc.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
   checa.push(['sem paciente, Esc nao abre o panorama', doc.getElementById('panoramaCard').style.display !== 'block']);
   const fila = opts().find(b => /fila/i.test(b.textContent));
@@ -156,7 +156,7 @@ function fakeDb(m) {
     pb0.click(); await espera(60);
     const card0 = doc.getElementById('panoramaCard');
     checa.push(['panorama marca o proximo modulo', !!card0 && !!card0.querySelector('.pan-mod.proximo')]);
-    checa.push(['panorama repete o continuar no topo', !!card0 && !!card0.querySelector('#panSeguirTopo')]);
+    checa.push(['panorama tem um unico continuar, no topo', !!card0 && card0.querySelectorAll('#panSeguir').length === 1 && !!card0.querySelector('.pan-top #panSeguir') && !card0.querySelector('#panSeguirTopo')]);
     const mods0 = card0 ? [...card0.querySelectorAll('.pan-mod')] : [];
     if (mods0.length) { mods0[mods0.length - 1].click(); await espera(80); }
     const telaModulo = (doc.getElementById('qText') || {}).textContent || '';
