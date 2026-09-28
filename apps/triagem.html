@@ -28,6 +28,16 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 .ficha-corpo td{padding:5px 8px 5px 0;vertical-align:top;border-bottom:1px solid #f0efea}
 .ficha-corpo td:first-child{color:#6b6a66;width:38%}
 .ficha-corpo .vazio{color:#6b6a66}
+.hist-btn{position:fixed;right:18px;bottom:18px;z-index:70;display:inline-flex;align-items:center;gap:8px;
+  font:inherit;font-size:14px;font-weight:600;padding:11px 16px;border-radius:999px;border:0;cursor:pointer;
+  background:#0e5e6f;color:#fff;box-shadow:0 8px 24px rgba(10,20,26,.28)}
+.hist-btn:hover{background:#0b4c5a}
+.hist-btn:focus-visible{outline:3px solid rgba(14,94,111,.35);outline-offset:2px}
+.hist-btn .n{background:rgba(255,255,255,.2);border-radius:999px;padding:1px 8px;font-size:12.5px}
+.hist-visita{margin-top:18px;padding-top:10px;border-top:2px solid #e2e0da}
+.hist-visita h5{margin:0 0 4px;font-size:14.5px;color:#141413}
+.hist-visita h5 .sub{font-weight:400;color:#6b6a66;font-size:13px}
+.hist-visita .nota{margin:6px 0 0;padding:8px 10px;background:#f6f5f1;border-radius:8px;white-space:pre-wrap}
 .ficha-corpo .pend{color:#8a5a0b}
 @media print{ .ficha-overlay{position:static;background:none;padding:0} .ficha-top{display:none} }
 .lista-pac{margin-top:6px;max-height:280px;overflow-y:auto;border:1px solid #d9d4c7;border-radius:10px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.08)}
@@ -109,7 +119,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 #envioBox .canal button{font:inherit;font-size:13px;padding:9px 13px;border-radius:9px;border:1px solid #b9c4c6;background:#fff;cursor:pointer}
 #envioBox .aviso{font-size:12.5px;color:#8a5a0b}
 </style></head><body>
-<title>Triagem Unificada Maximus</title>
+<title>Painel de atendimento Maximus</title>
 <style>
   :root{
     --navy-900:#0D1B2A;
@@ -489,8 +499,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     <span class="sub">Medicina Masculina</span>
   </div>
   <div class="tool-title">
-    <div class="t1">Triagem unificada</div>
-    <div class="t2">Disfun&ccedil;&atilde;o er&eacute;til &middot; Ejacula&ccedil;&atilde;o precoce</div>
+    <div class="t1">Painel de atendimento Maximus</div>
+    <div class="t2" id="versaoApp" data-versao="2.1.0">Vers&atilde;o 2.1.0 &middot; 27/09/2026</div>
   </div>
 </header>
 
@@ -704,6 +714,20 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         <div class="ficha-corpo" id="fichaCorpo"></div>
       </div>
     </div>
+    <div class="ficha-overlay" id="histOverlay" style="display:none;">
+      <div class="ficha-doc" role="dialog" aria-modal="true" aria-label="Histórico de atendimentos do paciente">
+        <div class="ficha-top">
+          <span id="histTitulo">Histórico do paciente</span>
+          <span class="ficha-acoes">
+            <button type="button" class="btn btn-ghost" id="histCopiar">Copiar</button>
+            <button type="button" class="btn btn-ghost" id="histImprimir">Imprimir</button>
+            <button type="button" class="btn btn-primary" id="histFechar">Fechar</button>
+          </span>
+        </div>
+        <div class="ficha-corpo" id="histCorpo"></div>
+      </div>
+    </div>
+    <button type="button" class="hist-btn noprint" id="histBtn" title="Resumo de todos os atendimentos anteriores (tecla H)" style="display:none;">Histórico do paciente</button>
     <div class="retomar" id="retomarBar" style="display:none;"></div>
     <div class="erro-global" id="erroGlobal" style="display:none;"></div>
     <div class="linha" id="linhaQuiz">
@@ -1372,6 +1396,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     verificaTelaAtual(sc);
     const btnFicha = document.getElementById('fichaBtn');
     if (btnFicha) btnFicha.style.display = (S.codigo||S.daFila) ? 'inline-flex' : 'none';
+    atualizaBotaoHist();
     if (temPainel){ aplicaTooltips(cop); aplicaTooltips(bar); }
     aplicaTooltips(document.getElementById('optsWrap'));
     const pOpen = document.getElementById('panoramaCard');
@@ -1626,6 +1651,198 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   }
   function fechaFicha(){ const ov=document.getElementById('fichaOverlay'); if(ov) ov.style.display='none'; }
 
+  // ---- histórico: todos os atendimentos anteriores num documento só ----
+  // Só dados, em ordem cronológica: data, tipo, escores, conduta com composição,
+  // exames, nota do médico. Antecedentes aparecem na primeira visita e depois só
+  // quando mudam. Nada de racional ou explicação.
+  function temHistorico(){ return !!(S.hist && norm(S.codigo) && S.visita==='reav' && S.codigoBuscado===norm(S.codigo)); }
+  function atualizaBotaoHist(){
+    const b = document.getElementById('histBtn'); if (!b) return;
+    b.style.display = temHistorico() ? 'inline-flex' : 'none';
+  }
+  const ROT_HIST = {
+    tempo:{curto:'menos de 3 meses',medio:'entre 3 e 6 meses',longo:'mais de 6 meses'},
+    parceria:{fixa:'parceria fixa',eventual:'parcerias eventuais',sem:'sem atividade sexual no momento'},
+    frequencia:{alta:'2 ou mais relações por semana',baixa:'menos de 2 relações por semana'},
+    adesao:{total:'regular',parcial:'falhas ocasionais',baixa:'falhas frequentes',parou:'interrompeu'},
+    ea:{nao:'nenhum',leve:'leves, toleráveis',atrap:'atrapalharam o uso'},
+    comorbControle:{sim:'controladas',parcial:'parcialmente controladas',nao:'não controladas'},
+    previaTrat:{nunca:'nunca usou inibidor de PDE5',func:'inibidor de PDE5 funcionou',falhou:'inibidor de PDE5 não funcionou'},
+    nodulos:{nao:'ausentes',leve:'discretos',sim:'evidentes'},
+    conduta:{nada:'acompanhamento',retoque:'retoque com ácido hialurônico',hialuro:'hialuronidase',botox:'toxina botulínica'},
+    curvatura:{nao:'ausente',leve:'leve',mod:'moderada',extrema:'extrema'}
+  };
+  function rotLista(lista, cat){
+    const arr = (lista||[]).filter(v=>v && v!=='nenhuma' && v!=='nenhum');
+    return arr.map(v=>{ const o=cat.find(x=>x.v===v); return o ? o.label : v; }).join('; ');
+  }
+  // o ciclo clínico não grava a linha: ela sai do prefixo do protocolo
+  function linhaDoCiclo(c){
+    if (c.linha) return rotuloLinha(c.linha);
+    const m = String(c.protocolo||'').match(/^(DE|EP|DUO)-/);
+    return m ? rotuloLinha(m[1]) : null;
+  }
+  function dataDoCiclo(c){ return c.dataBR || (c.data ? new Date(c.data).toLocaleDateString('pt-BR') : '—'); }
+  function tipoDoCiclo(c){
+    if (c.tipo==='primeira') return 'Primeira avaliação';
+    if (c.tipo==='reavaliacao') return (c.numeroReavaliacao ? c.numeroReavaliacao+'ª reavaliação' : 'Reavaliação');
+    if (c.tipo==='preench-inicial') return 'Preenchimento peniano — procedimento';
+    if (c.tipo==='preench-retorno') return 'Preenchimento peniano — retorno';
+    if (c.tipo==='tefi') return 'TEFI com Doppler';
+    if (c.tipo==='hipogonadismo') return 'Hipogonadismo';
+    if (c.tipo==='emagrecimento') return 'Emagrecimento';
+    if (c.tipo==='urologia') return 'Consulta urológica';
+    return rotuloLinha(c.linha||c.tipo);
+  }
+  function formulasDoCiclo(c){
+    return (c.kitCodes||[]).filter(k=>!['TEFI','LABS'].includes(k))
+      .map(k=>{ const comp=compoTxt(k); return escH(k)+(comp?' <span class="vazio">('+escH(comp)+')</span>':''); }).join('<br>');
+  }
+  function labsDoCiclo(l){
+    if (!l) return '';
+    return [['tTotal','T total'],['tLivre','T livre'],['lh','LH'],['fsh','FSH'],['estradiol','estradiol'],['prolactina','prolactina']]
+      .filter(([k])=>preenchido(l[k])).map(([k,r])=>r+' '+escH(l[k])).join(' · ');
+  }
+  function blocoCiclo(c, ant){
+    const R = ROT_HIST, lin = [];
+    const mudou = k => !ant || JSON.stringify(ant[k]||null)!==JSON.stringify(c[k]||null);
+    const add = (r,v) => { if (v!=null && v!=='') lin.push(linhaFicha(r, v)); };
+    const clinico = c.tipo==='primeira' || c.tipo==='reavaliacao';
+    if (clinico){
+      if (c.iief!=null) add('IIEF-5', c.iief+' <span class="vazio">('+faixaIief(c.iief)+')</span>');
+      if (c.pedt!=null) add('PEDT', c.pedt+' <span class="vazio">('+faixaPedt(c.pedt)+')</span>');
+      if (c.tipo==='reavaliacao'){
+        add('Adesão', R.adesao[c.adesao]||c.adesao||null);
+        if (c.ea) add('Efeitos adversos', (R.ea[c.ea]||c.ea) + ((c.eaQuais||[]).length ? ': '+escH(rotLista(c.eaQuais, EA)) : ''));
+        if (c.satisf!=null) add('Satisfação', c.satisf+'/10');
+        if (c.iciCasa) add('Intracavernosa em casa', [c.iciCasa.qualidade!=null?'qualidade '+escH(c.iciCasa.qualidade):null,
+          c.iciCasa.tempo?'duração '+escH(c.iciCasa.tempo):null, c.iciCasa.dose?'dose '+escH(c.iciCasa.dose):null].filter(Boolean).join(' · ')||null);
+      }
+      const adamSel = (c.adam||[]).filter(v=>v!=='nenhum');
+      if ((c.adam||[]).length && mudou('adam'))
+        add('ADAM', (c.adamPositivo?'positivo':'negativo') + (adamSel.length?' — '+escH(rotLista(adamSel, ADAM)):''));
+      if (c.tempo && mudou('tempo')) add('Tempo de queixa', R.tempo[c.tempo]||c.tempo);
+      if (c.parceria && mudou('parceria')) add('Parceria', R.parceria[c.parceria]||c.parceria);
+      if (c.frequencia && mudou('frequencia')) add('Frequência', R.frequencia[c.frequencia]||c.frequencia);
+      if (mudou('comorbidades') || mudou('comorbControle')){
+        const co = rotLista(c.comorbidades, COMORB);
+        if (co || ant) add('Comorbidades', co ? escH(co)+(c.comorbControle?' · '+(R.comorbControle[c.comorbControle]||c.comorbControle):'') : 'nenhuma');
+      }
+      if (mudou('medsRisco')){ const m = rotLista(c.medsRisco, MEDS); if (m || ant) add('Medicações de risco', m ? escH(m) : 'nenhuma'); }
+      if (mudou('alergias')){ const a = rotLista(c.alergias, ALERG); if (a || ant) add('Alergias', a ? escH(a) : 'nenhuma conhecida'); }
+      if (c.contraCV==='sim' && mudou('contraCV')) add('Contraindicação cardiovascular a PDE5', '<span class="pend">sim</span>');
+      if (c.psiquiatrico==='sim' && mudou('psiquiatrico')) add('Antecedente psiquiátrico', '<span class="pend">sim</span>');
+      if (c.fertilidade==='sim' && mudou('fertilidade')) add('Deseja engravidar em 12 meses', 'sim');
+      if (c.previaTrat && mudou('previaTrat')) add('Tratamento prévio', R.previaTrat[c.previaTrat]||c.previaTrat);
+      if (c.biotens!=null) add('Biotensiômetro', escH(c.biotens));
+      if (c.medidasRecepcao && c.medidasRecepcao.peso)
+        add('Medidas', c.medidasRecepcao.peso+' kg'+(c.medidasRecepcao.imc?' · IMC '+c.medidasRecepcao.imc:''));
+      add('Laboratório', labsDoCiclo(c.labs) || null);
+      if (c.tipo==='reavaliacao' && c.mudanca && c.mudanca!=='manter')
+        add('Mudança de conduta', escH(explicaSiglas(String(c.mudanca))));
+      add('Protocolo', c.protocolo ? escH(explicaSiglas(String(c.protocolo))) : null);
+      add('Fórmulas', formulasDoCiclo(c) || null);
+      const ped = [c.examesSolicitados?'perfil hormonal':null, c.tefiIndicado?'TEFI com Doppler':null].filter(Boolean);
+      if (ped.length) add('Solicitado', ped.join(' · '));
+      if (c.ondasIndicado) add('Ondas de choque', 'no protocolo');
+      else if (c.ondasOpcional) add('Ondas de choque', 'oferta complementar');
+    } else if (c.tipo==='tefi' && c.tefiExame){
+      const t = c.tefiExame;
+      add('Fármaco e dose', [t.farmaco, t.dose, t.doseComp?('complementar '+t.doseComp):null].filter(Boolean).map(escH).join(' · ')||null);
+      add('Tumescência 10 / 20 / 30 min', [t.g10,t.g20,t.g30].map(g=>g==null?'—':g).join(' / '));
+      add('Critério EAU', t.eau==null ? null : (t.eau?'atendido':'não atendido'));
+      if (t.dorGrau!=null) add('Dor', 'grau '+escH(t.dorGrau));
+      if (t.curvatura) add('Curvatura', R.curvatura[t.curvatura]||escH(t.curvatura));
+      add('Doppler', [t.psv!=null?'PSV '+t.psv+' cm/s':null, t.edv!=null?'EDV '+t.edv+' cm/s':null, t.ir!=null?'IR '+t.ir:null].filter(Boolean).join(' · ')||null);
+      add('Suspeita', t.suspeita ? escH(t.suspeita) : null);
+      add('Conduta', c.protocolo ? escH(explicaSiglas(String(c.protocolo))) : null);
+    } else if (c.linha==='preenchimento' && c.preench){
+      const p = c.preench;
+      if (c.tipo==='preench-inicial'){
+        const gC = ganhoPreench(p.compFlac, p.compPos), gD = ganhoPreench(p.diamFlac, p.diamPos);
+        add('Comprimento', p.compFlac ? (p.compFlac+(p.compPos?' → '+p.compPos:'')+' cm'+(gC?' · '+gC.txt:'')) : null);
+        add('Circunferência', p.diamFlac ? (p.diamFlac+(p.diamPos?' → '+p.diamPos:'')+' cm'+(gD?' · '+gD.txt:'')) : null);
+        add('Produto', p.mlUsado ? escH(p.mlUsado+' de '+(p.marca||'produto não registrado')) : null);
+        if (p.botoxUI) add('Toxina botulínica', escH(p.botoxUI));
+      } else {
+        add('Medida no retorno', [p.compRet?'comprimento '+p.compRet+' cm':null, p.diamRet?'circunferência '+p.diamRet+' cm':null].filter(Boolean).join(' · ')||null);
+        if (p.nodulos) add('Nódulos', R.nodulos[p.nodulos]||escH(p.nodulos));
+        if (p.notaMedicoRet!=null) add('Impressão do médico', p.notaMedicoRet+'/10');
+        if (p.satisfPaciente!=null) add('Satisfação do paciente', p.satisfPaciente+'/10');
+        if (p.conduta) add('Conduta', (R.conduta[p.conduta]||escH(p.conduta))
+          + (p.retoqueML?' · '+escH(p.retoqueML+' de '+(p.retoqueMarca||'produto não registrado')):'')
+          + (p.hialuronidase?' · '+escH(p.hialuronidase):''));
+      }
+      if (!p.conduta) add('Protocolo', c.protocolo ? escH(c.protocolo) : null);
+    } else if (c.tipo==='hipogonadismo' && c.hipo){
+      const h = c.hipo;
+      add('Laboratório', [h.tTotal?'T total '+escH(h.tTotal):null, h.lh?'LH '+escH(h.lh):null,
+        h.ht?'Ht '+escH(h.ht):null, h.psa?'PSA '+escH(h.psa):null].filter(Boolean).join(' · ')||null);
+      if (h.trtPrevio) add('Testosterona prévia', escH(h.trtPrevio));
+      add('Conduta', c.protocolo ? escH(explicaSiglas(String(c.protocolo))) : null);
+      if (h.via) add('Formulação', escH((FORM_H[h.via] && FORM_H[h.via].nome) || h.via));
+    } else {
+      add('Conduta', c.protocolo ? escH(c.protocolo) : null);
+    }
+    let h = lin.length ? '<table>'+lin.join('')+'</table>' : '';
+    const notas = [];
+    if (preenchido(c.notaAtendimento)) notas.push(String(c.notaAtendimento).trim());
+    (c.notasMedicas||[]).forEach(n=>{ if (n && preenchido(n.texto)) notas.push(String(n.texto).trim()); });
+    notas.forEach(n=>{ h += '<p class="nota"><b>Nota do médico:</b> '+escH(n)+'</p>'; });
+    return h;
+  }
+  async function abreHistorico(){
+    const ov = document.getElementById('histOverlay'), corpo = document.getElementById('histCorpo');
+    if (!ov || !corpo) return;
+    const cod = norm(S.codigo||'');
+    const ini = contatoAtual().iniciais;
+    document.getElementById('histTitulo').textContent = 'Histórico do paciente ' + (cod||'—') + (ini ? ' · '+ini : '');
+    corpo.innerHTML = '<p class="vazio">Carregando os atendimentos…</p>';
+    ov.style.display = 'flex';
+    let ciclos = [];
+    if (cod){ try{ ciclos = await Store.todosCiclos(cod); }catch(e){ ciclos = []; } }
+    const clin = ciclos.filter(c=>Store.ehClinico(c))
+      .sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
+    if (!clin.length){ corpo.innerHTML = '<p class="vazio">Nenhum atendimento anterior registrado para '+escH(cod)+'.</p>'; return; }
+
+    const prim = clin[0], ult = clin[clin.length-1];
+    const dias = ult.data ? Math.max(0, Math.round((Date.now()-new Date(ult.data).getTime())/86400000)) : null;
+    const linhas = [...new Set(clin.map(linhaDoCiclo).filter(Boolean))];
+    const prots = [];
+    clin.filter(c=>c.tipo==='primeira'||c.tipo==='reavaliacao').forEach(c=>{
+      if (c.protocolo && prots[prots.length-1]!==c.protocolo) prots.push(c.protocolo); });
+    const serie = k => clin.filter(c=>c[k]!=null).map(c=>c[k]+' <span class="vazio">('+dataDoCiclo(c)+')</span>').join(' → ');
+
+    let h = '<h4>Síntese</h4><table>'
+      + linhaFicha('Primeira visita', dataDoCiclo(prim))
+      + linhaFicha('Última visita', dataDoCiclo(ult) + (dias!=null ? ' <span class="vazio">(há '+dias+' dia'+(dias===1?'':'s')+')</span>' : ''))
+      + linhaFicha('Atendimentos registrados', String(clin.length))
+      + linhaFicha('Linhas de tratamento', linhas.length ? linhas.join(' · ') : null)
+      + linhaFicha('Sequência de protocolos', prots.length ? escH(explicaSiglas(prots.join(' → '))) : null)
+      + linhaFicha('IIEF-5', serie('iief') || null)
+      + linhaFicha('PEDT', serie('pedt') || null)
+      + '</table>';
+
+    h += '<h4>Atendimentos, do mais antigo ao mais recente</h4>';
+    let antClin = null, antData = null;
+    clin.forEach((c, i)=>{
+      const intervalo = (antData && c.data) ? Math.round((new Date(c.data)-new Date(antData))/86400000) : null;
+      const clinico = c.tipo==='primeira' || c.tipo==='reavaliacao';
+      h += '<div class="hist-visita"><h5>'+(i+1)+'. '+dataDoCiclo(c)+' · '+escH(tipoDoCiclo(c))
+        + (clinico && linhaDoCiclo(c) ? ' · '+escH(linhaDoCiclo(c)) : '')
+        + (intervalo!=null ? ' <span class="sub">('+intervalo+' dia'+(intervalo===1?'':'s')+' após o anterior)</span>' : '')
+        + '</h5>' + (blocoCiclo(c, clinico ? antClin : null) || '<p class="vazio">Sem dados registrados.</p>') + '</div>';
+      if (clinico) antClin = c;
+      if (c.data) antData = c.data;
+    });
+
+    corpo.innerHTML = h;
+    aplicaTooltips(corpo);
+    const fechar = document.getElementById('histFechar');
+    if (fechar) fechar.focus();
+  }
+  function fechaHistorico(){ const ov=document.getElementById('histOverlay'); if(ov) ov.style.display='none'; }
+
   // ---- vigia: invariantes conferidos a cada pintura ----
   window.__mxVigia = [];
   function registraVigia(msg){
@@ -1819,6 +2036,24 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     {v:'opioide', label:'Opioide de uso contínuo', nota:'Opioides crônicos causam hipogonadismo. Dosar testosterona total e livre e LH.'},
     {v:'espiro', label:'Espironolactona', nota:'Efeito antiandrogênico direto. Discutir troca com o prescritor.'},
     {v:'nenhuma', label:'Nenhuma das anteriores', nota:''},
+  ];
+
+  const COMORB = [
+    {v:'has', label:'Hipertensão arterial'}, {v:'dm', label:'Diabetes'},
+    {v:'disl', label:'Dislipidemia'}, {v:'vasc', label:'Doença coronariana ou arterial periférica'},
+    {v:'tabag', label:'Tabagismo atual'}, {v:'obes', label:'Obesidade'},
+    {v:'alcool', label:'Álcool em quantidade relevante'}, {v:'drogas', label:'Drogas recreacionais'},
+    {v:'nenhuma', label:'Nenhuma das anteriores'},
+  ];
+  const ALERG = [
+    {v:'tada', label:'Tadalafila ou outro inibidor de PDE5'},
+    {v:'clomi', label:'Clomipramina ou outro tricíclico'},
+    {v:'parox', label:'Paroxetina ou outro ISRS'},
+    {v:'dapo', label:'Dapoxetina'},
+    {v:'anest', label:'Lidocaína, prilocaína ou benzocaína'},
+    {v:'ioim', label:'Ioimbina'},
+    {v:'fito', label:'Algum fitoterápico da fórmula'},
+    {v:'nenhuma', label:'Nenhuma alergia conhecida'},
   ];
 
   const OPT_IIEF=[{v:0,label:'Sem atividade sexual'},{v:1,label:'Quase nunca / nunca'},{v:2,label:'Poucas vezes'},{v:3,label:'Algumas vezes'},{v:4,label:'Na maioria das vezes'},{v:5,label:'Quase sempre / sempre'}];
@@ -2966,11 +3201,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         options:[{v:'fixa',badge:'✓',label:'Sim, parceria fixa'},{v:'eventual',badge:'~',label:'Não, parcerias eventuais'},{v:'sem',badge:'—',label:'Sem atividade sexual no momento'}]});
       s.push({id:'comorb',kind:'opts',multi:true,step:D,eyebrow:'Comorbidades',
         text:'O paciente tem alguma destas condições? (marque todas)',
-        options:[{v:'has',badge:'•',label:'Hipertensão arterial'},{v:'dm',badge:'•',label:'Diabetes'},
-                 {v:'disl',badge:'•',label:'Dislipidemia'},{v:'vasc',badge:'•',label:'Doença coronariana ou arterial periférica'},
-                 {v:'tabag',badge:'•',label:'Tabagismo atual'},{v:'obes',badge:'•',label:'Obesidade'},
-                 {v:'alcool',badge:'•',label:'Álcool em quantidade relevante'},{v:'drogas',badge:'•',label:'Drogas recreacionais'},
-                 {v:'nenhuma',badge:'—',label:'Nenhuma das anteriores'}]});
+        options:COMORB.map(c=>({v:c.v,badge:c.v==='nenhuma'?'—':'•',label:c.label}))});
       if ((S.comorb||[]).filter(v=>v!=='nenhuma').length){
         s.push({id:'comorbCtrl',kind:'opts',step:D,eyebrow:'Comorbidades',
           text:'As condições marcadas estão bem controladas?',
@@ -2983,14 +3214,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         text:'Usa alguma destas medicações? (marque todas)', options:MEDS.map(m=>({v:m.v,badge:'•',label:m.label}))});
       if (!pularEst) s.push({id:'alergia',kind:'opts',multi:true,step:D,eyebrow:'Alergias',
       text:'O paciente tem alergia conhecida a algum destes? (marque todos; se nenhum, marque a última opção)',
-      options:[{v:'tada',badge:'•',label:'Tadalafila ou outro inibidor de PDE5'},
-               {v:'clomi',badge:'•',label:'Clomipramina ou outro tricíclico'},
-               {v:'parox',badge:'•',label:'Paroxetina ou outro ISRS'},
-               {v:'dapo',badge:'•',label:'Dapoxetina'},
-               {v:'anest',badge:'•',label:'Lidocaína, prilocaína ou benzocaína'},
-               {v:'ioim',badge:'•',label:'Ioimbina'},
-               {v:'fito',badge:'•',label:'Algum fitoterápico da fórmula'},
-               {v:'nenhuma',badge:'✓',label:'Nenhuma alergia conhecida'}]});
+      options:ALERG.map(a=>({v:a.v,badge:a.v==='nenhuma'?'✓':'•',label:a.label}))});
     }
     if (!pularEst) s.push({id:'contra',kind:'opts',step:D,eyebrow:'Segurança',text:'Usa nitrato ou doador de óxido nítrico? Teve infarto ou AVC nos últimos 6 meses? Angina instável, hipotensão, IC classe III-IV ou neuropatia óptica isquêmica?',
       options:[{v:'sim',badge:'!',label:'SIM a pelo menos um'},{v:'nao',badge:'✓',label:'NÃO a todos'}]});
@@ -4770,10 +4994,36 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       const t=(document.getElementById('fichaCorpo').innerText||'');
       try{ navigator.clipboard.writeText(t); fCop.textContent='Copiado'; setTimeout(()=>fCop.textContent='Copiar',1500); }catch(e){}
     };
+    const hb = document.getElementById('histBtn');
+    if (hb) hb.onclick = ()=>abreHistorico();
+    const hFechar = document.getElementById('histFechar');
+    if (hFechar) hFechar.onclick = ()=>fechaHistorico();
+    const hImp = document.getElementById('histImprimir');
+    if (hImp) hImp.onclick = ()=>imprimeEmAba(document.querySelector('#histOverlay .ficha-doc'), (document.getElementById('histTitulo')||{}).textContent||'Histórico do paciente', 'ph');
+    const hCop = document.getElementById('histCopiar');
+    if (hCop) hCop.onclick = ()=>{
+      const t=(document.getElementById('histTitulo').textContent+'\n\n'+(document.getElementById('histCorpo').innerText||''));
+      try{ navigator.clipboard.writeText(t); hCop.textContent='Copiado'; setTimeout(()=>hCop.textContent='Copiar',1500); }catch(e){}
+    };
+    const hov = document.getElementById('histOverlay');
+    if (hov) hov.onclick = (e)=>{ if (e.target===hov) fechaHistorico(); };
     const ov = document.getElementById('fichaOverlay');
     if (ov) ov.onclick = (e)=>{ if (e.target===ov) fechaFicha(); };
     document.addEventListener('keydown', e=>{
+      const oh=document.getElementById('histOverlay');
+      if (oh && oh.style.display==='flex'){
+        // janela do histórico aberta: nenhuma tecla chega ao questionário por trás dela
+        if (e.key==='Escape' || e.key==='h' || e.key==='H'){ e.preventDefault(); fechaHistorico(); }
+        if (!e.metaKey && !e.ctrlKey) e.stopPropagation();
+        return;
+      }
       if (e.key==='Escape'){ const o=document.getElementById('fichaOverlay'); if(o&&o.style.display==='flex'){ e.stopPropagation(); fechaFicha(); } }
+      if ((e.key==='h'||e.key==='H') && temHistorico() && !e.metaKey && !e.ctrlKey && !e.altKey){
+        const alvo=e.target;
+        if (alvo && (alvo.tagName==='INPUT'||alvo.tagName==='TEXTAREA'||alvo.isContentEditable)) return;
+        const o=document.getElementById('histOverlay');
+        if (o && o.style.display==='flex') fechaHistorico(); else abreHistorico();
+      }
       if ((e.key==='f'||e.key==='F') && (S.codigo||S.daFila)){
         const alvo=e.target;
         if (alvo && (alvo.tagName==='INPUT'||alvo.tagName==='TEXTAREA')) return;
