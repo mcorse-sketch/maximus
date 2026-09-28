@@ -7,7 +7,8 @@
 //   - texto do prontuário sem racional nem explicações;
 //   - ficha mostra tudo o que foi registrado no atendimento;
 //   - descartar atendimento interrompido sem depender do confirm() nativo;
-//   - botão de imprimir relatório chama a impressão.
+//   - botão de imprimir relatório chama a impressão;
+//   - retorno: botão fixo abre o histórico de todos os atendimentos anteriores.
 const fs = require('fs');
 const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
@@ -198,6 +199,66 @@ const tela = doc => doc.getElementById('quizCard').getAttribute('data-tela');
       'modo rede: 1 primeira + 2 reavaliações + TEFI + 2 recepções → "3ª reavaliação" (servidor diz total ' + ciclos.length + ')');
     ok(/3ª reavaliação/.test(doc.getElementById('painelCard').textContent), 'o painel do paciente mostra a 3ª reavaliação');
     ok(!erros.length, 'sem erro de JS' + (erros.length ? ' — ' + erros[0] : ''));
+  }
+
+  // ---- histórico do paciente: botão fixo e janela própria -------------------
+  console.log('histórico do paciente');
+  {
+    const dia = n => new Date(Date.now() - n * 86400000).toISOString();
+    const mem = { recepcao: [], codigos: [{ codigo: 'MX0005' }],
+      'pacientes/MX0005/ciclos': [
+        { codigo: 'MX0005', tipo: 'recepcao', linha: 'recepcao', iniciais: 'JS', telefone: '(21)91111-2222', data: dia(200) },
+        { codigo: 'MX0005', tipo: 'primeira', dataBR: '01/01/2026', data: dia(200), protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'],
+          iief: 12, adam: ['nenhum'], adamPositivo: false, comorbidades: ['has'], comorbControle: 'sim', alergias: ['anest'], medsRisco: [],
+          notaAtendimento: 'Paciente ansioso com o desempenho.' },
+        { codigo: 'MX0005', tipo: 'tefi', linha: 'tefi', dataBR: '15/02/2026', data: dia(150), protocolo: 'Via oral mantida',
+          tefiExame: { farmaco: 'R5 (trimix clássico) — padrão da clínica', dose: '0,1 mL', g10: 4, g20: 4, g30: 3, eau: true, psv: 38, edv: 2, ir: 0.95 } },
+        { codigo: 'MX0005', tipo: 'reavaliacao', numeroReavaliacao: 1, dataBR: '01/03/2026', data: dia(120), protocolo: 'DE-3',
+          kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE'], iief: 17, adesao: 'parcial', ea: 'leve', eaQuais: ['cefaleia'], satisf: 7,
+          mudanca: 'Subiu para DE-3', protocoloAnterior: 'DE-2', adam: ['nenhum'], comorbidades: ['has'], comorbControle: 'sim', alergias: ['anest'], medsRisco: [] }
+      ] };
+    const { win, doc, erros } = await abreApp(mem);
+    const btn = doc.getElementById('histBtn');
+    ok(!visivel(btn), 'sem paciente carregado, o botão do histórico fica escondido');
+    clica(doc, 'novo'); await avanca(doc);
+    clica(doc, 'reav'); await avanca(doc);
+    const inp = doc.querySelector('#optsWrap input.fld');
+    inp.value = 'MX0005'; inp.dispatchEvent(new win.Event('input')); await espera(10);
+    await avanca(doc);
+    ok(tela(doc) === 'confirmHist', 'retorno com histórico chega à confirmação');
+    ok(visivel(btn), 'paciente com histórico: o botão fixo do histórico aparece');
+    btn.click(); await espera(40);
+    const ov = doc.getElementById('histOverlay');
+    const txt = doc.getElementById('histCorpo').textContent;
+    ok(ov.style.display === 'flex', 'o histórico abre em janela própria');
+    ok(/Atendimentos registrados\s*3/.test(txt), 'conta só os atendimentos clínicos, sem a passagem pela recepção');
+    const i1 = txt.indexOf('01/01/2026 · Primeira avaliação'), i2 = txt.indexOf('15/02/2026 · TEFI'), i3 = txt.indexOf('01/03/2026 · 1ª reavaliação');
+    ok(i1 >= 0 && i1 < i2 && i2 < i3, 'atendimentos em ordem cronológica, com data e tipo');
+    ok(/DE-2 \(cápsula matinal com tadalafila 10 mg/.test(txt) && /BASE-T20 \(Tadalafila 20 mg/.test(txt), 'protocolos e fórmulas com composição e dose');
+    ok(/12 → 17/.test(txt.replace(/\s*\(\d{2}\/\d{2}\/\d{4}\)/g, '')), 'síntese traz a evolução do IIEF-5');
+    ok(/Paciente ansioso com o desempenho/.test(txt), 'a nota do médico entra no histórico');
+    ok(/Critério EAU\s*atendido/.test(txt) && /PSV 38 cm\/s/.test(txt), 'TEFI resumido com os achados');
+    ok((txt.match(/Hipertensão arterial/g) || []).length === 1, 'antecedente que não mudou não se repete na visita seguinte');
+    ok(/Efeitos adversos\s*leves, toleráveis: Cefaleia/.test(txt), 'reavaliação traz adesão e efeitos adversos');
+    const antes = tela(doc);
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: '1', bubbles: true })); await espera(20);
+    ok(tela(doc) === antes && ov.style.display === 'flex', 'com o histórico aberto, teclas não mexem no atendimento por trás');
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); await espera(10);
+    ok(ov.style.display === 'none' && tela(doc) === antes && !visivel(doc.getElementById('panoramaCard')),
+      'Esc fecha o histórico e volta exatamente onde estava');
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'h', bubbles: true })); await espera(40);
+    ok(ov.style.display === 'flex', 'a tecla H abre o histórico');
+    doc.getElementById('histFechar').click();
+    ok(!erros.length, 'sem erro de JS' + (erros.length ? ' — ' + erros[0] : ''));
+    ok(!(win.__mxVigia || []).length, 'vigia sem acusação');
+  }
+  {
+    const mem = { recepcao: [], codigos: [] };
+    const { doc } = await abreApp(mem);
+    clica(doc, 'novo'); await avanca(doc);
+    clica(doc, 'primeira'); await avanca(doc);
+    ok(!visivel(doc.getElementById('histBtn')), 'primeira avaliação: sem botão de histórico');
   }
 
   // ---- descartar atendimento interrompido ------------------------------------

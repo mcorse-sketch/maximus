@@ -108,6 +108,15 @@ que se sabe do paciente — inclusive tudo o que já foi respondido no atendimen
 em curso ("Registrado neste atendimento") —, incluindo evolução de IIEF e PEDT comparando
 prontuário com hoje, e ganho do preenchimento em cm e em porcentagem.
 
+**Histórico do paciente** (botão fixo no canto inferior direito, ou tecla H):
+só aparece no retorno com histórico encontrado para o código em tela. Abre em
+janela própria, sobre o atendimento, sem mexer nele — com a janela aberta
+nenhuma tecla chega ao questionário. Resume todos os ciclos clínicos (sem os
+registros da recepção) em ordem cronológica: síntese (datas, sequência de
+protocolos, evolução de IIEF/PEDT) e, por visita, só dados — escores, conduta
+com composição, exames, nota do médico. Antecedentes aparecem na primeira
+visita e depois só quando mudam. Implementado em `abreHistorico()`.
+
 **Identificação:** obrigatórios o código e telefone **ou** email. Telefone é
 formatado como `(21)99999-9999` e validado; iniciais em maiúsculas sem pontos.
 No retorno, os três campos vêm do banco e a recepção apenas confirma. Se nem
