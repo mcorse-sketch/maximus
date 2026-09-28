@@ -279,6 +279,16 @@ const tela = doc => doc.getElementById('quizCard').getAttribute('data-tela');
       'confirmado, o atendimento é descartado e o app volta ao início');
   }
 
+  // ---- cabeçalho: nome do app e versão ------------------------------------------
+  console.log('cabeçalho');
+  {
+    const doc = new JSDOM(HTML).window.document;
+    const v = doc.getElementById('versaoApp');
+    ok(doc.querySelector('.tool-title .t1').textContent === 'Painel de atendimento Maximus', 'o cabeçalho traz o nome do app');
+    ok(!!v && /^\d+\.\d+\.\d+$/.test(v.dataset.versao) && v.textContent.includes('Versão ' + v.dataset.versao),
+      'abaixo do nome aparece a versão atual');
+  }
+
   console.log('\n=== JORNADA ===\nfalhas: ' + falhas);
   process.exit(falhas ? 1 : 0);
 })();

@@ -219,6 +219,14 @@ Nunca publique com o vigia acusando algo.
 - Mudou comportamento? O teste que o cobre entra no mesmo commit.
 - Antes de publicar: `./scripts/testar.sh` verde **e** revisão visual no
   navegador, incluindo iPad em retrato.
+- **Versão.** O cabeçalho do `triagem.html` mostra "Painel de atendimento
+  Maximus" e, abaixo, a versão (`#versaoApp`, atributo `data-versao` e texto
+  "Versão X.Y.Z · DD/MM/AAAA"). Toda alteração publicada sobe a versão e a
+  data — correção no último número, recurso novo no do meio.
+- **Toda alteração é publicada em todas as instâncias**, sem esperar pedido:
+  commit, push e PR mesclado no GitHub, **e** o artifact correspondente
+  republicado (links em `README.md`, seção Publicação). Artifact de app que
+  não mudou não precisa ser republicado.
 
 ---
 
