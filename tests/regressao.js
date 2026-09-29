@@ -232,7 +232,7 @@ if (COMO_MODULO) { module.exports = { roda, preenche, espera }; return; }
   const lista = PACIENTES.filter(p => !SO || SO.has(p.id));
   const base = fs.existsSync(BASELINE) ? JSON.parse(fs.readFileSync(BASELINE, 'utf8')) : {};
   const nova = APROVAR ? Object.assign({}, base) : null;
-  let problemas = 0, mudaram = 0, novos = 0;
+  let problemas = 0, mudaram = 0, novos = 0, mudouClinica = 0, soTexto = 0;
 
   for (const p of lista) {
     const r = await roda(p);
@@ -265,7 +265,8 @@ if (COMO_MODULO) { module.exports = { roda, preenche, espera }; return; }
     const mudouTexto = b.texto !== atual.texto;
     if (!mudouConduta && !mudouTexto) { console.log('  ok     ' + cab); continue; }
     mudaram++;
-    console.log('  MUDOU  ' + cab);
+    if (mudouConduta) mudouClinica++; else soTexto++;
+    console.log('  MUDOU  ' + cab + (mudouConduta ? '' : '  (só o texto)'));
     if (mudouConduta) {
       ['protocolo', 'kit', 'iief', 'pedt'].forEach(k => {
         const x = JSON.stringify((b.conduta || {})[k]), y = JSON.stringify((atual.conduta || {})[k]);
@@ -292,6 +293,7 @@ if (COMO_MODULO) { module.exports = { roda, preenche, espera }; return; }
   }
   console.log('\n=== REGRESSAO CLINICA ===');
   console.log('pacientes: ' + lista.length + ' | com falha ou regra violada: ' + problemas + ' | conduta mudou: ' + mudaram + ' | sem baseline: ' + novos);
+  if (mudaram) console.log('  dessas: protocolo/kit/escores mudaram em ' + mudouClinica + ' | só o texto mudou em ' + soTexto);
   if (mudaram && !APROVAR) console.log('Se a mudança foi intencional e o médico aprovou: node regressao.js --aprovar');
   process.exit(problemas || mudaram || novos ? 1 : 0);
 })();

@@ -79,6 +79,32 @@ class Servidor(unittest.TestCase):
             self.assertNotIn(s, conteudo)
         self.assertEqual(oct(os.stat(srv.SENHAS).st_mode & 0o777), "0o600")
 
+    def test_senha_de_todos_e_usuarios_nomeados(self):
+        with open(srv.SENHAS) as f:
+            original = f.read()
+        try:
+            srv.adicionar_usuario("dra.teste", "medico", "senha-da-dra")
+            # usuario nomeado entra no proprio perfil, nunca em outro
+            self.assertEqual(self.req("POST", "/api/login", {"perfil": "medico", "senha": "senha-da-dra"})[0], 200)
+            self.assertEqual(self.req("POST", "/api/login", {"perfil": "recepcao", "senha": "senha-da-dra"})[0], 401)
+            # "1234" para todos: perfis e usuarios; a senha antiga deixa de valer
+            quem = srv.definir_senha_todos("1234")
+            self.assertEqual(set(quem), {"medico", "recepcao", "financeiro", "dra.teste"})
+            for p in ("medico", "recepcao", "financeiro"):
+                self.assertEqual(self.req("POST", "/api/login", {"perfil": p, "senha": "1234"})[0], 200)
+            self.assertEqual(self.req("POST", "/api/login", {"perfil": "medico", "senha": SENHAS["medico"]})[0], 401)
+            with open(srv.SENHAS) as f:
+                self.assertNotIn('"1234"', f.read())
+            self.assertEqual(oct(os.stat(srv.SENHAS).st_mode & 0o777), "0o600")
+            self.assertTrue(srv.remover_usuario("dra.teste"))
+            self.assertNotIn("dra.teste", srv.carregar_usuarios())
+            with self.assertRaises(ValueError):
+                srv.adicionar_usuario("Nome Com Espaco", "medico", "x")
+        finally:
+            with open(srv.SENHAS, "w") as f:
+                f.write(original)
+            srv._falhas.clear()
+
     def test_health_e_paginas_sem_senha(self):
         self.assertEqual(self.req("GET", "/api/health")[0], 200)
         for rota in ("/", "/recepcao", "/financeiro"):

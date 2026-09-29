@@ -38,6 +38,26 @@ python3 servidor_maximus.py --definir-senha recepcao
 python3 servidor_maximus.py --definir-senha financeiro
 ```
 
+A mesma senha para os três perfis (e para os usuários nomeados) de uma vez:
+
+```bash
+python3 servidor_maximus.py --definir-senha-todos
+```
+
+Pessoas com senha própria dentro de um perfil (por exemplo, uma segunda
+médica ou outra recepcionista) — entram no app do perfil com a própria senha,
+e o terminal registra quem entrou:
+
+```bash
+python3 servidor_maximus.py --adicionar-usuario dra.ana medico
+python3 servidor_maximus.py --listar-usuarios
+python3 servidor_maximus.py --remover-usuario dra.ana
+```
+
+Senha mínima de 4 caracteres (decisão de 28/09/2026); o bloqueio após cinco
+erros continua valendo. Depois de trocar senhas, reinicie o servidor para
+desconectar quem ainda está com a senha antiga.
+
 A senha é digitada no terminal, sem aparecer, e fica em `senhas.json` só como
 hash (fora do git). Cada app pede a senha do seu perfil ao abrir; a sessão
 dura 12 horas ou até a aba ser fechada. Cinco senhas erradas seguidas bloqueiam

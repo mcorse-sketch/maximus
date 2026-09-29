@@ -12,6 +12,12 @@ COMO USAR
         python3 servidor_maximus.py --definir-senha medico
         python3 servidor_maximus.py --definir-senha recepcao
         python3 servidor_maximus.py --definir-senha financeiro
+     ou a mesma senha para todos de uma vez:
+        python3 servidor_maximus.py --definir-senha-todos
+     Pessoas com senha propria dentro de um perfil:
+        python3 servidor_maximus.py --adicionar-usuario dra.ana medico
+        python3 servidor_maximus.py --listar-usuarios
+        python3 servidor_maximus.py --remover-usuario dra.ana
   4. Abra a pasta e execute:   python3 servidor_maximus.py
   5. O terminal mostra o endereco. Use esse endereco nos outros consultorios.
 
@@ -73,29 +79,85 @@ def _hash(senha, sal):
     return hashlib.pbkdf2_hmac("sha256", senha.encode("utf-8"), bytes.fromhex(sal), ITERACOES).hex()
 
 
-def carregar_senhas():
+SENHA_MINIMA = 4           # decisao do Dr. Marco (28/09/2026): senha curta aceita;
+                           # o bloqueio apos TENTATIVAS erros continua valendo
+USUARIO_OK = re.compile(r"^[a-z0-9._\-]{2,32}$")
+
+
+def _ler_senhas():
     if not os.path.exists(SENHAS):
         return {}
     with open(SENHAS, "r", encoding="utf-8") as f:
-        return json.load(f).get("perfis", {})
+        return json.load(f)
 
 
-def definir_senha(perfil, senha):
-    perfis = carregar_senhas()
-    sal = secrets.token_hex(16)
-    perfis[perfil] = {"sal": sal, "hash": _hash(senha, sal)}
+def _gravar_senhas(dados):
     tmp = SENHAS + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
-        json.dump({"perfis": perfis}, f, indent=1)
+        json.dump(dados, f, indent=1)
     os.chmod(tmp, 0o600)
     os.replace(tmp, SENHAS)
 
 
-def confere_senha(perfil, senha):
-    reg = carregar_senhas().get(perfil)
-    if not reg:
+def carregar_senhas():
+    return _ler_senhas().get("perfis", {})
+
+
+def carregar_usuarios():
+    """Usuarios nomeados: cada pessoa com a propria senha, dentro de um perfil."""
+    return _ler_senhas().get("usuarios", {})
+
+
+def definir_senha(perfil, senha):
+    dados = _ler_senhas()
+    sal = secrets.token_hex(16)
+    dados.setdefault("perfis", {})[perfil] = {"sal": sal, "hash": _hash(senha, sal)}
+    _gravar_senhas(dados)
+
+
+def definir_senha_todos(senha):
+    """Mesma senha para os tres perfis e para todos os usuarios nomeados ja cadastrados."""
+    dados = _ler_senhas()
+    for p in PERFIS:
+        sal = secrets.token_hex(16)
+        dados.setdefault("perfis", {})[p] = {"sal": sal, "hash": _hash(senha, sal)}
+    for nome, reg in dados.get("usuarios", {}).items():
+        sal = secrets.token_hex(16)
+        reg["sal"], reg["hash"] = sal, _hash(senha, sal)
+    _gravar_senhas(dados)
+    return list(PERFIS) + sorted(dados.get("usuarios", {}))
+
+
+def adicionar_usuario(nome, perfil, senha):
+    if not USUARIO_OK.match(nome):
+        raise ValueError("nome de usuario invalido (use letras minusculas, numeros, ponto, hifen)")
+    if perfil not in PERFIS:
+        raise ValueError("perfil invalido")
+    dados = _ler_senhas()
+    sal = secrets.token_hex(16)
+    dados.setdefault("usuarios", {})[nome] = {"perfil": perfil, "sal": sal, "hash": _hash(senha, sal)}
+    _gravar_senhas(dados)
+
+
+def remover_usuario(nome):
+    dados = _ler_senhas()
+    if nome not in dados.get("usuarios", {}):
         return False
-    return hmac.compare_digest(_hash(senha, reg["sal"]), reg["hash"])
+    del dados["usuarios"][nome]
+    _gravar_senhas(dados)
+    return True
+
+
+def confere_senha(perfil, senha):
+    """Devolve quem entrou: o proprio perfil (senha do perfil) ou o nome do
+    usuario desse perfil cuja senha confere. None se nada confere."""
+    reg = carregar_senhas().get(perfil)
+    if reg and hmac.compare_digest(_hash(senha, reg["sal"]), reg["hash"]):
+        return perfil
+    for nome, u in sorted(carregar_usuarios().items()):
+        if u.get("perfil") == perfil and hmac.compare_digest(_hash(senha, u["sal"]), u["hash"]):
+            return nome
+    return None
 
 
 def abre_sessao(perfil):
@@ -405,11 +467,12 @@ class Handler(BaseHTTPRequestHandler):
         corpo = self._corpo_json() or {}
         perfil = str(corpo.get("perfil", ""))
         senha = str(corpo.get("senha", ""))
-        if perfil in PERFIS and senha and confere_senha(perfil, senha):
+        quem = confere_senha(perfil, senha) if (perfil in PERFIS and senha) else None
+        if quem:
             with _lock_sessoes:
                 _falhas.pop(ip, None)
             token = abre_sessao(perfil)
-            print("  entrada: %s (%s)" % (perfil, ip))
+            print("  entrada: %s (%s)" % (perfil if quem == perfil else "%s / %s" % (perfil, quem), ip))
             self._json({"ok": True, "token": token, "perfil": perfil, "horas": SESSAO_HORAS})
             return
         with _lock_sessoes:
@@ -647,22 +710,55 @@ class Handler(BaseHTTPRequestHandler):
         self._json({"ok": True, "total": total})
 
 
+def _pede_senha(rotulo):
+    """Pede a senha duas vezes no terminal (nunca pela linha de comando)."""
+    senha = getpass.getpass(rotulo)
+    if len(senha) < SENHA_MINIMA:
+        print("A senha precisa de pelo menos %d caracteres. Nada foi alterado." % SENHA_MINIMA)
+        sys.exit(2)
+    if getpass.getpass("Repita a senha: ") != senha:
+        print("As senhas nao conferem. Nada foi alterado.")
+        sys.exit(2)
+    if len(senha) < 8:
+        print("Aviso: senha curta. O bloqueio de %d minutos apos %d erros continua ativo;" % (BLOQUEIO_MIN, TENTATIVAS))
+        print("use o servidor apenas na rede interna da clinica.")
+    return senha
+
+
 def main():
     if len(sys.argv) == 3 and sys.argv[1] == "--definir-senha":
         perfil = sys.argv[2]
         if perfil not in PERFIS:
             print("Perfil invalido. Use: " + ", ".join(PERFIS))
             sys.exit(2)
-        senha = getpass.getpass("Nova senha para '%s': " % perfil)
-        if len(senha) < 8:
-            print("A senha precisa de pelo menos 8 caracteres. Nada foi alterado.")
-            sys.exit(2)
-        if getpass.getpass("Repita a senha: ") != senha:
-            print("As senhas nao conferem. Nada foi alterado.")
-            sys.exit(2)
+        senha = _pede_senha("Nova senha para '%s': " % perfil)
         definir_senha(perfil, senha)
         print("Senha de '%s' gravada. Quem estiver conectado com esse perfil continua" % perfil)
         print("ate a sessao expirar; reinicie o servidor para desconectar todos agora.")
+        return
+    if len(sys.argv) == 2 and sys.argv[1] == "--definir-senha-todos":
+        senha = _pede_senha("Nova senha para TODOS os perfis e usuarios: ")
+        quem = definir_senha_todos(senha)
+        print("Senha trocada para: " + ", ".join(quem) + ".")
+        print("Reinicie o servidor para desconectar quem ainda esta com a senha antiga.")
+        return
+    if len(sys.argv) == 4 and sys.argv[1] == "--adicionar-usuario":
+        nome, perfil = sys.argv[2].strip().lower(), sys.argv[3]
+        if perfil not in PERFIS or not USUARIO_OK.match(nome):
+            print("Uso: --adicionar-usuario <nome> <perfil>  (perfil: " + ", ".join(PERFIS) + ";")
+            print("     nome em minusculas, sem espaco, ex.: dra.ana)")
+            sys.exit(2)
+        senha = _pede_senha("Senha de '%s' (%s): " % (nome, perfil))
+        adicionar_usuario(nome, perfil, senha)
+        print("Usuario '%s' gravado no perfil '%s'. Ele entra no app do perfil com a propria senha." % (nome, perfil))
+        return
+    if len(sys.argv) == 3 and sys.argv[1] == "--remover-usuario":
+        print("Usuario removido." if remover_usuario(sys.argv[2].strip().lower()) else "Usuario nao encontrado.")
+        return
+    if len(sys.argv) == 2 and sys.argv[1] == "--listar-usuarios":
+        print("Perfis com senha: " + (", ".join(p for p in PERFIS if p in carregar_senhas()) or "nenhum"))
+        us = carregar_usuarios()
+        print("Usuarios: " + (", ".join("%s (%s)" % (n, u["perfil"]) for n, u in sorted(us.items())) or "nenhum"))
         return
     if len(sys.argv) == 2 and sys.argv[1] == "--definir-senha-backup":
         print("A senha do backup fica no Chaveiro deste Mac e o servidor a usa sozinho.")

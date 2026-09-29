@@ -136,9 +136,11 @@ function fakeDb(m) {
   const cardQuiz = doc.getElementById('quizCard');
   const cardPainel = doc.getElementById('painelCard');
   checa.push(['questionario e painel sao janelas separadas', !!cardQuiz && !!cardPainel && !cardQuiz.contains(cardPainel)]);
+  // v2.2: o painel mora no trilho fixo do paciente (#mxRail), que vem antes do questionário
   const linhaOrd = doc.getElementById('linhaQuiz');
-  const filhos = linhaOrd ? [...linhaOrd.children] : [];
-  checa.push(['painel fica a esquerda do questionario', filhos.length >= 2 && filhos[0].id === 'painelCard']);
+  const trilho = doc.getElementById('mxRail');
+  checa.push(['painel fica a esquerda do questionario', !!trilho && !!cardPainel && trilho.contains(cardPainel) && !!linhaOrd
+    && !!(trilho.compareDocumentPosition(linhaOrd) & 4)]);
   checa.push(['painel guarda o resumo do paciente', !!cardPainel && !!cardPainel.querySelector('#copiloto')]);
   checa.push(['botao continuar fica na janela do questionario', !!cardQuiz && !!cardQuiz.querySelector('#nextBtn') && !cardQuiz.querySelector('#copiloto')]);
 
