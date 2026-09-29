@@ -3508,7 +3508,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   </ul>`;
 
 
-  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração/i;
+  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica com precaução|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração/i;
   function renderNotas(notas, abrirPadrao){
     const alertas = notas.filter(n=>RE_ALERTA.test(n));
     const demais  = notas.filter(n=>!RE_ALERTA.test(n));
@@ -4356,7 +4356,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     const semTada=S.contra==='sim'||alg.includes('tada');
     const semClomi=semTada||S.depre==='sim'||usaISRS||alg.includes('clomi');
     if (alg.length) notas.push('<b>Alergias declaradas:</b> '+alg.map(v=>({tada:'inibidor de PDE5',clomi:'tricíclico',parox:'ISRS',dapo:'dapoxetina',anest:'anestésico local',ioim:'ioimbina',fito:'fitoterápico da fórmula'}[v])).join(', ')+'. Os componentes correspondentes foram excluídos do protocolo.');
-    if (usaISRS) notas.push('<b>ISRS em uso — toda a via serotoninérgica está bloqueada.</b> Não associar paroxetina, dapoxetina nem clomipramina a um antidepressivo serotoninérgico. Para a ejaculação precoce, ficam o creme retardante, o preservativo e a abordagem comportamental. Se o controle for insuficiente, a conversa é com o psiquiatra sobre trocar o antidepressivo, não sobre somar outro serotoninérgico.');
+    if (usaISRS) notas.push('<b>ISRS em uso — use a via serotoninérgica com precaução.</b> Paroxetina, dapoxetina ou clomipramina somadas a um antidepressivo serotoninérgico aumentam o risco de síndrome serotoninérgica: se alguma delas estiver no protocolo, avalie antes de prescrever. Para a ejaculação precoce, a primeira escolha segue sendo o creme retardante, o preservativo e a abordagem comportamental. Se o controle for insuficiente, converse com o psiquiatra sobre trocar o antidepressivo antes de somar outro serotoninérgico.');
     const semPomada=S.pomada==='sim'||alg.includes('anest');
     const bio = S.biotens==='' || S.biotens===undefined ? null : parseFloat(String(S.biotens).replace(',','.'));
     const hipersens = bio!==null && bio<10;
@@ -4370,7 +4370,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (S.topico==='so_pomada' && S.hasEP) notas.push('Paciente prefere a pomada — o preservativo retardante não entra no kit. Se a resposta for parcial, ele continua sendo uma opção a reabordar.');
     if (S.topico==='so_preserv' && S.hasEP) notas.push('Paciente prefere o preservativo — a pomada não entra no kit. Se a resposta for parcial, ela continua sendo uma opção a reabordar.');
     if (bio!==null && bio>=10 && S.hasEP) notas.push('Biotensiômetro em '+bio+' — sensibilidade dentro do esperado. O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
-    if (S.depre==='sim') notas.push('<b>História psiquiátrica relevante:</b> evitar o SP-DUO — o frasco guarda 900 mg de clomipramina.');
+    if (S.depre==='sim') notas.push('<b>História psiquiátrica relevante:</b> use o SP-DUO com precaução — o frasco guarda 900 mg de clomipramina.');
     if (semPomada) notas.push('<b>Restrição a pomada anestésica:</b> o RET-1 está fora deste paciente.');
     if (semPomada&&S.preserv==='sim') notas.push('<b>Sem recursos tópicos disponíveis</b> — pomada e preservativo retardante estão os dois excluídos. Restam apenas as vias sistêmicas e a abordagem comportamental.');
 
@@ -4521,8 +4521,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       }
       const dapo=cs.find(c=>/^MOD-DAPO/.test(c));
       if (prot==='BLOQUEIO' && dapo && usaISRS)
-        notas.push('<b>ALERTA — dapoxetina com antidepressivo ISRS em uso:</b> '+dapo+' sob demanda somada ao ISRS que o paciente já usa — são dois serotoninérgicos. '
-          + 'Com a tadalafila contraindicada, a dapoxetina foi mantida como sugestão — mas avalie antes de prescrever.');
+        notas.push('<b>ALERTA — dapoxetina com antidepressivo ISRS em uso:</b> '+dapo+' também é um ISRS, e a soma dos dois aumenta o risco de síndrome serotoninérgica. '
+          + 'Com a tadalafila contraindicada, a dapoxetina foi mantida como sugestão para a ejaculação precoce, por ser de uso sob demanda — mas avalie antes de prescrever e, se possível, alinhe com o psiquiatra.');
     }
     if (hipersens) notas.push('<b>A hipersensibilidade não substitui a medicação oral</b> — ela indica ASSOCIAR o anestésico tópico. O braço periférico e o central do reflexo são distintos, e tratar os dois rende mais que escolher um.');
     if (ondasOpc && kit.indexOf('ONDAS')<0) kit = kit.concat([['ONDAS','Opcional — a oferecer']]);
@@ -4687,9 +4687,21 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       else if (S.contraIoim==='sim') rc_fora.push('<b>Ioimbina</b> — há contraindicação declarada (ansiedade, HAS não controlada, doença renal ou uso de serotoninérgico).');
       else if (trataEP) rc_fora.push('<b>Ioimbina</b> — não se associa a agente serotoninérgico, e a ejaculação precoce é a prioridade deste ciclo.');
     }
-    if (usaISRS) rc_fora.push('<b>Paroxetina, dapoxetina e clomipramina</b> — o paciente já usa antidepressivo serotoninérgico, e somar outro é duplicação de risco.');
+    // serotoninérgico que ficou no kit (com alerta) não entra em "fica fora"
+    const kc = kit.map(e=>Array.isArray(e)?e[0]:e),
+          kParox = kc.some(c=>/PAROX/.test(c)), kDapo = kc.some(c=>/^MOD-DAPO/.test(c)), kSpDuo = kc.some(c=>/^SP-DUO/.test(c));
+    const listaSer = a => { const t = a.length>1 ? a.slice(0,-1).join(', ')+' e '+a[a.length-1] : a[0]; return t.charAt(0).toUpperCase()+t.slice(1); };
+    if (usaISRS){
+      const fora=[], dentro=[];
+      (kParox?dentro:fora).push('paroxetina'); (kDapo?dentro:fora).push('dapoxetina'); (kSpDuo?dentro:fora).push('clomipramina');
+      if (fora.length) rc_fora.push('<b>'+listaSer(fora)+'</b> — o paciente já usa antidepressivo serotoninérgico, e somar outro é duplicação de risco.');
+      if (dentro.length) rc_porque.push('<b>'+listaSer(dentro)+(dentro.length>1?' mantidas':' mantida')+' com precaução</b> — o paciente já usa antidepressivo serotoninérgico. Ficou como sugestão, de uso sob demanda, com alerta para avaliar antes de prescrever.');
+    }
     else if (S.hasEP && S.freq==='baixa' && kit.every(e=>!/PAROX/.test(Array.isArray(e)?e[0]:e))) rc_fora.push('<b>ISRS contínuo</b> — a frequência baixa de relações não justifica medicar todos os dias.');
-    if (S.depre==='sim') rc_fora.push('<b>Spray com clomipramina</b> — história psiquiátrica relevante, e o frasco guarda 900 mg de tricíclico.');
+    if (S.depre==='sim'){
+      if (kSpDuo) rc_porque.push('<b>Spray com clomipramina mantido com precaução</b> — há história psiquiátrica relevante, e o frasco guarda 900 mg de tricíclico. Ficou como sugestão, de uso sob demanda, com alerta para avaliar antes de prescrever.');
+      else rc_fora.push('<b>Spray com clomipramina</b> — história psiquiátrica relevante, e o frasco guarda 900 mg de tricíclico.');
+    }
     if (semTada && S.hasEP) rc_fora.push('<b>Spray SP-DUO</b> — contém tadalafila, que está contraindicada neste paciente.');
     if (S.topico==='nenhum' && S.hasEP) rc_fora.push('<b>Anestésico tópico</b> — o paciente declarou restrição às duas vias. Se houver indicação, vale reabordar.');
     else if (S.topico==='so_pomada' && S.hasEP) rc_fora.push('<b>Preservativo retardante</b> — o paciente prefere a pomada. Continua sendo opção se a resposta for parcial.');

@@ -63,6 +63,11 @@ alerta `<b>ALERTA — …</b>` ao médico (vai para "Pendências e alertas"):
   terapêutico soma o SP-DUO no EP-2, EP-3 e DUO-3;
 - linha FERT com SP-DUO em paciente com ISRS em uso ou história psiquiátrica;
 - BLOQUEIO (tadalafila contraindicada) com dapoxetina em paciente com ISRS.
+Pelo mesmo motivo, as notas gerais falam em precaução, não em proibição:
+"ISRS em uso — use a via serotoninérgica com precaução" (título casado com
+`RE_ALERTA`; mudou o texto, mude a regex) e "História psiquiátrica relevante:
+use o SP-DUO com precaução". No racional da conduta, serotoninérgico que
+ficou no kit aparece como "mantido com precaução", nunca em "fica fora".
 Os títulos dos alertas estão em `tests/regressao/pacientes.js`
 (`esperaTexto`); mudar o texto exige mudar lá também. Estes alertas são
 notas da conduta — não confundir com o aviso fixo `#avisoISRS` acima.
