@@ -7,6 +7,10 @@
 //   node regressao.js [app] --aprovar  grava a conduta atual como nova baseline
 //   node regressao.js [app] --so LIM-003,LIM-004   roda só esses pacientes
 //
+// `espera` confere a conduta; `esperaTexto` ({ contem: [...], naoContem: [...] })
+// confere frases no texto da conduta (ex.: título de um alerta). Os dois são
+// regra escrita à mão e valem mesmo com --aprovar.
+//
 // Respostas não declaradas no paciente recebem um padrão neutro ("não",
 // "nenhuma", primeira opção), para que só o que o paciente declara influa
 // na conduta.
@@ -255,6 +259,20 @@ if (COMO_MODULO) { module.exports = { roda, preenche, espera }; return; }
         problemas++;
         console.log('  REGRA  ' + cab);
         errado.forEach(k => console.log('         ' + k + ': esperado ' + JSON.stringify(p.espera[k]) + ', saiu ' + JSON.stringify(c[k])));
+        continue;
+      }
+    }
+    if (p.esperaTexto) {
+      // alertas escritos à mão: frase que tem (ou não pode ter) no texto da
+      // conduta — vale mesmo com --aprovar, como `espera`
+      const t = r.texto || '';
+      const falta = (p.esperaTexto.contem || []).filter(f => t.indexOf(f) < 0);
+      const sobra = (p.esperaTexto.naoContem || []).filter(f => t.indexOf(f) >= 0);
+      if (falta.length || sobra.length) {
+        problemas++;
+        console.log('  REGRA  ' + cab);
+        falta.forEach(f => console.log('         texto sem: ' + JSON.stringify(f)));
+        sobra.forEach(f => console.log('         texto não deveria ter: ' + JSON.stringify(f)));
         continue;
       }
     }

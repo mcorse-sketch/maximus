@@ -33,6 +33,11 @@ const cod = id => 'RG' + id.replace(/-/g, '');
 const P = (id, descricao, respostas, extra) =>
   Object.assign({ id, descricao, codigo: cod(id), respostas: Object.assign({ visita: 'primeira' }, respostas) }, extra || {});
 
+// títulos dos alertas serotoninérgicos (a sugestão é mantida, o médico é avisado)
+const ALERTA_PAROX_DUO = 'ALERTA — combinação serotoninérgica fora do padrão';
+const ALERTA_FERT = 'ALERTA — spray com clomipramina na linha de fertilidade';
+const ALERTA_DAPO_ISRS = 'ALERTA — dapoxetina com antidepressivo ISRS em uso';
+
 const de = (total, mais) => Object.assign({ queixa: 'de' }, iief(total), mais || {});
 const ep = (total, mais) => Object.assign({ queixa: 'ep' }, pedt(total), mais || {});
 const duo = (ti, tp, mais) => Object.assign({ queixa: 'ambos' }, iief(ti), pedt(tp), mais || {});
@@ -103,9 +108,12 @@ module.exports = [
 
   // ---- fertilidade, EP e segurança serotoninérgica ---------------------------
   P('TEST-008', 'DE com desejo de engravidar — linha FERT', de(14, { fert: 'sim' }), { espera: { protocolo: 'FERT' } }),
-  P('TEST-009', 'EP com frequência alta — paroxetina diária', ep(13, { freq: 'alta' })),
-  P('TEST-010', 'EP intensa com frequência alta — paroxetina 20', ep(17, { freq: 'alta' })),
-  P('TEST-011', 'EP refratária à paroxetina 20 — EP-4, limite de 1 jato', ep(13, { parox: 'sim' }), { espera: { protocolo: 'EP-4' } }),
+  P('TEST-009', 'EP com frequência alta — paroxetina diária', ep(13, { freq: 'alta' }),
+    { esperaTexto: { contem: [ALERTA_PAROX_DUO] } }),
+  P('TEST-010', 'EP intensa com frequência alta — paroxetina 20', ep(17, { freq: 'alta' }),
+    { esperaTexto: { contem: [ALERTA_PAROX_DUO] } }),
+  P('TEST-011', 'EP refratária à paroxetina 20 — EP-4, limite de 1 jato', ep(13, { parox: 'sim' }),
+    { espera: { protocolo: 'EP-4' }, esperaTexto: { naoContem: [ALERTA_PAROX_DUO] } }),
   P('TEST-012', 'EP em uso de ISRS — só via tópica', ep(13, { freq: 'baixa', medsRisco: ['isrs'] })),
   P('TEST-013', 'EP com história psiquiátrica — sem SP-DUO', ep(13, { freq: 'baixa', depre: 'sim' })),
   P('TEST-014', 'EP com restrição a tópicos', ep(13, { freq: 'baixa', topico: 'nenhum' })),
@@ -115,9 +123,28 @@ module.exports = [
 
   // ---- DUO ------------------------------------------------------------------
   P('TEST-018', 'DUO leve a moderada, frequência baixa', duo(14, 12, { freq: 'baixa' })),
-  P('TEST-019', 'DUO com frequência alta — ISRS contínuo', duo(14, 12, { freq: 'alta' })),
-  P('TEST-020', 'DUO refratária à paroxetina — DUO-4', duo(14, 12, { parox: 'sim' }), { espera: { protocolo: 'DUO-4' } }),
+  P('TEST-019', 'DUO com frequência alta — ISRS contínuo', duo(14, 12, { freq: 'alta' }),
+    { esperaTexto: { contem: [ALERTA_PAROX_DUO] } }),
+  P('TEST-020', 'DUO refratária à paroxetina — DUO-4', duo(14, 12, { parox: 'sim' }),
+    { espera: { protocolo: 'DUO-4' }, esperaTexto: { naoContem: [ALERTA_PAROX_DUO] } }),
   P('TEST-021', 'DUO com ISRS em uso — EP por via tópica', duo(14, 12, { freq: 'baixa', medsRisco: ['isrs'] })),
+
+  // ---- alertas serotoninérgicos: sugestão mantida, médico avisado ------------
+  P('TEST-030', 'FERT com EP e ISRS em uso — SP-DUO mantido com alerta',
+    duo(14, 12, { fert: 'sim', medsRisco: ['isrs'] }),
+    { espera: { protocolo: 'FERT' }, esperaTexto: { contem: [ALERTA_FERT] } }),
+  P('TEST-031', 'FERT com EP e história psiquiátrica — SP-DUO mantido com alerta',
+    duo(14, 12, { fert: 'sim', depre: 'sim' }),
+    { espera: { protocolo: 'FERT' }, esperaTexto: { contem: [ALERTA_FERT] } }),
+  P('TEST-032', 'FERT com EP, sem ISRS nem história psiquiátrica — sem alerta',
+    duo(14, 12, { fert: 'sim' }),
+    { espera: { protocolo: 'FERT' }, esperaTexto: { naoContem: [ALERTA_FERT] } }),
+  P('TEST-033', 'Bloqueio da tadalafila com EP e ISRS em uso — dapoxetina mantida com alerta',
+    duo(14, 12, { contra: 'sim', medsRisco: ['isrs'] }),
+    { espera: { protocolo: 'BLOQUEIO' }, esperaTexto: { contem: [ALERTA_DAPO_ISRS] } }),
+  P('TEST-034', 'Bloqueio da tadalafila com EP, sem ISRS — sem alerta',
+    duo(14, 12, { contra: 'sim' }),
+    { espera: { protocolo: 'BLOQUEIO' }, esperaTexto: { naoContem: [ALERTA_DAPO_ISRS] } }),
 
   // ---- outras linhas ----------------------------------------------------------
   P('TEST-022', 'Hipogonadismo primário (LH 12)', {

@@ -57,6 +57,11 @@ errada, o erro é do app — corrija o app, não esta folha.
 | TEST-019 | DUO com frequência alta — ISRS contínuo | DUO-3 | BASE-T10, MOD-PAROX-10, NOITE-1, SP-DE, SP-DUO | 14 | 12 |
 | TEST-020 | DUO refratária à paroxetina — DUO-4 | DUO-4 | BASE-T10, MOD-PAROX-20, SP-DUO-1J, NOITE-1 | 14 | 12 |
 | TEST-021 | DUO com ISRS em uso — EP por via tópica | DUO-TOPICO | BASE-T10, NOITE-1, SP-DE | 14 | 12 |
+| TEST-030 | FERT com EP e ISRS em uso — SP-DUO mantido com alerta | FERT | MOD-CLOMI-25, FERT-SUP, SP-DUO | 14 | 12 |
+| TEST-031 | FERT com EP e história psiquiátrica — SP-DUO mantido com alerta | FERT | MOD-CLOMI-25, FERT-SUP, SP-DUO | 14 | 12 |
+| TEST-032 | FERT com EP, sem ISRS nem história psiquiátrica — sem alerta | FERT | MOD-CLOMI-25, FERT-SUP, SP-DUO | 14 | 12 |
+| TEST-033 | Bloqueio da tadalafila com EP e ISRS em uso — dapoxetina mantida com alerta | BLOQUEIO | MOD-DAPO-30, NOITE-1, ONDAS | 14 | 12 |
+| TEST-034 | Bloqueio da tadalafila com EP, sem ISRS — sem alerta | BLOQUEIO | MOD-DAPO-30, NOITE-1, ONDAS | 14 | 12 |
 | TEST-022 | Hipogonadismo primário (LH 12) | HIPOGONADISMO PRIMÁRIO | — | — | — |
 | TEST-023 | Hipogonadismo secundário (LH 4) | HIPOGONADISMO SECUNDÁRIO | — | — | — |
 | TEST-024 | Hipogonadismo com testosterona em uso — eixo suprimido | EIXO SUPRIMIDO — REPETIR APÓS WASHOUT | — | — | — |
