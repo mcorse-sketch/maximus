@@ -56,6 +56,17 @@ O aviso de ISRS na conduta **só aparece quando a prescrição associa
 paroxetina e clomipramina** no mesmo paciente (kit com item `PAROX` e item
 `SP-DUO`). Em nenhuma outra linha — o médico já reclamou duas vezes.
 
+**Combinações serotoninérgicas fora do padrão: avisar, nunca bloquear**
+(decisão do Dr. Marco, 28/09/2026). A sugestão fica no kit e a conduta traz um
+alerta `<b>ALERTA — …</b>` ao médico (vai para "Pendências e alertas"):
+- paroxetina diária + SP-DUO fora do EP-4/DUO-4 — acontece quando o piso
+  terapêutico soma o SP-DUO no EP-2, EP-3 e DUO-3;
+- linha FERT com SP-DUO em paciente com ISRS em uso ou história psiquiátrica;
+- BLOQUEIO (tadalafila contraindicada) com dapoxetina em paciente com ISRS.
+Os títulos dos alertas estão em `tests/regressao/pacientes.js`
+(`esperaTexto`); mudar o texto exige mudar lá também. Estes alertas são
+notas da conduta — não confundir com o aviso fixo `#avisoISRS` acima.
+
 **IIEF-5 (Rosen, 1999):** 22–25 sem DE, 17–21 leve, 12–16 leve a moderada,
 8–11 moderada, 5–7 grave. Corte diagnóstico **≤ 21**; IIEF ≤ 7 → intracavernosa.
 Nos itens 2 a 5, "0" é "sem atividade sexual / não tentou relação": havendo
@@ -193,7 +204,9 @@ e texto com `tests/regressao/baseline.json`. Conduta que muda derruba a
 bateria. Se a mudança foi intencional e o médico conferiu
 `tests/regressao/REVISAO.md`, regrave com `node regressao.js --aprovar`.
 Regra nova entra como paciente novo, no limite exato, e — se for regra do
-CLAUDE.md — com `espera`, que vale mesmo com `--aprovar`.
+CLAUDE.md — com `espera` (confere a conduta) e/ou `esperaTexto`
+(`{ contem, naoContem }`: frases no texto da conduta, como o título de um
+alerta), que valem mesmo com `--aprovar`.
 
 O teste acha cada pergunta pelo atributo `data-tela` do `#quizCard` e cada
 opção por `data-v` / `data-campo`. Não remova essas marcações.

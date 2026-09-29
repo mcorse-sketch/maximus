@@ -500,7 +500,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.1.0">Vers&atilde;o 2.1.0 &middot; 27/09/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.1.1">Vers&atilde;o 2.1.1 &middot; 28/09/2026</div>
   </div>
 </header>
 
@@ -4506,6 +4506,23 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (S.hasDE && !semTada && !cods().some(c=>/^SP-DE|^SP-DUO|^ICI/.test(c))){
       kit = kit.concat(['SP-DE']);
       notas.push('<b>Piso terapêutico aplicado:</b> paciente que procurou a clínica por queixa de ereção sai no mínimo com o spray de tadalafila sob demanda.');
+    }
+    // combinações serotoninérgicas fora do padrão: a sugestão é mantida, com
+    // alerta ao médico — não bloqueia (decisão clínica de 28/09/2026)
+    { const cs=cods(), parox=cs.find(c=>/PAROX/.test(c)), spduo=cs.some(c=>/^SP-DUO/.test(c));
+      if (parox && spduo && !/^(EP|DUO)-4/.test(prot))
+        notas.push('<b>ALERTA — combinação serotoninérgica fora do padrão:</b> '+parox+' diária somada ao SP-DUO, que traz clomipramina. '
+          + 'A associação de paroxetina com clomipramina como padrão fica reservada ao EP-4 e ao DUO-4, nos casos graves. '
+          + 'Aqui o SP-DUO entrou pelo piso terapêutico e foi mantido como sugestão: por ser spray sublingual, de uso sob demanda, o risco é menor — mas avalie antes de prescrever.');
+      if (S.fert==='sim' && spduo && (usaISRS || S.depre==='sim')){
+        const pq = [usaISRS?'antidepressivo ISRS em uso':'', S.depre==='sim'?'história psiquiátrica relevante':''].filter(Boolean).join(' e ');
+        notas.push('<b>ALERTA — spray com clomipramina na linha de fertilidade, com '+pq+':</b> o SP-DUO traz clomipramina, um tricíclico serotoninérgico. '
+          + 'Foi mantido como sugestão: por ser spray sublingual, de uso sob demanda, o risco é menor — mas avalie antes de prescrever.');
+      }
+      const dapo=cs.find(c=>/^MOD-DAPO/.test(c));
+      if (prot==='BLOQUEIO' && dapo && usaISRS)
+        notas.push('<b>ALERTA — dapoxetina com antidepressivo ISRS em uso:</b> '+dapo+' sob demanda somada ao ISRS que o paciente já usa — são dois serotoninérgicos. '
+          + 'Com a tadalafila contraindicada, a dapoxetina foi mantida como sugestão — mas avalie antes de prescrever.');
     }
     if (hipersens) notas.push('<b>A hipersensibilidade não substitui a medicação oral</b> — ela indica ASSOCIAR o anestésico tópico. O braço periférico e o central do reflexo são distintos, e tratar os dois rende mais que escolher um.');
     if (ondasOpc && kit.indexOf('ONDAS')<0) kit = kit.concat([['ONDAS','Opcional — a oferecer']]);
