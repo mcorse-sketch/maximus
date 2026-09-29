@@ -14,7 +14,7 @@ decisões que já custaram caro para descobrir.
 | Arquivo | Onde roda | Para quem |
 |---|---|---|
 | `apps/triagem.html` | Mac do consultório | médico — questionário clínico, panorama, conduta |
-| `apps/recepcao.html` | iPad da recepção | recepcionista entrega ao paciente |
+| `apps/recepcao.html` | iPad da recepção | respondido pelo **paciente** (a recepcionista só abre e entrega) — letra grande, alvos de toque de 64 px ou mais |
 | `apps/financeiro.html` | Mac | painel comercial |
 
 Cada app é um HTML único, autocontido, com uma só dependência conceitual: o
@@ -27,18 +27,35 @@ O servidor (`servidor_maximus.py`, na raiz) serve os três apps a partir de
 git). **Exige senha por perfil** (médico, recepção, financeiro): cada app pede
 a sua ao abrir, e o servidor só libera o que o perfil pode (`PERMISSOES`).
 O bloco `Sessao` que faz isso nos apps é idêntico nos três — mude nos três.
+Senhas só existem no Mac do servidor (`senhas.json`, PBKDF2 com sal, fora do
+git) — nunca no repositório nem nos HTML. Além da senha do perfil, pode haver
+**usuários nomeados** (cada pessoa com a própria senha dentro de um perfil):
+`--adicionar-usuario <nome> <perfil>`, `--listar-usuarios`,
+`--remover-usuario <nome>`; `--definir-senha-todos` troca a senha dos três
+perfis e de todos os usuários de uma vez. Senha mínima: 4 caracteres (decisão
+do Dr. Marco, 28/09/2026); o bloqueio após 5 erros continua.
 Rotas, permissões e detalhes em `docs/arquitetura.md`.
 
 ---
 
 ## Regras clínicas que não podem ser quebradas
 
-**Fórmulas sempre explicadas.** Toda sigla de fórmula ou de protocolo que
-apareça em tela, nota, alerta ou relatório vem acompanhada da composição.
-Com dose para: tadalafila, clomipramina, paroxetina, ioimbina, dapoxetina,
-clomifeno, testosteronas, lidocaína e prilocaína. Sem dose para fitoterápicos.
-Sem forma de apresentação nem horário na linha de composição.
-Implementado em `explicaSiglas()`, `compoTxt()` e `PROTO_COMPO`.
+**Sigla nunca aparece sozinha (v2.2).** Em TODA ocorrência — conduta, kit,
+racional, resumo, painel, prontuário, histórico, impressão, texto copiado,
+prévia e financeiro — a sigla de fórmula ou de protocolo vem seguida do ativo
+principal com a dose, no formato `BASE-T20 · tadalafila 20 mg`. Com dose para:
+tadalafila, clomipramina, paroxetina, ioimbina, dapoxetina, clomifeno,
+testosteronas, lidocaína e prilocaína. Fitoterápicos só pelo nome, sem dose.
+Composição vem **só** de `F` e `PROTO_COMPO`; nunca inventar.
+Implementado em `ativoTxt()` (texto do ativo), `garanteSiglas()` (texto puro:
+`explicaSiglas` e texto do prontuário) e `aplicaTooltips()` (tela: insere
+`span.sig-ativo` quando o ativo não vem logo depois). O financeiro guarda uma
+cópia (`ATIVO`) que `tests/teste_siglas.js` confere contra o app clínico.
+**Intracavernosas R1–R12 (R3 retirada das escolhas): as concentrações ainda
+não estão cadastradas no app.** Aparece só o que o código sabe (R1/R2 sem
+papaverina e com PGE1; R7/R8 papaverina + fentolamina, sem PGE1; demais
+papaverina + PGE1) com o aviso "concentrações não cadastradas no app". Quando o
+Dr. Marco enviar a tabela, cadastrar em `iciTxt()` e na cópia do financeiro.
 
 **Piso terapêutico.** Ninguém sai só com suplemento. DE → mínimo SP-DE;
 EP → SP-DUO, dapoxetina ou RET-1.
@@ -181,11 +198,13 @@ cd tests && npm install          # jsdom
 cd .. && ./scripts/testar.sh 100 # roda tudo
 ```
 
-Nove etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
+Dez etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
 recepção, rastreador de módulos nas oito linhas de queixa, integração
 recepção → consultório, **regressão clínica**, jornada do médico
 (`teste_jornada.js`: contato, nota final, aviso de ISRS, texto, ficha,
-impressão, lista de pacientes, descartar), tela de senha e servidor.
+impressão, lista de pacientes, descartar), **siglas com ativo**
+(`teste_siglas.js`), tela de senha e servidor. A regressão separa
+"protocolo/kit/escores mudaram" de "só o texto mudou".
 
 A regressão (`tests/regressao.js`) leva os pacientes de
 `tests/regressao/pacientes.js` até a conduta e compara protocolo, kit, escores
@@ -197,6 +216,32 @@ CLAUDE.md — com `espera`, que vale mesmo com `--aprovar`.
 
 O teste acha cada pergunta pelo atributo `data-tela` do `#quizCard` e cada
 opção por `data-v` / `data-campo`. Não remova essas marcações.
+
+---
+
+## Interface (v2.2 · identidade 2026)
+
+- Marca hias.group (mai/2026): Gelo #F2F9F9, Cinza Claro #D1DBDB, Cinza Médio
+  #424D54, Azul Principal #0E1E28, Azul Profundo #010B0F. Sem dourado. Fontes
+  Inter Tight (títulos) + Inter (texto). Tokens em `<style id="tema-2026">` no
+  fim de cada app, com o prefixo `--mx-`.
+- **Tema segue o aparelho** (`prefers-color-scheme`); nada de escuro forçado.
+  Impressão sempre clara.
+- `triagem.html` (Mac): casca `#mxShell` em três colunas — trilho fixo do
+  paciente `#mxRail` (Prontuário, Histórico, Panorama, módulos com estado e o
+  `#painelCard`), atendimento no centro e `#previaCard` (conduta ao vivo) à
+  direita. Prontuário e histórico abrem como **gavetas** à direita. As
+  respostas já dadas no módulo aparecem em `#grupoCard`, colado acima da
+  pergunta atual (card agrupado). Abaixo de 1180 px a prévia desce; abaixo de
+  900 px o trilho vira faixa.
+- **Prévia ao vivo:** o mesmo app num iframe oculto com `?previa=1`
+  (`PREVIA`), que roda `showResults()` com uma cópia das respostas e **nunca
+  grava** (salvarCiclo, sessão, fila e localStorage viram no-op; Store fica em
+  modo manual). Só aparece com os escores completos (IIEF-5/PEDT de hoje ou da
+  recepção) e avisa que perguntas pendentes podem mudar a conduta. Não roda em
+  jsdom.
+- `recepcao.html` é respondido pelo paciente no iPad: fonte ≥ 18 px, opções e
+  botões com 64–68 px de altura, barra de navegação fixa no rodapé.
 
 Dentro do app há duas camadas que os testes leem:
 

@@ -234,7 +234,8 @@ const tela = doc => doc.getElementById('quizCard').getAttribute('data-tela');
     ok(/Atendimentos registrados\s*3/.test(txt), 'conta só os atendimentos clínicos, sem a passagem pela recepção');
     const i1 = txt.indexOf('01/01/2026 · Primeira avaliação'), i2 = txt.indexOf('15/02/2026 · TEFI'), i3 = txt.indexOf('01/03/2026 · 1ª reavaliação');
     ok(i1 >= 0 && i1 < i2 && i2 < i3, 'atendimentos em ordem cronológica, com data e tipo');
-    ok(/DE-2 \(cápsula matinal com tadalafila 10 mg/.test(txt) && /BASE-T20 \(Tadalafila 20 mg/.test(txt), 'protocolos e fórmulas com composição e dose');
+    // v2.2: sigla sempre seguida do ativo, no formato "DE-2 · ativo"
+    ok(/DE-2 · cápsula matinal com tadalafila 10 mg/.test(txt) && /BASE-T20 \(Tadalafila 20 mg/.test(txt), 'protocolos e fórmulas com composição e dose');
     ok(/12 → 17/.test(txt.replace(/\s*\(\d{2}\/\d{2}\/\d{4}\)/g, '')), 'síntese traz a evolução do IIEF-5');
     ok(/Paciente ansioso com o desempenho/.test(txt), 'a nota do médico entra no histórico');
     ok(/Critério EAU\s*atendido/.test(txt) && /PSV 38 cm\/s/.test(txt), 'TEFI resumido com os achados');

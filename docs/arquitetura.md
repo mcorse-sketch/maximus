@@ -91,7 +91,14 @@ Rotas com senha, por perfil (`PERMISSOES` no servidor):
 Sessão: token aleatório no cabeçalho `Authorization: Bearer`, guardado em
 `sessionStorage` (some ao fechar a aba), válido por 12 horas, só na memória do
 servidor — reiniciar o servidor desconecta todos. Senhas em `senhas.json`
-como PBKDF2-SHA256 com sal, permissão 600. Cinco erros seguidos bloqueiam o
+como PBKDF2-SHA256 com sal, permissão 600:
+`{"perfis": {perfil: {sal, hash}}, "usuarios": {nome: {perfil, sal, hash}}}`.
+O login aceita a senha do perfil ou a de qualquer usuário nomeado daquele
+perfil (o terminal registra `perfil / nome`); a sessão continua sendo do
+perfil. Comandos: `--definir-senha <perfil>`, `--definir-senha-todos`,
+`--adicionar-usuario <nome> <perfil>`, `--listar-usuarios`,
+`--remover-usuario <nome>` (senha sempre digitada no terminal, duas vezes;
+mínimo 4 caracteres, aviso abaixo de 8). Cinco erros seguidos bloqueiam o
 endereço por 5 minutos. CORS continua aberto: sem o token, que outro site não
 consegue ler, a chamada não passa.
 
@@ -109,3 +116,13 @@ De propósito: o app de recepção usa essa rota para saber se o paciente existe
 para trazer peso e altura, que ficam no registro da recepção. O app clínico
 filtra do lado dele (`Store.ehClinico`) e busca o último ciclo clínico no
 histórico.
+
+## Prévia da conduta (v2.2)
+
+`triagem.html?previa=1` é uma cópia do app clínico que não grava nada: com
+`PREVIA` verdadeiro, `Store.init` fica em modo manual sem rede, `salvarCiclo`
+só guarda o registro em `window.__previaReg`, e sessão, fila, retomada e
+localStorage viram no-op. O app principal carrega essa cópia num iframe oculto
+e chama `window.__previa(respostas, cicloAnterior, historico)`, que roda o
+mesmo `showResults()` e devolve protocolo, kit e alertas. Nenhuma regra clínica
+é duplicada: a prévia é a própria conduta calculada com as respostas até ali.

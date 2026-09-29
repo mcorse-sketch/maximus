@@ -99,3 +99,16 @@ Cada ampliação veio de um caso real:
 Um falso positivo vale registro: o rastreador acusou "tela sem saída" numa
 tela de escala porque o teste não reconhecia aquele tipo de botão. Foi o teste
 que mudou, não o app.
+
+## v2.2.0 · 29/09/2026 — identidade visual 2026 (PR-0)
+
+Antes das regras v3, por decisão do Dr. Marco: casca nova com a marca 2026
+(Inter Tight + Inter, tema claro/escuro conforme o aparelho), trilho fixo do
+paciente, prontuário e histórico em gavetas, card agrupado com as respostas do
+módulo e prévia da conduta ao vivo. Recepção redesenhada para o paciente
+responder no iPad. Toda sigla passa a vir com o ativo e a dose ao lado
+("BASE-T20 · tadalafila 20 mg"), inclusive no financeiro; R3 saiu das listas de
+escolha. Servidor ganhou usuários nomeados e `--definir-senha-todos`; senha
+mínima passou a 4 caracteres. Conduta clínica idêntica à v2.1.0: na regressão,
+0 pacientes com protocolo/kit/escores diferentes; só o texto mudou (siglas com
+ativo).

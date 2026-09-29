@@ -39,6 +39,9 @@ node regressao.js "$CLIN" || falhas=$((falhas+1))
 linha "7. jornada do médico — lista, contato, nota, avisos, ficha, texto"
 node teste_jornada.js "$CLIN" || falhas=$((falhas+1))
 
+linha "7b. nenhuma sigla sem o ativo ao lado"
+node teste_siglas.js "$CLIN" || falhas=$((falhas+1))
+
 linha "8. tela de senha dos três apps"
 node teste_sessao.js || falhas=$((falhas+1))
 
