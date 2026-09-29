@@ -108,7 +108,9 @@ paciente, prontuário e histórico em gavetas, card agrupado com as respostas do
 módulo e prévia da conduta ao vivo. Recepção redesenhada para o paciente
 responder no iPad. Toda sigla passa a vir com o ativo e a dose ao lado
 ("BASE-T20 · tadalafila 20 mg"), inclusive no financeiro; R3 saiu das listas de
-escolha. Servidor ganhou usuários nomeados e `--definir-senha-todos`; senha
+escolha. As intracavernosas R1, R2 e R4–R12 passaram a mostrar todas as
+substâncias com a concentração (tabela §6.6 da proposta v3, aprovada pelo Dr.
+Marco em 29/09/2026; R2 com fentolamina 10 mg/mL confirmada). Servidor ganhou usuários nomeados e `--definir-senha-todos`; senha
 mínima passou a 4 caracteres. Conduta clínica idêntica à v2.1.0: na regressão,
 0 pacientes com protocolo/kit/escores diferentes; só o texto mudou (siglas com
 ativo).

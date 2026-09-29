@@ -51,11 +51,15 @@ Implementado em `ativoTxt()` (texto do ativo), `garanteSiglas()` (texto puro:
 `explicaSiglas` e texto do prontuário) e `aplicaTooltips()` (tela: insere
 `span.sig-ativo` quando o ativo não vem logo depois). O financeiro guarda uma
 cópia (`ATIVO`) que `tests/teste_siglas.js` confere contra o app clínico.
-**Intracavernosas R1–R12 (R3 retirada das escolhas): as concentrações ainda
-não estão cadastradas no app.** Aparece só o que o código sabe (R1/R2 sem
-papaverina e com PGE1; R7/R8 papaverina + fentolamina, sem PGE1; demais
-papaverina + PGE1) com o aviso "concentrações não cadastradas no app". Quando o
-Dr. Marco enviar a tabela, cadastrar em `iciTxt()` e na cópia do financeiro.
+**Intracavernosas:** R1, R2 e R4–R12 com todas as substâncias e
+concentrações por mL da tabela do Dr. Marco (proposta v3 §6.6, aprovada em
+29/09/2026), em `ICI_COMPO` — ex.: `R2 · alprostadil (PGE1) 20 mcg/mL +
+fentolamina 10 mg/mL`; R7 e R8 sem PGE1. A sigla R só conta como explicada se
+cada substância vier com a concentração. R3 não consta da tabela: fora das
+listas de escolha; em registro antigo aparece como "fórmula retirada".
+`ICI_COMPO` é só exibição — as regras do TEFI (`SEM_PAPA`/`SEM_PGE1`) não a
+leem. Mudou a tabela? Atualize `ICI_COMPO`, a cópia `ATIVO` do financeiro e a
+tabela conferida em `tests/teste_siglas.js`.
 
 **Piso terapêutico.** Ninguém sai só com suplemento. DE → mínimo SP-DE;
 EP → SP-DUO, dapoxetina ou RET-1.

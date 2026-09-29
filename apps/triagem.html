@@ -2433,21 +2433,49 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   // Regra do Dr. Marco: nenhuma sigla de fórmula ou protocolo aparece sozinha.
   // Ao lado vem o ativo principal com a dose ("BASE-T20 · tadalafila 20 mg").
   // Fitoterápicos aparecem só pelo nome. As composições vêm SÓ de F e de
-  // PROTO_COMPO acima; as intracavernosas (R1–R12) ainda não têm composição
-  // cadastrada no app, então aparece o que o código sabe (com/sem papaverina e
-  // PGE1, do teste de ereção) e o aviso de concentração não cadastrada.
-  const ICI_SEM_PAPA = [1,2,3], ICI_SEM_PGE1 = [7,8];
+  // PROTO_COMPO acima e, para as intracavernosas, de ICI_COMPO abaixo.
+
+  // Fórmulas intracavernosas da clínica — tabela "Sugestões Terapêuticas para
+  // Tratamento Injetável Intracavernoso" do Dr. Marco (proposta v3, §6.6),
+  // aprovada em 29/09/2026: R2 com fentolamina 10 mg/mL confirmada; R7 e R8 sem
+  // prostaglandina. Concentração por mL; null = a fórmula não contém.
+  // R3 não consta da tabela: saiu das listas de escolha e, em registro antigo,
+  // aparece como retirada, sem composição.
+  // Só exibição: as regras do TEFI (SEM_PAPA/SEM_PGE1 em calculaResultados)
+  // não leem esta tabela.
+  const ICI_COMPO = {
+    R1:  {faixa:'leve',     pge1:10, fento:0.2,  papa:null, atro:null,  frasco:5, gel:true},
+    R2:  {faixa:'leve',     pge1:20, fento:10,   papa:null, atro:null,  frasco:5, gel:true},
+    R9:  {faixa:'leve',     pge1:12, fento:1.1,  papa:9,    atro:0.11,  frasco:3, gel:true},
+    R10: {faixa:'leve',     pge1:22, fento:0.22, papa:1.8,  atro:0.022, frasco:3, gel:true},
+    R4:  {faixa:'moderada', pge1:20, fento:3.3,  papa:12,   atro:null,  frasco:3, gel:true},
+    R5:  {faixa:'moderada', pge1:10, fento:1,    papa:30,   atro:null,  frasco:5, gel:true},
+    R7:  {faixa:'moderada', pge1:null, fento:1,  papa:30,   atro:null,  frasco:5, gel:false},
+    R8:  {faixa:'moderada', pge1:null, fento:2,  papa:18,   atro:0.2,   frasco:5, gel:false},
+    R6:  {faixa:'grave',    pge1:20, fento:4,    papa:25,   atro:null,  frasco:4, gel:true},
+    R11: {faixa:'grave',    pge1:44, fento:3.3,  papa:20,   atro:0.11,  frasco:3, gel:true},
+    R12: {faixa:'grave',    pge1:66, fento:3,    papa:24,   atro:0.1,   frasco:5, gel:true}
+  };
+  const numBR = v => String(v).replace('.', ',');
   function iciTxt(n){
-    n = +n; if (!(n>=1 && n<=12)) return '';
-    const papa = ICI_SEM_PAPA.indexOf(n)<0, pge = ICI_SEM_PGE1.indexOf(n)<0;
-    const partes = [];
-    if (papa) partes.push('papaverina');
-    if (!pge) partes.push('fentolamina');
-    if (pge) partes.push('prostaglandina E1 (alprostadil)');
-    let t = partes.join(' + ');
-    if (!papa) t += ', sem papaverina';
-    if (!pge) t += ', sem prostaglandina';
-    return t + ' — concentrações não cadastradas no app';
+    const c = ICI_COMPO['R'+(+n)];
+    if (!c) return (+n)===3 ? 'fórmula retirada da lista da clínica, composição não consta da tabela' : '';
+    const p = [];
+    if (c.pge1!=null) p.push('alprostadil (PGE1) '+numBR(c.pge1)+' mcg/mL');
+    p.push('fentolamina '+numBR(c.fento)+' mg/mL');
+    if (c.papa!=null) p.push('papaverina '+numBR(c.papa)+' mg/mL');
+    if (c.atro!=null) p.push('atropina '+numBR(c.atro)+' mg/mL');
+    return p.join(' + ') + (c.pge1==null ? ', sem PGE1' : '');
+  }
+  // para a sigla R valer como explicada, cada substância tem de vir com a concentração
+  function chavesIci(n){
+    const c = ICI_COMPO['R'+(+n)]; if (!c) return null;
+    const k = [];
+    if (c.pge1!=null) k.push('alprostadil (pge1) '+numBR(c.pge1)+' mcg/ml');
+    k.push('fentolamina '+numBR(c.fento)+' mg/ml');
+    if (c.papa!=null) k.push('papaverina '+numBR(c.papa)+' mg/ml');
+    if (c.atro!=null) k.push('atropina '+numBR(c.atro)+' mg/ml');
+    return k;
   }
   const ATIVO_FIXO = {
     'SP-DE':'tadalafila 50 mg/mL, 1 jato = 10 mg',
@@ -2455,7 +2483,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     'SP-DUO-1J':'tadalafila 50 mg/mL + clomipramina 75 mg/mL, máximo 1 jato',
     'RET-1':'lidocaína 2,5% + prilocaína 2,5%',
     'PRESERV':'preservativo com benzocaína',
-    'TEFI':'teste de ereção com R5 · '+iciTxt(5)+', 0,1 mL'
+    'TEFI':'teste de ereção com R5 · '+iciTxt(5)+' (trimix clássico), 0,1 mL'
   };
   // nomes dos fitoterápicos/suplementos, sem dose
   function nomesSemDose(txt){
@@ -2495,9 +2523,11 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     return new RegExp('(?<![A-Za-z0-9\\-])(' + siglasComAtivo().map(c=>c.replace(/[-/ ]/g,'\\$&')).join('|') + ')(?![A-Za-z0-9\\-])','g');
   }
   const SUBST = ['tadalafila','ioimbina','paroxetina','dapoxetina','clomipramina','clomifeno','lidocaina','prilocaina',
-    'benzocaina','papaverina','fentolamina','prostaglandina','alprostadil','maca','carnitina','arginina','testosterona'];
+    'benzocaina','papaverina','fentolamina','prostaglandina','alprostadil','atropina','maca','carnitina','arginina','testosterona'];
   const semAcento = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   function chavesDaSigla(cod){
+    const mR = /^R(\d{1,2})$/.exec(cod);
+    if (mR && chavesIci(mR[1])) return chavesIci(mR[1]);
     // só o que a fórmula TEM conta como chave ("sem prostaglandina" não)
     const a = semAcento(ativoTxt(cod)).split(/, sem | — /)[0];
     const k = SUBST.filter(s=>a.indexOf(s)>=0);

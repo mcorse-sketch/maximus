@@ -51,8 +51,10 @@ function soltas(win, txt) {
     // o próprio conferidor precisa acusar uma sigla solta e aceitar a sigla com ativo
     if (p === PACIENTES[0]) {
       const a = soltas(win, 'Kit: BASE-T20 e SP-DE, depois EP-2.').length;
-      const b = soltas(win, 'Kit: BASE-T20 · tadalafila 20 mg e R7 · papaverina + fentolamina').length;
-      if (a !== 3 || b !== 0) { console.log('  FALHA  conferidor de siglas quebrado (' + a + ', ' + b + ')'); process.exit(1); }
+      const b = soltas(win, 'Kit: BASE-T20 · tadalafila 20 mg e R7 · ' + win.__maximusSiglas.ativo('R7')).length;
+      // intracavernosa: nome da substância sem a concentração não vale
+      const c = soltas(win, 'Trocar para R8 (papaverina com fentolamina)').length;
+      if (a !== 3 || b !== 0 || c !== 1) { console.log('  FALHA  conferidor de siglas quebrado (' + a + ', ' + b + ', ' + c + ')'); process.exit(1); }
       console.log('  ok     conferidor acusa sigla solta e aceita sigla com ativo');
     }
     const alvos = [];
@@ -87,6 +89,40 @@ function soltas(win, txt) {
     if (dif.length) { problemas++; console.log('  FALHA  financeiro.html: mapa ATIVO diferente do app clínico em ' + dif.join(', ')); }
     else console.log('  ok     financeiro.html usa os mesmos ativos do app clínico (' + Object.keys(fin).length + ' siglas)');
     t.window.close(); f.window.close();
+  }
+  // intracavernosas: o que o app mostra tem de ser exatamente a tabela do Dr. Marco
+  // (proposta v3, §6.6, aprovada em 29/09/2026). Cópia independente, de propósito.
+  {
+    const fs = require('fs');
+    const { JSDOM, VirtualConsole } = require('jsdom');
+    const html = fs.readFileSync(path.join(__dirname, '../apps/triagem.html'), 'utf8');
+    const t = new JSDOM(html, { runScripts: 'dangerously', url: 'http://localhost/triagem.html', virtualConsole: new VirtualConsole() });
+    await espera(600);
+    const api = t.window.__maximusSiglas;
+    const TAB = {
+      R1: 'alprostadil (PGE1) 10 mcg/mL + fentolamina 0,2 mg/mL',
+      R2: 'alprostadil (PGE1) 20 mcg/mL + fentolamina 10 mg/mL',
+      R4: 'alprostadil (PGE1) 20 mcg/mL + fentolamina 3,3 mg/mL + papaverina 12 mg/mL',
+      R5: 'alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL',
+      R6: 'alprostadil (PGE1) 20 mcg/mL + fentolamina 4 mg/mL + papaverina 25 mg/mL',
+      R7: 'fentolamina 1 mg/mL + papaverina 30 mg/mL, sem PGE1',
+      R8: 'fentolamina 2 mg/mL + papaverina 18 mg/mL + atropina 0,2 mg/mL, sem PGE1',
+      R9: 'alprostadil (PGE1) 12 mcg/mL + fentolamina 1,1 mg/mL + papaverina 9 mg/mL + atropina 0,11 mg/mL',
+      R10: 'alprostadil (PGE1) 22 mcg/mL + fentolamina 0,22 mg/mL + papaverina 1,8 mg/mL + atropina 0,022 mg/mL',
+      R11: 'alprostadil (PGE1) 44 mcg/mL + fentolamina 3,3 mg/mL + papaverina 20 mg/mL + atropina 0,11 mg/mL',
+      R12: 'alprostadil (PGE1) 66 mcg/mL + fentolamina 3 mg/mL + papaverina 24 mg/mL + atropina 0,1 mg/mL'
+    };
+    const erradas = Object.keys(TAB).filter(k => api.ativo(k) !== TAB[k]);
+    conferidos++;
+    if (erradas.length) { problemas++; erradas.forEach(k => console.log('  FALHA  ' + k + ': app mostra "' + api.ativo(k) + '"')); }
+    else console.log('  ok     R1, R2, R4–R12 com todas as substâncias e concentrações da tabela §6.6');
+    const semAviso = !/n.o cadastrad/i.test(html);
+    const semR3 = !/'R3'/.test(html);
+    conferidos += 2;
+    if (!semAviso) { problemas++; console.log('  FALHA  ainda há aviso de concentração não cadastrada'); }
+    if (!semR3) { problemas++; console.log('  FALHA  R3 ainda aparece numa lista de escolha'); }
+    if (semAviso && semR3) console.log('  ok     sem aviso de concentração não cadastrada e R3 fora das listas');
+    t.window.close();
   }
   console.log('\n=== SIGLAS COM ATIVO ===');
   console.log('trechos conferidos: ' + conferidos + ' | com sigla sem ativo: ' + problemas);
