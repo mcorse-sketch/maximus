@@ -139,3 +139,28 @@ o banco, a lista de pacientes e a fila da recepção de hoje; campo vazio ou
 inválido desativa o botão e mostra o motivo ("Informe o código do paciente
 para continuar — o próximo livre é MX0002."). Testes: tests/teste_codigo.js
 (etapa 7c) e três casos novos em teste_servidor.py. Conduta clínica idêntica.
+
+## v2.3.0 · 30/09/2026 — paridade com o mockup v3, sem mudar a conduta
+
+O app ao vivo ganhou o que o mockup v3 tinha e não depende das regras v3:
+atalhos de teclado (1–9, ↓/Enter, ↑, ⌘↵, R/H/P, ⌘K, T, ? e Esc, com lista de
+ajuda), tema claro/escuro manual (padrão continua seguindo o aparelho; a
+escolha fica salva no navegador), busca de paciente por código ou iniciais,
+barra superior com a fila de hoje, chips e contagem n/total no trilho, módulos
+dispensados com o motivo, seção agrupada no estilo do mockup (respondidas
+acima, seguintes abaixo), selo "nova · por causa de …" para pergunta que surge
+depois de uma resposta, opções curtas em pílula, barra fixa de progresso com
+"Revisar conduta ⌘↵" e conduta em 3 níveis (protocolo e escores; alertas e kit;
+racional e custo recolhíveis, abertos na impressão). O ⌘↵ só encadeia o botão
+Próxima: para na primeira pergunta obrigatória em aberto. Inclui a correção
+do código do paciente da v2.2.1. Conduta idêntica à v2.2: regressão com 0 pacientes com protocolo/kit/escores ou texto diferentes;
+teste novo (`teste_interface.js`) confere, nos 65 pacientes da regressão, que
+pedir a conduta com ⌘↵ dá o mesmo protocolo, kit, escores e texto do caminho
+normal.
+
+Ficou para as regras v3 (o mockup mostra, o app ainda não tem a regra por
+trás): todas as perguntas numa página com o "porquê" de cada uma (BD-x, P0,
+§6.1), perguntas dispensadas com motivo por pergunta, bloqueios duros × alertas
+com códigos BD, tags [PERMISSIVO] PE-x no kit, protocolo "BLOQUEIO",
+reavaliação com linha de diferença e critério de sucesso (Δ IIEF ≥ +5), escada
+de intracavernosa no kit e as perguntas novas da v3.

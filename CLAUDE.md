@@ -210,13 +210,15 @@ cd tests && npm install          # jsdom
 cd .. && ./scripts/testar.sh 100 # roda tudo
 ```
 
-Onze etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
+Doze etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
 recepção, rastreador de módulos nas oito linhas de queixa, integração
 recepção → consultório, **regressão clínica**, jornada do médico
 (`teste_jornada.js`: contato, nota final, aviso de ISRS, texto, ficha,
 impressão, lista de pacientes, descartar), **siglas com ativo**
 (`teste_siglas.js`), **código do paciente novo** (`teste_codigo.js`: próximo
-livre sempre preenchido, vazio não avança), tela de senha e servidor. A regressão separa
+livre sempre preenchido, vazio não avança), **interface v2.3**
+(`teste_interface.js`: tema, atalhos, busca e a equivalência do ⌘↵ com o
+caminho normal nos pacientes da regressão), tela de senha e servidor. A regressão separa
 "protocolo/kit/escores mudaram" de "só o texto mudou".
 
 A regressão (`tests/regressao.js`) leva os pacientes de
@@ -238,8 +240,11 @@ opção por `data-v` / `data-campo`. Não remova essas marcações.
   #424D54, Azul Principal #0E1E28, Azul Profundo #010B0F. Sem dourado. Fontes
   Inter Tight (títulos) + Inter (texto). Tokens em `<style id="tema-2026">` no
   fim de cada app, com o prefixo `--mx-`.
-- **Tema segue o aparelho** (`prefers-color-scheme`); nada de escuro forçado.
-  Impressão sempre clara.
+- **Tema:** padrão segue o aparelho (`prefers-color-scheme`); desde a v2.3 o
+  médico troca à mão (botão ◐ ou tecla T) e a escolha fica em
+  `localStorage['mx-tema']` ('claro'/'escuro'). O script logo após `<body>` põe
+  `data-tema` no `<html>` antes de pintar; as cores escuras valem só com
+  `html[data-tema="escuro"]` dentro de `@media screen`. Impressão sempre clara.
 - `triagem.html` (Mac): casca `#mxShell` em três colunas — trilho fixo do
   paciente `#mxRail` (Prontuário, Histórico, Panorama, módulos com estado e o
   `#painelCard`), atendimento no centro e `#previaCard` (conduta ao vivo) à
@@ -247,6 +252,18 @@ opção por `data-v` / `data-campo`. Não remova essas marcações.
   respostas já dadas no módulo aparecem em `#grupoCard`, colado acima da
   pergunta atual (card agrupado). Abaixo de 1180 px a prévia desce; abaixo de
   900 px o trilho vira faixa.
+- **v2.3 · paridade com o mockup v3** (bloco "v2.3" no fim do script, só
+  apresentação): atalhos 1–9, ↓/Enter, ↑, ⌘↵ (Ctrl+Enter), R/F, H, P, ⌘K, T,
+  ? e Esc com a lista em `#mxAjuda`; busca de paciente `#mxBusca` (fila de hoje
+  + banco; abre pelo mesmo clique das telas iniciais); chips e contagem n/total
+  no trilho, `#mxDisp` com os módulos que as regras atuais tiraram do fluxo;
+  seção agrupada (`#mxSecH`, `#grupoCard`, `#mxSeguintes`); selo
+  "nova · por causa de …" (`#mxNova`) em tela que surgiu depois de uma resposta
+  clínica; opções curtas em pílula; barra `#mxCta` com progresso; conduta em 3
+  níveis (`#mxCdHead` fora da impressão, alertas antes do kit só na tela,
+  racional e custo em `<details class="mx-det">`, que saem abertos na
+  impressão). **⌘↵ não calcula nada:** chama `avancar()` em sequência — o mesmo
+  caminho do botão Próxima — e para na primeira obrigatória em aberto.
 - **Prévia ao vivo:** o mesmo app num iframe oculto com `?previa=1`
   (`PREVIA`), que roda `showResults()` com uma cópia das respostas e **nunca
   grava** (salvarCiclo, sessão, fila e localStorage viram no-op; Store fica em
