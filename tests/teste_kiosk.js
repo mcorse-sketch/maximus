@@ -130,7 +130,11 @@ async function roda(i, mem, novo) {
 
     const codInp = doc.querySelector('#opcoes input.kfld');
     if (/C\u00f3digo do paciente/i.test(pergunta) && codInp) {
-      codInp.value = novo ? '' : 'MX' + String(intBetween(1, 60)).padStart(4, '0');
+      // paciente novo: usa o próximo livre, que já vem preenchido no campo
+      // (campo vazio não avança mais — teste_codigo.js); retorno: digita um código
+      if (novo) {
+        if (!/^MX\d{4}$/.test(codInp.value)) { rel.falha = 'código novo não veio preenchido: "' + codInp.value + '"'; break; }
+      } else codInp.value = 'MX' + String(intBetween(1, 60)).padStart(4, '0');
       codInp.dispatchEvent(new win.Event('input', { bubbles: true }));
     }
 

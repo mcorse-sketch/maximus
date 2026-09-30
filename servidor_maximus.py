@@ -186,7 +186,20 @@ def carregar():
         return {"pacientes": {}}
     try:
         with open(BANCO, "r", encoding="utf-8") as f:
-            return json.load(f)
+            texto = f.read()
+        # arquivo criado vazio (0 bytes) ou "{}": banco novo, nao corrompido.
+        # Antes, "{}" derrubava /api/proximo-codigo, /api/pacientes e a gravacao
+        # (KeyError 'pacientes'); e o arquivo de 0 bytes gerava uma copia
+        # ".corrompido" a cada consulta.
+        if not texto.strip():
+            return {"pacientes": {}}
+        dados = json.loads(texto)
+        if not isinstance(dados, dict):
+            raise ValueError("banco nao e um objeto")
+        dados.setdefault("pacientes", {})
+        if not isinstance(dados["pacientes"], dict):
+            raise ValueError("'pacientes' nao e um objeto")
+        return dados
     except Exception:
         quebrado = BANCO + ".corrompido-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         shutil.copy2(BANCO, quebrado)

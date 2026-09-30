@@ -115,6 +115,31 @@ mínima passou a 4 caracteres. Conduta clínica idêntica à v2.1.0: na regress�
 0 pacientes com protocolo/kit/escores diferentes; só o texto mudou (siglas com
 ativo).
 
+## v2.2.1 · 30/09/2026 — código do paciente novo
+
+Relato do Dr. Marco no app ao vivo (banco vazio, servidor local): ao escolher
+paciente novo o campo do código não parecia sugerido e o botão de avançar
+aceitava o campo vazio. O que estava errado:
+- Recepção: a sugestão ia só para o placeholder; campo vazio contava como
+  "aceitar o sugerido" e o botão ficava liberado. Depois de "Novo paciente"
+  nada era buscado: campo vazio, placeholder "MX0001" (já em uso) e botão ativo.
+- App clínico: a sugestão só rodava ao sair da tela "Tipo de visita"; chegar à
+  tela do código por outro caminho (atendimento retomado) deixava o campo
+  vazio. O placeholder era "MX0001", igual à sugestão com o banco vazio: campo
+  preenchido e campo vazio ficavam indistinguíveis. "Novo paciente" apagava a
+  fila e não a consultava de novo.
+- Os dois apps: servidor sem resposta virava "MX0001" às cegas (colide com
+  paciente gravado); no banco Claude a recepção ignorava os próprios códigos.
+- Servidor: banco "{}" derrubava /api/proximo-codigo, /api/pacientes e a
+  gravação (KeyError); arquivo de 0 bytes gerava uma cópia ".corrompido" a cada
+  consulta.
+
+Agora o próximo código livre vem sempre preenchido no campo, calculado contra
+o banco, a lista de pacientes e a fila da recepção de hoje; campo vazio ou
+inválido desativa o botão e mostra o motivo ("Informe o código do paciente
+para continuar — o próximo livre é MX0002."). Testes: tests/teste_codigo.js
+(etapa 7c) e três casos novos em teste_servidor.py. Conduta clínica idêntica.
+
 ## v2.3.0 · 30/09/2026 — paridade com o mockup v3, sem mudar a conduta
 
 O app ao vivo ganhou o que o mockup v3 tinha e não depende das regras v3:
@@ -127,8 +152,8 @@ acima, seguintes abaixo), selo "nova · por causa de …" para pergunta que surg
 depois de uma resposta, opções curtas em pílula, barra fixa de progresso com
 "Revisar conduta ⌘↵" e conduta em 3 níveis (protocolo e escores; alertas e kit;
 racional e custo recolhíveis, abertos na impressão). O ⌘↵ só encadeia o botão
-Próxima: para na primeira pergunta obrigatória em aberto. Conduta idêntica à
-v2.2: regressão com 0 pacientes com protocolo/kit/escores ou texto diferentes;
+Próxima: para na primeira pergunta obrigatória em aberto. Inclui a correção
+do código do paciente da v2.2.1. Conduta idêntica à v2.2: regressão com 0 pacientes com protocolo/kit/escores ou texto diferentes;
 teste novo (`teste_interface.js`) confere, nos 65 pacientes da regressão, que
 pedir a conduta com ⌘↵ dá o mesmo protocolo, kit, escores e texto do caminho
 normal.
@@ -139,4 +164,3 @@ trás): todas as perguntas numa página com o "porquê" de cada uma (BD-x, P0,
 com códigos BD, tags [PERMISSIVO] PE-x no kit, protocolo "BLOQUEIO",
 reavaliação com linha de diferença e critério de sucesso (Δ IIEF ≥ +5), escada
 de intracavernosa no kit e as perguntas novas da v3.
-
