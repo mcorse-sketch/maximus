@@ -118,7 +118,145 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 #envioBox .canal{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid #ecebe6;padding-top:10px;margin-top:10px}
 #envioBox .canal button{font:inherit;font-size:13px;padding:9px 13px;border-radius:9px;border:1px solid #b9c4c6;background:#fff;cursor:pointer}
 #envioBox .aviso{font-size:12.5px;color:#8a5a0b}
-</style></head><body>
+</style><style id="tema-2026-v23">
+/* ==== v2.3 · paridade com o mockup v3 (só apresentação) ==== */
+.kbd{display:inline-block;font:500 10.5px var(--mx-mono,ui-monospace,monospace);padding:1px 6px;border-radius:5px;line-height:1.5;
+  border:1px solid var(--mx-line2,rgba(14,30,40,.2));color:var(--mx-text2,#424D54);background:var(--mx-surf,#fff);vertical-align:1px}
+details.mx-det > summary{list-style:none}
+details.mx-det > summary::-webkit-details-marker{display:none}
+@media print{
+  .mx-cdhead,.mx-cta,.mx-sheet,.mx-toast,.mx-topacts,#mxNova{display:none!important}
+  details.mx-det > summary{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:14px 0 6px}
+  details.mx-det #racTitulo{display:none!important}
+}
+@media screen{
+  header.brand .tool-title{margin-left:14px!important;text-align:left!important}
+  .mx-topacts{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .mx-fila{font-size:13px;color:var(--mx-text2);white-space:nowrap}
+  .mx-fila b{color:var(--mx-text);font-weight:600}
+  .mx-busca-btn{display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 8px 0 12px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--mx-line2);background:var(--mx-surf2);color:var(--mx-text2);font-size:13px;min-width:250px}
+  .mx-busca-btn .lbl{flex:1;text-align:left}
+  .mx-busca-btn:hover{color:var(--mx-text);border-color:var(--mx-text3)}
+  .mx-iconbtn{display:inline-flex;align-items:center;gap:6px;height:34px;min-width:34px;justify-content:center;padding:0 9px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--mx-line2);background:var(--mx-surf);color:var(--mx-text);font-size:13px}
+  .mx-iconbtn:hover{background:var(--mx-surf2)}
+  .btn .kbd,.hist-btn .kbd{margin-left:6px;background:transparent}
+  .btn-primary .kbd{color:inherit;border-color:currentColor;opacity:.7}
+  @media (max-width:900px){ .mx-busca-btn{min-width:0} .mx-busca-btn .lbl,.mx-fila{display:none} header.brand .tool-title .t2{display:none} }
+
+  /* painéis flutuantes: atalhos e busca */
+  .mx-sheet{position:fixed;inset:0;display:none;place-items:center;z-index:80;background:rgba(1,11,15,.32);padding:16px}
+  .mx-sheet.on{display:grid}
+  .mx-sheet-card{width:min(440px,100%);max-height:86vh;overflow:auto;background:var(--mx-surf);color:var(--mx-text);border:1px solid var(--mx-line);
+    border-radius:22px;box-shadow:var(--mx-shadow);padding:22px 24px}
+  .mx-sheet table{width:100%;border-collapse:collapse;font-size:14px}
+  .mx-sheet td{padding:7px 0;border-top:1px solid var(--mx-line)}
+  .mx-sheet tr:first-child td{border-top:0}
+  .mx-sheet td:last-child{text-align:right;white-space:nowrap;color:var(--mx-text2)}
+  .mx-sheet .mx-sub{font-size:12.5px;color:var(--mx-text3)}
+  .mx-busca-card{width:min(560px,100%);align-self:start;margin-top:10vh}
+  .mx-busca-lista{display:grid;gap:4px;margin-top:10px;max-height:52vh;overflow:auto}
+  .mx-bi{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:baseline;text-align:left;border:0;background:transparent;
+    padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--mx-text);font-size:14px}
+  .mx-bi b{font:600 13px var(--mx-mono)} .mx-bi span{color:var(--mx-text2)} .mx-bi small{font-size:11.5px;color:var(--mx-text3)}
+  .mx-bi.on,.mx-bi:hover{background:var(--mx-surf2)}
+  .mx-toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,12px);opacity:0;pointer-events:none;z-index:90;
+    background:var(--mx-ink);color:var(--mx-inkt);padding:9px 16px;border-radius:999px;font-size:13px;box-shadow:var(--mx-shadow);
+    transition:opacity .2s cubic-bezier(.2,.8,.2,1),transform .2s cubic-bezier(.2,.8,.2,1)}
+  .mx-toast.on{opacity:1;transform:translate(-50%,0)}
+
+  /* trilho: chips, contagem e módulos dispensados */
+  .mx-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .mx-chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--mx-surf2);border:1px solid var(--mx-line);color:var(--mx-text2);white-space:nowrap}
+  .mx-chip.forte{background:transparent;border-color:var(--mx-line2);color:var(--mx-text)}
+  .mx-nav small{font-family:var(--mx-mono);font-size:10.5px}
+  .mx-nav .mx-navcd{margin-top:4px;border-top:1px solid var(--mx-line);border-radius:0 0 10px 10px;padding-top:10px}
+  .mx-nav .mx-navcd .kbd{font-size:10px}
+  details.mx-disp{font-size:12.5px;color:var(--mx-text3);padding:0 10px}
+  details.mx-disp summary{cursor:pointer}
+  details.mx-disp summary:hover{color:var(--mx-text2)}
+  details.mx-disp ul{margin:8px 0 0;padding-left:16px;line-height:1.45}
+  details.mx-disp li{margin-bottom:4px} details.mx-disp li b{font-weight:500;color:var(--mx-text2)}
+  .mx-acts .btn .kbd,.mx-acts .hist-btn .kbd{font-size:10px;padding:0 5px;margin-left:5px}
+
+  /* seção agrupada no estilo do mockup */
+  .mx-sech{font:600 12px var(--mx-font);letter-spacing:.07em;text-transform:uppercase;color:var(--mx-text3);margin:0 0 10px 4px;
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .mx-sech span{letter-spacing:0;text-transform:none;font-weight:400;font-size:12px}
+  #grupoCard{padding:6px 0 0!important}
+  #grupoCard .mx-q,#mxSeguintes .mx-q{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;width:100%;text-align:left;border:0;
+    border-top:1px solid var(--mx-line);background:transparent;padding:13px 22px;cursor:pointer;color:var(--mx-text)}
+  #grupoCard .mx-q:first-child,#mxSeguintes .mx-q:first-child{border-top:0}
+  #grupoCard .mx-q:hover,#mxSeguintes .mx-q:hover{background:var(--mx-surf2)}
+  #grupoCard .mx-q .ql,#mxSeguintes .mx-q .ql{font:500 15px var(--mx-font);letter-spacing:-.01em}
+  #grupoCard .mx-q .qa,#mxSeguintes .mx-q .qa{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;max-width:360px}
+  #grupoCard .mx-q .pil,#mxSeguintes .mx-q .pil{font-size:12.5px;padding:4px 11px;border-radius:999px;background:var(--mx-ink);color:var(--mx-inkt);white-space:nowrap;max-width:340px;overflow:hidden;text-overflow:ellipsis}
+  #grupoCard .mx-q.falta .ql,#mxSeguintes .mx-q.falta .ql{color:var(--mx-text3);font-weight:400}
+  #grupoCard .mx-q.falta .pil,#mxSeguintes .mx-q.falta .pil{background:transparent;color:var(--mx-text3);border:1px dashed var(--mx-line2)}
+  #grupoCard .mx-q.nova .ql::after,#mxSeguintes .mx-q.nova .ql::after{content:"nova";margin-left:8px;font:600 11px var(--mx-font);color:var(--mx-focus)}
+  #grupoCard.com-seguintes{border-bottom:0!important}
+  #quizCard.no-grupo{box-shadow:inset 3px 0 0 var(--mx-focus),var(--mx-shadow)!important}
+  #quizCard.no-grupo .q-text{font-size:clamp(20px,2vw,24px)!important}
+  #quizCard.com-seguintes{border-bottom-left-radius:0!important;border-bottom-right-radius:0!important}
+  #grupoCard[style*="none"] + #quizCard{border-top-left-radius:22px!important;border-top-right-radius:22px!important;border-top:1px solid var(--mx-line)!important}
+  #mxSeguintes{border-top-left-radius:0!important;border-top-right-radius:0!important;border-top:1px dashed var(--mx-line2)!important;box-shadow:none!important;padding:0!important;margin-top:-1px}
+  .mx-nova{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--mx-focus);margin:0 0 8px;
+    padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--mx-focus) 10%,transparent);animation:mxFresh 2.4s cubic-bezier(.2,.8,.2,1)}
+  .mx-nova b{font-weight:600}
+  @keyframes mxFresh{0%,40%{box-shadow:0 0 0 4px color-mix(in srgb,var(--mx-focus) 18%,transparent)}100%{box-shadow:none}}
+
+  /* opções curtas viram pílulas, como no mockup */
+  #optsWrap.mx-pilulas{flex-direction:row!important;flex-wrap:wrap;gap:8px!important}
+  #optsWrap.mx-pilulas .opt{width:auto!important;height:38px;padding:0 15px 0 8px!important;border-radius:999px!important;gap:8px!important;font-size:14px}
+  #optsWrap.mx-pilulas .opt .badge{min-width:20px;height:20px;padding:0 5px;font-size:10.5px;background:transparent!important;color:var(--mx-text3)!important}
+  #optsWrap.mx-pilulas .opt.selected .badge{color:inherit!important;opacity:.6}
+  #optsWrap.mx-pilulas .fld-hint,#optsWrap.mx-pilulas .fld-err{flex-basis:100%}
+
+  /* barra fixa de progresso + revisar conduta */
+  .mx-cta{position:sticky;bottom:18px;z-index:12;margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:8px 8px 8px 18px;border-radius:999px;background:var(--mx-glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--mx-line);box-shadow:var(--mx-shadow)}
+  .mx-prog{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mx-text2)}
+  .mx-bar{width:140px;height:4px;border-radius:4px;background:var(--mx-surf3);overflow:hidden}
+  .mx-bar i{display:block;height:100%;width:0;background:var(--mx-ink);transition:width .36s cubic-bezier(.2,.8,.2,1)}
+  .mx-cta .btn{height:40px;border-radius:999px!important;padding:0 16px!important}
+
+  /* conduta em 3 níveis: 1) protocolo e escores  2) alertas e kit  3) racional, custo e relatório recolhíveis */
+  .mx-cdhead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:26px clamp(18px,4vw,32px) 18px;border-bottom:1px solid var(--mx-line)}
+  .mx-cdproto{font:300 60px var(--mx-disp);letter-spacing:-.05em;line-height:1;color:var(--mx-text);margin-top:8px}
+  .mx-cdproto.longo{font-size:34px;letter-spacing:-.03em;line-height:1.1}
+  .mx-cdtit{font-size:17px;color:var(--mx-text2);margin-top:8px;max-width:520px}
+  .mx-cdhead .mx-chips{margin-top:12px}
+  .mx-scores{display:flex;gap:28px;flex:none}
+  .mx-scores div{text-align:right}
+  .mx-scores b{display:block;font:300 30px var(--mx-disp);letter-spacing:-.02em;color:var(--mx-text)}
+  .mx-scores span{font-size:12px;color:var(--mx-text3)}
+  .mx-alertas{display:inline-flex;margin-top:12px;font-size:12.5px;color:var(--mx-warn);border:1px solid var(--mx-warnln);background:var(--mx-warnbg);
+    border-radius:999px;padding:3px 10px;cursor:pointer}
+  #resultsCard.mx-cd-on .result-top .gauge-wrap,#resultsCard.mx-cd-on #marcador{display:none!important}
+  #resultsCard.mx-cd-on #printArea{display:flex;flex-direction:column}
+  #resultsCard.mx-cd-on #printArea > *{order:3}
+  #resultsCard.mx-cd-on #printArea > .result-top{order:0}
+  #resultsCard.mx-cd-on #printArea > .reco-box{order:1}
+  #resultsCard.mx-cd-on #printArea > #altNote{order:2}
+  details.mx-det{border-top:1px solid var(--mx-line);padding:14px 0;margin:0}
+  details.mx-det > summary{cursor:pointer;font-weight:500;display:flex;justify-content:space-between;gap:12px;color:var(--mx-text)}
+  details.mx-det > summary::after{content:"+";color:var(--mx-text3);font-weight:400}
+  details.mx-det[open] > summary::after{content:"–"}
+  details.mx-det > summary small{font-weight:400;color:var(--mx-text3);margin-left:auto}
+  details.mx-det #racTitulo{display:none!important}
+  details.mx-det #custoBox > div{margin-top:10px!important}
+  @media (max-width:720px){ .mx-cdhead{flex-direction:column;align-items:flex-start} .mx-cdproto{font-size:44px} .mx-scores div{text-align:left} }
+}
+</style></head><body><script>
+
+/* v2.3: tema claro/escuro. Padrão = o do aparelho; a escolha manual (tecla T
+   ou botão ◐) fica guardada neste navegador. Impressão continua sempre clara. */
+(function(){var t=null;try{t=localStorage.getItem('mx-tema')}catch(e){}
+if(t!=='claro'&&t!=='escuro'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'escuro':'claro'}
+document.documentElement.setAttribute('data-tema',t)})();
+</script>
 <title>Painel de atendimento Maximus</title>
 <style>
   :root{
@@ -502,9 +640,39 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.2.0">Vers&atilde;o 2.2.0 &middot; 29/09/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.3.0">Vers&atilde;o 2.3.0 &middot; 30/09/2026</div>
+  </div>
+  <div class="mx-topacts noprint" id="mxTopo">
+    <span class="mx-fila" id="mxFilaTopo"></span>
+    <button type="button" class="mx-busca-btn" id="mxBuscaBtn" aria-label="Buscar paciente ou código (⌘K)"><span aria-hidden="true">⌕</span><span class="lbl">Buscar paciente ou código</span><span class="kbd">⌘K</span></button>
+    <button type="button" class="mx-iconbtn" id="mxTemaBtn" aria-label="Alternar tema claro ou escuro (tecla T)">◐ <span class="kbd">T</span></button>
+    <button type="button" class="mx-iconbtn" id="mxAjudaBtn" aria-label="Atalhos de teclado (tecla ?)">?</button>
   </div>
 </header>
+<div class="mx-sheet noprint" id="mxAjuda" role="dialog" aria-modal="true" aria-label="Atalhos de teclado" aria-hidden="true"><div class="mx-sheet-card">
+  <div class="mx-eyebrow" style="margin-bottom:10px">Atalhos de teclado</div>
+  <table>
+   <tr><td>Escolher a opção da pergunta</td><td><span class="kbd">1</span>–<span class="kbd">9</span></td></tr>
+   <tr><td>Próxima pergunta (resposta válida)</td><td><span class="kbd">↓</span> ou <span class="kbd">↵</span></td></tr>
+   <tr><td>Pergunta anterior</td><td><span class="kbd">↑</span></td></tr>
+   <tr><td>Revisar conduta</td><td><span class="kbd">⌘</span> <span class="kbd">↵</span></td></tr>
+   <tr><td>Prontuário completo</td><td><span class="kbd">R</span> ou <span class="kbd">F</span></td></tr>
+   <tr><td>Histórico do paciente (retorno)</td><td><span class="kbd">H</span></td></tr>
+   <tr><td>Panorama dos módulos</td><td><span class="kbd">P</span></td></tr>
+   <tr><td>Buscar paciente ou código</td><td><span class="kbd">⌘</span> <span class="kbd">K</span></td></tr>
+   <tr><td>Tema claro / escuro</td><td><span class="kbd">T</span></td></tr>
+   <tr><td>Esta ajuda</td><td><span class="kbd">?</span></td></tr>
+   <tr><td>Fechar painel</td><td><span class="kbd">Esc</span></td></tr>
+  </table>
+  <div class="mx-sub" style="margin-top:12px">No Windows, <span class="kbd">Ctrl</span> no lugar de <span class="kbd">⌘</span>.</div>
+  <button type="button" class="btn btn-ghost" id="mxAjudaFechar" style="margin-top:14px;width:100%">Fechar <span class="kbd">Esc</span></button>
+</div></div>
+<div class="mx-sheet noprint" id="mxBusca" role="dialog" aria-modal="true" aria-label="Buscar paciente" aria-hidden="true"><div class="mx-sheet-card mx-busca-card">
+  <input type="text" class="fld" id="mxBuscaCampo" placeholder="Código ou iniciais do paciente" autocomplete="off" data-foco aria-label="Código ou iniciais do paciente">
+  <div class="mx-busca-lista" id="mxBuscaLista" role="listbox" aria-label="Pacientes"></div>
+  <div class="mx-sub" style="margin-top:10px">Da fila de hoje: começa pela fila da recepção. Do banco: abre como reavaliação, pelo caminho de sempre.</div>
+</div></div>
+<div class="mx-toast noprint" id="mxToast" role="status" aria-live="polite"></div>
 
 
 <style>
@@ -735,11 +903,12 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     <aside class="mx-rail noprint" id="mxRail" aria-label="Paciente em atendimento">
       <div class="mx-pac" id="mxPac"></div>
       <div class="mx-acts">
-        <button type="button" class="btn btn-ghost" id="mxFicha" title="Prontuário completo do paciente (tecla F)">Prontuário</button>
-        <button type="button" class="hist-btn noprint" id="histBtn" title="Resumo de todos os atendimentos anteriores (tecla H)" style="display:none;">Histórico</button>
-        <button type="button" class="btn btn-ghost" id="mxPan" title="Todos os módulos (Esc)">Panorama</button>
+        <button type="button" class="btn btn-ghost" id="mxFicha" title="Prontuário completo do paciente (tecla R ou F)">Prontuário <span class="kbd">R</span></button>
+        <button type="button" class="hist-btn noprint" id="histBtn" title="Resumo de todos os atendimentos anteriores (tecla H)" style="display:none;">Histórico <span class="kbd">H</span></button>
+        <button type="button" class="btn btn-ghost" id="mxPan" title="Todos os módulos (tecla P ou Esc)">Panorama <span class="kbd">P</span></button>
       </div>
       <nav class="mx-nav" id="mxNav" aria-label="Módulos do atendimento"></nav>
+      <div id="mxDisp"></div>
     <aside class="card noprint" id="painelCard" style="display:none;">
       <div class="painel-tit">Painel do paciente</div>
       <div class="atual" id="barraAtual" style="display:none;"></div>
@@ -750,10 +919,12 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     <div class="linha" id="linhaQuiz">
     <div class="col-dir" id="colDireita">
     <div class="card noprint" id="panoramaCard" style="display:none;"></div>
+    <div class="mx-sech noprint" id="mxSecH" style="display:none;"></div>
     <div class="card noprint" id="grupoCard" style="display:none;" aria-label="Respostas deste módulo"></div>
     <div class="card noprint" id="quizCard">
       <div class="progress-row"><span class="step-label" id="stepLabel"></span><div class="dots" id="dots"></div></div>
       <div class="q-wrap">
+        <div class="mx-nova" id="mxNova" style="display:none;"></div>
         <div class="q-eyebrow" id="qEyebrow"></div>
         <p class="q-text" id="qText"></p>
         <div class="options" id="optsWrap"></div>
@@ -768,10 +939,16 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         <button class="btn btn-primary" id="nextBtn" disabled>Pr&oacute;xima</button>
       </div>
     </div>
+    <div class="card noprint" id="mxSeguintes" style="display:none;" aria-label="Próximas perguntas deste módulo"></div>
+    <div class="mx-cta noprint" id="mxCta" style="display:none;">
+      <div class="mx-prog"><div class="mx-bar"><i id="mxBarra"></i></div><span id="mxProgTxt"></span></div>
+      <button type="button" class="btn btn-primary" id="mxRevisar">Revisar conduta <span class="kbd">⌘↵</span></button>
+    </div>
     </div>
     </div>
 
     <div class="card" id="resultsCard" style="display:none;">
+      <div class="mx-cdhead noprint" id="mxCdHead" style="display:none;"></div>
       <div class="results" id="printArea">
         <div class="result-top">
           <div class="gauge-wrap noprint">
@@ -788,9 +965,9 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         <div class="reco-box"><div class="reco-line" id="recoLine"></div><p id="recoText"></p></div>
         <div class="section-title">Protocolo sugerido</div>
         <div class="kit-grid" id="kitGrid"></div>
-        <div id="custoBox"></div>
-        <div class="section-title" id="racTitulo" style="display:none;">Racional da conduta</div>
-        <div id="racBox"></div>
+        <details class="mx-det" id="mxDetCusto"><summary>Custo estimado do ciclo <small></small></summary><div id="custoBox"></div></details>
+        <details class="mx-det" id="mxDetRac"><summary>Racional da conduta</summary><div class="section-title" id="racTitulo" style="display:none;">Racional da conduta</div>
+        <div id="racBox"></div></details>
         <div class="alt-note" id="altNote" style="display:none;"></div>
         <div id="notasMais"></div>
         <div class="rep" id="report"></div>
@@ -831,7 +1008,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 <style id="tema-2026">
 /* ==== v2.2 · identidade Maximus 2026 (hias.group, mai/2026) ====
    Gelo #F2F9F9 · Cinza Claro #D1DBDB · Cinza Médio #424D54 · Azul Principal #0E1E28 · Azul Profundo #010B0F
-   Tema segue o aparelho (prefers-color-scheme). Impressão continua sempre clara. */
+   Tema: padrão do aparelho, com troca manual (v2.3, atributo data-tema no <html>).
+   Impressão continua sempre clara. */
 :root{
   --mx-font:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
   --mx-disp:"Inter Tight",-apple-system,"SF Pro Display",system-ui,sans-serif;
@@ -849,8 +1027,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   --mx-glass:rgba(242,249,249,.82);
   --mx-rail:300px; --mx-prev:340px;
 }
-@media screen and (prefers-color-scheme: dark){
-  :root{
+@media screen{
+  html[data-tema="escuro"]{
     color-scheme:dark;
     --mx-bg:#010B0F; --mx-surf:#0B1820; --mx-surf2:#0E1E28; --mx-surf3:#182A35;
     --mx-line:rgba(209,219,219,.10); --mx-line2:rgba(209,219,219,.20);
@@ -884,7 +1062,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   header.brand .knight,header.brand .brand-text{display:none!important}
   header.brand .mx-logo{height:26px;width:auto;display:block}
   header.brand .mx-logo.escuro{display:none}
-  @media (prefers-color-scheme: dark){ header.brand .mx-logo.claro{display:none} header.brand .mx-logo.escuro{display:block} }
+  html[data-tema="escuro"] header.brand .mx-logo.claro{display:none} html[data-tema="escuro"] header.brand .mx-logo.escuro{display:block}
   header.brand .tool-title{color:var(--mx-text)!important;display:flex;align-items:baseline;gap:12px}
   header.brand .tool-title .t1{font:500 14px var(--mx-font)!important;color:var(--mx-text2)}
   header.brand .tool-title .t2{font:12px var(--mx-mono)!important;color:var(--mx-text3)!important;letter-spacing:0}
@@ -1417,6 +1595,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   }
   function avisaFalhaAoSalvar(){ marcaSalvo(false); }
   async function salvarCiclo(reg){
+    window.__mxReg = reg;   // v2.3: só para o cabeçalho da conduta na tela
     if (PREVIA){ window.__previaReg = reg; return true; }
     // contato registrado aqui (a recepção não coletou) fica no registro: a
     // recepção o encontra no próximo retorno
@@ -2220,7 +2399,9 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
         if (S.codigo||S.daFila) mostrarPanorama(); else paint();
         return;
       }
-      showResults(); return;
+      // v2.3: a promessa fica visível para o ⌘↵ esperar a conduta (não muda o cálculo)
+      window.__mxReg = null;
+      window.__mxPromConduta = showResults(); return;
     }
     const pos = screens.findIndex(x=>x.id===sc.id);
     // se a tela atual deixou de existir (ex.: trocar a queixa), a substituta
@@ -5310,6 +5491,8 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (!conteudo) return;
     const w = window.open('', '_blank');
     if (!w){ document.body.classList.add(classe); window.print(); setTimeout(()=>document.body.classList.remove(classe),400); return; }
+    // v2.3: racional e custo ficam recolhidos na tela, mas saem abertos no papel
+    const corpo = conteudo.innerHTML.replace(/<details(?![^>]*\sopen)/g, '<details open');
     const estilos = [...document.querySelectorAll('style')].map(n=>n.outerHTML).join('');
     w.document.open();
     w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+escH(titulo)+'</title>'+estilos
@@ -5317,7 +5500,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       + 'body *{visibility:visible!important}.noprint,.ficha-top,button{display:none!important}'
       + '.impresso{display:block!important;position:static!important;max-width:190mm;margin:0 auto}'
       + '.impresso .ficha-doc,.ficha-doc.impresso{box-shadow:none;max-height:none;overflow:visible}</style></head>'
-      + '<body class="'+classe+'"><div class="impresso">'+conteudo.innerHTML+'</div></body></html>');
+      + '<body class="'+classe+'"><div class="impresso">'+corpo+'</div></body></html>');
     w.document.close();
     w.focus();
     setTimeout(()=>{ try{ w.print(); }catch(e){} }, 350);
@@ -5674,10 +5857,11 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (comRail) mxPintaRail();
     mxPintaGrupo();
     mxAgendaPrevia();
+    mxDepoisLayout23();
   }
   let mxLayoutPend = false;
   function mxAgendaLayout(){ if (mxLayoutPend) return; mxLayoutPend = true; setTimeout(()=>{ mxLayoutPend=false; try{ mxLayout(); }catch(e){} }, 0); }
-  function mxDepoisPaint(){ mxAgendaLayout(); }
+  function mxDepoisPaint(){ try{ mxDepoisPaint23(); }catch(e){} mxAgendaLayout(); }
   function mxDepoisResultados(){ mxAgendaLayout(); if (!MX_JSDOM){ try{ window.scrollTo(0,0); }catch(e){} } }
   (function(){
     const fb = el('mxFicha'); if (fb) fb.onclick = ()=>abreFicha();
@@ -5686,6 +5870,422 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       const mo = new MutationObserver(mxAgendaLayout);
       ['resultsCard','painelCard','linhaQuiz','quizCard','panoramaCard'].forEach(id=>{ const e=el(id); if (e) mo.observe(e, {attributes:true, attributeFilter:['style']}); });
     }
+  })();
+
+
+  // ==== v2.3 · paridade com o mockup v3 ====
+  // Atalhos de teclado, tema manual, busca de paciente, trilho com chips e módulos
+  // dispensados, seção agrupada, barra de progresso e conduta em 3 níveis.
+  // Só apresentação e navegação: nada aqui calcula conduta. ⌘↵ percorre o MESMO
+  // caminho do botão Próxima (avancar) até a conduta ou até a primeira pendência.
+  const MX_TEMA = 'mx-tema';
+  let mxToastT = null;
+  function mxToast(msg){
+    const t = el('mxToast'); if (!t) return;
+    t.textContent = msg; t.classList.add('on');
+    clearTimeout(mxToastT); mxToastT = setTimeout(()=>t.classList.remove('on'), 2400);
+  }
+  function mxTemaAtual(){ return document.documentElement.getAttribute('data-tema')==='escuro' ? 'escuro' : 'claro'; }
+  function mxAplicaTema(t, salvar){
+    document.documentElement.setAttribute('data-tema', t==='escuro' ? 'escuro' : 'claro');
+    if (salvar){ try{ localStorage.setItem(MX_TEMA, t); }catch(e){} }
+    const b = el('mxTemaBtn');
+    if (b){ b.setAttribute('aria-pressed', t==='escuro' ? 'true' : 'false');
+            b.title = (t==='escuro' ? 'Tema escuro' : 'Tema claro') + ' — tecla T alterna'; }
+  }
+  function mxAlternaTema(){
+    mxAplicaTema(mxTemaAtual()==='escuro' ? 'claro' : 'escuro', true);
+    mxToast(mxTemaAtual()==='escuro' ? 'Tema escuro (fica salvo neste navegador)' : 'Tema claro (fica salvo neste navegador)');
+  }
+  (function(){
+    mxAplicaTema(mxTemaAtual(), false);
+    // sem escolha manual, acompanha o aparelho também durante o uso
+    try{
+      const mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+      const segue = ()=>{ let s=null; try{ s=localStorage.getItem(MX_TEMA); }catch(e){}
+        if (s!=='claro' && s!=='escuro') mxAplicaTema(mq.matches ? 'escuro' : 'claro', false); };
+      if (mq && mq.addEventListener) mq.addEventListener('change', segue);
+      else if (mq && mq.addListener) mq.addListener(segue);
+    }catch(e){}
+  })();
+
+  // ---- painéis flutuantes ----
+  let mxFocoAntes = null;
+  function mxSheetAberta(id){ const s=el(id); return !!s && s.classList.contains('on'); }
+  function mxAbreSheet(id){ const s=el(id); if (!s) return; if (!document.querySelector('.mx-sheet.on')) mxFocoAntes=document.activeElement;
+    s.classList.add('on'); s.setAttribute('aria-hidden','false'); }
+  function mxFechaSheet(id){ const s=el(id); if (!s || !s.classList.contains('on')) return;
+    s.classList.remove('on'); s.setAttribute('aria-hidden','true');
+    if (!document.querySelector('.mx-sheet.on')){ try{ if (mxFocoAntes && mxFocoAntes.focus) mxFocoAntes.focus(); }catch(e){} } }
+  function mxAjuda(){
+    if (mxSheetAberta('mxAjuda')){ mxFechaSheet('mxAjuda'); return; }
+    mxFechaSheet('mxBusca'); mxAbreSheet('mxAjuda');
+    const b = el('mxAjudaFechar'); if (b) b.focus();
+  }
+
+  // ---- busca de paciente (⌘K) ----
+  let mxBuscaSel = 0, mxBuscaItens = [];
+  async function mxBusca(){
+    mxFechaSheet('mxAjuda'); mxAbreSheet('mxBusca');
+    const c = el('mxBuscaCampo'); if (c){ c.value=''; c.focus(); }
+    mxBuscaSel = 0; mxPintaBusca();
+    if (!S.listaPacientes){
+      try{ await storePronto; S.listaPacientes = await Store.listaPacientes(); }catch(e){ S.listaPacientes = []; }
+      mxPintaBusca();
+    }
+  }
+  function mxPintaBusca(){
+    const lista = el('mxBuscaLista'), c = el('mxBuscaCampo'); if (!lista) return;
+    const q = norm(c ? c.value : '');
+    const casa = (cod, ini)=> !q || norm(cod).indexOf(q)>=0 || norm(ini||'').indexOf(q)>=0;
+    const itens = [];
+    (S.fila||[]).forEach(f=>{
+      const m = f.medidas||{}, id = m.idade||f.idade;
+      if (casa(f.codigo, f.iniciais)) itens.push({tipo:'fila', cod:f.codigo,
+        txt:[f.iniciais||null, id ? id+' anos' : null].filter(Boolean).join(' · '),
+        extra:'fila de hoje'+(f.hora ? ' · '+f.hora : '')});
+    });
+    const naFila = new Set((S.fila||[]).map(f=>norm(f.codigo)));
+    (S.listaPacientes||[]).forEach(p=>{
+      if (!naFila.has(norm(p.codigo)) && casa(p.codigo, p.iniciais))
+        itens.push({tipo:'banco', cod:p.codigo, txt:p.iniciais||'', extra:'no banco · reavaliação'});
+    });
+    mxBuscaItens = itens.slice(0, 40);
+    if (mxBuscaSel>=mxBuscaItens.length) mxBuscaSel = 0;
+    lista.innerHTML = mxBuscaItens.length
+      ? mxBuscaItens.map((it,k)=>'<button type="button" role="option" class="mx-bi'+(k===mxBuscaSel?' on':'')+'" data-k="'+k+'" aria-selected="'+(k===mxBuscaSel)+'">'
+          + '<b>'+escH(norm(it.cod))+'</b><span>'+escH(it.txt)+'</span><small>'+escH(it.extra)+'</small></button>').join('')
+      : '<div class="mx-sub" style="padding:10px 4px">'+(q ? 'Nenhum paciente com “'+escH(q)+'”.' : 'Sem pacientes na fila de hoje nem no banco.')+'</div>';
+    [...lista.querySelectorAll('.mx-bi')].forEach(b=>{ b.onclick = ()=>mxEscolheBusca(+b.dataset.k); });
+  }
+  function mxRecomeca(){
+    // como “Novo paciente”, mas preserva a fila já consultada
+    const fila=S.fila, fe=S.filaEstado, lp=S.listaPacientes;
+    Object.keys(S).forEach(k=>delete S[k]);
+    if (fila!==undefined) S.fila=fila; if (fe!==undefined) S.filaEstado=fe; if (lp) S.listaPacientes=lp;
+    si=0; prev=null; hist=[]; window.__mxReg=null; mxNovas={}; mxVistas=null;
+    try{ limpaSessao(); escondeRetomar(); }catch(e){}
+    resultsCard.style.display='none';
+    const lQ=el('linhaQuiz'); if (lQ) lQ.style.display='';
+    const pc=el('panoramaCard'); if (pc) pc.style.display='none';
+    quizCard.style.display='block'; build(); paint();
+  }
+  // escolhe uma opção da tela atual pelo mesmo clique do usuário
+  function mxEscolhe(id, v){
+    if ((screens[si]||{}).id!==id) return false;
+    const b = [...document.querySelectorAll('#optsWrap .opt')].find(x=>x.dataset.v===String(v));
+    if (!b) return false;
+    b.click(); return true;
+  }
+  async function mxEscolheBusca(k){
+    const it = mxBuscaItens[k]; if (!it) return;
+    const atual = norm(S.codigo||S.daFila||'');
+    const emCurso = mxTemPaciente() && !mxEmResultados();
+    if (emCurso && atual===norm(it.cod)){ mxFechaSheet('mxBusca'); return; }
+    if (emCurso && !window.confirm('Sair do atendimento de '+atual+' e abrir '+norm(it.cod)+'? As respostas deste atendimento que ainda não geraram conduta serão descartadas.')) return;
+    mxFechaSheet('mxBusca');
+    mxRecomeca();
+    try{
+      if ((screens[si]||{}).id==='origem'){
+        if (!mxEscolhe('origem', it.tipo==='fila' ? 'fila' : 'novo')) throw new Error('origem');
+        await avancar();
+      }
+      if (it.tipo==='fila'){
+        if (!mxEscolhe('daFila', it.cod)) throw new Error('fila');
+        await avancar();
+      } else {
+        if (!mxEscolhe('visita', 'reav')) throw new Error('visita');
+        await avancar();
+        if ((screens[si]||{}).id!=='codigo') throw new Error('codigo');
+        S.codigo = it.cod; paint();
+        await avancar();
+      }
+    }catch(e){ mxToast('Não foi possível abrir '+norm(it.cod)+' pela busca. Siga pela tela inicial.'); }
+  }
+
+  // ---- ⌘↵: revisar conduta pelo caminho normal ----
+  let mxRevisando = false;
+  async function mxRevisarConduta(){
+    if (mxRevisando || mxEmResultados()) return;
+    if (!mxTemPaciente()){ mxToast('Escolha o paciente antes de revisar a conduta.'); return; }
+    const pan = el('panoramaCard');
+    if (pan && pan.style.display==='block') mostrarQuiz();
+    mxRevisando = true;
+    try{
+      for (let n=0; n<screens.length+12; n++){
+        const antes = si, idAntes = (screens[si]||{}).id;
+        window.__mxPromConduta = null;
+        await avancar();
+        if (window.__mxPromConduta){ await window.__mxPromConduta; return; }
+        if (mxEmResultados()) return;
+        if (si===antes && (screens[si]||{}).id===idAntes) break;   // parou: pergunta obrigatória em aberto
+      }
+      const sc = screens[si];
+      if (quizCard.style.display==='none') mostrarQuiz();
+      const tx = sc ? explicaSiglas(String(sc.text||'')).replace(/\s+/g,' ').trim() : '';
+      mxToast('Falta responder: '+(sc ? rotuloTela(sc)+(tx ? ' — '+(tx.length>70 ? tx.slice(0,68)+'…' : tx) : '') : 'pergunta obrigatória'));
+    } finally { mxRevisando = false; }
+  }
+
+  // ---- teclado (fase de captura: roda antes dos atalhos antigos) ----
+  window.addEventListener('keydown', e=>{
+    const k = e.key, mod = e.metaKey || e.ctrlKey;
+    const vis = id=>{ const o=el(id); return !!o && o.style.display==='flex'; };
+    // prontuário e histórico abertos têm os próprios atalhos
+    if (vis('histOverlay') || vis('fichaOverlay')) return;
+    if (mxSheetAberta('mxBusca')){
+      if (k==='Escape'){ e.preventDefault(); mxFechaSheet('mxBusca'); }
+      else if (k==='ArrowDown' || k==='ArrowUp'){
+        e.preventDefault();
+        if (mxBuscaItens.length){ mxBuscaSel = (mxBuscaSel + (k==='ArrowDown'?1:-1) + mxBuscaItens.length) % mxBuscaItens.length; mxPintaBusca();
+          const on = document.querySelector('.mx-bi.on'); if (on && on.scrollIntoView) on.scrollIntoView({block:'nearest'}); }
+      }
+      else if (k==='Enter'){ e.preventDefault(); mxEscolheBusca(mxBuscaSel); }
+      e.stopPropagation(); return;
+    }
+    if (mxSheetAberta('mxAjuda')){
+      if (k==='Escape' || k==='?'){ e.preventDefault(); mxFechaSheet('mxAjuda'); }
+      e.stopPropagation(); return;
+    }
+    if (mod && !e.altKey && (k==='k' || k==='K')){ e.preventDefault(); e.stopPropagation(); mxBusca(); return; }
+    if (mod && k==='Enter'){ e.preventDefault(); e.stopPropagation(); mxRevisarConduta(); return; }
+    const alvo = e.target;
+    const digitando = alvo && (alvo.tagName==='INPUT' || alvo.tagName==='TEXTAREA' || alvo.tagName==='SELECT' || alvo.isContentEditable);
+    if (digitando || mod || e.altKey) return;
+    const quizVis = quizCard.style.display!=='none' && !mxEmResultados() && (el('linhaQuiz')||{style:{}}).style.display!=='none';
+    if (k==='?'){ e.preventDefault(); e.stopPropagation(); mxAjuda(); return; }
+    if (k==='t' || k==='T'){ e.preventDefault(); e.stopPropagation(); mxAlternaTema(); return; }
+    if (k==='r' || k==='R'){
+      if (mxTemPaciente()){ e.preventDefault(); e.stopPropagation(); abreFicha(); }
+      return;
+    }
+    if (k==='p' || k==='P'){
+      if (mxTemPaciente() && !mxEmResultados()){
+        e.preventDefault(); e.stopPropagation();
+        const pan = el('panoramaCard');
+        if (pan && pan.style.display==='block'){ const c=el('panSeguir'); if (c) c.click(); } else mostrarPanorama();
+      }
+      return;
+    }
+    if ((k==='h' || k==='H') && !temHistorico()){
+      if (mxTemPaciente()) mxToast('Histórico só existe em reavaliação de paciente já registrado.');
+      return;
+    }
+    if (k==='ArrowDown' && quizVis){ e.preventDefault(); e.stopPropagation(); avancar(); return; }
+    if (k==='ArrowUp' && quizVis){ e.preventDefault(); e.stopPropagation(); if (!backBtn.disabled) backBtn.click(); return; }
+  }, true);
+
+  // ---- perguntas que surgem por causa de uma resposta ("nova · motivo") ----
+  // Só registra telas que entram no fluxo depois de uma resposta clínica (as
+  // regras atuais já fazem isso); identificação e troca de queixa não contam.
+  let mxVistas = null, mxNovas = {}, mxUltTela = null, mxCodVisto = null;
+  const MX_ESTRUTURAIS = ['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa','queixa','confirma','confirmaEstavel','refazer'];
+  function mxMotivoDe(sc){
+    let l = null; try{ l = linhasDaTela(sc)[0]; }catch(e){}
+    let t = rotuloTela(sc) + (l ? ': '+explicaSiglas(String(l[1])) : '');
+    return t.length>70 ? t.slice(0,68)+'…' : t;
+  }
+  function mxRastreiaNovas(){
+    const cod = norm(S.codigo||S.daFila||'');
+    if (!cod || !S.queixa){ mxVistas=null; mxNovas={}; mxUltTela=null; mxCodVisto=cod; return; }
+    if (cod!==mxCodVisto){ mxVistas=null; mxNovas={}; mxCodVisto=cod; }
+    const ids = screens.filter(x=>!x.plumb).map(x=>x.id);
+    if (mxVistas && mxUltTela && MX_ESTRUTURAIS.indexOf(mxUltTela.id)<0){
+      const novas = ids.filter(id=>!mxVistas.has(id));
+      if (novas.length && novas.length<=4){ const m = mxMotivoDe(mxUltTela.sc); novas.forEach(id=>{ mxNovas[id] = m; }); }
+    }
+    mxVistas = new Set([...(mxVistas||[]), ...ids]);
+    const sc = screens[si];
+    mxUltTela = (sc && !sc.plumb) ? {id:sc.id, sc:sc} : null;
+  }
+
+  // ---- seção agrupada: respondidas acima, seguintes abaixo, todas clicáveis ----
+  function mxPintaSecao(){
+    const g = el('grupoCard'), q = el('quizCard'), seg = el('mxSeguintes'), cab = el('mxSecH');
+    if (!g || !q || !seg) return;
+    const sc = screens[si];
+    const esconde = ()=>{ seg.style.display='none'; if (cab) cab.style.display='none'; q.classList.remove('no-grupo','com-seguintes'); };
+    if (!sc || q.style.display==='none' || mxEmResultados() || !mxTemPaciente() || sc.plumb){ esconde(); return; }
+    const nome = mxNomeModulo(sc);
+    const gr = grupos().find(x=>x.nome===nome);
+    if (!gr){ esconde(); return; }
+    const pos = gr.telas.findIndex(t=>t.idx===si);
+    const obrig = gr.telas.filter(t=>!t.sc.optional);
+    const feitas = obrig.filter(t=>val(t.sc)).length;
+    if (cab){ cab.innerHTML = escH(nome)+'<span>'+feitas+'/'+obrig.length+' obrigatórias'+(gr.telas.length>1 ? ' · pergunta '+(pos+1)+' de '+gr.telas.length : '')+'</span>'; cab.style.display=''; }
+    // respondidas deste módulo, no formato pergunta + resposta em pílula
+    const linha = (t, falta)=>{
+      const tx = explicaSiglas(String(t.sc.text||'')).replace(/\s+/g,' ').trim();
+      const rot = tx && tx.length<=90 ? tx : (tx ? tx.slice(0,88)+'…' : rotuloTela(t.sc));
+      let resp = '';
+      if (!falta){ try{ resp = linhasDaTela(t.sc).map(x=>'<span class="pil">'+escH(explicaSiglas(String(x[1])))+'</span>').slice(0,3).join(''); }catch(e){} }
+      else resp = '<span class="pil">'+(t.sc.optional ? 'opcional' : 'a responder')+'</span>';
+      return '<button type="button" class="mx-q'+(falta?' falta':'')+(mxNovas[t.sc.id]?' nova':'')+'" data-ir="'+t.idx+'"><span class="ql">'+escH(rot)+'</span><span class="qa">'+resp+'</span></button>';
+    };
+    const antes = gr.telas.filter(t=>t.idx<si && !t.sc.plumb);
+    const depois = gr.telas.filter(t=>t.idx>si && !t.sc.plumb);
+    if (antes.length){
+      g.innerHTML = antes.map(t=>linha(t, !val(t.sc))).join('');
+      g.style.display = 'block';
+    } else g.style.display = 'none';
+    // perguntas respondidas fora de ordem (depois da atual) também aparecem acima
+    seg.innerHTML = depois.map(t=>linha(t, !val(t.sc))).join('');
+    seg.style.display = depois.length ? 'block' : 'none';
+    q.classList.add('no-grupo');
+    q.classList.toggle('com-seguintes', depois.length>0);
+    [...g.querySelectorAll('.mx-q'), ...seg.querySelectorAll('.mx-q')].forEach(b=>{
+      b.onclick = ()=>{ si = Math.min(+b.dataset.ir, screens.length-1); mostrarQuiz(); };
+    });
+  }
+
+  // ---- pílulas, selo "nova", barra de progresso ----
+  function mxDepoisPaint23(){
+    const sc = screens[si];
+    try{ mxRastreiaNovas(); }catch(e){}
+    const w = el('optsWrap');
+    if (w){
+      const curtas = sc && Array.isArray(sc.options) && !sc.kind && sc.options.length<=8 && !sc.plumb
+        && sc.options.every(o=>typeof o.label==='string' && o.label.indexOf('<')<0 && o.label.length<=32);
+      const curtas2 = sc && Array.isArray(sc.options) && sc.kind==='opts' && sc.options.length<=8 && !sc.plumb
+        && sc.options.every(o=>typeof o.label==='string' && o.label.indexOf('<')<0 && o.label.length<=32);
+      w.classList.toggle('mx-pilulas', !!(curtas || curtas2));
+    }
+    const nv = el('mxNova');
+    if (nv){
+      const m = sc && mxNovas[sc.id];
+      if (m && quizCard.style.display!=='none'){ nv.innerHTML = '<b>nova</b> · por causa de “'+escH(m)+'”'; nv.style.display=''; }
+      else nv.style.display='none';
+    }
+  }
+  function mxPintaCta(){
+    const cta = el('mxCta'); if (!cta) return;
+    const ativo = mxTemPaciente() && !mxEmResultados() && quizCard.style.display!=='none' && !!S.queixa;
+    cta.style.display = ativo ? 'flex' : 'none';
+    if (!ativo) return;
+    const obrig = screens.filter(x=>!x.plumb && !x.optional);
+    const ok = obrig.filter(x=>val(x)).length;
+    const bar = el('mxBarra'); if (bar) bar.style.width = (obrig.length ? Math.round(100*ok/obrig.length) : 0)+'%';
+    const t = el('mxProgTxt'); if (t) t.textContent = ok+' de '+obrig.length+' respondidas';
+  }
+  function mxTopo(){
+    const f = el('mxFilaTopo'); if (!f) return;
+    const n = (S.fila||[]).length;
+    f.innerHTML = S.filaEstado===undefined ? 'Fila de hoje <b>…</b>' : (S.filaEstado==='erro' ? 'Fila indisponível' : 'Fila de hoje <b>'+n+'</b>');
+  }
+
+  // ---- trilho: chips, contagem n/total, entrada da conduta, dispensados ----
+  const MX_QUEIXA = {de:'ereção', ep:'ejaculação', ambos:'ereção + ejaculação', libido:'desejo e energia', hipo:'hipogonadismo',
+                     preench:'aumento peniano', emag:'emagrecimento', clinica:'rotina', tefi:'TEFI'};
+  const MX_POR_QUE = {
+    'Antecedentes':'não se aplica à queixa escolhida',
+    'Medicações e alergias':'não se aplica à queixa escolhida',
+    'Escores e resposta':'sem escore previsto para esta queixa/visita',
+    'Exames':'nenhum exame pedido pelas respostas até aqui',
+    'Procedimento':'só entra em procedimento (aumento peniano/retoque)',
+    'Escolha da conduta':'só aparece quando há escolha a fazer'
+  };
+  function mxPintaRail23(){
+    const rail = el('mxRail'); if (!rail) return;
+    let chips = el('mxChips');
+    if (!chips){ chips = document.createElement('div'); chips.id='mxChips'; chips.className='mx-chips';
+      const acts = rail.querySelector('.mx-acts'); rail.insertBefore(chips, acts); }
+    const c = [];
+    if (S.visita) c.push(['forte', S.visita==='reav' ? 'Reavaliação'+(S.nReav ? ' '+S.nReav : '') : '1ª avaliação']);
+    if (S.queixa && MX_QUEIXA[S.queixa]) c.push(['forte', MX_QUEIXA[S.queixa]]);
+    if (S.origem==='fila' && S.daFila) c.push(['', 'veio da recepção']);
+    if (S.diasDesde!=null && S.visita==='reav') c.push(['', S.diasDesde+' dias desde o último']);
+    chips.innerHTML = c.map(([cl,t])=>'<span class="mx-chip '+cl+'">'+escH(t)+'</span>').join('');
+    chips.style.display = c.length ? '' : 'none';
+    // n/total no lugar de "N pend." e a entrada da conduta
+    const nav = el('mxNav');
+    if (nav){
+      const gs = grupos();
+      [...nav.querySelectorAll('button[data-ir]')].forEach((b,k)=>{
+        const gr = gs[k]; if (!gr) return;
+        const obrig = gr.telas.filter(t=>!t.sc.optional), ok = obrig.filter(t=>val(t.sc)).length;
+        const s = b.querySelector('small'); if (s && obrig.length) s.textContent = ok+'/'+obrig.length;
+      });
+      if (!mxEmResultados() && S.queixa && !nav.querySelector('.mx-navcd')){
+        const b = document.createElement('button'); b.type='button'; b.className='mx-navcd';
+        b.innerHTML = '<span class="d"></span><span class="n">Conduta</span><small><span class="kbd">⌘↵</span></small>';
+        b.onclick = ()=>mxRevisarConduta();
+        nav.appendChild(b);
+      }
+    }
+    // módulos que as regras atuais tiraram do fluxo deste paciente
+    const disp = el('mxDisp');
+    if (disp){
+      const presentes = grupos().map(g=>g.nome);
+      const fora = S.queixa ? MODS.filter(m=>presentes.indexOf(m.n)<0 && m.n!=='Identificação' && m.n!=='Queixa e protocolo') : [];
+      const aberto = disp.querySelector('details') && disp.querySelector('details').open;
+      disp.innerHTML = fora.length ? '<details class="mx-disp"'+(aberto?' open':'')+'><summary>'+fora.length+' módulo'+(fora.length>1?'s':'')+' dispensado'+(fora.length>1?'s':'')+' — não muda'+(fora.length>1?'m':'')+' a conduta deste paciente ›</summary><ul>'
+        + fora.map(m=>'<li><b>'+escH(m.n)+'</b> · '+escH(MX_POR_QUE[m.n]||'não se aplica às respostas até aqui')+'</li>').join('')
+        + '</ul></details>' : '';
+    }
+  }
+
+  // ---- conduta em 3 níveis ----
+  function mxPintaConduta(){
+    const head = el('mxCdHead'), rc = el('resultsCard'); if (!head || !rc) return;
+    if (!mxEmResultados()){ head.style.display='none'; rc.classList.remove('mx-cd-on'); return; }
+    const txt = id=>((el(id)||{}).textContent||'').replace(/\s+/g,' ').trim();
+    const reg = window.__mxReg || null;
+    const proto = reg && reg.protocolo ? String(reg.protocolo) : '';
+    const codigoCurto = /^[A-Z0-9][A-Z0-9+\-]{0,13}$/.test(proto);
+    const classe = txt('classLabel');
+    const titulo = codigoCurto ? proto : (classe || proto || 'Conduta');
+    const ativo = codigoCurto ? (ativoTxt(proto) || '') : '';
+    const sub = ativo ? '· '+ativo : (codigoCurto ? classe : txt('recoLine'));
+    const vis = {reav:'Reavaliação', primeira:'Primeira avaliação'}[S.visita] || '';
+    const queixa = MX_QUEIXA[S.queixa] || '';
+    const chips = txt('marcador').split(' · ').map(s=>s.trim()).filter(c=>c && c.toLowerCase()!==vis.toLowerCase());
+    const esc = [];
+    const iief = reg && reg.iief!=null ? reg.iief : null, pedt = reg && reg.pedt!=null ? reg.pedt : null;
+    if (iief!=null) esc.push(['IIEF-5', iief, prev && prev.iief!=null ? 'antes '+prev.iief : 'de 25']);
+    if (pedt!=null) esc.push(['PEDT', pedt, prev && prev.pedt!=null ? 'antes '+prev.pedt : 'de 20']);
+    const alertas = el('altNote') && el('altNote').style.display!=='none' ? el('altNote').querySelectorAll('p').length : 0;
+    head.innerHTML = '<div style="min-width:0">'
+      + '<div class="mx-eyebrow">'+escH(['Conduta sugerida', vis, queixa].filter(Boolean).join(' · '))+'</div>'
+      + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+'">'+escH(titulo)+'</div>'
+      + (sub && sub!==titulo ? '<div class="mx-cdtit">'+(ativo ? '<span class="sig-ativo">'+escH(sub)+'</span>' : escH(explicaSiglas(sub)))+'</div>' : '')
+      + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(explicaSiglas(c))+'</span>').join('')+'</div>' : '')
+      + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
+      + '</div>'
+      + (esc.length ? '<div class="mx-scores">'+esc.map(([n,v,d])=>'<div><b>'+escH(String(v))+'</b><span>'+escH(n)+' · '+escH(d)+'</span></div>').join('')+'</div>' : '');
+    head.style.display = 'flex';
+    rc.classList.add('mx-cd-on');
+    const va = el('mxVerAlertas');
+    if (va) va.onclick = ()=>{ const a=el('altNote'); if (a && a.scrollIntoView) a.scrollIntoView({behavior:'smooth', block:'center'}); };
+    // nível 3: racional e custo recolhidos, com o resumo no título
+    const dc = el('mxDetCusto'), dr = el('mxDetRac');
+    if (dc){ const cb=el('custoBox'); const tem = !!(cb && cb.textContent.trim());
+      dc.style.display = tem ? '' : 'none';
+      const m = tem ? cb.textContent.match(/(\d+)\s*de 10/) : null;
+      const s = dc.querySelector('summary small'); if (s) s.textContent = m ? 'índice '+m[1]+' de 10' : ''; }
+    if (dr){ const rb=el('racBox'); dr.style.display = (rb && rb.textContent.trim()) ? '' : 'none'; }
+  }
+
+  function mxDepoisLayout23(){
+    try{ mxPintaRail23(); }catch(e){}
+    try{ mxPintaSecao(); }catch(e){}
+    try{ mxPintaCta(); }catch(e){}
+    try{ mxTopo(); }catch(e){}
+    try{ mxPintaConduta(); }catch(e){}
+  }
+
+  // impressão pelo navegador (Ctrl+P): seções recolhidas saem abertas
+  (function(){
+    let abertos = [];
+    window.addEventListener('beforeprint', ()=>{ abertos = [...document.querySelectorAll('details.mx-det:not([open])')]; abertos.forEach(d=>d.open=true); });
+    window.addEventListener('afterprint', ()=>{ abertos.forEach(d=>d.open=false); abertos = []; });
+    const b = el('mxBuscaBtn'); if (b) b.onclick = ()=>mxBusca();
+    const t = el('mxTemaBtn'); if (t) t.onclick = ()=>mxAlternaTema();
+    const a = el('mxAjudaBtn'); if (a) a.onclick = ()=>mxAjuda();
+    const af = el('mxAjudaFechar'); if (af) af.onclick = ()=>mxFechaSheet('mxAjuda');
+    const rv = el('mxRevisar'); if (rv) rv.onclick = ()=>mxRevisarConduta();
+    const c = el('mxBuscaCampo'); if (c) c.oninput = ()=>{ mxBuscaSel = 0; mxPintaBusca(); };
+    ['mxAjuda','mxBusca'].forEach(id=>{ const s=el(id); if (s) s.addEventListener('click', ev=>{ if (ev.target===s) mxFechaSheet(id); }); });
+    const rs = el('restartBtn'); if (rs) rs.addEventListener('click', ()=>{ window.__mxReg=null; mxNovas={}; mxVistas=null; });
   })();
 
   build(); paint();

@@ -42,6 +42,9 @@ node teste_jornada.js "$CLIN" || falhas=$((falhas+1))
 linha "7b. nenhuma sigla sem o ativo ao lado"
 node teste_siglas.js "$CLIN" || falhas=$((falhas+1))
 
+linha "7d. interface v2.3 — atalhos, tema, busca e ⌘↵ = caminho normal"
+node teste_interface.js "$CLIN" || falhas=$((falhas+1))
+
 linha "8. tela de senha dos três apps"
 node teste_sessao.js || falhas=$((falhas+1))
 
