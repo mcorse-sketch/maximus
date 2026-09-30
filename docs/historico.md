@@ -114,3 +114,28 @@ Marco em 29/09/2026; R2 com fentolamina 10 mg/mL confirmada). Servidor ganhou us
 mínima passou a 4 caracteres. Conduta clínica idêntica à v2.1.0: na regressão,
 0 pacientes com protocolo/kit/escores diferentes; só o texto mudou (siglas com
 ativo).
+
+## v2.2.1 · 30/09/2026 — código do paciente novo
+
+Relato do Dr. Marco no app ao vivo (banco vazio, servidor local): ao escolher
+paciente novo o campo do código não parecia sugerido e o botão de avançar
+aceitava o campo vazio. O que estava errado:
+- Recepção: a sugestão ia só para o placeholder; campo vazio contava como
+  "aceitar o sugerido" e o botão ficava liberado. Depois de "Novo paciente"
+  nada era buscado: campo vazio, placeholder "MX0001" (já em uso) e botão ativo.
+- App clínico: a sugestão só rodava ao sair da tela "Tipo de visita"; chegar à
+  tela do código por outro caminho (atendimento retomado) deixava o campo
+  vazio. O placeholder era "MX0001", igual à sugestão com o banco vazio: campo
+  preenchido e campo vazio ficavam indistinguíveis. "Novo paciente" apagava a
+  fila e não a consultava de novo.
+- Os dois apps: servidor sem resposta virava "MX0001" às cegas (colide com
+  paciente gravado); no banco Claude a recepção ignorava os próprios códigos.
+- Servidor: banco "{}" derrubava /api/proximo-codigo, /api/pacientes e a
+  gravação (KeyError); arquivo de 0 bytes gerava uma cópia ".corrompido" a cada
+  consulta.
+
+Agora o próximo código livre vem sempre preenchido no campo, calculado contra
+o banco, a lista de pacientes e a fila da recepção de hoje; campo vazio ou
+inválido desativa o botão e mostra o motivo ("Informe o código do paciente
+para continuar — o próximo livre é MX0002."). Testes: tests/teste_codigo.js
+(etapa 7c) e três casos novos em teste_servidor.py. Conduta clínica idêntica.

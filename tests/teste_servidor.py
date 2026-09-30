@@ -301,6 +301,72 @@ class Servidor(unittest.TestCase):
         finally:
             srv.BANCO = banco_real
 
+    def _com_banco(self, conteudo):
+        """Troca o banco por um arquivo com 'conteudo' (texto cru) so neste teste."""
+        banco_real = srv.BANCO
+        srv.BANCO = os.path.join(self.tmp, "codigo-%d.json" % id(conteudo))
+        if conteudo is not None:
+            with open(srv.BANCO, "w", encoding="utf-8") as f:
+                f.write(conteudo)
+        return banco_real
+
+    def test_proximo_codigo_banco_vazio(self):
+        # sem arquivo, arquivo de 0 bytes e "{}": sempre MX0001, sem erro 500
+        # e sem gerar copia ".corrompido" (bug do app ao vivo, 30/09/2026)
+        m = self.tok["medico"]
+        for conteudo in (None, "", "  \n", "{}", '{"pacientes": {}}'):
+            banco_real = self._com_banco(conteudo)
+            try:
+                st, j = self.req("GET", "/api/proximo-codigo", token=m)
+                self.assertEqual((st, j), (200, {"codigo": "MX0001"}), repr(conteudo))
+                st, j = self.req("GET", "/api/pacientes", token=m)
+                self.assertEqual((st, j), (200, {"pacientes": []}), repr(conteudo))
+                self.assertEqual(self.req("GET", "/api/triagens-hoje", token=m)[0], 200)
+                pasta = os.path.dirname(srv.BANCO)
+                self.assertFalse([x for x in os.listdir(pasta) if ".corrompido" in x], repr(conteudo))
+                # a primeira gravacao funciona e o proximo passa a ser MX0002
+                st, _ = self.req("POST", "/api/ciclo", {"codigo": "MX0001", "tipo": "primeira", "linha": "DE"}, token=m)
+                self.assertEqual(st, 200, repr(conteudo))
+                self.assertEqual(self.req("GET", "/api/proximo-codigo", token=m)[1]["codigo"], "MX0002")
+            finally:
+                if os.path.exists(srv.BANCO):
+                    os.remove(srv.BANCO)
+                srv.BANCO = banco_real
+
+    def test_proximo_codigo_com_pacientes_e_recepcao(self):
+        # o proximo livre passa do maior codigo, inclusive de quem so passou
+        # pela recepcao hoje (a fila) e de codigos fora do padrao MX
+        import datetime
+        hoje = datetime.date.today().isoformat()
+        banco_real = self._com_banco(json.dumps({"pacientes": {
+            "MX0003": [{"codigo": "MX0003", "tipo": "primeira", "linha": "DE"}],
+            "MX0007": [{"codigo": "MX0007", "tipo": "recepcao", "linha": "recepcao", "dataLocal": hoje}],
+            "LIM000": [{"codigo": "LIM000", "tipo": "primeira", "linha": "DE"}]}}))
+        try:
+            for perfil in ("medico", "recepcao"):
+                st, j = self.req("GET", "/api/proximo-codigo", token=self.tok[perfil])
+                self.assertEqual((st, j["codigo"]), (200, "MX0008"), perfil)
+            fila = self.req("GET", "/api/triagens-hoje", token=self.tok["medico"])[1]["triagens"]
+            self.assertIn("MX0007", [t["codigo"] for t in fila])
+        finally:
+            os.remove(srv.BANCO)
+            srv.BANCO = banco_real
+
+    def test_banco_com_pacientes_invalido_nao_e_sobrescrito(self):
+        # "pacientes" que nao e objeto e banco estragado: copia de seguranca, nunca
+        # zera em silencio
+        banco_real = self._com_banco('{"pacientes": []}')
+        try:
+            self.assertEqual(srv.carregar(), {"pacientes": {}})
+            pasta = os.path.dirname(srv.BANCO)
+            copias = [x for x in os.listdir(pasta) if x.startswith(os.path.basename(srv.BANCO) + ".corrompido")]
+            self.assertEqual(len(copias), 1)
+            for c in copias:
+                os.remove(os.path.join(pasta, c))
+        finally:
+            os.remove(srv.BANCO)
+            srv.BANCO = banco_real
+
     def test_codigo_invalido(self):
         self.assertEqual(self.req("GET", "/api/paciente/..%2Fetc", token=self.tok["medico"])[0], 400)
 

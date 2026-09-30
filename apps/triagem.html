@@ -502,7 +502,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.2.0">Vers&atilde;o 2.2.0 &middot; 29/09/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.2.1">Vers&atilde;o 2.2.1 &middot; 30/09/2026</div>
   </div>
 </header>
 
@@ -1355,7 +1355,10 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
              (s.docs||[]).forEach(d=>{ const m=String(d.data().codigo||'').match(/(\d+)\s*$/); if(m) n=Math.max(n,parseInt(m[1],10)); }); }catch(e){}
       } else if (this.modo==='rede'){
         try{ const r=await fetch(this.api+'/api/proximo-codigo',{cache:'no-store'});
-             if(r.ok){ const j=await r.json(); return j.codigo; } }catch(e){}
+             if(r.ok){ const j=await r.json(); if (j && j.codigo) return j.codigo; } }catch(e){}
+        // servidor não respondeu: nada de "MX0001" às cegas, que colidiria com
+        // um paciente já gravado. sugerirCodigo() calcula pela lista e pela fila.
+        return null;
       } else {
         n = parseInt(LS.get('maximus_seq')||'0',10) || 0;
       }
@@ -1406,7 +1409,56 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   async function carregarPaciente(cod){ return await Store.ultimo(norm(cod)); }
   async function buscarPorTipo(cod,tipo){ return await Store.porTipo(norm(cod),tipo); }
   async function filaRecepcao(){ if (PREVIA) return []; return await Store.triagensHoje(); }
-  async function sugerirCodigo(){ return await Store.proximoCodigo(); }
+  // ---- código do paciente novo: sempre o próximo livre ----------------------
+  // O próximo livre é maior que todo código já visto: o que o banco diz, a lista
+  // de pacientes e a fila da recepção de hoje (quem respondeu no tablet já tem
+  // código, mesmo antes de o médico atender). Nunca devolve um código em uso.
+  const RE_CODIGO = /^[A-Z0-9][A-Z0-9-]{1,19}$/;
+  function codigoValido(v){ return RE_CODIGO.test(norm(v)); }
+  function numDoCodigo(c){ const m=String(c||'').match(/(\d+)\s*$/); return m ? parseInt(m[1],10) : 0; }
+  function proximoLivre(base, usados){
+    let n = Math.max(0, base ? numDoCodigo(base)-1 : 0);
+    usados.forEach(c=>{ n = Math.max(n, numDoCodigo(c)); });
+    let c = 'MX'+String(n+1).padStart(4,'0');
+    while (usados.has(c)){ n++; c = 'MX'+String(n+1).padStart(4,'0'); }
+    return c;
+  }
+  async function sugerirCodigo(){
+    try{ await storePronto; }catch(e){}
+    let base = null;
+    try{ base = await Store.proximoCodigo(); }catch(e){}
+    const usados = new Set();
+    const junta = c => { const k=norm(c); if (k) usados.add(k); };
+    (S.fila||[]).forEach(f=>f && junta(f.codigo));
+    if (!PREVIA && Store.modo!=='manual'){
+      try{ ((await Store.listaPacientes())||[]).forEach(p=>p && junta(p.codigo)); }catch(e){}
+      if (!S.fila){ try{ ((await Store.triagensHoje())||[]).forEach(f=>f && junta(f.codigo)); }catch(e){} }
+    }
+    return proximoLivre(base, usados);
+  }
+  // tela do código: garante a sugestão mesmo quando se chega a ela sem passar
+  // pelo "after" da tela anterior (retomar, Voltar, trilho, Novo paciente)
+  let sugestaoPend = null, codigoBuscando = false, telaPintada = null;
+  function pedeSugestao(){
+    if (sugestaoPend) return sugestaoPend;
+    codigoBuscando = true;
+    sugestaoPend = sugerirCodigo().catch(()=>null).then(c=>{
+      sugestaoPend = null; codigoBuscando = false;
+      if (c) S.codigoSug = c;
+      const sc = screens[si];
+      const aqui = sc && sc.id==='codigo' && quizCard.style.display!=='none';
+      if (c && S.visita==='primeira' && !preenchido(S.codigo)) S.codigo = c;
+      if (aqui){ build(); paint(); }
+      return c;
+    });
+    return sugestaoPend;
+  }
+  function msgCodigo(){
+    if (!preenchido(S.codigo))
+      return 'Informe o código do paciente para continuar'
+        + (S.visita==='primeira' && S.codigoSug ? ' — o próximo livre é '+S.codigoSug+'.' : '.');
+    return 'Código inválido: use só letras e números, sem espaços ou símbolos (ex.: MX0042).';
+  }
   function marcaSalvo(ok){
     const t = document.getElementById('salvoTag'); if (!t) return;
     t.style.display='block';
@@ -1449,6 +1501,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (sc.kind==='escalas') return (sc.fields||[]).every(f=>preenchido(S[f.id]));
     if (sc.kind==='grupo')   return (sc.fields||[]).every(f=>preenchido(S[f.id]));
     if (sc.multi) return (S[sc.id]||[]).length>0;
+    if (sc.id==='codigo') return preenchido(S.codigo) && codigoValido(S.codigo);
     return preenchido(S[sc.id]);
   }
 
@@ -1531,11 +1584,28 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
       i.className='fld'; i.type='text'; if (sc.kind==='num') i.inputMode='decimal';
       i.placeholder = sc.ph||''; i.value = S[sc.id]||'';
       if (sc.min!==undefined) i.min=sc.min; if (sc.max!==undefined) i.max=sc.max;
-      i.oninput=()=>{ S[sc.id]=i.value; const e=el('fldErr'); if(e) e.style.display='none'; nextBtn.disabled = sc.optional ? false : !val(sc); };
+      const ehCodigo = sc.id==='codigo';
+      i.oninput=()=>{ S[sc.id]=i.value; const e=el('fldErr');
+        if (ehCodigo && e){ const ok=val(sc); e.textContent=msgCodigo(); e.style.display = ok ? 'none' : 'block'; }
+        else if(e) e.style.display='none';
+        nextBtn.disabled = sc.optional ? false : !val(sc); };
+      if (ehCodigo){
+        i.setAttribute('autocomplete','off'); i.setAttribute('aria-describedby','fldErr');
+        // Enter no campo: avança se válido, senão mostra o motivo
+        i.addEventListener('keydown', ev=>{ if (ev.key==='Enter'){ ev.preventDefault(); avancar(); } });
+      }
       optsWrap.appendChild(i);
       if (sc.lista) montaListaPacientes(i, sc);
       if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=explicaSiglas(sc.hint); optsWrap.appendChild(h); }
-      const e=document.createElement('div'); e.className='fld-err'; e.id='fldErr'; e.textContent='Preencha este campo para continuar'; optsWrap.appendChild(e);
+      const e=document.createElement('div'); e.className='fld-err'; e.id='fldErr'; e.setAttribute('role','alert');
+      e.textContent = ehCodigo ? msgCodigo() : 'Preencha este campo para continuar'; optsWrap.appendChild(e);
+      if (ehCodigo){
+        const entrando = telaPintada!=='codigo';
+        if (S.visita==='primeira' && !preenchido(S.codigo) && entrando && !codigoBuscando) pedeSugestao();
+        // campo inválido e nada chegando do banco: o motivo fica à vista
+        else if (preenchido(S.codigo) && !codigoValido(S.codigo)) e.style.display='block';
+        else if (!preenchido(S.codigo) && !codigoBuscando && !entrando) e.style.display='block';
+      }
     } else if (sc.kind==='contato'){
       const ca=contatoAtual();
       if (!preenchido(S.iniciais) && ca.iniciais) S.iniciais=fmtIniciais(ca.iniciais);
@@ -1648,6 +1718,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     quizCard.setAttribute('data-q', sc.qtipo || '');
     // marcacao para a regressao clinica (tests/regressao.js); nao muda comportamento
     quizCard.setAttribute('data-tela', sc.id);
+    telaPintada = sc.id;
     pintaBarraAtual();
     pintaCopiloto();
     // sem paciente carregado não há módulo a mostrar: Panorama fica desativado
@@ -2198,7 +2269,7 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   async function avancar(){
     const sc=screens[si];
     if (!sc.optional && !val(sc)){
-      const e=el('fldErr'); if(e) e.style.display='block';
+      const e=el('fldErr'); if(e){ if (sc.id==='codigo') e.textContent=msgCodigo(); e.style.display='block'; }
       const w=el('optsWrap'); if(w){ w.style.outline='2px solid #b3261e'; w.style.outlineOffset='6px';
         setTimeout(()=>{w.style.outline='';w.style.outlineOffset='';},1200); }
       return;
@@ -3130,12 +3201,23 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
     if (!veioDaFila) s.push({id:'visita',kind:'opts',step:'Abertura',eyebrow:'Tipo de visita',text:'Esta é a primeira avaliação ou uma reavaliação?',
       options:[{v:'primeira',badge:'1',label:'Primeira avaliação'},{v:'reav',badge:'2',label:'Reavaliação'}],
       after: async () => {
-        if (S.visita==='primeira' && !S.codigo){ S.codigoSug = await sugerirCodigo(); S.codigo = S.codigoSug; }
+        if (S.visita==='primeira' && !preenchido(S.codigo)){
+          const c = await sugerirCodigo();
+          if (c){ S.codigoSug = c; if (!preenchido(S.codigo)) S.codigo = c; }
+        }
       }});
     if (!veioDaFila) s.push({id:'codigo',kind:'text',step:'Abertura',eyebrow:'Identificação',text:'Código do paciente',
-      ph:'MX0001',
+      // placeholder não pode parecer um código: com o banco vazio ele dizia
+      // "MX0001", igual à sugestão, e campo vazio passava por preenchido
+      ph: S.visita==='primeira'
+        ? (codigoBuscando ? 'Buscando o próximo código livre…' : 'Digite o código do paciente')
+        : 'Digite o código ou escolha na lista',
       hint: S.visita==='primeira'
-        ? 'Sugerido automaticamente'+(S.codigoSug?' ('+S.codigoSug+')':'')+'. Pode ser alterado. Sem nome ou documento — a ligação com o paciente fica no prontuário.'
+        ? ((S.codigoSug
+            ? 'Próximo código livre: '+S.codigoSug+(norm(S.codigo)===S.codigoSug ? ' (sugerido automaticamente)' : '')+'. Pode ser alterado.'
+            : (codigoBuscando ? 'Buscando o próximo código livre no banco…'
+                              : 'Não foi possível consultar o banco agora — digite o código do paciente.'))
+           + ' Sem nome ou documento — a ligação com o paciente fica no prontuário.')
         : 'Digite o código ou toque no campo para escolher na lista de pacientes.',
       lista: S.visita==='reav',
       esperando: (S.visita==='reav' ? 'Buscando…' : null),
@@ -5408,16 +5490,20 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
   el('printPacBtn').onclick=()=>imprimeEmAba(el('printPaciente'),'Orientações do paciente','pp');
   el('restartBtn').onclick=()=>{
     Object.keys(S).forEach(k=>delete S[k]);
-    si=0; prev=null; resultsCard.style.display='none';
+    si=0; prev=null; hist=[]; resultsCard.style.display='none';
     const lQ=document.getElementById('linhaQuiz'); if(lQ) lQ.style.display='';
     quizCard.style.display='block'; build(); paint();
+    // a fila foi apagada junto com o paciente anterior: consulta de novo, senão
+    // a abertura ficava em "Consultando a fila…" e os códigos dela eram ignorados
+    carregaFila();
   };
 
-  (async()=>{
+  async function carregaFila(){
     try{ await storePronto; const f=await filaRecepcao(); S.fila=f||[]; S.filaEstado='ok'; }
     catch(e){ S.fila=[]; S.filaEstado='erro'; }
     if (S.origem===undefined){ build(); paint(); }
-  })();
+  }
+  carregaFila();
   (function(){
     const pb = document.getElementById('panBtn');
     if (pb) pb.onclick = ()=>mostrarPanorama();
