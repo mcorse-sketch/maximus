@@ -61,6 +61,14 @@ listas de escolha; em registro antigo aparece como "fórmula retirada".
 leem. Mudou a tabela? Atualize `ICI_COMPO`, a cópia `ATIVO` do financeiro e a
 tabela conferida em `tests/teste_siglas.js`.
 
+**Código do paciente novo (v2.2.1).** O próximo código LIVRE vem sempre
+preenchido no campo (nunca só no placeholder), nos dois apps e nos três modos,
+inclusive com o banco vazio: maior que tudo o que existe no banco, na lista de
+pacientes e na fila da recepção de hoje (`sugerirCodigo()`/`proximoLivre()` no
+clínico, `Store.proximoCodigo()` na recepção). Servidor sem resposta nunca vira
+"MX0001" às cegas. Campo vazio ou inválido desativa o botão e mostra o motivo.
+O placeholder não pode se parecer com um código.
+
 **Piso terapêutico.** Ninguém sai só com suplemento. DE → mínimo SP-DE;
 EP → SP-DUO, dapoxetina ou RET-1.
 
@@ -202,12 +210,13 @@ cd tests && npm install          # jsdom
 cd .. && ./scripts/testar.sh 100 # roda tudo
 ```
 
-Dez etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
+Onze etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
 recepção, rastreador de módulos nas oito linhas de queixa, integração
 recepção → consultório, **regressão clínica**, jornada do médico
 (`teste_jornada.js`: contato, nota final, aviso de ISRS, texto, ficha,
 impressão, lista de pacientes, descartar), **siglas com ativo**
-(`teste_siglas.js`), tela de senha e servidor. A regressão separa
+(`teste_siglas.js`), **código do paciente novo** (`teste_codigo.js`: próximo
+livre sempre preenchido, vazio não avança), tela de senha e servidor. A regressão separa
 "protocolo/kit/escores mudaram" de "só o texto mudou".
 
 A regressão (`tests/regressao.js`) leva os pacientes de

@@ -808,23 +808,32 @@
       }catch(e){}
       return [];
     },
+    // próximo código LIVRE: maior que tudo o que já existe — o que o servidor
+    // sugere, a lista de pacientes, os códigos da recepção e a fila de hoje.
+    // Servidor fora do ar não vira "MX0001" às cegas (colidiria com alguém).
     async proximoCodigo(){
-      let n=0;
+      const usados=new Set(); let base=null;
+      const junta=c=>{ const k=String(c||'').trim().toUpperCase().replace(/\s+/g,''); if(k) usados.add(k); };
+      const num=c=>{ const m=String(c||'').match(/(\d+)\s*$/); return m?parseInt(m[1],10):0; };
       try{
         if (this.modo==='rede'){
-          const r=await fetch(this.api+'/api/proximo-codigo',{cache:'no-store'});
-          if(r.ok){ const j=await r.json(); return j.codigo; }
+          try{ const r=await fetch(this.api+'/api/proximo-codigo',{cache:'no-store'});
+               if(r.ok){ const j=await r.json(); base=(j&&j.codigo)||null; } }catch(e){}
+          try{ const r=await fetch(this.api+'/api/pacientes',{cache:'no-store'});
+               if(r.ok){ const j=await r.json(); (j.pacientes||[]).forEach(p=>junta(p&&p.codigo)); } }catch(e){}
         }
         if (this.modo==='claude'){
-          const r=await this.db.collection('codigos').get();
-          (r.docs||[]).forEach(d=>{ const m=String(d.data().codigo||'').match(/(\d+)\s*$/); if(m) n=Math.max(n,parseInt(m[1],10)); });
-          if (!n){
-            const t=await this.db.collection('recepcao').orderBy('data','desc').limit(200).get();
-            (t.docs||[]).forEach(d=>{ const m=String(d.data().codigo||'').match(/(\d+)\s*$/); if(m) n=Math.max(n,parseInt(m[1],10)); });
-          }
+          try{ const r=await this.db.collection('codigos').get(); (r.docs||[]).forEach(d=>junta(d.data().codigo)); }catch(e){}
+          try{ const t=await this.db.collection('recepcao').orderBy('data','desc').limit(200).get();
+               (t.docs||[]).forEach(d=>junta(d.data().codigo)); }catch(e){}
         }
+        if (this.modo!=='manual'){ try{ ((await this.triagensHoje())||[]).forEach(f=>junta(f&&f.codigo)); }catch(e){} }
       }catch(e){}
-      return 'MX'+String(n+1).padStart(4,'0');
+      let n=Math.max(0, base ? num(base)-1 : 0);
+      usados.forEach(c=>{ n=Math.max(n, num(c)); });
+      let c='MX'+String(n+1).padStart(4,'0');
+      while (usados.has(c)){ n++; c='MX'+String(n+1).padStart(4,'0'); }
+      return c;
     },
     async ultimo(cod){
       if (this.modo==='claude'){
@@ -936,16 +945,23 @@
 
   const FORMATO=/^MX\d{4}$/;
   const codOK=v=>FORMATO.test(norm(v||''));
+  let buscandoCod=false;
+  const MSG_FORMATO='O código precisa ser MX seguido de 4 números. Exemplo: MX0042.';
+  const msgCodigo=()=> ok(S.codigo) ? MSG_FORMATO
+    : 'Informe o código do paciente para continuar'+(S.sugerido ? ' — o próximo livre é '+S.sugerido+'.' : '.');
 
   function saudacao(){ const h=new Date().getHours(); return h<12?'Bom dia':(h<18?'Boa tarde':'Boa noite'); }
 
   function monta(){
     const t=[];
     t.push({id:'codigo',kind:'text',eyebrow:'Recepção',text:'Código do paciente',
-      hint: (S.sugerido ? 'Sugerido: '+S.sugerido+' — o próximo disponível. Toque em continuar para usar. '
-                        : 'Preenchido pela recepção, antes de entregar o tablet. ')
+      hint: (S.sugerido
+               ? 'Próximo código livre: '+S.sugerido+' — sugerido automaticamente. Pode ser alterado. '
+               : (buscandoCod ? 'Buscando o próximo código livre… '
+                              : 'Não foi possível consultar o banco agora — digite o código. '))
             + 'Formato MX e 4 números. Para retorno, digite o código do paciente.',
-      ph: S.sugerido || 'MX0001'});
+      // o placeholder não pode parecer um código: "MX0001" passava por preenchido
+      ph: buscandoCod ? 'Buscando o próximo código livre…' : 'Digite o código (MX e 4 números)'});
     t.push({id:'tipoVisita',kind:'opts',eyebrow:'Recepção',
       text:'Este é um paciente novo ou um retorno?',
       hint:'Depois desta tela, entregue o tablet ao paciente.',
@@ -1259,13 +1275,19 @@
       const inp=document.createElement('input'); inp.className='kfld'; inp.placeholder=sc.ph||'';
       inp.value=S[sc.id]||'';
       const err=document.createElement('div'); err.className='kerro'; err.id='kerro';
-      err.textContent='O código precisa ser MX seguido de 4 números. Exemplo: MX0042.';
-      err.style.display='none';
+      err.setAttribute('role','alert');
+      err.textContent = sc.id==='codigo' ? msgCodigo() : MSG_FORMATO;
+      // campo apagado ou inválido (fora da busca inicial): o motivo fica à vista
+      const mostra = sc.id==='codigo' && !buscandoCod && !codValido() && (ok(S.codigo) || S.codigoMexido);
+      err.style.display = mostra ? 'block' : 'none';
+      if (mostra) inp.classList.add('kfld-erro');
       inp.oninput=()=>{ S[sc.id]=inp.value;
         if (sc.id==='codigo'){
-          const cheio=String(inp.value||'').trim().length>0;
-          err.style.display = (cheio && !codValido()) ? 'block' : 'none';
-          inp.classList.toggle('kfld-erro', cheio && !codValido());
+          S.codigoMexido=true;
+          const ruim=!codValido();
+          err.textContent=msgCodigo();
+          err.style.display = ruim ? 'block' : 'none';
+          inp.classList.toggle('kfld-erro', ruim);
         }
         sync(); };
       w.appendChild(inp);
@@ -1369,7 +1391,8 @@
   }
 
   function respondida(sc){
-    if (sc.id==='codigo') return true;   // vazio significa aceitar o sugerido
+    // vazio ou fora do formato não avança: o sugerido já vem preenchido no campo
+    if (sc.id==='codigo') return codValido();
     if (sc.kind==='contato') return temContatoValido() && contatoSemErro();
     if (['intro','jornada','campos','termo','entrega','preintro','prefim'].indexOf(sc.kind)>=0) return true;
     if (sc.kind==='corrigir') return false;
@@ -1446,10 +1469,9 @@
     const sc=telas[i];
     if(!respondida(sc)) return;
     if (sc.id==='codigo'){
-      if (!ok(S.codigo) && S.sugerido) S.codigo = S.sugerido;
       if (!codOK(S.codigo)){
         const e=el('kerro');
-        if(e) e.style.display='block';
+        if(e){ e.textContent=msgCodigo(); e.style.display='block'; }
         const inp=el('opcoes').querySelector('input');
         if(inp) inp.classList.add('kfld-erro');
         return;
@@ -1517,14 +1539,10 @@
       : 'Não conseguimos enviar automaticamente.<br><b>Avise a recepção e mostre esta tela para ela.</b>';
     el('fimCod').innerHTML = norm(S.codigo) + '<span class="khora">' + hora + '</span>';
   }
+  // "Novo paciente" no fim: antes zerava tudo e não buscava código nenhum — o
+  // campo ficava vazio com "MX0001" de placeholder e o botão liberado
   el('novo').onclick=()=>{ limparRascunho(); Object.keys(S).forEach(k=>delete S[k]); i=0; salvo=false;
-    el('fim').style.display='none'; el('quiz').style.display='block'; monta(); pinta(); };
-
-  (async()=>{
-    try{ await storePronto; const c=await Store.proximoCodigo();
-      if (c && !S.codigo){ S.codigoSugerido=c; S.codigo=c; monta(); pinta(); }
-    }catch(e){}
-  })();
+    el('fim').style.display='none'; el('quiz').style.display='block'; iniciarSugestao(); monta(); pinta(); };
 
   const rascunho = lerRascunho();
   if (rascunho){
@@ -1547,10 +1565,15 @@
     const cx=el('acoesFim')||el('novo').parentElement; cx.innerHTML=''; cx.appendChild(b1); cx.appendChild(b2);
   }
 
+  // sugestão sempre PREENCHIDA no campo (não só no placeholder), inclusive
+  // com o banco vazio; quem já digitou algo não perde o que digitou
   function iniciarSugestao(){
+    buscandoCod=true;
     (async()=>{
       try{ await storePronto; S.sugerido = await Store.proximoCodigo(); }catch(e){}
-      if (i===0){ monta(); pinta(); }
+      buscandoCod=false;
+      if (S.sugerido && !ok(S.codigo)) S.codigo = S.sugerido;
+      if (i===0 && el('quiz').style.display!=='none'){ monta(); pinta(); }
     })();
   }
   if (!rascunho) iniciarSugestao();
