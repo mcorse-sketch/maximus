@@ -160,6 +160,28 @@ fictícios (MX9101–MX9140) é a mesma da v2.3.1. Entregue em PRs empilhados:
   perguntas:" com a lista (módulo + pergunta); cada item leva à pergunta. A
   caixa some quando não falta nada ou no ×.
 
+**PR B — fila e navegação (itens 6, 7, 8)**
+- **⌘K não inicia atendimento.** Escolher um paciente na busca abre duas
+  opções: "Iniciar atendimento" (o caminho de sempre, com confirmação se houver
+  outro em curso) ou "Só consultar prontuário". A tela inicial ganhou
+  "Consultar prontuário" (busca em modo consulta). O prontuário abre na gaveta
+  do histórico (`abreHistorico(cod)`), só leitura, sem tocar no atendimento em
+  curso — fechar volta exatamente à pergunta onde estava.
+- **"Fila de hoje N" virou botão.** Abre um popup a qualquer momento: quem
+  aguarda (hora, espera, novo × retorno, "em atendimento" para o atual, botões
+  Atender e Prontuário) e os já atendidos hoje. Fechar (× ou Esc) volta ao
+  atendimento.
+- **"Concluir atendimento"** na tela final (além de "Novo paciente"): confere
+  que o ciclo foi gravado (reenvia pendências; pede confirmação se ainda
+  estiver pendente), marca o registro da recepção de hoje como atendido no
+  servidor (`PUT /api/triagem/<código>/atendido` — só acrescenta `atendido`,
+  `atendidoEm`, `atendidoCiclo` e uma linha em `atendimentoLog`; nada é
+  apagado), tira da fila, mantém no histórico e abre a fila com o próximo já
+  indicado (confirmar com Próxima). `/api/triagens-hoje` continua devolvendo
+  todos os registros do dia, agora com o estado. A recepção mostra, na tela
+  inicial dela (antes de entregar o tablet), "N aguardando · M atendidos" com a
+  lista e "Devolver à fila" (com confirmação) para marcação por engano.
+
 ## v2.3.1 · 01/10/2026 — receita só quando há fórmula; novas orientações pós-preenchimento; banco de teste
 
 Pedidos do Dr. Marco:

@@ -155,6 +155,8 @@ class Servidor(unittest.TestCase):
              {"medico": 200, "recepcao": 403, "financeiro": 403}),
             ("POST", "/api/ciclo", {"codigo": "MX0101", "tipo": "recepcao", "linha": "recepcao"},
              {"medico": 200, "recepcao": 200, "financeiro": 403}),
+            ("PUT", "/api/triagem/MX0999/atendido", {"atendido": True},
+             {"medico": 404, "recepcao": 404, "financeiro": 403}),
         ]
         for metodo, rota, corpo, esperado in casos:
             for perfil, codigo in esperado.items():
@@ -192,6 +194,48 @@ class Servidor(unittest.TestCase):
         st, j = self.req("GET", "/api/pacientes", token=m)
         p = [x for x in j["pacientes"] if x["codigo"] == "MX0200"][0]
         self.assertEqual((p["iniciais"], p["clinicos"]), ("RAM", 1))
+
+    def test_concluir_atendimento_marca_sem_apagar(self):
+        """v2.4: 'Concluir atendimento' marca o registro da recepcao de hoje
+        como atendido (nunca apaga); a fila continua listando todos com o
+        estado; desfazer devolve a fila e fica no log."""
+        import datetime
+        m, r, f = self.tok["medico"], self.tok["recepcao"], self.tok["financeiro"]
+        hoje = datetime.date.today().isoformat()
+        ontem = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+        self.req("POST", "/api/ciclo", {"codigo": "MX0300", "tipo": "recepcao", "linha": "recepcao",
+                                        "dataLocal": ontem, "data": ontem + "T10:00:00"}, token=r)
+        self.req("POST", "/api/ciclo", {"codigo": "MX0300", "tipo": "recepcao", "linha": "recepcao",
+                                        "dataLocal": hoje, "data": hoje + "T10:00:00", "iniciais": "ABC"}, token=r)
+        self.req("POST", "/api/ciclo", {"codigo": "MX0300", "tipo": "primeira", "linha": "DE",
+                                        "data": hoje + "T10:30:00", "protocolo": "DE-2"}, token=m)
+        st, antes = self.req("GET", "/api/historico/MX0300", token=m)
+        n_antes = len(antes["ciclos"])
+        # financeiro nao marca; codigo sem recepcao hoje responde 404
+        self.assertEqual(self.req("PUT", "/api/triagem/MX0300/atendido", {"atendido": True}, token=f)[0], 403)
+        self.assertEqual(self.req("PUT", "/api/triagem/MX0301/atendido", {"atendido": True}, token=m)[0], 404)
+        self.assertEqual(self.req("PUT", "/api/triagem/MX0300/atendido", {"atendido": "sim"}, token=m)[0], 400)
+        st, j = self.req("PUT", "/api/triagem/MX0300/atendido",
+                         {"atendido": True, "ciclo": hoje + "T10:30:00"}, token=m)
+        self.assertEqual((st, j["atendido"]), (200, True))
+        st, j = self.req("GET", "/api/triagens-hoje", token=r)
+        t = [x for x in j["triagens"] if x["codigo"] == "MX0300"]
+        self.assertEqual(len(t), 1, "a fila do dia continua listando o atendido, com o estado")
+        self.assertTrue(t[0]["atendido"])
+        self.assertTrue(t[0]["atendidoEm"])
+        self.assertEqual(t[0]["atendidoCiclo"], hoje + "T10:30:00")
+        self.assertEqual(t[0]["iniciais"], "ABC", "nada do registro se perde")
+        # desfazer (devolver a fila): estado volta, historico do log fica
+        st, j = self.req("PUT", "/api/triagem/MX0300/atendido", {"atendido": False}, token=r)
+        self.assertEqual(st, 200)
+        st, j = self.req("GET", "/api/historico/MX0300", token=m)
+        self.assertEqual(len(j["ciclos"]), n_antes, "nenhum registro apagado nem criado")
+        rec = [c for c in j["ciclos"] if c["tipo"] == "recepcao" and c["dataLocal"] == hoje][0]
+        self.assertFalse(rec["atendido"])
+        self.assertEqual([x["atendido"] for x in rec["atendimentoLog"]], [True, False])
+        self.assertEqual([x["perfil"] for x in rec["atendimentoLog"]], ["medico", "recepcao"])
+        ont = [c for c in j["ciclos"] if c["tipo"] == "recepcao" and c["dataLocal"] == ontem][0]
+        self.assertNotIn("atendido", ont, "registro de outro dia nao e tocado")
 
     def test_pagina_inexistente_responde_404(self):
         # o log quebrava ao registrar o erro e a conexao caia sem resposta

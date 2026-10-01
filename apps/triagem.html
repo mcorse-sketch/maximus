@@ -142,8 +142,36 @@ details.mx-det > summary::-webkit-details-marker{display:none}
 @media screen{
   header.brand .tool-title{margin-left:14px!important;text-align:left!important}
   .mx-topacts{margin-left:auto;display:flex;align-items:center;gap:10px}
-  .mx-fila{font-size:13px;color:var(--mx-text2);white-space:nowrap}
+  .mx-fila{font-size:13px;color:var(--mx-text2);white-space:nowrap;border:1px solid var(--mx-line2);background:var(--mx-surf);
+    border-radius:999px;padding:6px 12px;cursor:pointer;font-family:inherit}
+  .mx-fila:hover{background:var(--mx-surf2);color:var(--mx-text)}
   .mx-fila b{color:var(--mx-text);font-weight:600}
+  .mx-sheet-card.mx-fila-card{width:min(680px,100%);align-self:start;margin-top:7vh}
+  .mx-fila-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .mx-fila-sec{font-size:13px;color:var(--mx-text2);margin:6px 0 6px}
+  .mx-fl-lista{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+  .mx-fl{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;border:1px solid var(--mx-line)}
+  .mx-fl.agora{border-color:var(--mx-focus);box-shadow:inset 3px 0 0 var(--mx-focus)}
+  .mx-fl.at{opacity:.8}
+  .mx-fl .h{font:600 12.5px var(--mx-mono);color:var(--mx-text2)}
+  .mx-fl .q{font-size:13.5px;color:var(--mx-text);min-width:0}
+  .mx-fl .q b{font:600 13px var(--mx-mono)} .mx-fl .q small{display:block;font-size:12px;color:var(--mx-text3)}
+  .mx-fl .t{font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .mx-fl .t.nov{background:var(--mx-permbg);color:var(--mx-perm)} .mx-fl .t.ret{background:var(--mx-okbg);color:var(--mx-ok)}
+  .mx-fl .a{display:flex;gap:6px} .mx-fl .a .btn{padding:5px 10px!important;font-size:12.5px!important;min-height:0!important;width:auto!important;margin:0!important}
+  .mx-fl .a em{font-size:12px;color:var(--mx-focus);font-style:normal;align-self:center}
+  details.mx-fila-at{margin-top:12px;font-size:13px} details.mx-fila-at summary{cursor:pointer;color:var(--mx-text2);margin-bottom:6px}
+  .mx-escolha{display:grid;gap:12px;padding:6px 2px}
+  .mx-escolha-cab b{font:600 15px var(--mx-mono)} .mx-escolha-cab span{color:var(--mx-text2)} .mx-escolha-cab small{color:var(--mx-text3);margin-left:6px}
+  .mx-escolha-acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mx-escolha-acoes .btn{width:100%!important;margin:0!important}
+  .mx-escolha-volta{border:0;background:transparent;color:var(--mx-text3);cursor:pointer;justify-self:start;font:inherit;font-size:13px;padding:2px 0}
+  .mx-consulta-ini{display:block;margin-top:14px;border:1px dashed var(--mx-line2);background:transparent;border-radius:12px;padding:10px 14px;
+    width:100%;text-align:left;cursor:pointer;color:var(--mx-text);font:inherit;font-size:14px}
+  .mx-consulta-ini small{color:var(--mx-text3);margin-left:6px;font-size:12.5px}
+  .mx-consulta-ini:hover{background:var(--mx-surf2)}
+  .mx-concluir-info{font-size:12.5px;color:var(--mx-text3);margin:0 0 12px;text-align:center}
+  .hist-consulta{background:#eef6f8;border:1px solid #cfe1e6;border-radius:10px;padding:8px 12px;font-size:13px;color:#24434c}
   .mx-busca-btn{display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 8px 0 12px;border-radius:999px;cursor:pointer;
     border:1px solid var(--mx-line2);background:var(--mx-surf2);color:var(--mx-text2);font-size:13px;min-width:250px}
   .mx-busca-btn .lbl{flex:1;text-align:left}
@@ -153,7 +181,7 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-iconbtn:hover{background:var(--mx-surf2)}
   .btn .kbd,.hist-btn .kbd{margin-left:6px;background:transparent}
   .btn-primary .kbd{color:inherit;border-color:currentColor;opacity:.7}
-  @media (max-width:900px){ .mx-busca-btn{min-width:0} .mx-busca-btn .lbl,.mx-fila{display:none} header.brand .tool-title .t2{display:none} }
+  @media (max-width:900px){ .mx-busca-btn{min-width:0} .mx-busca-btn .lbl{display:none} .mx-fila{padding:6px 10px} header.brand .tool-title .t2{display:none} }
 
   /* painéis flutuantes: atalhos e busca */
   .mx-sheet{position:fixed;inset:0;display:none;place-items:center;z-index:80;background:rgba(1,11,15,.32);padding:16px}
@@ -654,7 +682,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     <div class="t2" id="versaoApp" data-versao="2.4.0">Vers&atilde;o 2.4.0 &middot; 01/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
-    <span class="mx-fila" id="mxFilaTopo"></span>
+    <button type="button" class="mx-fila" id="mxFilaTopo" aria-haspopup="dialog" title="Quem está aguardando hoje — abre sem sair do atendimento"></button>
     <button type="button" class="mx-busca-btn" id="mxBuscaBtn" aria-label="Buscar paciente ou código (⌘K)"><span aria-hidden="true">⌕</span><span class="lbl">Buscar paciente ou código</span><span class="kbd">⌘K</span></button>
     <button type="button" class="mx-iconbtn" id="mxTemaBtn" aria-label="Alternar tema claro ou escuro (tecla T)">◐ <span class="kbd">T</span></button>
     <button type="button" class="mx-iconbtn" id="mxAjudaBtn" aria-label="Atalhos de teclado (tecla ?)">?</button>
@@ -681,7 +709,12 @@ document.documentElement.setAttribute('data-tema',t)})();
 <div class="mx-sheet noprint" id="mxBusca" role="dialog" aria-modal="true" aria-label="Buscar paciente" aria-hidden="true"><div class="mx-sheet-card mx-busca-card">
   <input type="text" class="fld" id="mxBuscaCampo" placeholder="Código ou iniciais do paciente" autocomplete="off" data-foco aria-label="Código ou iniciais do paciente">
   <div class="mx-busca-lista" id="mxBuscaLista" role="listbox" aria-label="Pacientes"></div>
-  <div class="mx-sub" style="margin-top:10px">Da fila de hoje: começa pela fila da recepção. Do banco: abre como reavaliação, pelo caminho de sempre.</div>
+  <div class="mx-sub" id="mxBuscaRodape" style="margin-top:10px">Escolha o paciente: depois você decide entre iniciar o atendimento ou só consultar o prontuário.</div>
+</div></div>
+<div class="mx-sheet noprint" id="mxFilaSheet" role="dialog" aria-modal="true" aria-label="Fila de hoje" aria-hidden="true"><div class="mx-sheet-card mx-fila-card">
+  <div class="mx-fila-cab"><div class="mx-eyebrow">Fila de hoje</div><button type="button" class="mx-faltam-x" id="mxFilaFechar" aria-label="Fechar e voltar ao atendimento">×</button></div>
+  <div id="mxFilaCorpo"></div>
+  <div class="mx-sub" style="margin-top:12px">Fechar (× ou <span class="kbd">Esc</span>) volta ao atendimento atual, sem mudar nada.</div>
 </div></div>
 <div class="mx-toast noprint" id="mxToast" role="status" aria-live="polite"></div>
 
@@ -1009,6 +1042,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       <button class="btn btn-ghost noprint" id="termoBtn" style="width:100%;margin-bottom:10px;display:none;">Imprimir termo de consentimento</button>
       <button class="btn btn-gold noprint" id="printPacBtn" style="width:100%;margin-bottom:10px;">Imprimir orienta&ccedil;&otilde;es do paciente</button>
       <button class="btn btn-ghost noprint" id="printBtn" style="width:100%;margin-bottom:10px;">Imprimir relat&oacute;rio da cl&iacute;nica</button>
+      <button class="btn btn-primary noprint" id="concluirBtn" style="width:100%;margin-bottom:6px;">Concluir atendimento</button>
+      <div class="mx-concluir-info noprint" id="concluirInfo">Grava, marca como atendido, tira da fila (o histórico fica) e chama o próximo.</div>
       <button class="btn btn-ghost noprint" id="restartBtn" style="width:100%;">Novo paciente</button>
     </div>
     </section>
@@ -1543,10 +1578,37 @@ document.documentElement.setAttribute('data-tema',t)})();
         }
         if (this.modo==='claude'){
           const r=await this.db.collection('recepcao').orderBy('data','desc').limit(60).get();
-          return (r.docs||[]).map(d=>d.data()).filter(ehHoje);
+          const lista=(r.docs||[]).map(d=>Object.assign({}, d.data())).filter(ehHoje);
+          // v2.4: estado "atendido" fica numa coleção à parte (só acrescenta, nunca apaga)
+          try{
+            const a=await this.db.collection('atendidos').orderBy('em','asc').get();
+            const est={}; (a.docs||[]).forEach(d=>{ const x=d.data(); est[norm(x.codigo)+'|'+(x.recepcao||'')]=x; });
+            lista.forEach(f=>{ const x=est[norm(f.codigo)+'|'+(f.data||'')];
+              if (x){ f.atendido=!!x.atendido; if (x.atendido) f.atendidoEm=x.em; } });
+          }catch(e){}
+          return lista;
         }
       }catch(e){}
       return [];
+    },
+    // v2.4 · "Concluir atendimento": marca o registro da recepção de hoje como
+    // atendido (ou devolve à fila com atendido=false). Nada é apagado.
+    async marcarAtendido(reg, atendido, ciclo){
+      const marca = atendido!==false;
+      try{
+        if (this.modo==='rede'){
+          const r=await fetch(this.api+'/api/triagem/'+encodeURIComponent(norm(reg.codigo))+'/atendido',
+            {method:'PUT',headers:{'Content-Type':'application/json'},
+             body:JSON.stringify({atendido:marca, recepcao:reg.data||undefined, ciclo:ciclo||undefined})});
+          return r.ok;
+        }
+        if (this.modo==='claude'){
+          await this.db.collection('atendidos').add({codigo:norm(reg.codigo), recepcao:reg.data||null, atendido:marca,
+            em:new Date().toISOString(), ciclo:ciclo||null});
+          return true;
+        }
+      }catch(e){}
+      return false;
     },
     async salvarRecepcao(reg){
       if (this.modo==='claude'){
@@ -1619,6 +1681,12 @@ document.documentElement.setAttribute('data-tema',t)})();
   async function carregarPaciente(cod){ return await Store.ultimo(norm(cod)); }
   async function buscarPorTipo(cod,tipo){ return await Store.porTipo(norm(cod),tipo); }
   async function filaRecepcao(){ if (PREVIA) return []; return await Store.triagensHoje(); }
+  // v2.4: a fila mostra só quem aguarda; quem já foi atendido hoje fica à parte
+  function mxSeparaFila(todos){
+    todos = todos||[];
+    S.fila = todos.filter(f=>f && !f.atendido);
+    S.filaAtendidos = todos.filter(f=>f && f.atendido);
+  }
   // ---- código do paciente novo: sempre o próximo livre ----------------------
   // O próximo livre é maior que todo código já visto: o que o banco diz, a lista
   // de pacientes e a fila da recepção de hoje (quem respondeu no tablet já tem
@@ -2024,9 +2092,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       document.getElementById('rbCancela').onclick = ()=>ofereceRetomar();
       document.getElementById('rbConfirma').onclick = ()=>{
         limpaSessao();
-        const fila=S.fila, filaEstado=S.filaEstado;
+        const fila=S.fila, filaEstado=S.filaEstado, filaAt=S.filaAtendidos;
         Object.keys(S).forEach(k=>delete S[k]);
-        S.fila=fila; S.filaEstado=filaEstado;
+        S.fila=fila; S.filaEstado=filaEstado; if (filaAt) S.filaAtendidos=filaAt;
         prev=null; barra.style.display='none';
         build(); si=0; paint(); mostrarQuiz();
       };
@@ -2368,19 +2436,35 @@ document.documentElement.setAttribute('data-tema',t)})();
     notas.forEach(n=>{ h += '<p class="nota"><b>Nota do médico:</b> '+escH(n)+'</p>'; });
     return h;
   }
-  async function abreHistorico(){
+  // codConsulta (v2.4): abre o prontuário de QUALQUER paciente, só leitura,
+  // sem tocar no atendimento em curso (nada de S muda)
+  async function abreHistorico(codConsulta){
     const ov = document.getElementById('histOverlay'), corpo = document.getElementById('histCorpo');
     if (!ov || !corpo) return;
-    const cod = norm(S.codigo||'');
-    const ini = contatoAtual().iniciais;
-    document.getElementById('histTitulo').textContent = 'Histórico do paciente ' + (cod||'—') + (ini ? ' · '+ini : '');
-    corpo.innerHTML = '<p class="vazio">Carregando os atendimentos…</p>';
+    const consulta = typeof codConsulta==='string' && !!codConsulta;
+    const cod = norm(consulta ? codConsulta : (S.codigo||''));
+    const ini = consulta ? mxIniciaisDe(cod) : contatoAtual().iniciais;
+    ov.dataset.consulta = consulta ? cod : '';
+    document.getElementById('histTitulo').textContent = consulta
+      ? 'Prontuário de ' + cod + (ini ? ' · '+ini : '') + ' — só consulta'
+      : 'Histórico do paciente ' + (cod||'—') + (ini ? ' · '+ini : '');
+    const atual = norm(S.codigo||S.daFila||'');
+    const aviso = consulta
+      ? '<p class="hist-consulta">Somente leitura: nada aqui altera dados'
+        + (mxTemPaciente() && !mxEmResultados() && atual && atual!==cod ? ' nem o atendimento de <b>'+escH(atual)+'</b>, que continua de onde parou' : '')
+        + '.</p>' : '';
+    corpo.innerHTML = aviso + '<p class="vazio">Carregando os atendimentos…</p>';
     ov.style.display = 'flex';
     let ciclos = [];
     if (cod){ try{ ciclos = await Store.todosCiclos(cod); }catch(e){ ciclos = []; } }
     const clin = ciclos.filter(c=>Store.ehClinico(c))
       .sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
-    if (!clin.length){ corpo.innerHTML = '<p class="vazio">Nenhum atendimento anterior registrado para '+escH(cod)+'.</p>'; return; }
+    if (!clin.length){
+      const rec = ciclos.filter(c=>!Store.ehClinico(c)).length;
+      corpo.innerHTML = aviso + '<p class="vazio">Nenhum atendimento '+(consulta?'clínico ':'anterior ')+'registrado para '+escH(cod)
+        + (consulta && rec ? ' — só '+rec+' passage'+(rec===1?'m':'ns')+' pela recepção' : '')+'.</p>';
+      return;
+    }
 
     const prim = clin[0], ult = clin[clin.length-1];
     const dias = ult.data ? Math.max(0, Math.round((Date.now()-new Date(ult.data).getTime())/86400000)) : null;
@@ -2413,7 +2497,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (c.data) antData = c.data;
     });
 
-    corpo.innerHTML = h;
+    corpo.innerHTML = aviso + h;
     aplicaTooltips(corpo);
     const fechar = document.getElementById('histFechar');
     if (fechar) fechar.focus();
@@ -3347,8 +3431,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       s.push({id:'origem',plumb:true,kind:'opts',step:'Abertura',eyebrow:'Início do atendimento',
         text:'Como você quer começar?',
         hint: carregando ? 'Consultando a fila da recepção…'
-            : (n ? (n===1 ? '1 paciente respondeu o questionário na recepção hoje.'
-                          : n+' pacientes responderam o questionário na recepção hoje.')
+            : (n ? (n===1 ? '1 paciente aguardando — respondeu o questionário na recepção hoje.'
+                          : n+' pacientes aguardando — responderam o questionário na recepção hoje.')
+                   + ((S.filaAtendidos||[]).length ? ' '+(S.filaAtendidos.length===1 ? '1 já atendido hoje.' : S.filaAtendidos.length+' já atendidos hoje.') : '')
                  : (S.filaEstado==='erro'
                     ? 'Não foi possível consultar a fila da recepção. Você pode seguir normalmente.'
                     : 'Ninguém respondeu o questionário na recepção hoje.')),
@@ -3363,7 +3448,9 @@ document.documentElement.setAttribute('data-tema',t)})();
             text:'Não há ninguém na fila de hoje',
             hint: S.filaEstado==='erro'
               ? 'Não foi possível consultar a fila. Veja o estado da conexão no rodapé.'
-              : 'Ou o paciente não respondeu na recepção, ou o questionário foi de outro dia.',
+              : ((S.filaAtendidos||[]).length
+                  ? 'Os '+S.filaAtendidos.length+' pacientes de hoje já foram atendidos (veja em "Fila de hoje", no alto).'
+                  : 'Ou o paciente não respondeu na recepção, ou o questionário foi de outro dia.'),
             options:[{v:'novo',badge:'+',label:'Atender sem questionário da recepção'}]});
           if (S.filaVazia==='novo') S.origem='novo';
           else { s.forEach(x=>x.parcial=true); screens=s; verificaContrato(screens); si=Math.min(si,s.length-1); return; }
@@ -5776,8 +5863,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   };
 
   async function carregaFila(){
-    try{ await storePronto; const f=await filaRecepcao(); S.fila=f||[]; S.filaEstado='ok'; }
-    catch(e){ S.fila=[]; S.filaEstado='erro'; }
+    try{ await storePronto; const f=await filaRecepcao(); mxSeparaFila(f); S.filaEstado='ok'; }
+    catch(e){ S.fila=[]; S.filaAtendidos=[]; S.filaEstado='erro'; }
     if (S.origem===undefined){ build(); paint(); }
   }
   carregaFila();
@@ -6105,9 +6192,15 @@ document.documentElement.setAttribute('data-tema',t)})();
 
   // ---- busca de paciente (⌘K) ----
   let mxBuscaSel = 0, mxBuscaItens = [];
-  async function mxBusca(){
-    mxFechaSheet('mxAjuda'); mxAbreSheet('mxBusca');
-    const c = el('mxBuscaCampo'); if (c){ c.value=''; c.focus(); }
+  // v2.4: escolher na busca NÃO inicia atendimento — abre "Iniciar" ou "Só consultar"
+  let mxBuscaModo = 'normal', mxBuscaEscolhido = null;
+  async function mxBusca(modo){
+    mxBuscaModo = modo==='consulta' ? 'consulta' : 'normal'; mxBuscaEscolhido = null;
+    mxFechaSheet('mxAjuda'); mxFechaSheet('mxFilaSheet'); mxAbreSheet('mxBusca');
+    const c = el('mxBuscaCampo'); if (c){ c.value=''; c.style.display=''; c.placeholder = mxBuscaModo==='consulta' ? 'Consultar prontuário — código ou iniciais' : 'Código ou iniciais do paciente'; c.focus(); }
+    const rod = el('mxBuscaRodape'); if (rod) rod.textContent = mxBuscaModo==='consulta'
+      ? 'Só consulta: abre o prontuário em modo leitura, sem iniciar atendimento.'
+      : 'Escolha o paciente: depois você decide entre iniciar o atendimento ou só consultar o prontuário.';
     mxBuscaSel = 0; mxPintaBusca();
     if (!S.listaPacientes){
       try{ await storePronto; S.listaPacientes = await Store.listaPacientes(); }catch(e){ S.listaPacientes = []; }
@@ -6116,6 +6209,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   function mxPintaBusca(){
     const lista = el('mxBuscaLista'), c = el('mxBuscaCampo'); if (!lista) return;
+    if (mxBuscaEscolhido){ mxPintaEscolha(lista, c); return; }
+    if (c) c.style.display = '';
     const q = norm(c ? c.value : '');
     const casa = (cod, ini)=> !q || norm(cod).indexOf(q)>=0 || norm(ini||'').indexOf(q)>=0;
     const itens = [];
@@ -6140,9 +6235,9 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   function mxRecomeca(){
     // como “Novo paciente”, mas preserva a fila já consultada
-    const fila=S.fila, fe=S.filaEstado, lp=S.listaPacientes;
+    const fila=S.fila, fe=S.filaEstado, lp=S.listaPacientes, fa=S.filaAtendidos;
     Object.keys(S).forEach(k=>delete S[k]);
-    if (fila!==undefined) S.fila=fila; if (fe!==undefined) S.filaEstado=fe; if (lp) S.listaPacientes=lp;
+    if (fila!==undefined) S.fila=fila; if (fe!==undefined) S.filaEstado=fe; if (lp) S.listaPacientes=lp; if (fa) S.filaAtendidos=fa;
     si=0; prev=null; hist=[]; window.__mxReg=null; mxNovas={}; mxVistas=null; mxFaltamAtivo=false;
     try{ limpaSessao(); escondeRetomar(); }catch(e){}
     resultsCard.style.display='none';
@@ -6159,6 +6254,37 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   async function mxEscolheBusca(k){
     const it = mxBuscaItens[k]; if (!it) return;
+    if (mxBuscaModo==='consulta'){ mxFechaSheet('mxBusca'); mxConsultaProntuario(it.cod); return; }
+    mxBuscaEscolhido = it; mxPintaBusca();
+  }
+  function mxPintaEscolha(lista, c){
+    const it = mxBuscaEscolhido;
+    if (c) c.style.display = 'none';
+    const atual = norm(S.codigo||S.daFila||'');
+    const emCurso = mxTemPaciente() && !mxEmResultados();
+    const mesmo = emCurso && atual===norm(it.cod);
+    lista.innerHTML = '<div class="mx-escolha">'
+      + '<div class="mx-escolha-cab"><b>'+escH(norm(it.cod))+'</b> <span>'+escH(it.txt||'')+'</span> <small>'+escH(it.extra||'')+'</small></div>'
+      + '<div class="mx-escolha-acoes">'
+      + '<button type="button" class="btn btn-primary" id="mxBIniciar">'+(mesmo ? 'Voltar ao atendimento em curso' : 'Iniciar atendimento')+'</button>'
+      + '<button type="button" class="btn btn-ghost" id="mxBConsultar">Só consultar prontuário</button>'
+      + '</div>'
+      + (emCurso && !mesmo ? '<div class="mx-sub">Atendimento em curso: '+escH(atual)+'. Consultar não muda nada nele; iniciar pede confirmação.</div>' : '')
+      + '<button type="button" class="mx-escolha-volta" id="mxBVoltar">← voltar à lista</button></div>';
+    el('mxBIniciar').onclick = ()=>{ if (mesmo){ mxFechaSheet('mxBusca'); return; } mxIniciaPaciente(it); };
+    el('mxBConsultar').onclick = ()=>{ mxFechaSheet('mxBusca'); mxConsultaProntuario(it.cod); };
+    el('mxBVoltar').onclick = ()=>{ mxBuscaEscolhido = null; mxPintaBusca(); const cc=el('mxBuscaCampo'); if (cc) cc.focus(); };
+    el('mxBConsultar').focus();
+  }
+  function mxConsultaProntuario(cod){ abreHistorico(norm(cod)); }
+  function mxIniciaisDe(cod){
+    cod = norm(cod);
+    const f = (S.fila||[]).concat(S.filaAtendidos||[]).find(x=>norm(x.codigo)===cod);
+    if (f && f.iniciais) return f.iniciais;
+    const p = (S.listaPacientes||[]).find(x=>norm(x.codigo)===cod);
+    return p && p.iniciais ? p.iniciais : '';
+  }
+  async function mxIniciaPaciente(it){
     const atual = norm(S.codigo||S.daFila||'');
     const emCurso = mxTemPaciente() && !mxEmResultados();
     if (emCurso && atual===norm(it.cod)){ mxFechaSheet('mxBusca'); return; }
@@ -6240,6 +6366,14 @@ document.documentElement.setAttribute('data-tema',t)})();
     const vis = id=>{ const o=el(id); return !!o && o.style.display==='flex'; };
     // prontuário e histórico abertos têm os próprios atalhos
     if (vis('histOverlay') || vis('fichaOverlay')) return;
+    if (mxSheetAberta('mxFilaSheet')){
+      if (k==='Escape'){ e.preventDefault(); e.stopPropagation(); mxFechaFila(); }
+      return;
+    }
+    if (mxSheetAberta('mxBusca') && mxBuscaEscolhido){
+      if (k==='Escape'){ e.preventDefault(); e.stopPropagation(); mxBuscaEscolhido = null; mxPintaBusca(); const cc=el('mxBuscaCampo'); if (cc) cc.focus(); }
+      return;   // Enter/Tab: comportamento normal dos botões
+    }
     if (mxSheetAberta('mxBusca')){
       if (k==='Escape'){ e.preventDefault(); mxFechaSheet('mxBusca'); }
       else if (k==='ArrowDown' || k==='ArrowUp'){
@@ -6378,6 +6512,111 @@ document.documentElement.setAttribute('data-tema',t)})();
     const f = el('mxFilaTopo'); if (!f) return;
     const n = (S.fila||[]).length;
     f.innerHTML = S.filaEstado===undefined ? 'Fila de hoje <b>…</b>' : (S.filaEstado==='erro' ? 'Fila indisponível' : 'Fila de hoje <b>'+n+'</b>');
+    if (mxSheetAberta('mxFilaSheet')) mxPintaFila();
+  }
+
+  // ---- v2.4 · abertura: "Consultar prontuário" sem iniciar atendimento ----
+  function mxPintaInicio(){
+    let b = el('mxConsultaInicio');
+    const naAbertura = (screens[si]||{}).id==='origem' && quizCard.style.display!=='none' && !mxEmResultados();
+    if (!naAbertura){ if (b) b.remove(); return; }
+    if (!b){
+      b = document.createElement('button'); b.type='button'; b.id='mxConsultaInicio'; b.className='mx-consulta-ini';
+      b.innerHTML = 'Consultar prontuário <small>só leitura, sem iniciar atendimento</small>';
+      b.onclick = ()=>mxBusca('consulta');
+    }
+    const w = el('optsWrap'); if (w && b.parentNode!==w) w.appendChild(b);
+  }
+
+  // ---- v2.4 · "Fila de hoje": popup a qualquer momento ----
+  function mxEspera(f){
+    const t = Date.parse(f && f.data); if (isNaN(t)) return '';
+    const min = Math.round((Date.now()-t)/60000);
+    if (min < 0) return 'previsto '+(f.hora||'');
+    if (min < 60) return 'esperando há '+min+' min';
+    return 'esperando há '+Math.floor(min/60)+' h '+String(min%60).padStart(2,'0');
+  }
+  function mxHoraDe(iso){ const d=new Date(iso); return isNaN(d) ? '' : String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+  function mxPintaFila(){
+    const corpo = el('mxFilaCorpo'); if (!corpo) return;
+    if (S.filaEstado==='erro'){ corpo.innerHTML = '<p class="mx-sub">Não foi possível consultar a fila da recepção agora.</p>'; return; }
+    if (S.filaEstado===undefined){ corpo.innerHTML = '<p class="mx-sub">Consultando a fila…</p>'; return; }
+    const atual = norm(S.codigo||S.daFila||''), emCurso = mxTemPaciente() && !mxEmResultados();
+    const porHora = l => (l||[]).slice().sort((a,b)=>String(a.data||'').localeCompare(String(b.data||'')));
+    const fila = porHora(S.fila), at = porHora(S.filaAtendidos);
+    const queixa = f => ({de:'ereção',ep:'ejaculação',ambos:'ereção e ejaculação',libido:'desejo e energia',
+                          preench:'aumento peniano',emag:'emagrecimento',clinica:'rotina'}[f.queixaRecepcao]||'');
+    const linha = f => {
+      const cod = norm(f.codigo), agora = emCurso && cod===atual;
+      const m = f.medidas||{}, id = m.idade||f.idade;
+      return '<li class="mx-fl'+(agora?' agora':'')+'">'
+        + '<span class="h">'+escH(f.hora||mxHoraDe(f.data)||'—')+'</span>'
+        + '<span class="q"><b>'+escH(cod)+'</b> '+escH([f.iniciais||null, id?id+' anos':null, queixa(f)||null].filter(Boolean).join(' · '))
+        + '<small>'+escH(mxEspera(f))+'</small></span>'
+        + '<span class="t '+(f.retorno?'ret':'nov')+'">'+(f.retorno?'Retorno':'Novo')+'</span>'
+        + '<span class="a">'+(agora ? '<em>em atendimento</em>'
+            : '<button type="button" class="btn btn-ghost" data-ini="'+escH(cod)+'">Atender</button>')
+        + '<button type="button" class="btn btn-ghost" data-pront="'+escH(cod)+'">Prontuário</button></span></li>';
+    };
+    corpo.innerHTML = '<div class="mx-fila-sec">Aguardando <b>'+fila.length+'</b></div>'
+      + (fila.length ? '<ul class="mx-fl-lista">'+fila.map(linha).join('')+'</ul>' : '<p class="mx-sub">Ninguém aguardando agora.</p>')
+      + '<details class="mx-fila-at"'+(at.length&&!fila.length?' open':'')+'><summary>Atendidos hoje <b>'+at.length+'</b></summary>'
+      + (at.length ? '<ul class="mx-fl-lista">'+at.map(f=>'<li class="mx-fl at"><span class="h">'+escH(f.hora||mxHoraDe(f.data)||'—')+'</span>'
+          + '<span class="q"><b>'+escH(norm(f.codigo))+'</b> '+escH(f.iniciais||'')+'<small>atendido às '+escH(mxHoraDe(f.atendidoEm)||'—')+'</small></span>'
+          + '<span class="t '+(f.retorno?'ret':'nov')+'">'+(f.retorno?'Retorno':'Novo')+'</span>'
+          + '<span class="a"><button type="button" class="btn btn-ghost" data-pront="'+escH(norm(f.codigo))+'">Prontuário</button></span></li>').join('')+'</ul>'
+          : '<p class="mx-sub">Nenhum ainda.</p>')
+      + '</details>';
+    corpo.querySelectorAll('[data-pront]').forEach(b=>b.onclick = ()=>{ mxFechaFila(); mxConsultaProntuario(b.dataset.pront); });
+    corpo.querySelectorAll('[data-ini]').forEach(b=>b.onclick = ()=>{
+      const cod = b.dataset.ini; mxFechaFila();
+      const f = fila.find(x=>norm(x.codigo)===cod) || {};
+      mxIniciaPaciente({tipo:'fila', cod:f.codigo||cod});
+    });
+  }
+  async function mxAbreFila(){
+    mxFechaSheet('mxAjuda'); mxFechaSheet('mxBusca'); mxAbreSheet('mxFilaSheet');
+    mxPintaFila();
+    const x = el('mxFilaFechar'); if (x) x.focus();
+    try{ await storePronto; const f = await filaRecepcao(); mxSeparaFila(f); S.filaEstado='ok'; }catch(e){}
+    mxPintaFila(); mxTopo();
+  }
+  function mxFechaFila(){ mxFechaSheet('mxFilaSheet'); }
+
+  // ---- v2.4 · "Concluir atendimento" ----
+  let mxConcluindo = false;
+  async function mxConcluir(){
+    if (mxConcluindo) return;
+    const btn = el('concluirBtn'), info = el('concluirInfo');
+    const cod = norm(S.codigo||S.daFila||'');
+    const volta = msg=>{ mxConcluindo=false; if (btn){ btn.disabled=false; btn.textContent='Concluir atendimento'; } if (msg && info) info.textContent = msg; };
+    mxConcluindo = true; if (btn){ btn.disabled=true; btn.textContent='Concluindo…'; }
+    // 1. gravar: o ciclo já foi gravado ao gerar a conduta; reenvia o que ficou pendente
+    try{ await processaFila(); }catch(e){}
+    if (filaLe().length && !window.confirm('O registro deste atendimento ainda não chegou ao banco — está guardado neste computador e será reenviado sozinho. Concluir mesmo assim?')){
+      volta('Atendimento não concluído: o registro ainda está pendente de envio.'); return; }
+    // 2. marcar como atendido o registro da recepção de hoje (se ele passou pela recepção)
+    let todos = [];
+    try{ todos = (await filaRecepcao())||[]; }catch(e){ todos = S.fila||[]; }
+    const rec = todos.filter(f=>norm(f.codigo)===cod && !f.atendido).slice(-1)[0];
+    if (rec){
+      const ok = await Store.marcarAtendido(rec, true, (window.__mxReg||{}).data);
+      if (!ok){ volta('Não foi possível marcar '+cod+' como atendido no servidor. Nada foi perdido — tente de novo.'); mxToast('Falha ao marcar '+cod+' como atendido.'); return; }
+    }
+    // 3. próximo da fila (ou a fila / a abertura)
+    mxRecomeca();
+    try{ await storePronto; mxSeparaFila(await filaRecepcao()); S.filaEstado='ok'; }catch(e){}
+    build(); paint();
+    const prox = (S.fila||[]).slice().sort((a,b)=>String(a.data||'').localeCompare(String(b.data||'')))[0];
+    const feito = 'Atendimento de '+cod+' concluído'+(rec ? '' : ' (não estava na fila de hoje)')+'.';
+    if (prox && mxEscolhe('origem','fila')){
+      await avancar();
+      mxEscolhe('daFila', prox.codigo);
+      mxToast(feito+' Próximo: '+norm(prox.codigo)+(prox.hora?' ('+prox.hora+')':'')+' — confirme com Próxima.');
+    } else mxToast(feito+' Ninguém aguardando na fila.');
+    mxConcluindo = false;
+    if (btn){ btn.disabled=false; btn.textContent='Concluir atendimento'; }
+    if (info) info.textContent = 'Grava, marca como atendido, tira da fila (o histórico fica) e chama o próximo.';
   }
 
   // ---- trilho: chips, contagem n/total, entrada da conduta, dispensados ----
@@ -6477,6 +6716,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     try{ mxPintaSecao(); }catch(e){}
     try{ mxPintaCta(); }catch(e){}
     try{ mxPintaFaltam(); }catch(e){}
+    try{ mxPintaInicio(); }catch(e){}
     try{ mxTopo(); }catch(e){}
     try{ mxPintaConduta(); }catch(e){}
   }
@@ -6487,12 +6727,15 @@ document.documentElement.setAttribute('data-tema',t)})();
     window.addEventListener('beforeprint', ()=>{ abertos = [...document.querySelectorAll('details.mx-det:not([open])')]; abertos.forEach(d=>d.open=true); });
     window.addEventListener('afterprint', ()=>{ abertos.forEach(d=>d.open=false); abertos = []; });
     const b = el('mxBuscaBtn'); if (b) b.onclick = ()=>mxBusca();
+    const fb2 = el('mxFilaTopo'); if (fb2) fb2.onclick = ()=>mxAbreFila();
+    const ff = el('mxFilaFechar'); if (ff) ff.onclick = ()=>mxFechaFila();
+    const cb2 = el('concluirBtn'); if (cb2) cb2.onclick = ()=>mxConcluir();
     const t = el('mxTemaBtn'); if (t) t.onclick = ()=>mxAlternaTema();
     const a = el('mxAjudaBtn'); if (a) a.onclick = ()=>mxAjuda();
     const af = el('mxAjudaFechar'); if (af) af.onclick = ()=>mxFechaSheet('mxAjuda');
     const rv = el('mxRevisar'); if (rv) rv.onclick = ()=>mxRevisarConduta();
     const c = el('mxBuscaCampo'); if (c) c.oninput = ()=>{ mxBuscaSel = 0; mxPintaBusca(); };
-    ['mxAjuda','mxBusca'].forEach(id=>{ const s=el(id); if (s) s.addEventListener('click', ev=>{ if (ev.target===s) mxFechaSheet(id); }); });
+    ['mxAjuda','mxBusca','mxFilaSheet'].forEach(id=>{ const s=el(id); if (s) s.addEventListener('click', ev=>{ if (ev.target===s) mxFechaSheet(id); }); });
     const rs = el('restartBtn'); if (rs) rs.addEventListener('click', ()=>{ window.__mxReg=null; mxNovas={}; mxVistas=null; });
   })();
 

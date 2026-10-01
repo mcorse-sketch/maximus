@@ -166,7 +166,9 @@ async function atendimento(p, viaAtalho) {
     const hoje = new Date();
     const fila = [{ codigo: 'MXF001', iniciais: 'A.B.', hora: '14:20', data: hoje.toISOString(), dataLocal: hoje.toISOString().slice(0, 10),
       queixaRecepcao: 'de', idade: 50, respostas: { i0: 3, i1: 3, i2: 3, i3: 3, i4: 3 } }];
-    const mem = { recepcao: fila, codigos: [], pacientes: [] };
+    const mem = { recepcao: fila, codigos: [{ codigo: 'MXH001' }], pacientes: [],
+      'pacientes/MXH001/ciclos': [{ codigo: 'MXH001', tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', iief: 14,
+        data: new Date(Date.now() - 60 * 86400000).toISOString(), kitCodes: ['BASE-T5'] }] };
     const a = await abre(mem);
     const { win, doc } = a;
     await espera(60);
@@ -178,10 +180,19 @@ async function atendimento(p, viaAtalho) {
     tecla(win, 'k', { ctrlKey: true }); await espera(30);
     ok(doc.getElementById('mxBusca').classList.contains('on'), '⌘K / Ctrl+K abre a busca');
     ok(/MXF001/.test(doc.getElementById('mxBuscaLista').textContent), 'a busca lista a fila de hoje');
-    tecla(win, 'Enter'); await espera(80);
-    ok(!doc.getElementById('mxBusca').classList.contains('on'), 'Enter escolhe o paciente e fecha a busca');
     const tela = () => doc.getElementById('quizCard').getAttribute('data-tela');
-    ok(!['origem', 'daFila'].includes(tela()), 'a busca abre o paciente da fila pelo caminho normal', 'tela: ' + tela());
+    const telaAntes = tela();
+    tecla(win, 'Enter'); await espera(80);
+    ok(doc.getElementById('mxBusca').classList.contains('on') && visivel(doc.getElementById('mxBIniciar')) && visivel(doc.getElementById('mxBConsultar')),
+      'Enter na busca NÃO inicia: oferece "Iniciar atendimento" e "Só consultar prontuário"');
+    ok(tela() === telaAntes, 'escolher na busca não mexe no fluxo', 'tela: ' + tela());
+    ok(/Iniciar atendimento/.test(doc.getElementById('mxBIniciar').textContent) && /Só consultar prontuário/.test(doc.getElementById('mxBConsultar').textContent), 'textos dos dois botões');
+    tecla(win, 'Escape'); await espera(10);
+    ok(doc.getElementById('mxBusca').classList.contains('on') && !doc.getElementById('mxBIniciar'), 'Esc na escolha volta à lista');
+    tecla(win, 'Enter'); await espera(30);
+    doc.getElementById('mxBIniciar').click(); await espera(120);
+    ok(!doc.getElementById('mxBusca').classList.contains('on'), '"Iniciar atendimento" fecha a busca');
+    ok(!['origem', 'daFila'].includes(tela()), '"Iniciar atendimento" abre o paciente da fila pelo caminho normal', 'tela: ' + tela());
     // anda até uma tela obrigatória sem resposta e tenta ⌘↵
     let t0 = null;
     for (let k = 0; k < 20; k++) {
@@ -221,6 +232,100 @@ async function atendimento(p, viaAtalho) {
     tecla(win, 'ArrowUp'); await espera(20);
     ok(tela() !== antes || visivel(doc.getElementById('panoramaCard')), '↑ volta uma pergunta');
     ok(/Fila de hoje/.test(doc.getElementById('mxFilaTopo').textContent), 'barra superior mostra a fila de hoje');
+    // ⌘K no meio do atendimento: "só consultar" abre o prontuário sem perder nada
+    {
+      const tAntes = tela(), progAntes = doc.getElementById('mxProgTxt').textContent;
+      tecla(win, 'k', { ctrlKey: true }); await espera(30);
+      const campo = doc.getElementById('mxBuscaCampo'); campo.value = 'MXH'; campo.dispatchEvent(new win.Event('input')); await espera(10);
+      ok(/MXH001/.test(doc.getElementById('mxBuscaLista').textContent), 'a busca acha paciente do banco');
+      tecla(win, 'Enter'); await espera(30);
+      ok(/em curso/i.test(doc.getElementById('mxBuscaLista').textContent), 'com atendimento em curso, a escolha avisa que consultar não muda nada');
+      doc.getElementById('mxBConsultar').click(); await espera(80);
+      const ov = doc.getElementById('histOverlay');
+      ok(ov.style.display === 'flex' && /MXH001/.test(doc.getElementById('histTitulo').textContent) && /só consulta/.test(doc.getElementById('histTitulo').textContent),
+        '"Só consultar prontuário" abre a gaveta de MXH001 em modo leitura', doc.getElementById('histTitulo').textContent);
+      ok(/Somente leitura/.test(doc.getElementById('histCorpo').textContent) && /DE-2/.test(doc.getElementById('histCorpo').textContent), 'a gaveta mostra o histórico e diz que é só leitura');
+      ok(tela() === tAntes && doc.getElementById('mxProgTxt').textContent === progAntes, 'o atendimento em curso continua igual por trás da gaveta');
+      doc.getElementById('histFechar').click(); await espera(20);
+      ok(ov.style.display !== 'flex' && tela() === tAntes, 'fechar a gaveta volta exatamente para a pergunta onde estava');
+    }
+    // "Fila de hoje" vira botão: popup a qualquer momento
+    {
+      const tAntes = tela();
+      doc.getElementById('mxFilaTopo').click(); await espera(60);
+      const sh = doc.getElementById('mxFilaSheet');
+      ok(sh.classList.contains('on'), '"Fila de hoje" abre o popup no meio do atendimento');
+      const txt = doc.getElementById('mxFilaCorpo').textContent;
+      ok(/Aguardando\s*1/.test(txt) && /MXF001/.test(txt) && /(Novo|Retorno)/.test(txt) && /(esperando há|previsto)/.test(txt),
+        'popup lista quem espera, tempo de espera e novo × retorno', txt.slice(0, 160));
+      ok(/em atendimento/.test(txt), 'o paciente atual aparece como "em atendimento"');
+      ok(/Atendidos hoje\s*0/.test(txt), 'popup separa os já atendidos');
+      tecla(win, 'Escape'); await espera(10);
+      ok(!sh.classList.contains('on') && tela() === tAntes, 'Esc fecha o popup e volta ao atendimento atual');
+    }
+    ok(a.erros.length === 0, 'sem erro de JS', a.erros.slice(0, 3).join(' | '));
+    win.close();
+  }
+
+  // ---------- abertura: "Consultar prontuário" ----------
+  console.log('\n--- abertura: consultar prontuário (só leitura)');
+  {
+    const mem = { recepcao: [], codigos: [{ codigo: 'MXH002' }],
+      'pacientes/MXH002/ciclos': [{ codigo: 'MXH002', tipo: 'primeira', linha: 'EP', protocolo: 'EP-1', pedt: 12,
+        data: new Date(Date.now() - 30 * 86400000).toISOString() }] };
+    const a = await abre(mem); const { win, doc } = a;
+    await espera(60);
+    const b = doc.getElementById('mxConsultaInicio');
+    ok(!!b && doc.getElementById('quizCard').getAttribute('data-tela') === 'origem' && /Consultar prontuário/.test(b.textContent), 'a tela inicial tem "Consultar prontuário"');
+    b.click(); await espera(40);
+    ok(doc.getElementById('mxBusca').classList.contains('on') && /Só consulta/.test(doc.getElementById('mxBuscaRodape').textContent), 'abre a busca em modo consulta');
+    tecla(win, 'Enter'); await espera(80);
+    ok(doc.getElementById('histOverlay').style.display === 'flex' && /MXH002/.test(doc.getElementById('histTitulo').textContent), 'no modo consulta, escolher abre direto o prontuário');
+    ok(doc.getElementById('quizCard').getAttribute('data-tela') === 'origem' && !(mem['pacientes/MXH002/ciclos'].length > 1), 'nenhum atendimento iniciado, nada gravado');
+    ok(a.erros.length === 0, 'sem erro de JS', a.erros.slice(0, 3).join(' | '));
+    win.close();
+  }
+
+  // ---------- concluir atendimento ----------
+  console.log('\n--- concluir atendimento: marca atendido, tira da fila, chama o próximo');
+  {
+    const hoje = new Date();
+    const mk = (cod, ini, min) => { const d = new Date(hoje.getTime() - min * 60000);
+      return { codigo: cod, iniciais: ini, tipo: 'recepcao', linha: 'recepcao', hora: d.toTimeString().slice(0, 5), data: d.toISOString(),
+        dataLocal: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
+        queixaRecepcao: 'de', idade: 50, respostas: { i0: 3, i1: 3, i2: 3, i3: 3, i4: 3 } }; };
+    const mem = { recepcao: [mk('MXF101', 'A.A.', 40), mk('MXF102', 'B.B.', 20)], codigos: [] };
+    const a = await abre(mem); const { win, doc } = a;
+    const resp = { origem: 'fila', daFila: 'MXF101' };
+    let chegou = false;
+    for (let k = 0; k < 120; k++) {
+      await espera(12);
+      if (visivel(doc.getElementById('resultsCard'))) { chegou = true; break; }
+      const pan = doc.getElementById('panoramaCard');
+      if (visivel(pan)) { doc.getElementById('panSeguir').click(); continue; }
+      const t = doc.getElementById('quizCard').getAttribute('data-tela');
+      try { preenche(doc, win, t, resp[t]); } catch (e) { break; }
+      doc.getElementById('nextBtn').click();
+    }
+    await espera(80);
+    ok(chegou, 'paciente da fila chega à conduta');
+    const cb = doc.getElementById('concluirBtn');
+    ok(visivel(cb) && /Concluir atendimento/.test(cb.textContent) && visivel(doc.getElementById('restartBtn')), 'tela final tem "Concluir atendimento" além de "Novo paciente"');
+    const ciclosAntes = (mem['pacientes/MXF101/ciclos'] || []).length;
+    cb.click(); await espera(250);
+    const at = mem.atendidos || [];
+    ok(at.length === 1 && at[0].codigo === 'MXF101' && at[0].atendido === true && at[0].recepcao === mem.recepcao[0].data, 'marca MXF101 como atendido (registro da recepção de hoje)', JSON.stringify(at));
+    ok(mem.recepcao.length === 2 && mem.recepcao[0].codigo === 'MXF101', 'o registro da recepção não é apagado');
+    ok((mem['pacientes/MXF101/ciclos'] || []).length === ciclosAntes && ciclosAntes >= 1, 'o ciclo clínico continua no histórico');
+    const tela = doc.getElementById('quizCard').getAttribute('data-tela');
+    const opts = [...doc.querySelectorAll('#optsWrap .opt')].map(o => o.dataset.v);
+    ok(tela === 'daFila' && opts.indexOf('MXF101') < 0 && opts.indexOf('MXF102') >= 0, 'volta à fila sem o atendido', tela + ' ' + JSON.stringify(opts));
+    ok(!!doc.querySelector('#optsWrap .opt.selected[data-v="MXF102"], #optsWrap .opt.on[data-v="MXF102"], #optsWrap .opt[aria-pressed="true"][data-v="MXF102"]') || /MXF102/.test(doc.getElementById('mxToast').textContent),
+      'o próximo (MXF102) já vem indicado', doc.getElementById('mxToast').textContent);
+    ok(/Fila de hoje\s*1/.test(doc.getElementById('mxFilaTopo').textContent), 'contador da fila cai para 1');
+    doc.getElementById('mxFilaTopo').click(); await espera(60);
+    ok(/Atendidos hoje\s*1/.test(doc.getElementById('mxFilaCorpo').textContent), 'o popup mostra 1 atendido hoje');
+    tecla(win, 'Escape'); await espera(10);
     ok(a.erros.length === 0, 'sem erro de JS', a.erros.slice(0, 3).join(' | '));
     win.close();
   }

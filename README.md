@@ -161,7 +161,7 @@ CLAUDE.md    regras do projeto — leia antes de editar
 | `tests/teste_codigo.js` | código do paciente novo: próximo livre preenchido (banco vazio, com pacientes, fila da recepção, servidor fora), vazio/inválido não avança |
 | `tests/teste_envio.js` | "Enviar ao paciente": receita só com fórmula/medicação (DE, EP, DUO, intracavernosa, nitrato, hipogonadismo, preenchimento, urologia, emagrecimento, TEFI) e o texto exato das orientações pós-preenchimento |
 | `tests/banco_teste.js` | gera o banco de teste (`data/banco_teste.json`) com o próprio app; `--conferir` acusa se o app passou a produzir outra conduta |
-| `tests/teste_interface.js` | interface v2.3/v2.4: tema manual, atalhos, busca, "nova · motivo", impressão dos recolhidos, ⌘↵ = caminho normal nos pacientes da regressão, lista "Falta responder N perguntas:" e escores em pílulas |
+| `tests/teste_interface.js` | interface v2.3/v2.4: tema manual, atalhos, busca (escolher não inicia: iniciar × só consultar), gaveta de prontuário só leitura no meio do atendimento, popup "Fila de hoje", "Concluir atendimento", "nova · motivo", impressão dos recolhidos, ⌘↵ = caminho normal nos pacientes da regressão, lista "Falta responder N perguntas:" e escores em pílulas |
 | `tests/teste_sessao.js` | tela de senha dos três apps contra um servidor falso |
 | `tests/teste_servidor.py` | servidor: senhas, permissões por perfil, bloqueio, rotas de dados, carga do banco de teste sem tocar no real |
 

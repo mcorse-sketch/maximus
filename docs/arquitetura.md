@@ -87,6 +87,7 @@ Rotas com senha, por perfil (`PERMISSOES` no servidor):
 | `/api/pacientes` (lista para o retorno: código, iniciais, última data) | ✓ | ✓ | — |
 | `POST /api/ciclo` | ✓ | só `tipo` e `linha` = `recepcao` | — |
 | `PUT /api/triagem/<cod>/nota`, `/api/export` | ✓ | — | — |
+| `PUT /api/triagem/<cod>/atendido` (v2.4: marca/desmarca o registro da recepção de hoje como atendido; só acrescenta `atendido`, `atendidoEm`, `atendidoCiclo`, `atendimentoLog` — nunca apaga) | ✓ | ✓ | — |
 
 Sessão: token aleatório no cabeçalho `Authorization: Bearer`, guardado em
 `sessionStorage` (some ao fechar a aba), válido por 12 horas, só na memória do
