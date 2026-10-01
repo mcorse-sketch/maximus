@@ -405,6 +405,76 @@ def apagar_ficticios():
     return removidos, len(dados["pacientes"])
 
 
+def so_ficticio(ciclos):
+    """Paciente cujos registros sao todos ficticios (demo:true)."""
+    return bool(ciclos) and all(c.get("demo") for c in ciclos)
+
+
+def _desloca(reg, dias):
+    """Traz as datas de um registro do banco de teste para perto de hoje."""
+    reg = dict(reg)
+    delta = datetime.timedelta(days=dias)
+    d = reg.get("data")
+    if isinstance(d, str) and d:
+        try:
+            utc = d.endswith("Z")
+            x = datetime.datetime.fromisoformat(d[:-1] if utc else d) + delta
+            reg["data"] = x.isoformat(timespec="milliseconds") + ("Z" if utc else "")
+        except ValueError:
+            pass
+    dl = reg.get("dataLocal")
+    if isinstance(dl, str) and len(dl) == 10:
+        try:
+            x = datetime.date.fromisoformat(dl) + delta
+            reg["dataLocal"] = x.isoformat()
+            reg["dataBR"] = x.strftime("%d/%m/%Y")
+        except ValueError:
+            pass
+    return reg
+
+
+def carregar_teste(origem):
+    """Carrega o banco de TESTE ficticio (data/banco_teste.json) no banco atual.
+
+    - copia o banco atual antes (banco_triagem.json.antes-carregar-teste-AAAAMMDDHHMM);
+    - MESCLA: nenhum registro real e apagado ou alterado;
+    - recusa tudo se algum codigo do teste ja tiver registro real;
+    - substitui os registros ficticios desses mesmos codigos (recarregar e seguro);
+    - traz as datas para hoje: a fila da recepcao do teste vira a fila de hoje;
+    - todo registro carregado leva demo:true (sai com --apagar-ficticios)."""
+    with open(origem, "r", encoding="utf-8") as f:
+        teste = json.load(f)
+    ref = datetime.date.fromisoformat(teste["referencia"])
+    dias = (datetime.date.today() - ref).days
+    copia = None
+    with _lock:
+        dados = carregar()
+        conflito = sorted(cod for cod in teste["pacientes"]
+                          if any(not c.get("demo") for c in dados["pacientes"].get(cod, [])))
+        if conflito:
+            raise SystemExit("Nada foi carregado: estes codigos ja tem registros REAIS no banco: %s.\n"
+                             "O banco de teste usa MX9101-MX9140; renomeie no arquivo de teste se precisar."
+                             % ", ".join(conflito))
+        if os.path.exists(BANCO):
+            copia = BANCO + ".antes-carregar-teste-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            shutil.copy2(BANCO, copia)
+        reais = sum(1 for v in dados["pacientes"].values() if v and not so_ficticio(v))
+        for cod, regs in teste["pacientes"].items():
+            novos = []
+            for r in regs:
+                r = _desloca(r, dias)
+                r["demo"] = True
+                novos.append(r)
+            novos.sort(key=lambda c: str(c.get("data", "")))
+            dados["pacientes"][cod] = novos
+        gravar(dados)
+    hoje = datetime.date.today().isoformat()
+    fila = sorted(cod for cod, regs in teste["pacientes"].items()
+                  if any(r.get("tipo") == "recepcao" and _desloca(r, dias).get("dataLocal") == hoje for r in regs))
+    return {"pacientes": len(teste["pacientes"]), "registros": sum(len(v) for v in teste["pacientes"].values()),
+            "fila": fila, "reais": reais, "copia": copia, "dias": dias}
+
+
 def ip_da_rede():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -599,7 +669,8 @@ class Handler(BaseHTTPRequestHandler):
                 ini = next((c.get("iniciais") for c in reversed(ord_) if c.get("iniciais")), None)
                 clin = [c for c in ord_ if c.get("tipo") != "recepcao" and c.get("linha") != "recepcao"]
                 lista.append({"codigo": cod, "iniciais": ini, "clinicos": len(clin),
-                              "ultimaData": ord_[-1].get("data") if ord_ else None})
+                              "ultimaData": ord_[-1].get("data") if ord_ else None,
+                              "ficticio": so_ficticio(ciclos)})
             lista.sort(key=lambda p: p["codigo"])
             self._json({"pacientes": lista})
             return
@@ -607,12 +678,18 @@ class Handler(BaseHTTPRequestHandler):
         if caminho == "/api/proximo-codigo":
             with _lock:
                 dados = carregar()
+            # paciente so com registros ficticios (banco de teste, fila
+            # ficticia) nao empurra a numeracao dos reais, mas o codigo dele
+            # continua ocupado: o proximo nunca colide
             maior = 0
-            for cod in dados["pacientes"]:
+            for cod, ciclos in dados["pacientes"].items():
                 m = re.search(r"(\d+)\s*$", cod)
-                if m:
+                if m and not so_ficticio(ciclos):
                     maior = max(maior, int(m.group(1)))
-            self._json({"codigo": "MX%04d" % (maior + 1)})
+            prox = maior + 1
+            while ("MX%04d" % prox) in dados["pacientes"]:
+                prox += 1
+            self._json({"codigo": "MX%04d" % prox})
             return
 
         if caminho == "/api/export":
@@ -716,6 +793,10 @@ class Handler(BaseHTTPRequestHandler):
         with _lock:
             backup_do_dia()
             dados = carregar()
+            # atender um paciente ficticio (da fila de teste) gera registro
+            # ficticio: sai junto com --apagar-ficticios e nao vira paciente real
+            if so_ficticio(dados["pacientes"].get(cod)):
+                reg["demo"] = True
             dados["pacientes"].setdefault(cod, []).append(reg)
             gravar(dados)
             total = len(dados["pacientes"][cod])
@@ -803,6 +884,18 @@ def main():
         n, restam = apagar_ficticios()
         print("%d registros ficticios apagados; restam %d pacientes reais." % (n, restam))
         print("Copia do banco anterior: %s.antes-de-apagar-ficticios" % BANCO)
+        return
+    if len(sys.argv) in (2, 3) and sys.argv[1] == "--carregar-teste":
+        origem = sys.argv[2] if len(sys.argv) == 3 else os.path.join(PASTA, "data", "banco_teste.json")
+        r = carregar_teste(origem)
+        print("Banco de teste carregado em %s:" % BANCO)
+        print("  %d pacientes ficticios (MX9101-MX9140), %d registros; datas trazidas %d dia(s) para hoje."
+              % (r["pacientes"], r["registros"], r["dias"]))
+        print("  Fila da recepcao de hoje: %d pacientes (%s)." % (len(r["fila"]), ", ".join(r["fila"])))
+        print("  Pacientes reais preservados: %d." % r["reais"])
+        if r["copia"]:
+            print("  Copia do banco anterior: %s" % r["copia"])
+        print("Para remover so os ficticios depois: python3 servidor_maximus.py --apagar-ficticios")
         return
     if len(sys.argv) == 2 and sys.argv[1] == "--carregar-demo":
         n = carregar_demo(os.path.join(PASTA, "data", "banco_demonstracao.json"))

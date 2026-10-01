@@ -301,6 +301,83 @@ class Servidor(unittest.TestCase):
         finally:
             srv.BANCO = banco_real
 
+    def test_banco_de_teste_mescla_sem_tocar_no_real(self):
+        # --carregar-teste: 40 ficticios MX9101-MX9140 entram ao lado dos reais,
+        # com backup antes, datas trazidas para hoje e fila da recepcao de hoje;
+        # atender um ficticio gera registro ficticio; --apagar-ficticios devolve
+        # exatamente o banco real
+        import datetime
+        hoje = datetime.date.today()
+        origem = os.path.join(RAIZ, "data", "banco_teste.json")
+        with open(origem, encoding="utf-8") as f:
+            teste = json.load(f)
+        # arquivo gerado 10 dias "atras": a carga tem de trazer tudo para hoje
+        velho = dict(teste, referencia=(datetime.date.fromisoformat(teste["referencia"]) - datetime.timedelta(days=10)).isoformat())
+        velho["pacientes"] = {c: [dict(r, dataLocal=(datetime.date.fromisoformat(r["dataLocal"]) - datetime.timedelta(days=10)).isoformat())
+                                  for r in regs] for c, regs in teste["pacientes"].items()}
+        arq = os.path.join(self.tmp, "banco_teste_velho.json")
+        with open(arq, "w", encoding="utf-8") as f:
+            json.dump(velho, f)
+        real = {"MX0001": [{"codigo": "MX0001", "tipo": "primeira", "linha": "DE", "protocolo": "DE-2", "data": "2026-01-10T12:00:00.000Z", "dataLocal": "2026-01-10"},
+                           {"codigo": "MX0001", "tipo": "reavaliacao", "linha": "DE", "protocolo": "DE-2 (mantido)", "data": "2026-03-10T12:00:00.000Z", "dataLocal": "2026-03-10"}],
+                "MX0002": [{"codigo": "MX0002", "tipo": "recepcao", "linha": "recepcao", "dataLocal": hoje.isoformat(), "data": hoje.isoformat() + "T11:00:00"}]}
+        banco_real = self._com_banco(json.dumps({"pacientes": dict(real, MX9105=[{"codigo": "MX9105", "tipo": "primeira", "demo": True, "velho": True}])}))
+        m = self.tok["medico"]
+        try:
+            r = srv.carregar_teste(arq)
+            self.assertEqual((r["pacientes"], len(r["fila"]), r["reais"], r["dias"]), (40, 8, 2, (hoje - datetime.date.fromisoformat(velho["referencia"])).days))
+            self.assertTrue(r["copia"] and os.path.exists(r["copia"]))
+            with open(srv.BANCO, encoding="utf-8") as f:
+                d = json.load(f)["pacientes"]
+            self.assertEqual({k: d[k] for k in real}, real)                       # real intacto
+            self.assertEqual(sorted(k for k in d if k.startswith("MX91")), ["MX%d" % k for k in range(9101, 9141)])
+            self.assertFalse(any(x.get("velho") for x in d["MX9105"]))          # ficticio antigo substituido
+            self.assertTrue(all(x.get("demo") for k in d if k.startswith("MX91") for x in d[k]))
+            self.assertTrue(all(x["dataLocal"] <= hoje.isoformat() for k in d if k.startswith("MX91") for x in d[k]))
+            fila = self.req("GET", "/api/triagens-hoje", token=m)[1]["triagens"]
+            self.assertEqual(sorted(t["codigo"] for t in fila), sorted(r["fila"] + ["MX0002"]))
+            # numeracao: os ficticios nao empurram o proximo real
+            for perfil in ("medico", "recepcao"):
+                self.assertEqual(self.req("GET", "/api/proximo-codigo", token=self.tok[perfil])[1]["codigo"], "MX0003")
+            lista = {p["codigo"]: p for p in self.req("GET", "/api/pacientes", token=m)[1]["pacientes"]}
+            self.assertEqual((lista["MX9101"]["ficticio"], lista["MX0001"]["ficticio"], lista["MX0002"]["ficticio"]), (True, False, False))
+            hist = self.req("GET", "/api/historico/MX9102", token=m)[1]["ciclos"]
+            self.assertGreaterEqual(len([c for c in hist if c.get("tipo") != "recepcao"]), 3)
+            # atender ficticio da fila: o registro novo e ficticio; paciente real novo, nao
+            self.assertEqual(self.req("POST", "/api/ciclo", {"codigo": "MX9113", "tipo": "primeira", "linha": "DE"}, token=m)[0], 200)
+            self.assertEqual(self.req("POST", "/api/ciclo", {"codigo": "MX0003", "tipo": "primeira", "linha": "DE"}, token=m)[0], 200)
+            with open(srv.BANCO, encoding="utf-8") as f:
+                d = json.load(f)["pacientes"]
+            self.assertTrue(d["MX9113"][-1].get("demo"))
+            self.assertNotIn("demo", d["MX0003"][-1])
+            self.assertEqual(self.req("GET", "/api/proximo-codigo", token=m)[1]["codigo"], "MX0004")
+            # recarregar e seguro (substitui os ficticios, nao duplica)
+            srv.carregar_teste(arq)
+            with open(srv.BANCO, encoding="utf-8") as f:
+                d = json.load(f)["pacientes"]
+            self.assertEqual(len(d["MX9102"]), len(teste["pacientes"]["MX9102"]))
+            # apagar: sobra exatamente o real
+            n, restam = srv.apagar_ficticios()
+            with open(srv.BANCO, encoding="utf-8") as f:
+                d = json.load(f)["pacientes"]
+            self.assertEqual(sorted(d), ["MX0001", "MX0002", "MX0003"])
+            self.assertEqual({k: d[k] for k in real}, real)
+            # codigo do teste com registro REAL: recusa tudo e nao mexe no banco
+            d["MX9120"] = [{"codigo": "MX9120", "tipo": "primeira", "linha": "DE"}]
+            srv.gravar({"pacientes": d})
+            with open(srv.BANCO, encoding="utf-8") as f:
+                antes = f.read()
+            with self.assertRaises(SystemExit):
+                srv.carregar_teste(arq)
+            with open(srv.BANCO, encoding="utf-8") as f:
+                self.assertEqual(f.read(), antes)
+        finally:
+            pasta = os.path.dirname(srv.BANCO)
+            for x in os.listdir(pasta):
+                if x.startswith(os.path.basename(srv.BANCO)):
+                    os.remove(os.path.join(pasta, x))
+            srv.BANCO = banco_real
+
     def _com_banco(self, conteudo):
         """Troca o banco por um arquivo com 'conteudo' (texto cru) so neste teste."""
         banco_real = srv.BANCO

@@ -107,6 +107,26 @@ guarda uma cópia do banco antes e mantém qualquer registro real:
 python3 servidor_maximus.py --apagar-ficticios
 ```
 
+**Banco de teste realista (40 pacientes).** Para testar histórico e recepção
+com casos clínicos plausíveis sem apagar nada real:
+
+```bash
+cp banco_triagem.json banco_triagem.json.antes-teste   # se houver banco
+python3 servidor_maximus.py --carregar-teste
+```
+
+Carrega `data/banco_teste.json` — 14 DE, 8 EP, 6 DE+EP, 4 preenchimento,
+3 TEFI e 5 casos de segurança (nitrato, alergia a lidocaína, transtorno
+bipolar, risco cardiovascular alto, testosterona limítrofe), códigos
+`MX9101`–`MX9140`, metade com 2–3 consultas e 8 na fila da recepção de hoje.
+Todas as condutas foram geradas pelo próprio app (`node tests/banco_teste.js`).
+O comando mescla com o banco atual (registros reais intactos, cópia
+`.antes-carregar-teste-…` ao lado), recusa se algum código do teste já for de
+paciente real, traz as datas para hoje e pode ser repetido (substitui só os
+fictícios). Fictícios não empurram a numeração: o próximo paciente real segue
+do maior código real. Atender um fictício grava registro fictício. Para
+remover: `python3 servidor_maximus.py --apagar-ficticios`.
+
 **Demonstração antiga.** Para um banco de teste menor, numa pasta sem `banco_triagem.json`:
 
 ```bash
@@ -139,9 +159,11 @@ CLAUDE.md    regras do projeto — leia antes de editar
 | `tests/regressao.js` | conduta de 59 pacientes-limite contra a baseline aprovada (`tests/regressao/`) |
 | `tests/teste_jornada.js` | jornada do médico: contato, nota final, aviso de ISRS, texto do prontuário, ficha, impressão, lista de pacientes, descartar |
 | `tests/teste_codigo.js` | código do paciente novo: próximo livre preenchido (banco vazio, com pacientes, fila da recepção, servidor fora), vazio/inválido não avança |
+| `tests/teste_envio.js` | "Enviar ao paciente": receita só com fórmula/medicação (DE, EP, DUO, intracavernosa, nitrato, hipogonadismo, preenchimento, urologia, emagrecimento, TEFI) e o texto exato das orientações pós-preenchimento |
+| `tests/banco_teste.js` | gera o banco de teste (`data/banco_teste.json`) com o próprio app; `--conferir` acusa se o app passou a produzir outra conduta |
 | `tests/teste_interface.js` | interface v2.3: tema manual, atalhos, busca, "nova · motivo", impressão dos recolhidos e ⌘↵ = caminho normal nos pacientes da regressão |
 | `tests/teste_sessao.js` | tela de senha dos três apps contra um servidor falso |
-| `tests/teste_servidor.py` | servidor: senhas, permissões por perfil, bloqueio, rotas de dados |
+| `tests/teste_servidor.py` | servidor: senhas, permissões por perfil, bloqueio, rotas de dados, carga do banco de teste sem tocar no real |
 
 Os quatro primeiros aceitam o caminho do HTML como primeiro argumento e o
 número de pacientes como segundo.

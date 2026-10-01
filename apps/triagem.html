@@ -640,7 +640,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.3.0">Vers&atilde;o 2.3.0 &middot; 30/09/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.3.1">Vers&atilde;o 2.3.1 &middot; 01/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <span class="mx-fila" id="mxFilaTopo"></span>
@@ -829,7 +829,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   .pac .med b{font-size:11.6px;}
   .pac .med .como{display:block;}
   .pac .med .pq{display:block;opacity:.68;font-size:10.6px;font-style:italic;}
-  .pac ul{margin:0;padding-left:15px;} .pac li{margin-bottom:2px;}
+  .pac ul{margin:0;padding-left:15px;} .pac li{margin-bottom:2px;} .pac ol{margin:0;padding-left:18px;} .pac ol ol{padding-left:18px;margin:2px 0 0;}
   .pac .box{border:1px solid rgba(11,31,59,.25);border-radius:6px;padding:7px 9px;margin-top:7px;}
   .pac .alerta{border:1.5px solid #7b1e24;background:rgba(123,30,36,.05);}
   .pac .alerta b{color:#7b1e24;}
@@ -1594,9 +1594,11 @@ document.documentElement.setAttribute('data-tema',t)})();
   const RE_CODIGO = /^[A-Z0-9][A-Z0-9-]{1,19}$/;
   function codigoValido(v){ return RE_CODIGO.test(norm(v)); }
   function numDoCodigo(c){ const m=String(c||'').match(/(\d+)\s*$/); return m ? parseInt(m[1],10) : 0; }
-  function proximoLivre(base, usados){
+  // reais: códigos que contam para a numeração. Paciente fictício (banco de
+  // teste, fila fictícia) ocupa o código, mas não empurra a numeração.
+  function proximoLivre(base, usados, reais){
     let n = Math.max(0, base ? numDoCodigo(base)-1 : 0);
-    usados.forEach(c=>{ n = Math.max(n, numDoCodigo(c)); });
+    (reais||usados).forEach(c=>{ n = Math.max(n, numDoCodigo(c)); });
     let c = 'MX'+String(n+1).padStart(4,'0');
     while (usados.has(c)){ n++; c = 'MX'+String(n+1).padStart(4,'0'); }
     return c;
@@ -1605,14 +1607,14 @@ document.documentElement.setAttribute('data-tema',t)})();
     try{ await storePronto; }catch(e){}
     let base = null;
     try{ base = await Store.proximoCodigo(); }catch(e){}
-    const usados = new Set();
-    const junta = c => { const k=norm(c); if (k) usados.add(k); };
-    (S.fila||[]).forEach(f=>f && junta(f.codigo));
+    const usados = new Set(), reais = new Set();
+    const junta = (c, ficticio) => { const k=norm(c); if (k){ usados.add(k); if (!ficticio) reais.add(k); } };
+    (S.fila||[]).forEach(f=>f && junta(f.codigo, f.demo));
     if (!PREVIA && Store.modo!=='manual'){
-      try{ ((await Store.listaPacientes())||[]).forEach(p=>p && junta(p.codigo)); }catch(e){}
-      if (!S.fila){ try{ ((await Store.triagensHoje())||[]).forEach(f=>f && junta(f.codigo)); }catch(e){} }
+      try{ ((await Store.listaPacientes())||[]).forEach(p=>p && junta(p.codigo, p.ficticio)); }catch(e){}
+      if (!S.fila){ try{ ((await Store.triagensHoje())||[]).forEach(f=>f && junta(f.codigo, f.demo)); }catch(e){} }
     }
-    return proximoLivre(base, usados);
+    return proximoLivre(base, usados, reais);
   }
   // tela do código: garante a sugestão mesmo quando se chega a ela sem passar
   // pelo "after" da tela anterior (retomar, Voltar, trilho, Novo paciente)
@@ -4188,15 +4190,20 @@ document.documentElement.setAttribute('data-tema',t)})();
     return {sug, alt, motivo, bloqueio, diagOk, classe, fertNow};
   }
 
-  const POS_TEXTO = `<ul>
-    <li><b>Posicione o pênis para baixo, entre os testículos, por 15 dias.</b> Evite dobrar para o lado, para não marcar.</li>
-    <li><b>Jejum sexual por 15 dias</b> — sem relação e sem masturbação.</li>
-    <li><b>Massageie todos os dias</b>, no sentido da cabeça para o corpo, para espalhar melhor o ácido. Melhor ainda se feito com o pênis ereto.</li>
-    <li>Limpe bem o local de acesso da cânula.</li>
-    <li>Aguarde <b>21 dias</b> antes de qualquer nova aplicação.</li>
-    <li>Se aparecerem nódulos, tente espalhar com massagem localizada. Se o aspecto não ficar como desejado, entre em contato — existe a aplicação de hialuronidase.</li>
-    <li><b>Não use bomba peniana por 6 meses.</b></li>
-  </ul>`;
+  // v2.3.1 — texto definido pelo Dr. Marco, reproduzido exatamente (com subitens)
+  const POS_TEXTO = `<ol class="pos-proc">
+    <li>Posicionar para baixo entre os testículos por 15 dias
+      <ol type="a"><li>Evitar dobrar para o lado para não deixar marcado</li></ol></li>
+    <li>Jejum sexual por 15 dias, tanto de relação sexual quanto masturbação</li>
+    <li>Massagear todos os dias no sentido corpo-cabeça para espalhar melhor o ácido
+      <ol type="a"><li>Melhor realizar com estado ereto, para espalhar ainda melhor o ácido</li></ol></li>
+    <li>Limpar bem o local de acesso da cânula</li>
+    <li>Aguardar 21 dias para nova aplicação do ácido caso tenha interesse</li>
+    <li>Em caso de nódulos, tentar espalhar com massagens localizadas, apertando contra o corpo do pênis e também entre os dedos a área.
+      <ol type="a"><li>Caso não fique com o aspecto desejado, não se preocupe, entrar em contato para aplicação de hialuronidase</li></ol></li>
+    <li>Não utilizar bomba peniana por 6 meses.</li>
+    <li>Evitar uso de anti-inflamatórios não esteroidais.</li>
+  </ol>`;
 
 
   const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração/i;
@@ -4217,9 +4224,51 @@ document.documentElement.setAttribute('data-tema',t)})();
   // sigla fica sem o ativo ao lado na tela, na impressão e na folha do paciente
   async function showResults(){
     const r = await calculaResultados();
+    try{ ajustaEnvio(); }catch(e){}
     try{ aplicaTooltips(el('resultsCard')); }catch(e){}
     try{ if (typeof mxDepoisResultados==='function') mxDepoisResultados(); }catch(e){}
     return r;
+  }
+  // v2.3.1 — "Enviar ao paciente" só oferece o que existe nesta conduta.
+  // A receita aparece quando o kit tem ao menos uma fórmula manipulada ou
+  // medicação (exame, ondas de choque, TEFI em consultório e preservativo de
+  // farmácia não geram receita). Preenchimento, consulta urológica,
+  // emagrecimento e TEFI não têm receita; hipogonadismo só quando há via
+  // prescrita. Guia e apêndice são do protocolo DE/EP.
+  const SEM_RECEITA = {TEFI:1, LABS:1, ONDAS:1, PRESERV:1};
+  function temMedicacaoNoKit(codes){
+    return (codes||[]).some(c=>{ const k=Array.isArray(c)?c[0]:c; return !SEM_RECEITA[k] && (k==='ICI' || !!F[k]); });
+  }
+  function linhaDaConduta(reg){
+    const t = reg && (reg.linha||reg.tipo) || '';
+    if (/hipogonadismo/.test(t) || S.hasHipo) return 'hipogonadismo';
+    if (/preench/.test(t) || S.hasPre) return 'preenchimento';
+    if (t==='tefi' || S.hasTefi) return 'tefi';
+    if (t==='urologia' || (MODE==='uni' && S.queixa==='uro')) return 'urologia';
+    if (t==='emagrecimento' || (MODE==='uni' && S.queixa==='emag')) return 'emagrecimento';
+    return 'principal';
+  }
+  function ajustaEnvio(){
+    const box = el('envioBox'); if (!box) return;
+    const reg = window.__mxReg || null;
+    const linha = linhaDaConduta(reg);
+    let receita = false, rotulo = 'Receita das fórmulas';
+    if (linha==='principal') receita = !!reg && (temMedicacaoNoKit(reg.kitCodes) || S.tefiConduta==='ici');
+    else if (linha==='hipogonadismo'){ receita = !!(reg && reg.hipo && reg.hipo.via); rotulo = 'Receita da medicação'; }
+    const mostra = (id, sim, marcado)=>{
+      const cb = el(id); if (!cb) return;
+      const lb = cb.closest('label') || cb.parentNode;
+      lb.style.display = sim ? '' : 'none';
+      if (!sim) cb.checked = false; else if (marcado!==undefined) cb.checked = marcado;
+    };
+    mostra('envRec', receita, receita);
+    const rec = el('envRec');
+    if (rec){ rec.dataset.rotulo = rotulo.toLowerCase();
+      const lb = rec.closest('label'); if (lb) lb.lastChild.textContent = ' '+rotulo; }
+    const principal = linha==='principal';
+    mostra('envGuia', principal, principal);
+    mostra('envApend', principal);
+    box.dataset.linha = linha; box.dataset.receita = receita ? 'sim' : 'nao';
   }
   async function calculaResultados(){
     const hoje=new Date().toLocaleDateString('pt-BR');
@@ -4811,7 +4860,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           <h3>${feito?'Seu procedimento':'Sua avaliação'}</h3>
           <div class="sub">${feito?'Preenchimento peniano realizado hoje':'Avaliação para preenchimento peniano'}</div>
           ${feito?`<h4>O que foi feito</h4><div class="med"><b>${S.marcaAH||'Ácido hialurônico'}</b><span class="como">${S.mlUsado||'—'} mL aplicados.</span><span class="pq">O resultado final se acomoda ao longo das próximas semanas.</span></div>`:''}
-          <h4>Orientações</h4>
+          <h4>${feito?'Orientações pós-procedimento':'Orientações'}</h4>
           ${feito?POS_TEXTO:'<ul><li>Leve as dúvidas e as expectativas para a próxima conversa.</li><li>Traga suas medidas e fotos, se já tiver.</li></ul>'}
           <div class="box"><b>Seu retorno: ${feito?('3 semanas — por volta de '+ret3):'a combinar'}</b><br>
             Passe na recepção <b>hoje, antes de sair</b>, para agendar.
@@ -5227,7 +5276,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       mudanca='Nenhuma — manter e resolver a causa';
     }
     const lembretes=[];
-    if (!reav) lembretes.push('Entregar o guia <b>Protocolo de Performance</b> (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta.');
+    if (!reav) lembretes.push('Entregar o guia <b>Protocolo de Performance</b> (2ª edição) '+(temMedicacaoNoKit(kit)?'junto da receita ':'')+'e pedir que traga o registro de 12 semanas na próxima consulta.');
     if (S.testo==='baixa') lembretes.push('<b>Solicitar SEGUNDA coleta de testosterona</b> — total e livre, SHBG, LH, FSH, estradiol e prolactina, matinal e em jejum. O protocolo de hipogonadismo só começa com o valor confirmado.');
     else if (pedirLabs) lembretes.push('<b>Solicitar perfil hormonal:</b> testosterona total e livre, SHBG, LH, FSH, estradiol e prolactina. Coleta matinal, em jejum, entre 7h e 10h. Na próxima consulta o sistema vai perguntar pelos resultados.');
     if (tefi) lembretes.push('<b>Agendar TEFI com Doppler peniano — R5, 0,1 mL.</b> Na próxima consulta o sistema vai perguntar pelo resultado e pela conduta definida.');
@@ -5743,7 +5792,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     function itensEnvio(){
       const m=[];
       if (el('envOri') && el('envOri').checked) m.push('orientações do atendimento');
-      if (el('envRec') && el('envRec').checked) m.push('receita das fórmulas');
+      if (el('envRec') && el('envRec').checked && el('envRec').closest('label').style.display!=='none') m.push(el('envRec').dataset.rotulo || 'receita das fórmulas');
       if (el('envGuia') && el('envGuia').checked) m.push('Guia Protocolo de Performance');
       if (el('envApend') && el('envApend').checked) m.push('apêndice de reset do estímulo');
       if (el('envExa') && el('envExa').checked) m.push('pedido de exames');
