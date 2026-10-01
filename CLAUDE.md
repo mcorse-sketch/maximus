@@ -282,6 +282,12 @@ opção por `data-v` / `data-campo`. Não remova essas marcações.
   racional e custo em `<details class="mx-det">`, que saem abertos na
   impressão). **⌘↵ não calcula nada:** chama `avancar()` em sequência — o mesmo
   caminho do botão Próxima — e para na primeira obrigatória em aberto.
+- **v2.4 · correções de UX** (só apresentação e fluxo; conduta idêntica):
+  escores com o nome do questionário e o valor em pílulas separadas
+  (`qn()`/`qv()`/`qEscore()` — envolvem o texto existente, o prontuário copiado
+  não muda; dica de tela com HTML via `hintHtml`); botões do trilho com a mesma
+  caixa; "Ir para a conduta ⌘↵" e, com pendência, a lista clicável
+  `#mxFaltam` ("Falta responder N perguntas:").
 - **Prévia ao vivo:** o mesmo app num iframe oculto com `?previa=1`
   (`PREVIA`), que roda `showResults()` com uma cópia das respostas e **nunca
   grava** (salvarCiclo, sessão, fila e localStorage viram no-op; Store fica em

@@ -140,6 +140,26 @@ inválido desativa o botão e mostra o motivo ("Informe o código do paciente
 para continuar — o próximo livre é MX0002."). Testes: tests/teste_codigo.js
 (etapa 7c) e três casos novos em teste_servidor.py. Conduta clínica idêntica.
 
+## v2.4.0 · 01/10/2026 — fila de correções de UX do Dr. Marco (sem mudar a conduta)
+
+Só interface, fluxo e texto. A conduta dos pacientes da regressão e dos 40
+fictícios (MX9101–MX9140) é a mesma da v2.3.1. Entregue em PRs empilhados:
+
+**PR A — visual (itens 1, 2, 3)**
+- **Escores em pílulas.** O nome do questionário (IIEF-5, PEDT, ADAM) fica numa
+  caixa com borda e o valor numa pílula cheia, separados, em todo lugar:
+  fila da recepção, ficha (prontuário), histórico, trilho, classificação,
+  cabeçalho da conduta, relatório e dicas das telas. Os auxiliares `qn()`,
+  `qv()` e `qEscore()` só envolvem o texto que já existia, então o prontuário
+  copiado (`__textoCopia`) não muda. Na fila e na lista do histórico "IIEF 19"
+  passou a "IIEF-5 19".
+- **Prontuário R / Histórico H / Panorama P** com a mesma caixa (altura,
+  largura, borda), rótulo e tecla na mesma linha.
+- **"Revisar conduta ⌘↵" virou "Ir para a conduta ⌘↵".** Com pergunta
+  obrigatória em aberto, além do aviso, aparece a caixa "Falta responder N
+  perguntas:" com a lista (módulo + pergunta); cada item leva à pergunta. A
+  caixa some quando não falta nada ou no ×.
+
 ## v2.3.1 · 01/10/2026 — receita só quando há fórmula; novas orientações pós-preenchimento; banco de teste
 
 Pedidos do Dr. Marco:

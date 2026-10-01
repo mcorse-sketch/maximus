@@ -34,6 +34,13 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 .hist-btn:hover{background:#0b4c5a}
 .hist-btn:focus-visible{outline:3px solid rgba(14,94,111,.35);outline-offset:2px}
 .hist-btn .n{background:rgba(255,255,255,.2);border-radius:999px;padding:1px 8px;font-size:12.5px}
+/* escores: nome do questionário (caixa com borda) + valor (pílula cheia) */
+.mx-qn{display:inline-block;border:1px solid #9fb3ba;border-radius:5px;padding:0 6px;font-weight:600;font-size:.82em;line-height:1.55;
+  letter-spacing:.02em;color:#24434c;background:transparent;white-space:nowrap;vertical-align:.06em}
+.mx-qv{display:inline-block;border-radius:999px;padding:0 8px;font-weight:600;font-size:.9em;line-height:1.5;background:#e3eef0;color:#0E1E28;
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.mx-qn + .mx-qv{margin-left:2px}
+@media print{ .mx-qn{border-color:#777;color:#000} .mx-qv{background:#eee;color:#000} }
 .hist-visita{margin-top:18px;padding-top:10px;border-top:2px solid #e2e0da}
 .hist-visita h5{margin:0 0 4px;font-size:14.5px;color:#141413}
 .hist-visita h5 .sub{font-weight:400;color:#6b6a66;font-size:13px}
@@ -228,10 +235,11 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-cdproto.longo{font-size:34px;letter-spacing:-.03em;line-height:1.1}
   .mx-cdtit{font-size:17px;color:var(--mx-text2);margin-top:8px;max-width:520px}
   .mx-cdhead .mx-chips{margin-top:12px}
-  .mx-scores{display:flex;gap:28px;flex:none}
-  .mx-scores div{text-align:right}
-  .mx-scores b{display:block;font:300 30px var(--mx-disp);letter-spacing:-.02em;color:var(--mx-text)}
-  .mx-scores span{font-size:12px;color:var(--mx-text3)}
+  .mx-scores{display:flex;gap:18px;flex:none;align-items:flex-start}
+  .mx-scores .mx-esc{display:grid;grid-template-columns:auto auto;align-items:center;gap:4px 6px;text-align:right}
+  .mx-scores .mx-qn{font-size:12px;justify-self:end}
+  .mx-scores .mx-qv{font:400 22px/1.25 var(--mx-disp);padding:1px 12px;letter-spacing:-.01em}
+  .mx-scores small{grid-column:1 / -1;font-size:12px;color:var(--mx-text3)}
   .mx-alertas{display:inline-flex;margin-top:12px;font-size:12.5px;color:var(--mx-warn);border:1px solid var(--mx-warnln);background:var(--mx-warnbg);
     border-radius:999px;padding:3px 10px;cursor:pointer}
   #resultsCard.mx-cd-on .result-top .gauge-wrap,#resultsCard.mx-cd-on #marcador{display:none!important}
@@ -640,7 +648,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.3.1">Vers&atilde;o 2.3.1 &middot; 01/10/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.4.0">Vers&atilde;o 2.4.0 &middot; 01/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <span class="mx-fila" id="mxFilaTopo"></span>
@@ -655,7 +663,7 @@ document.documentElement.setAttribute('data-tema',t)})();
    <tr><td>Escolher a opção da pergunta</td><td><span class="kbd">1</span>–<span class="kbd">9</span></td></tr>
    <tr><td>Próxima pergunta (resposta válida)</td><td><span class="kbd">↓</span> ou <span class="kbd">↵</span></td></tr>
    <tr><td>Pergunta anterior</td><td><span class="kbd">↑</span></td></tr>
-   <tr><td>Revisar conduta</td><td><span class="kbd">⌘</span> <span class="kbd">↵</span></td></tr>
+   <tr><td>Ir para a conduta</td><td><span class="kbd">⌘</span> <span class="kbd">↵</span></td></tr>
    <tr><td>Prontuário completo</td><td><span class="kbd">R</span> ou <span class="kbd">F</span></td></tr>
    <tr><td>Histórico do paciente (retorno)</td><td><span class="kbd">H</span></td></tr>
    <tr><td>Panorama dos módulos</td><td><span class="kbd">P</span></td></tr>
@@ -940,9 +948,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       </div>
     </div>
     <div class="card noprint" id="mxSeguintes" style="display:none;" aria-label="Próximas perguntas deste módulo"></div>
+    <div class="mx-faltam noprint" id="mxFaltam" role="alert" style="display:none;"></div>
     <div class="mx-cta noprint" id="mxCta" style="display:none;">
       <div class="mx-prog"><div class="mx-bar"><i id="mxBarra"></i></div><span id="mxProgTxt"></span></div>
-      <button type="button" class="btn btn-primary" id="mxRevisar">Revisar conduta <span class="kbd">⌘↵</span></button>
+      <button type="button" class="btn btn-primary" id="mxRevisar">Ir para a conduta <span class="kbd">⌘↵</span></button>
     </div>
     </div>
     </div>
@@ -1103,9 +1112,29 @@ document.documentElement.setAttribute('data-tema',t)})();
   .mx-nav .d{width:8px;height:8px;border-radius:50%;background:var(--mx-line2);flex:none}
   .mx-nav .d.ok{background:var(--mx-ok)} .mx-nav .d.parc{background:var(--mx-warn)}
   .mx-nav .n{flex:1} .mx-nav small{font-size:11px;color:var(--mx-text3)}
-  .mx-acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px}
-  .mx-acts .btn,.mx-acts .hist-btn{position:static!important;height:38px!important;min-width:0;padding:0 10px!important;font-size:13px!important;
-    border-radius:12px!important;box-shadow:none!important;justify-content:center;width:100%}
+  .mx-acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;align-items:stretch}
+  /* Prontuário / Histórico / Panorama: mesma caixa, rótulo e tecla na mesma linha */
+  .mx-acts .btn,.mx-acts .hist-btn{position:static!important;height:36px!important;min-width:0;padding:0 4px!important;font-size:12px!important;letter-spacing:-.005em;
+    font-weight:500!important;border-radius:10px!important;box-shadow:none!important;width:100%;margin:0!important;
+    display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:4px!important;
+    white-space:nowrap!important;overflow:hidden;line-height:1!important;
+    background:var(--mx-surf)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important}
+  .mx-acts .btn:hover,.mx-acts .hist-btn:hover{background:var(--mx-surf2)!important}
+  .mx-acts .btn .kbd,.mx-acts .hist-btn .kbd{flex:none;margin:0!important;font-size:10px!important;line-height:16px!important;padding:0 4px!important;
+    min-width:0!important;height:16px!important}
+  .mx-acts .hist-btn .n{display:none}
+  html[data-tema="escuro"] .mx-qn{border-color:#4f6c75;color:#cfe3e7}
+  html[data-tema="escuro"] .mx-qv{background:#1d3a42;color:#F2F9F9}
+  /* ⌘↵ com perguntas em aberto: lista clicável */
+  .mx-faltam{margin-top:14px;border:1px solid var(--mx-warnln);background:var(--mx-warnbg);border-radius:14px;padding:12px 14px 10px;color:var(--mx-text)}
+  .mx-faltam-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;color:var(--mx-warn)}
+  .mx-faltam-x{border:0;background:transparent;font-size:20px;line-height:1;cursor:pointer;color:var(--mx-text3);padding:0 4px}
+  .mx-faltam ol{margin:8px 0 0;padding-left:22px;font-size:13.5px}
+  .mx-faltam li{margin:2px 0}
+  .mx-faltam li button{border:0;background:transparent;padding:3px 4px;text-align:left;cursor:pointer;color:var(--mx-text);font:inherit;
+    border-radius:6px;text-decoration:underline;text-decoration-color:var(--mx-line2);text-underline-offset:3px}
+  .mx-faltam li button:hover,.mx-faltam li button.atual{background:rgba(154,88,0,.08);text-decoration-color:var(--mx-warn)}
+  .mx-faltam li .mod{font-weight:600;color:var(--mx-warn);text-decoration:none}
   .copiloto,.atual{background:transparent!important;border:0!important;padding:0!important;color:var(--mx-text)!important;font-size:13px}
   .cop2 .bloco{border-color:var(--mx-line)!important;background:transparent!important}
   .cop2 .rot,.copiloto .cab{color:var(--mx-text3)!important}
@@ -1687,6 +1716,12 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
 
   function escH(t){ return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  // escores: nome do questionário numa pílula, valor em outra (o texto é o mesmo — o prontuário copiado não muda)
+  function qn(nome){ return '<span class="mx-qn">'+nome+'</span>'; }
+  function qv(valor){ return '<span class="mx-qv">'+valor+'</span>'; }
+  function qEscore(nome, valor){ return qn(nome)+' '+qv(valor); }
+  // dica da tela: texto simples, ou HTML (pílulas de escore) quando a tela traz hintHtml
+  function pintaHint(h, sc){ if (sc.hintHtml) h.innerHTML = sc.hintHtml; else h.textContent = explicaSiglas(sc.hint); }
   // contato: mesma formatação e validação da recepção
   function fmtIniciais(v){ return String(v||'').toUpperCase().replace(/[^A-ZÀ-Ý ]/g,'').replace(/\s+/g,' ').slice(0,6); }
   function soDigitos(v){ return String(v||'').replace(/\D/g,'').slice(0,11); }
@@ -1758,7 +1793,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (fx0){
       optsWrap.appendChild(montaSeletorNum({id:sc.id, label:sc.text, min:fx0.min, max:fx0.max, passo:fx0.passo, un:fx0.un, fechada:fx0.fechada,
         aoMudar:()=>{ const e=el('fldErr'); if(e) e.style.display='none'; nextBtn.disabled = sc.optional ? false : !val(sc); }}));
-      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=explicaSiglas(sc.hint); optsWrap.appendChild(h); }
+      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
       const e0=document.createElement('div'); e0.className='fld-err'; e0.id='fldErr'; e0.textContent='Defina um valor para continuar'; optsWrap.appendChild(e0);
     } else if (sc.kind==='text' || sc.kind==='num'){
       const i=document.createElement('input');
@@ -1777,7 +1812,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       }
       optsWrap.appendChild(i);
       if (sc.lista) montaListaPacientes(i, sc);
-      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=explicaSiglas(sc.hint); optsWrap.appendChild(h); }
+      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
       const e=document.createElement('div'); e.className='fld-err'; e.id='fldErr'; e.setAttribute('role','alert');
       e.textContent = ehCodigo ? msgCodigo() : 'Preencha este campo para continuar'; optsWrap.appendChild(e);
       if (ehCodigo){
@@ -1828,7 +1863,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         i.oninput=()=>{ S[f.id]=i.value; nextBtn.disabled = sc.optional ? false : !val(sc); };
         optsWrap.appendChild(i);
       });
-      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=explicaSiglas(sc.hint); optsWrap.appendChild(h); }
+      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
       const e2=document.createElement('div'); e2.className='fld-err'; e2.id='fldErr';
       e2.textContent='Preencha ao menos um campo para continuar'; optsWrap.appendChild(e2);
     } else if (sc.kind==='escalas'){
@@ -1846,7 +1881,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         leg.innerHTML='<span class="lr">0–6 detrator</span><span class="ly">7–8 neutro</span><span class="lg">9–10 promotor</span>';
         optsWrap.appendChild(leg);
       });
-      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=explicaSiglas(sc.hint); optsWrap.appendChild(h); }
+      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
     } else if (sc.kind==='grupo'){
       sc.fields.forEach(f=>{
         const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=f.label; optsWrap.appendChild(lab);
@@ -1860,7 +1895,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         });
         optsWrap.appendChild(g);
       });
-      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=explicaSiglas(sc.hint); optsWrap.appendChild(h); }
+      if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
     } else if (sc.kind==='select'){
       const s=document.createElement('select'); s.className='fld';
       const o0=document.createElement('option'); o0.value=''; o0.textContent='— selecione —'; s.appendChild(o0);
@@ -2032,17 +2067,17 @@ document.documentElement.setAttribute('data-tema',t)})();
     let linhas = '';
     if (iAnt!=null || iHoje!=null){
       const comp = (iAnt!=null && iHoje!=null)
-        ? (iAnt+' \u2192 '+iHoje+' \u00b7 '+variacao(iAnt,iHoje,false))
-        : ((iHoje!=null?iHoje:iAnt) + (iHoje!=null&&iAnt==null?' \u00b7 primeira medida':' \u00b7 sem medida de hoje'));
+        ? (qv(iAnt+' \u2192 '+iHoje)+' \u00b7 '+variacao(iAnt,iHoje,false))
+        : (qv(iHoje!=null?iHoje:iAnt) + (iHoje!=null&&iAnt==null?' \u00b7 primeira medida':' \u00b7 sem medida de hoje'));
       const fa = [faixaIief(iAnt), faixaIief(iHoje)].filter(Boolean);
-      linhas += linhaFicha('IIEF-5', comp + (fa.length===2 && iAnt!=null && iHoje!=null ? ' <span class="vazio">('+fa[0]+' \u2192 '+fa[1]+')</span>' : (fa.length?' <span class="vazio">('+fa[fa.length-1]+')</span>':'')));
+      linhas += linhaFicha(qn('IIEF-5'), comp + (fa.length===2 && iAnt!=null && iHoje!=null ? ' <span class="vazio">('+fa[0]+' \u2192 '+fa[1]+')</span>' : (fa.length?' <span class="vazio">('+fa[fa.length-1]+')</span>':'')));
     }
     if (pAnt!=null || pHoje!=null){
       const comp = (pAnt!=null && pHoje!=null)
-        ? (pAnt+' \u2192 '+pHoje+' \u00b7 '+variacao(pAnt,pHoje,true))
-        : ((pHoje!=null?pHoje:pAnt) + (pHoje!=null&&pAnt==null?' \u00b7 primeira medida':' \u00b7 sem medida de hoje'));
+        ? (qv(pAnt+' \u2192 '+pHoje)+' \u00b7 '+variacao(pAnt,pHoje,true))
+        : (qv(pHoje!=null?pHoje:pAnt) + (pHoje!=null&&pAnt==null?' \u00b7 primeira medida':' \u00b7 sem medida de hoje'));
       const fa = [faixaPedt(pAnt), faixaPedt(pHoje)].filter(Boolean);
-      linhas += linhaFicha('PEDT', comp + (fa.length===2 && pAnt!=null && pHoje!=null ? ' <span class="vazio">('+fa[0]+' \u2192 '+fa[1]+')</span>' : (fa.length?' <span class="vazio">('+fa[fa.length-1]+')</span>':'')));
+      linhas += linhaFicha(qn('PEDT'), comp + (fa.length===2 && pAnt!=null && pHoje!=null ? ' <span class="vazio">('+fa[0]+' \u2192 '+fa[1]+')</span>' : (fa.length?' <span class="vazio">('+fa[fa.length-1]+')</span>':'')));
     }
     return linhas;
   }
@@ -2075,11 +2110,11 @@ document.documentElement.setAttribute('data-tema',t)})();
       + linhaFicha('Tipo', S.visita==='reav' ? 'reavaliação' : 'primeira avaliação')
       + linhaFicha('Queixa', S.queixa ? rotuloLinha({de:'DE',ep:'EP',ambos:'DUO',preench:'preenchimento',hipo:'hipogonadismo',emag:'emagrecimento',uro:'urologica'}[S.queixa]||S.queixa) : '<span class="pend">ainda não definida</span>')
       + linhaFicha('Origem', S.origem==='fila' ? ('questionário da recepção'+(f&&f.hora?' às '+f.hora:'')) : 'atendimento sem questionário')
-      + linhaFicha('IIEF-5 de hoje', (escoreHoje(Q_IIEF,'iief')!=null)
-          ? (escoreHoje(Q_IIEF,'iief') + ((f&&f.iief!=null && !Q_IIEF.every(q=>typeof S[q.id]==='number'))?' <span class="vazio">(recepção)</span>':''))
+      + linhaFicha(qn('IIEF-5')+' de hoje', (escoreHoje(Q_IIEF,'iief')!=null)
+          ? (qv(escoreHoje(Q_IIEF,'iief')) + ((f&&f.iief!=null && !Q_IIEF.every(q=>typeof S[q.id]==='number'))?' <span class="vazio">(recepção)</span>':''))
           : null)
-      + linhaFicha('PEDT de hoje', (escoreHoje(Q_PEDT,'pedt')!=null)
-          ? (escoreHoje(Q_PEDT,'pedt') + ((f&&f.pedt!=null && !Q_PEDT.every(q=>typeof S[q.id]==='number'))?' <span class="vazio">(recepção)</span>':''))
+      + linhaFicha(qn('PEDT')+' de hoje', (escoreHoje(Q_PEDT,'pedt')!=null)
+          ? (qv(escoreHoje(Q_PEDT,'pedt')) + ((f&&f.pedt!=null && !Q_PEDT.every(q=>typeof S[q.id]==='number'))?' <span class="vazio">(recepção)</span>':''))
           : null)
       + linhaFicha('Relato', (f&&f.usoRelatado)?({total:'uso regular',parcial:'falhas ocasionais',baixa:'baixa adesão',parou:'interrompeu'}[f.usoRelatado]||f.usoRelatado)
           +(f.satisfRelatada!=null?' · satisfação '+f.satisfRelatada+'/10':''):null)
@@ -2132,7 +2167,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       clin.slice().reverse().forEach(c=>{
         const d = c.dataBR || (c.data? new Date(c.data).toLocaleDateString('pt-BR') : '—');
         const partes = [rotuloLinha(c.linha), c.protocolo||null,
-                        c.iief!=null?('IIEF '+c.iief):null, c.pedt!=null?('PEDT '+c.pedt):null].filter(Boolean);
+                        c.iief!=null?qEscore('IIEF-5',c.iief):null, c.pedt!=null?qEscore('PEDT',c.pedt):null].filter(Boolean);
         h += '<tr><td>'+d+'</td><td>'+partes.join(' · ')+'</td></tr>';
       });
       h += '</table>';
@@ -2248,8 +2283,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     const add = (r,v) => { if (v!=null && v!=='') lin.push(linhaFicha(r, v)); };
     const clinico = c.tipo==='primeira' || c.tipo==='reavaliacao';
     if (clinico){
-      if (c.iief!=null) add('IIEF-5', c.iief+' <span class="vazio">('+faixaIief(c.iief)+')</span>');
-      if (c.pedt!=null) add('PEDT', c.pedt+' <span class="vazio">('+faixaPedt(c.pedt)+')</span>');
+      if (c.iief!=null) add(qn('IIEF-5'), qv(c.iief)+' <span class="vazio">('+faixaIief(c.iief)+')</span>');
+      if (c.pedt!=null) add(qn('PEDT'), qv(c.pedt)+' <span class="vazio">('+faixaPedt(c.pedt)+')</span>');
       if (c.tipo==='reavaliacao'){
         add('Adesão', R.adesao[c.adesao]||c.adesao||null);
         if (c.ea) add('Efeitos adversos', (R.ea[c.ea]||c.ea) + ((c.eaQuais||[]).length ? ': '+escH(rotLista(c.eaQuais, EA)) : ''));
@@ -2259,7 +2294,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       }
       const adamSel = (c.adam||[]).filter(v=>v!=='nenhum');
       if ((c.adam||[]).length && mudou('adam'))
-        add('ADAM', (c.adamPositivo?'positivo':'negativo') + (adamSel.length?' — '+escH(rotLista(adamSel, ADAM)):''));
+        add(qn('ADAM'), qv(c.adamPositivo?'positivo':'negativo') + (adamSel.length?' — '+escH(rotLista(adamSel, ADAM)):''));
       if (c.tempo && mudou('tempo')) add('Tempo de queixa', R.tempo[c.tempo]||c.tempo);
       if (c.parceria && mudou('parceria')) add('Parceria', R.parceria[c.parceria]||c.parceria);
       if (c.frequencia && mudou('frequencia')) add('Frequência', R.frequencia[c.frequencia]||c.frequencia);
@@ -2350,7 +2385,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const prots = [];
     clin.filter(c=>c.tipo==='primeira'||c.tipo==='reavaliacao').forEach(c=>{
       if (c.protocolo && prots[prots.length-1]!==c.protocolo) prots.push(c.protocolo); });
-    const serie = k => clin.filter(c=>c[k]!=null).map(c=>c[k]+' <span class="vazio">('+dataDoCiclo(c)+')</span>').join(' → ');
+    const serie = k => clin.filter(c=>c[k]!=null).map(c=>qv(c[k])+' <span class="vazio">('+dataDoCiclo(c)+')</span>').join(' → ');
 
     let h = '<h4>Síntese</h4><table>'
       + linhaFicha('Primeira visita', dataDoCiclo(prim))
@@ -2358,8 +2393,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       + linhaFicha('Atendimentos registrados', String(clin.length))
       + linhaFicha('Linhas de tratamento', linhas.length ? linhas.join(' · ') : null)
       + linhaFicha('Sequência de protocolos', prots.length ? escH(explicaSiglas(prots.join(' → '))) : null)
-      + linhaFicha('IIEF-5', serie('iief') || null)
-      + linhaFicha('PEDT', serie('pedt') || null)
+      + linhaFicha(qn('IIEF-5'), serie('iief') || null)
+      + linhaFicha(qn('PEDT'), serie('pedt') || null)
       + '</table>';
 
     h += '<h4>Atendimentos, do mais antigo ao mais recente</h4>';
@@ -3177,9 +3212,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (iiefAnt!=null || iiefHoje!=null){
       const vemDaRecepcao = !!(f && f.iief!=null) && !preenchido(S.iiefAnt);
       if (iiefAnt!=null && iiefHoje!=null){
-        es.push(lin('IIEF-5 '+iiefAnt+' \u2192 '+iiefHoje+' \u00b7 '+variacao(iiefAnt, iiefHoje, false)));
+        es.push(lin(qEscore('IIEF-5', iiefAnt+' \u2192 '+iiefHoje)+' \u00b7 '+variacao(iiefAnt, iiefHoje, false)));
       } else {
-        es.push(lin('IIEF-5 '+(iiefHoje!=null?iiefHoje:iiefAnt)+(iiefHoje!=null&&iiefAnt==null?' \u00b7 primeira medida':'')));
+        es.push(lin(qEscore('IIEF-5', iiefHoje!=null?iiefHoje:iiefAnt)+(iiefHoje!=null&&iiefAnt==null?' \u00b7 primeira medida':'')));
       }
       if (vemDaRecepcao) es.push(lin('respondido na recep\u00e7\u00e3o, confirme com ele','sub'));
       const fa = faixaIief(iiefHoje!=null?iiefHoje:iiefAnt);
@@ -3187,9 +3222,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     if (pedtAnt!=null || pedtHoje!=null){
       if (pedtAnt!=null && pedtHoje!=null){
-        es.push(lin('PEDT '+pedtAnt+' \u2192 '+pedtHoje+' \u00b7 '+variacao(pedtAnt, pedtHoje, true)));
+        es.push(lin(qEscore('PEDT', pedtAnt+' \u2192 '+pedtHoje)+' \u00b7 '+variacao(pedtAnt, pedtHoje, true)));
       } else {
-        es.push(lin('PEDT '+(pedtHoje!=null?pedtHoje:pedtAnt)+(pedtHoje!=null&&pedtAnt==null?' \u00b7 primeira medida':'')));
+        es.push(lin(qEscore('PEDT', pedtHoje!=null?pedtHoje:pedtAnt)+(pedtHoje!=null&&pedtAnt==null?' \u00b7 primeira medida':'')));
       }
       const fa = faixaPedt(pedtHoje!=null?pedtHoje:pedtAnt);
       if (fa) es.push(lin(fa,'sub'));
@@ -3343,7 +3378,7 @@ document.documentElement.setAttribute('data-tema',t)})();
               const cabeca = [norm(f.codigo), f.iniciais||null, (m.idade||f.idade)?((m.idade||f.idade)+' anos'):null, nomeQueixa]
                               .filter(Boolean).join(' · ');
               const resumo = [ f.retorno?'retorno':'primeira vez',
-                               f.iief!=null?('IIEF '+f.iief):null, f.pedt!=null?('PEDT '+f.pedt):null,
+                               f.iief!=null?qEscore('IIEF-5',f.iief):null, f.pedt!=null?qEscore('PEDT',f.pedt):null,
                                m.imc?('IMC '+m.imc):null,
                                f.usoRelatado?({total:'uso regular',parcial:'falhas ocasionais',baixa:'baixa adesão',parou:'interrompeu o tratamento'}[f.usoRelatado]):null,
                                status ].filter(Boolean).join(' · ');
@@ -3412,6 +3447,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       hint: (prev && prev.protocolo) ? ('No banco: '+prev.protocolo
         + ((prev.kitCodes||[]).length ? ' · '+prev.kitCodes.filter(x=>!['TEFI','LABS'].includes(x)).join(', ') : '')
         + (prev.iief!=null?' · IIEF '+prev.iief:'') + (prev.pedt!=null?' · PEDT '+prev.pedt:'')) : '',
+      hintHtml: (prev && prev.protocolo) ? (escH(explicaSiglas('No banco: '+prev.protocolo
+        + ((prev.kitCodes||[]).length ? ' · '+prev.kitCodes.filter(x=>!['TEFI','LABS'].includes(x)).join(', ') : '')))
+        + (prev.iief!=null?' · '+qEscore('IIEF-5',prev.iief):'') + (prev.pedt!=null?' · '+qEscore('PEDT',prev.pedt):'')) : '',
       options: S.semHistorico
         ? [{v:'ok',badge:'✓',label:'Entendi, seguir como primeira avaliação'}]
         : [{v:'ok',badge:'✓',label:'Confirmar e continuar'},
@@ -3809,6 +3847,8 @@ document.documentElement.setAttribute('data-tema',t)})();
         text:'Questionários já preenchidos pelo paciente',
         hint:[si5!==null?('IIEF-5: '+si5+' de 25'):'', sp5!==null?('PEDT: '+sp5+' de 20'):'',
               ((a=>a.length?('ADAM: '+a.length+' sintoma'+(a.length>1?'s':'')+' marcado'+(a.length>1?'s':'')):'')((S.adam||[]).filter(v=>v!=='nenhum')))].filter(Boolean).join(' · '),
+        hintHtml:[si5!==null?qEscore('IIEF-5',si5+' de 25'):'', sp5!==null?qEscore('PEDT',sp5+' de 20'):'',
+              ((a=>a.length?qEscore('ADAM',a.length+' sintoma'+(a.length>1?'s':'')+' marcado'+(a.length>1?'s':'')):'')((S.adam||[]).filter(v=>v!=='nenhum')))].filter(Boolean).join(' · '),
         options:[{v:'nao',badge:'✓',label:'Confirmar e seguir'},{v:'sim',badge:'↻',label:'Refazer os questionários agora'}]});
     } else if (S.filaAplicada && S.refazer!=='sim' && S.usarTotaisRec!=='nao'
                && ((S.hasDE && (S.fila||[]).find(x=>x.codigo===S.daFila) && ((S.fila||[]).find(x=>x.codigo===S.daFila).iief!=null))
@@ -3819,6 +3859,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       s.push({id:'usarTotaisRec',kind:'opts',step:'Questionários',eyebrow:'Respondido na recepção',
         text:'Escores que vieram da recepção',
         hint:[fr.iief!=null?('IIEF-5: '+fr.iief+' de 25'):'', fr.pedt!=null?('PEDT: '+fr.pedt+' de 20'):'',
+              'As respostas pergunta a pergunta não vieram no registro — dá para usar só os totais.'].filter(Boolean).join(' · '),
+        hintHtml:[fr.iief!=null?qEscore('IIEF-5',fr.iief+' de 25'):'', fr.pedt!=null?qEscore('PEDT',fr.pedt+' de 20'):'',
               'As respostas pergunta a pergunta não vieram no registro — dá para usar só os totais.'].filter(Boolean).join(' · '),
         options:[{v:'sim',badge:'✓',label:'Usar estes totais'},{v:'nao',badge:'↻',label:'Aplicar os questionários agora'}],
         after: async ()=>{
@@ -5330,7 +5372,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     fill.style.strokeDasharray=`${C*(score/(showDE?25:20))} ${C}`;
     el('classPill').style.background=`var(--sev-${band.key})`;
     el('classLabel').textContent=((S.hasDE&&S.hasEP&&bDE&&bEP)?`${bDE.label} · ${bEP.label}`:band.label)+' · '+prot;
-    el('classDesc').textContent=(S.hasDE?`IIEF-5 ${sIIEF}/25. `:'')+(S.hasEP?`PEDT ${sPEDT}/20.`:'');
+    el('classDesc').innerHTML=(S.hasDE?qEscore('IIEF-5',sIIEF+'/25')+'. ':'')+(S.hasEP?qEscore('PEDT',sPEDT+'/20')+'.':'');
     const marc=[];
     marc.push(reav ? ((S.nReav?S.nReav+'ª ':'')+'reavaliação'+(S.diasDesde!=null?' · '+S.diasDesde+' dias desde a última':'')) : 'Primeira avaliação');
     if (reav){
@@ -5460,14 +5502,14 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (reav && S.diasDesde!=null) add('Intervalo desde a última',S.diasDesde+' dias');
     if (reav){
       add('Protocolo anterior',(S.protAnt==='Outro / combinação não listada'?((S.formulasAnt||[]).join(', ')||'não especificado'):S.protAnt)||'—');
-      if (S.iiefAnt) add('IIEF-5 anterior → atual',S.iiefAnt+' → '+sIIEF+'  ('+(dIIEF>0?'+':'')+dIIEF+')');
-      if (S.pedtAnt) add('PEDT anterior → atual',S.pedtAnt+' → '+sPEDT+'  ('+(dPEDT>0?'+':'')+dPEDT+')');
+      if (S.iiefAnt) add(qn('IIEF-5')+' anterior → atual',qv(S.iiefAnt+' → '+sIIEF)+'  ('+(dIIEF>0?'+':'')+dIIEF+')');
+      if (S.pedtAnt) add(qn('PEDT')+' anterior → atual',qv(S.pedtAnt+' → '+sPEDT)+'  ('+(dPEDT>0?'+':'')+dPEDT+')');
       add('Adesão',{total:'Todos os dias',parcial:'Falhou alguns dias',baixa:'Falhou muitos dias',parou:'Parou de tomar'}[S.adesao]||'—');
       if (S.motivo) add('Motivo',{ea:'Efeito adverso',esq:'Esquecimento',naoprec:'Achou que não precisava',outro:'Outro'}[S.motivo]);
       add('Efeitos adversos',{nao:'Nenhum',leve:'Leves, toleráveis',atrap:'Atrapalharam o uso'}[S.ea]||'—');
-      if (S.adam){ const a=(S.adam||[]).filter(v=>v!=='nenhum'); add('ADAM', (adamPositivo(a)?'POSITIVO':'negativo')+' — '+a.length+'/10 sintomas'); }
+      if (S.adam){ const a=(S.adam||[]).filter(v=>v!=='nenhum'); add(qn('ADAM'), qv(adamPositivo(a)?'POSITIVO':'negativo')+' — '+a.length+'/10 sintomas'); }
     if (alg.length) add('Alergias', alg.map(v=>({tada:'PDE5',clomi:'tricíclico',parox:'ISRS',dapo:'dapoxetina',anest:'anestésico local',ioim:'ioimbina',fito:'fitoterápico'}[v])).join('; '));
-    if (S.hasDE && (S.adam||[]).length) add('ADAM', (S.adamPos?'POSITIVO':'negativo')+' — '+(adamSet.length?adamSet.map(v=>(ADAM.find(a=>a.v===v)||{}).label).filter(Boolean).join('; '):'nenhum sintoma'));
+    if (S.hasDE && (S.adam||[]).length) add(qn('ADAM'), qv(S.adamPos?'POSITIVO':'negativo')+' — '+(adamSet.length?adamSet.map(v=>(ADAM.find(a=>a.v===v)||{}).label).filter(Boolean).join('; '):'nenhum sintoma'));
     if (comorb.length) add('Comorbidades',comorb.map(v=>({has:'HAS',dm:'Diabetes',disl:'Dislipidemia',vasc:'Doença arterial',tabag:'Tabagismo',obes:'Obesidade',alcool:'Álcool',drogas:'Drogas recreacionais'}[v])).join('; ')+({sim:' · controladas',parcial:' · controle parcial',nao:' · NÃO controladas'}[S.comorbCtrl]||'')+({sim:' · com acompanhamento',nao:' · SEM acompanhamento'}[S.comorbMed]||''));
     if (reav && S.examesFeitos==='sim') add('Perfil hormonal',[S.tTotal&&('T total '+S.tTotal),S.tLivre&&('T livre '+S.tLivre),S.lh&&('LH '+S.lh),S.fsh&&('FSH '+S.fsh),S.estradiol&&('E2 '+S.estradiol),S.prolactina&&('PRL '+S.prolactina)].filter(Boolean).join(' · ')||'—');
     if (reav && S.tefiFeito) add('TEFI',S.tefiFeito==='sim'?('realizado — '+(S.tefiResp||'')+' · Doppler '+(S.tefiDoppler||'')+' · conduta '+(S.tefiConduta||'')+(S.tefiConduta==='ici'?(' · '+(S.iciFormula||'')+' '+(S.iciDose||'')):'')):'ainda não realizado');
@@ -5483,8 +5525,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       add('Recomendaria a clínica (0-10)', S.nps + (pn!=null ? '   (anterior '+pn+', '+(S.nps-pn>0?'+':'')+(S.nps-pn)+')' : ''));
       add('Mudança deste ciclo','<b>'+(mudanca||'manter o protocolo')+'</b>');
     }
-    if (S.hasDE){ add('IIEF-5 total','<b>'+sIIEF+'/25 — '+bDE.label+'</b>'); Q_IIEF.forEach(q=>add('· '+q.short,S[q.id])); }
-    if (S.hasEP){ add('PEDT total','<b>'+sPEDT+'/20 — '+bEP.label+'</b>'); Q_PEDT.forEach(q=>add('· '+q.short,S[q.id])); }
+    if (S.hasDE){ add(qn('IIEF-5')+' total','<b>'+qv(sIIEF+'/25')+' — '+bDE.label+'</b>'); Q_IIEF.forEach(q=>add('· '+q.short,S[q.id])); }
+    if (S.hasEP){ add(qn('PEDT')+' total','<b>'+qv(sPEDT+'/20')+' — '+bEP.label+'</b>'); Q_PEDT.forEach(q=>add('· '+q.short,S[q.id])); }
     const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
     screens.filter(s=>LBL[s.id]).forEach(s=>{const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
     add('Custo estimado do ciclo', CUS.idx+'/10'+(CUS.temOpc?'  ·  com opcional: '+CUS.idxComOpc+'/10':'')+'  ('+CUS.total+' pontos · maior peso: '+(CUS.itens.slice(0,3).map(i=>i.cod).join(', ')||'—')+')');
@@ -6098,7 +6140,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const fila=S.fila, fe=S.filaEstado, lp=S.listaPacientes;
     Object.keys(S).forEach(k=>delete S[k]);
     if (fila!==undefined) S.fila=fila; if (fe!==undefined) S.filaEstado=fe; if (lp) S.listaPacientes=lp;
-    si=0; prev=null; hist=[]; window.__mxReg=null; mxNovas={}; mxVistas=null;
+    si=0; prev=null; hist=[]; window.__mxReg=null; mxNovas={}; mxVistas=null; mxFaltamAtivo=false;
     try{ limpaSessao(); escondeRetomar(); }catch(e){}
     resultsCard.style.display='none';
     const lQ=el('linhaQuiz'); if (lQ) lQ.style.display='';
@@ -6155,11 +6197,38 @@ document.documentElement.setAttribute('data-tema',t)})();
         if (mxEmResultados()) return;
         if (si===antes && (screens[si]||{}).id===idAntes) break;   // parou: pergunta obrigatória em aberto
       }
-      const sc = screens[si];
       if (quizCard.style.display==='none') mostrarQuiz();
-      const tx = sc ? explicaSiglas(String(sc.text||'')).replace(/\s+/g,' ').trim() : '';
-      mxToast('Falta responder: '+(sc ? rotuloTela(sc)+(tx ? ' — '+(tx.length>70 ? tx.slice(0,68)+'…' : tx) : '') : 'pergunta obrigatória'));
+      mxFaltamAtivo = true;
+      const n = mxPintaFaltam();
+      mxToast('Falta responder '+n+' pergunta'+(n===1?'':'s')+' — a lista está abaixo da pergunta.');
     } finally { mxRevisando = false; }
+  }
+
+  // ---- lista explícita do que falta (aparece depois de ⌘↵ / "Ir para a conduta") ----
+  let mxFaltamAtivo = false;
+  function mxListaFaltam(){
+    const out = [];
+    screens.forEach((sc,idx)=>{ if (!sc.plumb && !sc.optional && !val(sc)) out.push({sc:sc, idx:idx}); });
+    return out;
+  }
+  function mxPintaFaltam(){
+    const box = el('mxFaltam'); if (!box) return 0;
+    const pend = (mxFaltamAtivo && mxTemPaciente() && !mxEmResultados() && quizCard.style.display!=='none') ? mxListaFaltam() : [];
+    if (!pend.length){ box.style.display='none'; box.innerHTML=''; mxFaltamAtivo = false; return 0; }
+    const curto = t => { t = explicaSiglas(String(t||'')).replace(/\s+/g,' ').trim(); return t.length>90 ? t.slice(0,88)+'…' : t; };
+    box.innerHTML = '<div class="mx-faltam-cab"><b>Falta responder '+pend.length+' pergunta'+(pend.length===1?'':'s')+':</b>'
+      + '<button type="button" class="mx-faltam-x" aria-label="Fechar a lista">×</button></div><ol>'
+      + pend.map(p=>'<li><button type="button" data-i="'+p.idx+'"'+(p.idx===si?' class="atual"':'')+'>'
+          + '<span class="mod">'+escH(rotuloTela(p.sc))+'</span> '+escH(curto(p.sc.text))+'</button></li>').join('')
+      + '</ol>';
+    box.querySelector('.mx-faltam-x').onclick = ()=>{ mxFaltamAtivo = false; mxPintaFaltam(); };
+    box.querySelectorAll('button[data-i]').forEach(b=>b.onclick = ()=>{
+      const i = +b.dataset.i; if (!screens[i]) return;
+      si = i; mostrarQuiz(); mxPintaFaltam();
+      const q = el('quizCard'); if (q && q.scrollIntoView) q.scrollIntoView({block:'start', behavior:'smooth'});
+    });
+    box.style.display = 'block';
+    return pend.length;
   }
 
   // ---- teclado (fase de captura: roda antes dos atalhos antigos) ----
@@ -6386,7 +6455,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(explicaSiglas(c))+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
       + '</div>'
-      + (esc.length ? '<div class="mx-scores">'+esc.map(([n,v,d])=>'<div><b>'+escH(String(v))+'</b><span>'+escH(n)+' · '+escH(d)+'</span></div>').join('')+'</div>' : '');
+      + (esc.length ? '<div class="mx-scores">'+esc.map(([n,v,d])=>'<div class="mx-esc">'+qn(escH(n))+qv(escH(String(v)))+'<small>'+escH(d)+'</small></div>').join('')+'</div>' : '');
     head.style.display = 'flex';
     rc.classList.add('mx-cd-on');
     const va = el('mxVerAlertas');
@@ -6404,6 +6473,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     try{ mxPintaRail23(); }catch(e){}
     try{ mxPintaSecao(); }catch(e){}
     try{ mxPintaCta(); }catch(e){}
+    try{ mxPintaFaltam(); }catch(e){}
     try{ mxTopo(); }catch(e){}
     try{ mxPintaConduta(); }catch(e){}
   }

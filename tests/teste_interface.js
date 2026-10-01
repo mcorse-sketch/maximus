@@ -124,6 +124,13 @@ async function atendimento(p, viaAtalho) {
     falha, erros, texto,
     conduta: salvo ? { protocolo: salvo.protocolo || null, kit: salvo.kitCodes || [], iief: salvo.iief ?? null, pedt: salvo.pedt ?? null } : null,
     cabecalho: cab && visivel(cab) ? cab.textContent : null,
+    pilulas: (() => {
+      const temDE = salvo && salvo.iief != null, temEP = salvo && salvo.pedt != null;
+      if (!temDE && !temEP) return true;
+      const cd = doc.getElementById('classDesc'), rep = doc.getElementById('report');
+      const par = n => n && n.querySelector('.mx-qn') && n.querySelector('.mx-qv');
+      return !!(par(cd) && par(rep) && (!cab || !visivel(cab) || par(cab)));
+    })(),
     cabDentroDaImpressao: !!(cab && doc.getElementById('printArea').contains(cab))
   };
   win.close();
@@ -150,6 +157,7 @@ async function atendimento(p, viaAtalho) {
     ok(c.doc.documentElement.getAttribute('data-tema') === 'claro', 'escolha manual vale mais que o aparelho');
     c.win.close();
     ok(/@media screen\{\s*html\[data-tema="escuro"\]/.test(HTML), 'cores escuras só na tela (impressão continua clara)');
+    ok(/\.mx-acts \.btn,\.mx-acts \.hist-btn\{[^}]*height:36px[^}]*white-space:nowrap/.test(HTML), 'Prontuário / Histórico / Panorama: mesma altura, rótulo e tecla numa linha só');
   }
 
   // ---------- atalhos, busca, pendência ----------
@@ -164,7 +172,7 @@ async function atendimento(p, viaAtalho) {
     await espera(60);
     tecla(win, '?'); await espera(5);
     ok(doc.getElementById('mxAjuda').classList.contains('on'), '? abre a lista de atalhos');
-    ok(/Revisar conduta/.test(doc.getElementById('mxAjuda').textContent) && /Tema claro/.test(doc.getElementById('mxAjuda').textContent), 'a lista mostra ⌘↵, T e os demais');
+    ok(/Ir para a conduta/.test(doc.getElementById('mxAjuda').textContent) && !/Revisar conduta/.test(doc.getElementById('mxAjuda').textContent) && /Tema claro/.test(doc.getElementById('mxAjuda').textContent), 'a lista mostra ⌘↵, T e os demais');
     tecla(win, 'Escape'); await espera(5);
     ok(!doc.getElementById('mxAjuda').classList.contains('on'), 'Esc fecha a lista de atalhos');
     tecla(win, 'k', { ctrlKey: true }); await espera(30);
@@ -187,6 +195,28 @@ async function atendimento(p, viaAtalho) {
     tecla(win, 'Enter', { ctrlKey: true }); await espera(60);
     ok(tela() === t0 && !visivel(doc.getElementById('resultsCard')), '⌘↵ com pergunta obrigatória em aberto não gera conduta e fica nela');
     ok(/Falta responder/.test(doc.getElementById('mxToast').textContent), '… e avisa o que falta');
+    ok(/^Ir para a conduta/.test(doc.getElementById('mxRevisar').textContent.trim()), 'o botão diz "Ir para a conduta ⌘↵"');
+    {
+      const box = doc.getElementById('mxFaltam');
+      const itens = box ? [...box.querySelectorAll('li button[data-i]')] : [];
+      const m = box ? box.textContent.match(/Falta responder (\d+) perguntas?:/) : null;
+      ok(visivel(box) && m && +m[1] === itens.length && itens.length >= 1, 'mostra "Falta responder N perguntas:" com a lista', box ? box.textContent.slice(0, 120) : 'sem caixa');
+      ok(itens.some(b => b.classList.contains('atual')), 'a pergunta onde parou aparece marcada na lista');
+      if (itens.length > 1) {
+        const alvo = itens[itens.length - 1], idx = +alvo.dataset.i;
+        alvo.click(); await espera(20);
+        ok(doc.getElementById('quizCard').getAttribute('data-tela') !== t0, 'clicar num item pula para aquela pergunta');
+        ok(visivel(doc.getElementById('mxFaltam')), 'a lista continua visível enquanto houver pendência');
+        const volta = [...doc.querySelectorAll('#mxFaltam li button[data-i]')].find(b => !b.classList.contains('atual'));
+        if (volta) { volta.click(); await espera(20); }
+      } else {
+        ok(true, 'clicar num item pula para aquela pergunta (só uma pendente)');
+        ok(true, 'a lista continua visível enquanto houver pendência');
+      }
+      ok(!/\[object Object\]/.test(doc.body.textContent), 'nenhum texto "[object Object]" na tela (prévia e lista)');
+      doc.querySelector('#mxFaltam .mx-faltam-x').click(); await espera(5);
+      ok(!visivel(doc.getElementById('mxFaltam')), '× fecha a lista');
+    }
     const antes = tela();
     tecla(win, 'ArrowUp'); await espera(20);
     ok(tela() !== antes || visivel(doc.getElementById('panoramaCard')), '↑ volta uma pergunta');
@@ -235,7 +265,7 @@ async function atendimento(p, viaAtalho) {
   // ---------- ⌘↵ = caminho normal ----------
   console.log('\n--- ⌘↵ leva à mesma conduta do caminho normal');
   const lista = RAPIDO ? PACIENTES.filter((_, k) => k % 6 === 0) : PACIENTES;
-  let iguais = 0, difs = 0, cabecalhos = 0;
+  let iguais = 0, difs = 0, cabecalhos = 0, pilulas = 0;
   for (const p of lista) {
     const normal = await atendimento(p, false);
     const atalho = await atendimento(p, true);
@@ -254,10 +284,12 @@ async function atendimento(p, viaAtalho) {
     // protocolo em código (DE-3, DUO-4…) aparece grande; nome longo (ex.: consulta) cede o lugar à classificação
     const pr = normal.conduta ? String(normal.conduta.protocolo || '') : '';
     const curto = /^[A-Z0-9][A-Z0-9+\-]{0,13}$/.test(pr);
+    if (normal.pilulas) pilulas++; else console.log('         escores sem pílula em ' + p.id);
     if (normal.cabecalho && !normal.cabDentroDaImpressao && (!curto || normal.cabecalho.indexOf(pr) >= 0)) cabecalhos++;
     else console.log('         cabeçalho de ' + p.id + ': ' + JSON.stringify((normal.cabecalho || '').slice(0, 120)) + ' / protocolo ' + pr);
   }
   falhas += difs;
+  ok(pilulas === lista.length, 'escores: nome do questionário e valor em pílulas separadas (classificação, relatório, cabeçalho)', pilulas + ' de ' + lista.length);
   ok(cabecalhos === lista.length, 'cabeçalho da conduta (nível 1) mostra o protocolo e fica fora da impressão', cabecalhos + ' de ' + lista.length);
   console.log('\n=== INTERFACE v2.3 ===');
   console.log('pacientes: ' + lista.length + ' | ⌘↵ igual ao caminho normal: ' + iguais + ' | diferentes: ' + (lista.length - iguais));
