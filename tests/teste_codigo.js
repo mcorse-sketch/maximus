@@ -34,6 +34,12 @@ function fakeDb(mem) {
   }
   return { collection(p) { const arr = mem[p] || (mem[p] = []); return q(arr); } };
 }
+const soFicticio = regs => !!(regs && regs.length && regs.every(r => r.demo));
+// banco de teste fictício (MX9101…): ocupa códigos altos, mas não pode empurrar
+// o próximo paciente real para MX9104
+const hojeUTC = () => new Date().toISOString().slice(0, 10);
+const TESTE = () => ({ MX9101: [{ tipo: 'primeira', demo: true }], MX9103: [{ tipo: 'primeira', demo: true }],
+  MX9102: [{ tipo: 'primeira', demo: true }, { codigo: 'MX9102', tipo: 'recepcao', linha: 'recepcao', demo: true, dataLocal: hojeUTC(), data: hojeISO() }] });
 // servidor falso no formato do servidor_maximus.py
 function servidorFalso(banco, opcoes) {
   opcoes = opcoes || {};
@@ -46,10 +52,13 @@ function servidorFalso(banco, opcoes) {
     if (u === '/api/sessao') return resp(200, { perfil: 'medico' });
     if (u === '/api/proximo-codigo') {
       if (opcoes.semProximo) return resp(500, {});
-      const n = cods.reduce((m, c) => Math.max(m, +((c.match(/(\d+)\s*$/) || [0, 0])[1])), 0);
-      return resp(200, { codigo: 'MX' + String(n + 1).padStart(4, '0') });
+      // como o servidor: paciente só com registros fictícios (demo) não conta
+      // para a numeração, mas o código dele continua ocupado
+      const n = cods.filter(c => !soFicticio(banco[c])).reduce((m, c) => Math.max(m, +((c.match(/(\d+)\s*$/) || [0, 0])[1])), 0);
+      let k = n + 1; while (banco['MX' + String(k).padStart(4, '0')]) k++;
+      return resp(200, { codigo: 'MX' + String(k).padStart(4, '0') });
     }
-    if (u === '/api/pacientes') return resp(200, { pacientes: cods.sort().map(c => ({ codigo: c })) });
+    if (u === '/api/pacientes') return resp(200, { pacientes: cods.sort().map(c => ({ codigo: c, ficticio: soFicticio(banco[c]) })) });
     if (u === '/api/triagens-hoje') {
       const t = [];
       cods.forEach(c => banco[c].forEach(r => { if (r.tipo === 'recepcao' && (r.dataLocal || '') === hoje) t.push(r); }));
@@ -97,6 +106,10 @@ async function clinico() {
         MX0007: [{ codigo: 'MX0007', tipo: 'recepcao', linha: 'recepcao', dataLocal: new Date().toISOString().slice(0, 10), data: hojeISO() }] }, espera: 'MX0008' },
     { nome: 'servidor sem /api/proximo-codigo, lista com MX0005 (não pode virar MX0001)', banco: { MX0005: [{ tipo: 'primeira' }] },
         opcoes: { semProximo: true }, espera: 'MX0006' },
+    { nome: 'servidor, real MX0003 + fictícios MX9101–MX9103 (um na fila de hoje)', banco: Object.assign({ MX0003: [{ tipo: 'primeira' }] }, TESTE()), espera: 'MX0004' },
+    { nome: 'servidor, só fictícios MX9101–MX9103', banco: TESTE(), espera: 'MX0001' },
+    { nome: 'servidor sem /api/proximo-codigo, real MX0002 + fictícios', banco: Object.assign({ MX0002: [{ tipo: 'primeira' }] }, TESTE()), opcoes: { semProximo: true }, espera: 'MX0003' },
+    { nome: 'servidor, fictício ocupando MX0001 (não colide)', banco: { MX0001: [{ tipo: 'primeira', demo: true }] }, espera: 'MX0002' },
     { nome: 'banco Claude vazio', mem: { recepcao: [], codigos: [] }, espera: 'MX0001' },
     { nome: 'banco Claude com MX0001..MX0003 e recepção de hoje MX0010', mem: {
         codigos: [{ codigo: 'MX0001' }, { codigo: 'MX0002' }, { codigo: 'MX0003' }],
@@ -193,6 +206,8 @@ async function recepcao() {
     { nome: 'servidor, fila de hoje com MX0009', banco: { MX0002: [{ tipo: 'primeira' }],
         MX0009: [{ codigo: 'MX0009', tipo: 'recepcao', linha: 'recepcao', dataLocal: new Date().toISOString().slice(0, 10) }] }, espera: 'MX0010' },
     { nome: 'servidor sem /api/proximo-codigo, lista com MX0005', banco: { MX0005: [{ tipo: 'primeira' }] }, opcoes: { semProximo: true }, espera: 'MX0006' },
+    { nome: 'servidor, real MX0003 + fictícios MX9101–MX9103 (um na fila de hoje)', banco: Object.assign({ MX0003: [{ tipo: 'primeira' }] }, TESTE()), espera: 'MX0004' },
+    { nome: 'servidor sem /api/proximo-codigo, real MX0002 + fictícios', banco: Object.assign({ MX0002: [{ tipo: 'primeira' }] }, TESTE()), opcoes: { semProximo: true }, espera: 'MX0003' },
     { nome: 'banco Claude: codigos até MX0060 e recepção MX0061 já usada', mem: {
         codigos: Array.from({ length: 60 }, (_, k) => ({ codigo: 'MX' + String(k + 1).padStart(4, '0') })),
         recepcao: [{ codigo: 'MX0061', tipo: 'recepcao', data: hojeISO() }] }, espera: 'MX0062' },

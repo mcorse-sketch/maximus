@@ -99,6 +99,20 @@ exclui as demais.
 
 **Preenchimento usa circunferência, não diâmetro.**
 
+**Orientações pós-preenchimento são o texto do Dr. Marco, palavra por palavra**
+(`POS_TEXTO`, 8 itens numerados com subitens a.). Não reescrever nem "melhorar";
+`teste_envio.js` confere o texto exato.
+
+**Receita só se o kit tiver fórmula ou medicação.** "Enviar ao paciente" não
+oferece receita em preenchimento, consulta urológica, emagrecimento, TEFI,
+hipogonadismo sem via prescrita, nem quando o kit só tem exames, ondas de
+choque, TEFI ou preservativo de farmácia (`ajustaEnvio()`).
+
+**Banco de teste fictício:** `MX9101`–`MX9140`, todo registro com `demo: true`.
+Paciente só com registros `demo` não conta para a numeração do próximo código
+(servidor e apps), mas o código fica ocupado. Conduta do banco de teste vem do
+app (`tests/banco_teste.js`), nunca escrita à mão.
+
 **Escores e índices são faixas fechadas** (IIEF-5, PEDT, biotensiômetro 0–100,
 índice de resistividade 0–1): não existe "valor fora da faixa" neles.
 Laboratório e medidas anatômicas têm saída para valor atípico.
@@ -210,7 +224,7 @@ cd tests && npm install          # jsdom
 cd .. && ./scripts/testar.sh 100 # roda tudo
 ```
 
-Doze etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
+Catorze etapas: sintaxe dos três apps, 100 pacientes sintéticos no clínico, 100 na
 recepção, rastreador de módulos nas oito linhas de queixa, integração
 recepção → consultório, **regressão clínica**, jornada do médico
 (`teste_jornada.js`: contato, nota final, aviso de ISRS, texto, ficha,
@@ -218,7 +232,11 @@ impressão, lista de pacientes, descartar), **siglas com ativo**
 (`teste_siglas.js`), **código do paciente novo** (`teste_codigo.js`: próximo
 livre sempre preenchido, vazio não avança), **interface v2.3**
 (`teste_interface.js`: tema, atalhos, busca e a equivalência do ⌘↵ com o
-caminho normal nos pacientes da regressão), tela de senha e servidor. A regressão separa
+caminho normal nos pacientes da regressão), **enviar ao paciente**
+(`teste_envio.js`: receita só com fórmula ou medicação no kit; texto exato das
+orientações pós-preenchimento), **banco de teste** (`banco_teste.js
+--conferir`: `data/banco_teste.json` ainda é o que o app produz), tela de
+senha e servidor. A regressão separa
 "protocolo/kit/escores mudaram" de "só o texto mudou".
 
 A regressão (`tests/regressao.js`) leva os pacientes de

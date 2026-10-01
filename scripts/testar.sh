@@ -48,6 +48,12 @@ node teste_codigo.js "$CLIN" "$RECEP" || falhas=$((falhas+1))
 linha "7d. interface v2.3 — atalhos, tema, busca e ⌘↵ = caminho normal"
 node teste_interface.js "$CLIN" || falhas=$((falhas+1))
 
+linha "7e. enviar ao paciente — receita só com fórmula/medicação; orientações pós-preenchimento"
+node teste_envio.js || falhas=$((falhas+1))
+
+linha "7f. banco de teste fictício (data/banco_teste.json) confere com o app"
+node banco_teste.js --conferir || falhas=$((falhas+1))
+
 linha "8. tela de senha dos três apps"
 node teste_sessao.js || falhas=$((falhas+1))
 

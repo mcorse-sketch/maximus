@@ -140,6 +140,41 @@ inválido desativa o botão e mostra o motivo ("Informe o código do paciente
 para continuar — o próximo livre é MX0002."). Testes: tests/teste_codigo.js
 (etapa 7c) e três casos novos em teste_servidor.py. Conduta clínica idêntica.
 
+## v2.3.1 · 01/10/2026 — receita só quando há fórmula; novas orientações pós-preenchimento; banco de teste
+
+Pedidos do Dr. Marco:
+- **"Receita das fórmulas" oferecida sem fórmula.** A caixa "Enviar ao
+  paciente" era fixa: preenchimento peniano, consulta urológica, emagrecimento,
+  TEFI e o bloqueio por nitrato (kit só com ondas de choque) ofereciam a
+  receita e o guia do Protocolo de Performance. Agora `ajustaEnvio()` monta a
+  caixa a partir do kit gravado: a receita só aparece com pelo menos uma
+  fórmula manipulada ou medicação (exames, ondas de choque, TEFI em consultório
+  e preservativo de farmácia não contam); no hipogonadismo vira "Receita da
+  medicação" e só aparece com via prescrita; guia e apêndice só na linha DE/EP.
+  O lembrete "entregar o guia junto da receita" perdeu o "junto da receita"
+  quando não há receita (TEST-005 e TEST-006 da regressão: só esse texto
+  mudou; protocolo, kit e escores idênticos — baseline regravada).
+- **Orientações pós-preenchimento** trocadas pelo texto do Dr. Marco, exato,
+  com subitens (lista numerada 1–8 com a., na folha do paciente e na folha
+  "Orientações pós-procedimento"). Muda o sentido da massagem (antes "da
+  cabeça para o corpo", agora "corpo-cabeça") e entra o item 8 (evitar AINE).
+- **Banco de teste fictício** (`data/banco_teste.json`, 40 pacientes
+  MX9101–MX9140, gerado pelo próprio app com `tests/banco_teste.js`) e
+  `python3 servidor_maximus.py --carregar-teste`: mescla sem tocar em registro
+  real, faz cópia do banco antes, recusa se algum código do teste já for de
+  paciente real, traz as datas para hoje (fila da recepção de hoje com 8).
+  Sai inteiro com `--apagar-ficticios`.
+- **Fictício não empurra a numeração.** Com MX9101–MX9140 no banco, o próximo
+  paciente real viraria MX9141. Servidor (`/api/proximo-codigo`) e os dois apps
+  ignoram, na numeração, pacientes só com registros `demo`, mas o código deles
+  continua ocupado (nunca colide). `/api/pacientes` informa `ficticio`.
+  Atender um paciente fictício grava registro fictício (o servidor marca
+  `demo:true`), para que `--apagar-ficticios` o leve junto.
+
+Testes: `teste_envio.js` (etapa 7e: 14 condutas em 6 linhas + texto exato das
+orientações), `banco_teste.js --conferir` (etapa 7f: o banco de teste ainda é
+o que o app produz), casos novos em `teste_codigo.js` e `teste_servidor.py`.
+
 ## v2.3.0 · 30/09/2026 — paridade com o mockup v3, sem mudar a conduta
 
 O app ao vivo ganhou o que o mockup v3 tinha e não depende das regras v3:
