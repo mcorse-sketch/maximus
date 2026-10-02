@@ -44,6 +44,13 @@ abbr.sig{text-decoration:none;border-bottom:1px dotted currentColor;cursor:help}
 /* opção escolhida (fundo escuro): pílulas acompanham a cor do texto */
 .opt.selected .mx-qn{color:inherit!important;border-color:currentColor!important;opacity:.85}
 .opt.selected .mx-qv{background:rgba(255,255,255,.18)!important;color:inherit!important}
+/* v2.4 retorno: "Algum destes mudou?" — pergunta curta + resposta anterior ao lado */
+.opt .est-q{font-weight:500}
+.opt .est-a{display:inline-block;margin-left:10px;padding:1px 9px;border-radius:999px;background:#eef3f4;color:#24434c;font-size:.88em;white-space:normal}
+.opt .est-ant{opacity:.65;font-size:.9em}
+.opt.selected .est-a{background:rgba(255,255,255,.18)!important;color:inherit!important}
+.opt.selected .est-a::after{content:' → editar';font-weight:600}
+html[data-tema="escuro"] .opt .est-a{background:rgba(255,255,255,.08);color:inherit}
 .hist-visita{margin-top:18px;padding-top:10px;border-top:2px solid #e2e0da}
 .hist-visita h5{margin:0 0 4px;font-size:14.5px;color:#141413}
 .hist-visita h5 .sub{font-weight:400;color:#6b6a66;font-size:13px}
@@ -1856,7 +1863,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     [...dotsEl.children].forEach((d,k)=>{d.classList.toggle('done',k<si);d.classList.toggle('active',k===si);});
     stepLabel.textContent = sc.step || `Passo ${si+1} de ${screens.length}`;
     qEyebrow.textContent = sc.eyebrow || '';
-    qText.textContent = explicaSiglas(sc.text);
+    if (sc.textHtml) qText.innerHTML = sc.textHtml; else qText.textContent = explicaSiglas(sc.text);
     aplicaTooltips(qText);
     optsWrap.innerHTML='';
 
@@ -1991,7 +1998,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${o.label}</span>`;
         b.onclick=()=>{
           if (sc.multi){
-            const a=S[sc.id]||[], nada=['nenhum','nenhuma'];
+            const a=Array.isArray(S[sc.id])?S[sc.id]:[], nada=sc.nada||['nenhum','nenhuma'];
             if (a.includes(o.v)) S[sc.id]=a.filter(x=>x!==o.v);
             // "nenhum" exclui os demais itens, e marcar um item tira o "nenhum"
             else S[sc.id] = nada.includes(o.v) ? [o.v] : a.filter(x=>!nada.includes(x)).concat([o.v]);
@@ -2001,6 +2008,9 @@ document.documentElement.setAttribute('data-tema',t)})();
         };
         optsWrap.appendChild(b);
       });
+      // v2.4: telas de opções não mostravam a dica; as novas do retorno e da
+      // recepção pedem (mostraDica) — as demais seguem como estavam
+      if (sc.hint && sc.mostraDica){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
     }
     quizCard.setAttribute('data-q', sc.qtipo || '');
     // marcacao para a regressao clinica (tests/regressao.js); nao muda comportamento
@@ -2763,7 +2773,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     ['codigoBuscado','hist','resumoHist','nReav','diasDesde','tefiBanco','medidasRec','autorrelato',
      'leuTermo','revisarRec','difRec','pendRec','filaAplicada','protAnt','formulasAnt','iiefAnt','pedtAnt']
       .forEach(k=>{ delete S[k]; });
-    if (alvo==='origem' || alvo==='daFila'){ delete S.daFila; delete S.queixa; delete S.trocarQueixa;
+    if (alvo==='origem' || alvo==='daFila'){ delete S.daFila; delete S.queixa; delete S.trocarQueixa; delete S.queixaFila; delete S.novaQueixa;
       delete S.queixaConfirmada; delete S.codigo; delete S.visita; }
   }
 
@@ -3018,6 +3028,12 @@ document.documentElement.setAttribute('data-tema',t)})();
   // select nativo não aceita marcação: o rótulo da opção já leva o ativo
   function rotuloOpcao(p){ return garanteSiglas(String(p)); }
 
+  // v2.4: classificação por extenso para a confirmação dos questionários da recepção
+  function faixaRec(tipo, v){
+    v = Number(v); const B = tipo==='iief' ? BANDS_DE : BANDS_EP;
+    const b = B.find(x=>v>=x.min && v<=x.max); if (!b) return '';
+    return b.label.replace(/^Sem disfunção erétil$/,'sem disfunção erétil').replace(/^DE /,'disfunção erétil ').replace(/^EP /,'ejaculação precoce ');
+  }
   function faixaIief(v){ v=+v; if(!(v>0)) return ''; if(v<=7) return 'disfun\u00e7\u00e3o grave'; if(v<=11) return 'moderada'; if(v<=16) return 'leve a moderada'; if(v<=21) return 'leve'; return 'sem disfun\u00e7\u00e3o'; }
   function faixaPedt(v){ v=+v; if(!(v>=0)) return ''; if(v<=8) return 'precocidade improv\u00e1vel'; if(v<=10) return 'lim\u00edtrofe'; return 'precocidade prov\u00e1vel'; }
   function variacao(ant, hoje, menorEhMelhor){
@@ -3031,9 +3047,9 @@ document.documentElement.setAttribute('data-tema',t)})();
   function rotuloBiotens(v){ v=+v; if(!(v>=0)) return ''; if (v<10) return 'abaixo de 10'; if (v<=20) return 'faixa 10 a 20'; return 'acima de 20'; }
 
   const MODS = [
-    {n:'Identifica\u00e7\u00e3o', ids:['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa']},
+    {n:'Identifica\u00e7\u00e3o', ids:['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa','novaQueixa']},
     {n:'Queixa e protocolo', ids:['queixa','confirma','confirmaEstavel','tempo','parceira','caracteriza','mast','matinal','previa','adequado','protAnt','formulasAnt','iciUso','iciAnt','iciAntDose','iciQual','iciQualidade','iciTempo','iciFreq','iciDoseAtual','refazer']},
-    {n:'Antecedentes', ids:['comorb','comorbCtrl','comorbMed','contra','contraIoim','depre','adam','reversiveis','duasDosagens','sintomas','convive','contexto']},
+    {n:'Antecedentes', ids:['comorb','comorbCtrl','comorbMed','contra','contraIoim','depre','adam','adamEvol','reversiveis','duasDosagens','sintomas','convive','contexto']},
     {n:'Medica\u00e7\u00f5es e alergias', ids:['medsRisco','alergia','parox','topico','freq','fert','querFilho','trtPrevio','contraind','pref','experiencia']},
     {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','satisf','nps','satisfNps',
       'i0','i1','i2','i3','i4','p0','p1','p2','p3','p4','p5','refazer','usarTotaisRec']},
@@ -3377,8 +3393,38 @@ document.documentElement.setAttribute('data-tema',t)})();
       (linhas.length ? linhas.join('<br>') : 'Fórmulas não registradas no ciclo anterior.');
   }
 
+  function queixasDoRegistro(ciclos){
+    const q = [];
+    const poe = v => { if (q.indexOf(v)<0) q.push(v); };
+    (ciclos||[]).slice().sort((a,b)=>new Date(a.data||0)-new Date(b.data||0)).forEach(c=>{
+      if (!c) return;
+      if (c.tipo==='primeira' || c.tipo==='reavaliacao'){
+        const m = String(c.protocolo||'').match(/^(DE|EP|DUO)-/);
+        if ((m && m[1]!=='EP') || c.iief!=null) poe('de');
+        if ((m && m[1]!=='DE') || c.pedt!=null) poe('ep');
+      } else if (c.tipo==='preench-inicial' || c.tipo==='preench-retorno' || c.linha==='preenchimento') poe('preench');
+      else if (c.tipo==='hipogonadismo') poe('hipo');
+    });
+    return q;
+  }
+  const NOME_QUEIXA = {de:'disfunção erétil',ep:'ejaculação precoce',ambos:'disfunção erétil e ejaculação precoce',
+    preench:'preenchimento peniano',tefi:'TEFI com Doppler',hipo:'hipogonadismo',emag:'protocolo de emagrecimento',uro:'consulta urológica'};
+  function listaQueixas(q){
+    const n = (q||[]).map(v=>NOME_QUEIXA[v]||v);
+    return n.length<=1 ? (n[0]||'') : n.slice(0,-1).join(', ')+' e '+n[n.length-1];
+  }
+  // DE + EP viram "ambos"; outra linha (preenchimento, TEFI…) segue como queixa própria
+  function juntaQueixas(a, b){
+    const fam = v => v==='de'||v==='ep'||v==='ambos';
+    if (!a) return b; if (!b) return a;
+    if (fam(a) && fam(b)){
+      const de = a==='de'||a==='ambos'||b==='de'||b==='ambos', ep = a==='ep'||a==='ambos'||b==='ep'||b==='ambos';
+      return de&&ep ? 'ambos' : (de ? 'de' : 'ep');
+    }
+    return b;
+  }
   async function carregarHistorico(origem){
-    S.hist = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null;
+    S.hist = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null; S.queixasRegistro = null; S.primeiraAval = null;
     S.codigoBuscado = norm(S.codigo);
     if (S.visita !== 'reav'){ prev = null; return; }
     S.tefiBanco = await buscarPorTipo(S.codigo,'tefi');
@@ -3392,6 +3438,18 @@ document.documentElement.setAttribute('data-tema',t)})();
       const ult = k => { for (let i=ord.length-1;i>=0;i--){ if (ord[i][k]) return ord[i][k]; } return null; };
       S.contatoBanco = {iniciais:ult('iniciais'), telefone:ult('telefone'), email:ult('email')};
     }catch(e){}
+    // v2.4: queixas em tratamento, tiradas do prontuário (primeira avaliação e
+    // reavaliações): servem só para o texto do retorno — não entram na conduta
+    S.queixasRegistro = queixasDoRegistro(todos);
+    // v2.4: respostas da primeira avaliação (caracterização e ADAM) para as
+    // perguntas de evolução do retorno; sem o campo no registro, pergunta-se como antes
+    S.primeiraAval = (function(){
+      const cl = todos.filter(c=>c && (c.tipo==='primeira' || c.tipo==='reavaliacao')).sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
+      if (!cl.length) return null;
+      const pr = cl.find(c=>c.tipo==='primeira') || cl[0];
+      const de = k => (pr[k]!==undefined && pr[k]!==null) ? pr[k] : ((cl.find(c=>c[k]!==undefined && c[k]!==null)||{})[k]);
+      return {mast: de('mast')||null, matinal: de('matinal')||null, adam: Array.isArray(de('adam')) ? de('adam') : null, data: pr.dataBR||pr.data||null};
+    })();
     if (r){
       // número da reavaliação: só contam primeira e reavaliações. Recepção, TEFI,
       // preenchimento, hipogonadismo etc. não são reavaliação (r.total conta tudo)
@@ -3494,6 +3552,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         if (S.visita===undefined) S.visita = f.retorno ? 'reav' : 'primeira';
         S.queixa = f.queixaRecepcao==='libido' ? 'de'
                  : (f.queixaRecepcao==='clinica' ? 'de' : f.queixaRecepcao);
+        S.queixaFila = S.queixa;
         S.medidasRec = f.medidas || null;
         S.autorrelato = f.autorrelato || null;
         S.retornoPreench = f.retornoPreench || null;
@@ -3502,7 +3561,11 @@ document.documentElement.setAttribute('data-tema',t)})();
         S.difRec = f.dificuldade || null;
         const r=f.respostas||{};
         ['i0','i1','i2','i3','i4','p0','p1','p2','p3','p4'].forEach(k=>{ if(r[k]!==undefined&&r[k]!==null) S[k]=r[k]; });
+        // v2.4: cópia do que o paciente respondeu no tablet — a revisão com o
+        // médico edita S[i0..p4], mas o original da recepção nunca se perde
+        S.respRec = {}; ['i0','i1','i2','i3','i4','p0','p1','p2','p3','p4'].forEach(k=>{ if(r[k]!==undefined&&r[k]!==null) S.respRec[k]=r[k]; });
         if (f.adam && f.adam.length) S.adam=f.adam;
+        S.adamFila = !!(f.adam && f.adam.length);
       }
     }
     const veioDaFila = (S.origem==='fila' && !!S.daFila);
@@ -3542,14 +3605,42 @@ document.documentElement.setAttribute('data-tema',t)})();
         + (prev.iief!=null?' · '+qEscore('IIEF-5',prev.iief):'') + (prev.pedt!=null?' · '+qEscore('PEDT',prev.pedt):'')) : '',
       options: S.semHistorico
         ? [{v:'ok',badge:'✓',label:'Entendi, seguir como primeira avaliação'}]
-        : [{v:'ok',badge:'✓',label:'Confirmar e continuar'},
-           {v:'rever',badge:'↻',label:'Corrigir protocolo ou escores anteriores'}]});
-    if (S.confirmHist==='rever') S.revisarCiclo='sim';
+        : [{v:'ok',badge:'✓',label:'Confirmar e continuar'}]});
+    // v2.4: consultas anteriores são registro fechado — sem "corrigir protocolo
+    // ou escores anteriores" aqui (sessão antiga com 'rever' segue como 'ok')
+    if (S.confirmHist==='rever') S.confirmHist='ok';
     // contato: se a recepção não coletou e o cadastro não tem, registra-se aqui
     if (temPaciente() && !contatoConhecido()) s.push({id:'contato',kind:'contato',step:'Abertura',eyebrow:'Identificação',
       text:'Contato do paciente',
       hint:'Não veio da recepção nem está no cadastro. Telefone ou email é obrigatório — é por aqui que orientações e receita são enviadas.'});
 
+    // v2.4: retorno vindo da fila com queixas no prontuário — "Alguma nova queixa?"
+    // Não = segue o tratamento das queixas registradas (somadas à que ele marcou
+    // no tablet, se for DE/EP); Sim = escolhe a nova, que se soma às atuais.
+    if (MODE==='uni' && S.filaAplicada && S.queixaFila===undefined && S.queixa && !S.queixaConfirmada) S.queixaFila = S.queixa;
+    const regQ = (MODE==='uni' && S.filaAplicada && S.visita==='reav' && (S.queixasRegistro||[]).length) ? S.queixasRegistro : null;
+    if (regQ){
+      const base = regQ.reduce((a,v)=>juntaQueixas(a,v), null);
+      const atual = juntaQueixas(base, S.queixaFila);
+      const marcouOutra = S.queixaFila && juntaQueixas(base, S.queixaFila)!==base;
+      s.push({id:'trocarQueixa',kind:'opts',mostraDica:true,step:'Queixa',eyebrow:'Queixa principal · retorno',
+        text:'O paciente está em tratamento para '+listaQueixas(regQ)+' ('+(regQ.length>1?'queixas':'queixa')+' da primeira avaliação). Alguma nova queixa?',
+        hint: marcouOutra ? ('Na recepção ele marcou: '+(NOME_QUEIXA[S.queixaFila]||S.queixaFila)+' — já somado ao atendimento de hoje.')
+                          : 'Pergunte se surgiu algo novo desde a última consulta. Sem queixa nova, o retorno segue o tratamento atual.',
+        options:[{v:'nao',badge:'✓',label:'Não — seguir com o tratamento atual'},{v:'sim',badge:'+',label:'Sim — acrescentar nova queixa'}]});
+      if (S.trocarQueixa==='sim'){
+        const jaTem = v => atual===v || (atual==='ambos' && (v==='de'||v==='ep'));
+        s.push({id:'novaQueixa',kind:'opts',mostraDica:true,step:'Queixa',eyebrow:'Nova queixa',text:'Qual a nova queixa?',
+          hint:'Ereção e ejaculação somam-se ao tratamento atual. Preenchimento, TEFI, hipogonadismo, emagrecimento e consulta urológica seguem como atendimento próprio hoje — o tratamento atual continua registrado no prontuário.',
+          options:[{v:'de',badge:'1',label:'Dificuldade de ereção'},{v:'ep',badge:'2',label:'Ejaculação rápida'},
+                   {v:'preench',badge:'3',label:'Preenchimento peniano com ácido hialurônico'},
+                   {v:'tefi',badge:'4',label:'Realização de TEFI com Doppler (opcional)'},
+                   {v:'hipo',badge:'5',label:'Hipogonadismo — avaliação para reposição'},
+                   {v:'emag',badge:'6',label:'Protocolo de emagrecimento — avaliação com o especialista'},
+                   {v:'uro',badge:'7',label:'Consulta urológica — segue no prontuário da clínica'}].filter(o=>!jaTem(o.v))});
+        S.queixa = S.novaQueixa ? juntaQueixas(atual, S.novaQueixa) : undefined;
+      } else S.queixa = (S.trocarQueixa==='nao') ? atual : (S.queixa===undefined ? undefined : atual);
+    } else {
     if (MODE==='uni' && S.trocarQueixa==='sim' && !S.queixaConfirmada){ S.queixa=undefined; S.queixaConfirmada=true; }
     if (MODE==='uni' && S.filaAplicada && S.queixa && S.trocarQueixa!=='sim'){
       s.push({id:'trocarQueixa',kind:'opts',step:'Queixa',eyebrow:'Queixa principal · vinda da recepção',
@@ -3563,6 +3654,7 @@ document.documentElement.setAttribute('data-tema',t)})();
                {v:'hipo',badge:'6',label:'Hipogonadismo — avaliação para reposição'},
                {v:'emag',badge:'7',label:'Protocolo de emagrecimento — avaliação com o especialista'},
                {v:'uro',badge:'8',label:'Consulta urológica — segue no prontuário da clínica'}]});
+    }
 
     S.hasDE = MODE==='de' || (MODE==='uni' && (S.queixa==='de'||S.queixa==='ambos'));
     S.hasEP = MODE==='ep' || (MODE==='uni' && (S.queixa==='ep'||S.queixa==='ambos'));
@@ -3926,33 +4018,66 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const pendRec = S.filaAplicada ? ((S.fila||[]).find(x=>x.codigo===S.daFila)||{}).pendentes||[] : [];
     S.pendRec = pendRec;
-    const jaRespondeu = S.filaAplicada && S.refazer!=='sim'
+    // v2.4: questionários da recepção — "O paciente respondeu na recepção: … Confirma?"
+    // Confirmo / Revisar com o paciente. Revisar abre só aquele questionário, com as
+    // respostas dele já marcadas, logo depois desta tela (que continua no lugar: nada
+    // some, nada volta ao início). Nada é apagado; desfazer a revisão pede confirmação.
+    const rr = S.respRec || null;
+    const temRec = id => rr ? (rr[id]!==undefined && rr[id]!==null) : S[id]!==undefined;
+    const valRec = id => (rr && rr[id]!==undefined && rr[id]!==null) ? rr[id] : S[id];
+    const recCompleto = S.filaAplicada
       && pendRec.length===0
-      && (!S.hasDE || Q_IIEF.every(q=>S[q.id]!==undefined))
-      && (!S.hasEP || Q_PEDT.every(q=>S[q.id]!==undefined));
-    if (jaRespondeu){
-      const si5 = S.hasDE ? Q_IIEF.reduce((a,q)=>a+Number(S[q.id]),0) : null;
-      const sp5 = S.hasEP ? Q_PEDT.reduce((a,q)=>a+Number(S[q.id]),0) : null;
-      s.push({id:'refazer',kind:'opts',step:'Questionários',eyebrow:'Respondido na recepção',
-        text:'Questionários já preenchidos pelo paciente',
-        hint:[si5!==null?('IIEF-5: '+si5+' de 25'):'', sp5!==null?('PEDT: '+sp5+' de 20'):'',
-              ((a=>a.length?('ADAM: '+a.length+' sintoma'+(a.length>1?'s':'')+' marcado'+(a.length>1?'s':'')):'')((S.adam||[]).filter(v=>v!=='nenhum')))].filter(Boolean).join(' · '),
-        hintHtml:[si5!==null?qEscore('IIEF-5',si5+' de 25'):'', sp5!==null?qEscore('PEDT',sp5+' de 20'):'',
-              ((a=>a.length?qEscore('ADAM',a.length+' sintoma'+(a.length>1?'s':'')+' marcado'+(a.length>1?'s':'')):'')((S.adam||[]).filter(v=>v!=='nenhum')))].filter(Boolean).join(' · '),
-        options:[{v:'nao',badge:'✓',label:'Confirmar e seguir'},{v:'sim',badge:'↻',label:'Refazer os questionários agora'}]});
-    } else if (S.filaAplicada && S.refazer!=='sim' && S.usarTotaisRec!=='nao'
-               && ((S.hasDE && (S.fila||[]).find(x=>x.codigo===S.daFila) && ((S.fila||[]).find(x=>x.codigo===S.daFila).iief!=null))
-                || (S.hasEP && (S.fila||[]).find(x=>x.codigo===S.daFila) && ((S.fila||[]).find(x=>x.codigo===S.daFila).pedt!=null)))){
+      && (!S.hasDE || Q_IIEF.every(q=>temRec(q.id)))
+      && (!S.hasEP || Q_PEDT.every(q=>temRec(q.id)));
+    const frRec = S.filaAplicada ? ((S.fila||[]).find(x=>x.codigo===S.daFila)||null) : null;
+    const descRec = (nome, v, tipo, html) => {
+      const fx = faixaRec(tipo, v);
+      return (html ? qEscore(nome, v) : (nome+' = '+v)) + (fx ? ' ('+fx+')' : '');
+    };
+    if (recCompleto){
+      const soma = (Q, f) => Q.reduce((a,q)=>a+Number(f(q.id)),0);
+      const recI = S.hasDE ? soma(Q_IIEF, valRec) : null, recP = S.hasEP ? soma(Q_PEDT, valRec) : null;
+      const atI  = S.hasDE ? soma(Q_IIEF, id=>S[id]) : null, atP = S.hasEP ? soma(Q_PEDT, id=>S[id]) : null;
+      const partes = h => [recI!==null ? descRec('IIEF-5', recI, 'iief', h) : '', recP!==null ? descRec('PEDT', recP, 'pedt', h) : ''].filter(Boolean);
+      const adamM = (S.adam||[]).filter(v=>v!=='nenhum');
+      const mudou = (recI!==atI || recP!==atP);
+      const notaRev = mudou ? ('Revisado com o paciente: '+[recI!==atI ? 'IIEF-5 '+recI+' → '+atI : '', recP!==atP ? 'PEDT '+recP+' → '+atP : ''].filter(Boolean).join(' · ')+'. ') : '';
+      const notaRevH = mudou ? ('Revisado com o paciente: '+[recI!==atI ? qEscore('IIEF-5', recI+' → '+atI) : '', recP!==atP ? qEscore('PEDT', recP+' → '+atP) : ''].filter(Boolean).join(' · ')+'. ') : '';
+      const adamTx = adamM.length ? ('ADAM: '+adamM.length+' sintoma'+(adamM.length>1?'s':'')+' marcado'+(adamM.length>1?'s':'')+'. ') : '';
+      const adamH = adamM.length ? (qEscore('ADAM', adamM.length+' sintoma'+(adamM.length>1?'s':'')+' marcado'+(adamM.length>1?'s':''))+'. ') : '';
+      const dois = S.hasDE && S.hasEP;
+      const ops = [{v:'nao',badge:'✓',label:'Confirmo'}];
+      if (dois) ops.push({v:'rev_iief',badge:'↻',label:'Revisar o IIEF-5 com o paciente'},{v:'rev_pedt',badge:'↻',label:'Revisar o PEDT com o paciente'});
+      else ops.push({v:S.hasDE?'rev_iief':'rev_pedt',badge:'↻',label:'Revisar com o paciente'});
+      if (mudou) ops.push({v:'restaurar',badge:'⟲',label:'Voltar às respostas da recepção'});
+      s.push({id:'refazer',kind:'opts',mostraDica:true,step:'Questionários',eyebrow:'Respondido na recepção',
+        text:'O paciente respondeu na recepção: '+partes(false).join(' e ')+'. Confirma?',
+        textHtml:'O paciente respondeu na recepção: '+partes(true).join(' e ')+'. Confirma?',
+        hint: notaRev + adamTx + 'Revisar não apaga nada: abre só aquele questionário, com as respostas dele já marcadas, e depois segue daqui.',
+        hintHtml: notaRevH + adamH + 'Revisar não apaga nada: abre só aquele questionário, com as respostas dele já marcadas, e depois segue daqui.',
+        options: ops,
+        after: async ()=>{
+          if (S.refazer!=='restaurar') return;
+          const txt = 'Desfazer a revisão e voltar às respostas que o paciente deu na recepção ('+partes(false).join(' e ')+')? As respostas revisadas no consultório serão substituídas.';
+          if (rr && window.confirm(txt)){
+            ['i0','i1','i2','i3','i4','p0','p1','p2','p3','p4'].forEach(k=>{ if (rr[k]!==undefined && rr[k]!==null) S[k]=rr[k]; });
+            S.refazer='nao'; mxToast('Respostas da recepção restauradas.');
+          } else S.refazer = S.refazerAnt || 'nao';
+        }});
+      if (S.refazer && S.refazer!=='restaurar') S.refazerAnt = S.refazer;
+      const rev = S.refazer==='sim' ? ['iief','pedt'] : (S.refazer==='rev_iief' ? ['iief'] : (S.refazer==='rev_pedt' ? ['pedt'] : []));
+      if (S.hasDE && rev.indexOf('iief')>=0) Q_IIEF.forEach((q,i)=>s.push(Object.assign({kind:'opts',qtipo:'iief',step:`Ereção — ${i+1} de 5`,eyebrow:'IIEF-5 · revisão com o paciente (resposta da recepção já marcada)'},q)));
+      if (S.hasEP && rev.indexOf('pedt')>=0) Q_PEDT.forEach((q,i)=>s.push(Object.assign({kind:'opts',qtipo:'pedt',step:`Ejaculação — ${i+1} de 5`,eyebrow:'PEDT · revisão com o paciente (resposta da recepção já marcada)'},q)));
+    } else if (frRec && ((S.hasDE && frRec.iief!=null) || (S.hasEP && frRec.pedt!=null))){
       // a recepção mandou os totais, mas não as respostas item a item:
       // perguntar tudo de novo seria repetir o que o paciente já respondeu
-      const fr = (S.fila||[]).find(x=>x.codigo===S.daFila) || {};
-      s.push({id:'usarTotaisRec',kind:'opts',step:'Questionários',eyebrow:'Respondido na recepção',
-        text:'Escores que vieram da recepção',
-        hint:[fr.iief!=null?('IIEF-5: '+fr.iief+' de 25'):'', fr.pedt!=null?('PEDT: '+fr.pedt+' de 20'):'',
-              'As respostas pergunta a pergunta não vieram no registro — dá para usar só os totais.'].filter(Boolean).join(' · '),
-        hintHtml:[fr.iief!=null?qEscore('IIEF-5',fr.iief+' de 25'):'', fr.pedt!=null?qEscore('PEDT',fr.pedt+' de 20'):'',
-              'As respostas pergunta a pergunta não vieram no registro — dá para usar só os totais.'].filter(Boolean).join(' · '),
-        options:[{v:'sim',badge:'✓',label:'Usar estes totais'},{v:'nao',badge:'↻',label:'Aplicar os questionários agora'}],
+      const fr = frRec;
+      const partes = h => [(S.hasDE && fr.iief!=null) ? descRec('IIEF-5', fr.iief, 'iief', h) : '', (S.hasEP && fr.pedt!=null) ? descRec('PEDT', fr.pedt, 'pedt', h) : ''].filter(Boolean);
+      s.push({id:'usarTotaisRec',kind:'opts',mostraDica:true,step:'Questionários',eyebrow:'Respondido na recepção',
+        text:'O paciente respondeu na recepção: '+partes(false).join(' e ')+'. Confirma?',
+        textHtml:'O paciente respondeu na recepção: '+partes(true).join(' e ')+'. Confirma?',
+        hint:'As respostas pergunta a pergunta não vieram no registro: Confirmo usa os totais; Revisar aplica o questionário agora, junto com ele, e depois segue daqui.',
+        options:[{v:'sim',badge:'✓',label:'Confirmo'},{v:'nao',badge:'↻',label:'Revisar com o paciente'}],
         after: async ()=>{
           if (S.usarTotaisRec==='sim'){
             if (fr.iief!=null) S.iiefTotalRec = Number(fr.iief);
@@ -3981,49 +4106,82 @@ document.documentElement.setAttribute('data-tema',t)})();
       topico: prev.topicoPref, depre: prev.psiquiatrico, freq: prev.frequencia, biotens: prev.biotens
     } : null;
     const temEst = !!(est && (est.contra || (est.alergia&&est.alergia.length) || est.fert));
+    // v2.4 (retorno): uma tela com as respostas estáveis da ficha, cada uma como
+    // pergunta curta + resposta anterior — "Algum destes mudou?". O médico toca só
+    // no que mudou; só esses itens voltam (com a resposta anterior já marcada).
+    // "Nada mudou" = o antigo "confirmo tudo": copia a ficha, igual a antes.
+    let mudouEst = [];
+    const curtoDe = (cat, v) => { const o=cat.find(x=>x.v===v); return o ? o.label.replace(/\s*\(.*\)\s*$/,'') : v; };
+    const listaDe = (cat, arr, vazio) => { const a=(arr||[]).filter(v=>v && v!=='nenhuma' && v!=='nenhum'); return a.length ? a.map(v=>curtoDe(cat,v)).join(', ') : vazio; };
+    const refAdam = (S.visita==='reav' && S.primeiraAval && Array.isArray(S.primeiraAval.adam)) ? S.primeiraAval.adam.filter(v=>v && v!=='nenhum') : null;
+    const adamDaFila = S.filaAplicada && S.refazer!=='sim' && (S.adamFila!==undefined ? !!S.adamFila : (S.adam||[]).length>0);
     if (temEst){
-      const NM={has:'hipertensão',dm:'diabetes',disl:'dislipidemia',vasc:'doença arterial',tabag:'tabagismo',obes:'obesidade',alcool:'álcool',drogas:'drogas recreacionais'};
-      const NA={tada:'PDE5',clomi:'tricíclico',parox:'ISRS',dapo:'dapoxetina',anest:'anestésico local',ioim:'ioimbina',fito:'fitoterápico'};
-      const linhas=[];
-      linhas.push(est.contra==='sim' ? 'Contraindicação cardiovascular à tadalafila registrada' : 'Sem nitrato e sem contraindicação cardiovascular');
-      linhas.push((est.alergia&&est.alergia.length) ? ('Alergia a '+est.alergia.map(v=>NA[v]||v).join(', ')) : 'Sem alergias conhecidas');
-      linhas.push((est.comorb&&est.comorb.length) ? (est.comorb.map(v=>NM[v]||v).join(', ')+({sim:' — controladas',parcial:' — controle parcial',nao:' — NÃO controladas'}[est.comorbCtrl]||'')) : 'Sem comorbidades registradas');
-      linhas.push((est.meds&&est.meds.length) ? ('Em uso de medicação de risco: '+est.meds.length+' item(ns)') : 'Sem medicações que interfiram na ereção ou libido');
-      linhas.push(est.fert==='sim' ? 'Deseja engravidar nos próximos 12 meses' : 'Não deseja engravidar nos próximos 12 meses');
-      if (est.freq) linhas.push(est.freq==='alta' ? 'Duas ou mais relações por semana' : 'Menos de duas relações por semana');
-      if (est.topico) linhas.push({ambos:'Aceita pomada e preservativo',so_pomada:'Prefere pomada',
-        so_preserv:'Prefere preservativo',nenhum:'Restrição a anestésico tópico'}[est.topico]);
-      if (est.biotens) linhas.push('Biotensiômetro '+est.biotens);
-      if (est.depre) linhas.push(est.depre==='sim' ? 'Com história psiquiátrica' : 'Sem história psiquiátrica');
-      s.push({id:'confirmaEstavel',kind:'opts',step:D,eyebrow:'Confirmação',
-        text:'Algo mudou desde a última consulta?',
-        hint:'Na ficha: '+linhas.join(' · ')+'.',
-        options:[{v:'nao',badge:'✓',label:'Nada mudou — confirmo tudo acima'},
-                 {v:'sim',badge:'!',label:'Algo mudou — rever item a item'}]});
-      if (S.confirmaEstavel==='nao'){
-        if (est.contra) S.contra = est.contra;
-        if (est.alergia) S.alergia = est.alergia;
-        if (est.fert) S.fert = est.fert;
-        if (est.previa) S.previa = est.previa;
-        if (est.adequado) S.adequado = est.adequado;
-        if (est.comorb) S.comorb = est.comorb;
-        if (est.comorbCtrl) S.comorbCtrl = est.comorbCtrl;
-        if (est.comorbMed) S.comorbMed = est.comorbMed;
-        if (est.meds) S.medsRisco = est.meds;
-        if (est.tempo) S.tempo = est.tempo;
-        if (est.parceira) S.parceira = est.parceira;
-        if (est.topico) S.topico = est.topico;
-        if (est.depre) S.depre = est.depre;
-        if (est.freq) S.freq = est.freq;
-        if (est.biotens!=null && est.biotens!=='') S.biotens = String(est.biotens);
+      const itens = [];
+      itens.push({v:'contra', q:'Nitrato, infarto/AVC há menos de 6 meses ou outra contraindicação cardiovascular?', a: est.contra==='sim' ? 'sim — registrada' : 'não'});
+      itens.push({v:'alergia', q:'Alergias?', a: listaDe(ALERG, est.alergia, 'nenhuma conhecida')});
+      itens.push({v:'comorb', q:'Antecedentes / comorbidades?', a: listaDe(COMORB, est.comorb, 'nenhuma')
+        + (((est.comorb||[]).filter(v=>v!=='nenhuma').length && {sim:' — controladas',parcial:' — controle parcial',nao:' — não controladas'}[est.comorbCtrl]) || '')});
+      itens.push({v:'meds', q:'Além do que a clínica prescreveu, alguma medicação mudou ou iniciou outra?', a: 'em uso: '+listaDe(MEDS, est.meds, 'nenhuma que interfira')});
+      if (est.tempo) itens.push({v:'tempo', q:'Início dos sintomas?', a:({curto:'menos de 3 meses',medio:'entre 3 e 6 meses',longo:'mais de 6 meses'}[est.tempo]||est.tempo)});
+      if (est.parceira) itens.push({v:'parceira', q:'Parceria fixa?', a:({fixa:'sim, parceria fixa',eventual:'parcerias eventuais',sem:'sem atividade sexual'}[est.parceira]||est.parceira)});
+      if (S.hasDE && est.previa) itens.push({v:'previa', q:'Medicação para ereção antes da clínica?', a:({nunca:'nunca usou',func:'usou e funcionou',falhou:'usou e não funcionou'}[est.previa]||est.previa)
+        + (est.previa==='falhou' ? (est.adequado==='sim' ? ' (dose plena, 6+ tentativas)' : ' (dose baixa ou poucas tentativas)') : '')});
+      if (S.hasDE && refAdam && !refAdam.length && !adamDaFila) itens.push({v:'adam', q:'Sintomas do ADAM (libido, energia, humor…)?', a:'nenhum na primeira avaliação'});
+      if (S.hasEP){
+        if (est.freq) itens.push({v:'freq', q:'Relações por semana?', a: est.freq==='alta' ? 'duas ou mais' : 'menos de duas'});
+        if (est.biotens!=null && est.biotens!=='') itens.push({v:'biotens', q:'Biotensiômetro?', a: String(est.biotens)});
+        if (est.topico) itens.push({v:'topico', q:'Restrição a anestésico tópico?', a:({ambos:'sem restrição',so_pomada:'sem restrição — prefere pomada',so_preserv:'sem restrição — prefere preservativo',nenhum:'restrição a ambos'}[est.topico]||est.topico)});
+        if (est.depre) itens.push({v:'depre', q:'Depressão maior ou acompanhamento psiquiátrico?', a: est.depre==='sim' ? 'sim' : 'não'});
+      }
+      itens.push({v:'fert', q:'Deseja engravidar nos próximos 12 meses?', a: est.fert==='sim' ? 'sim' : 'não'});
+      s.push({id:'confirmaEstavel',kind:'opts',mostraDica:true,multi:true,nada:['nao'],step:D,eyebrow:'Ficha da primeira avaliação',
+        text:'Algum destes mudou?',
+        hint:'Toque só no que mudou: a pergunta daquele item volta com a resposta anterior já marcada, para editar. O resto segue como está na ficha.',
+        options:[{v:'nao',badge:'✓',label:'<b>Nada mudou</b> — seguir com a ficha como está'}]
+          .concat(itens.map(i=>({v:i.v,badge:'✎',label:'<span class="est-q">'+escH(i.q)+'</span><span class="est-a"><span class="est-ant">antes:</span> '+escH(i.a)+'</span>'})))});
+      const ce = S.confirmaEstavel;
+      // sessão antiga: 'sim' (rever tudo) / 'nao' (nada mudou)
+      mudouEst = Array.isArray(ce) ? ce.filter(v=>v!=='nao') : (ce==='sim' ? itens.map(i=>i.v) : []);
+      const respondeu = Array.isArray(ce) ? ce.length>0 : (ce==='nao' || ce==='sim');
+      if (respondeu){
+        // item que não mudou: vem da ficha (como no antigo "confirmo tudo").
+        // item que mudou: a resposta anterior entra marcada, para editar.
+        const NADA_EST = {alergia:'nenhuma', comorb:'nenhuma', medsRisco:'nenhuma'};
+        const poe = (campo, valor, item) => {
+          if (valor===undefined || valor===null || valor==='') return;
+          if (mudouEst.indexOf(item)<0){ S[campo] = valor; return; }
+          // item marcado como mudado: a resposta anterior entra marcada para editar
+          // (lista vazia na ficha = "nenhuma"); o que o médico já mexeu fica
+          const vazio = S[campo]===undefined || (Array.isArray(S[campo]) && !S[campo].length);
+          if (vazio) S[campo] = (Array.isArray(valor) && !valor.length && NADA_EST[campo]) ? [NADA_EST[campo]] : valor;
+        };
+        if (est.contra) poe('contra', est.contra, 'contra');
+        if (est.alergia) poe('alergia', est.alergia, 'alergia');
+        if (est.fert) poe('fert', est.fert, 'fert');
+        if (est.previa) poe('previa', est.previa, 'previa');
+        if (est.adequado) poe('adequado', est.adequado, 'previa');
+        if (est.comorb) poe('comorb', est.comorb, 'comorb');
+        if (est.comorbCtrl) poe('comorbCtrl', est.comorbCtrl, 'comorb');
+        if (est.comorbMed) poe('comorbMed', est.comorbMed, 'comorb');
+        if (est.meds) poe('medsRisco', est.meds, 'meds');
+        if (est.tempo) poe('tempo', est.tempo, 'tempo');
+        if (est.parceira) poe('parceira', est.parceira, 'parceira');
+        if (est.topico) poe('topico', est.topico, 'topico');
+        if (est.depre) poe('depre', est.depre, 'depre');
+        if (est.freq) poe('freq', est.freq, 'freq');
+        if (est.biotens!=null && est.biotens!=='') poe('biotens', String(est.biotens), 'biotens');
       }
     }
-    const pularEst = temEst && S.confirmaEstavel==='nao';
-    if (S.visita==='primeira' || (temEst && S.confirmaEstavel==='sim')){
-      s.push({id:'tempo',kind:'opts',step:D,eyebrow:'História',text:'Há quanto tempo os sintomas começaram?',
+    S.mudouEst = mudouEst;
+    // pede1: perguntas que o retorno sem ficha estável nunca repetia (tempo, parceria,
+    // comorbidades, medicações, alergias); pede2: as que ele repetia (contra, prévia…)
+    const pede1 = item => S.visita==='primeira' || (temEst && mudouEst.indexOf(item)>=0);
+    const pede2 = item => !temEst || mudouEst.indexOf(item)>=0;
+    if (pede1('tempo')) s.push({id:'tempo',kind:'opts',step:D,eyebrow:'História',text:'Há quanto tempo os sintomas começaram?',
         options:[{v:'curto',badge:'<3m',label:'Menos de 3 meses'},{v:'medio',badge:'3-6',label:'Entre 3 e 6 meses'},{v:'longo',badge:'>6m',label:'Mais de 6 meses'}]});
-      s.push({id:'parceira',kind:'opts',step:D,eyebrow:'Contexto',text:'O paciente tem parceria fixa?',
+    if (pede1('parceira')) s.push({id:'parceira',kind:'opts',step:D,eyebrow:'Contexto',text:'O paciente tem parceria fixa?',
         options:[{v:'fixa',badge:'✓',label:'Sim, parceria fixa'},{v:'eventual',badge:'~',label:'Não, parcerias eventuais'},{v:'sem',badge:'—',label:'Sem atividade sexual no momento'}]});
+    if (pede1('comorb')){
       s.push({id:'comorb',kind:'opts',multi:true,step:D,eyebrow:'Comorbidades',
         text:'O paciente tem alguma destas condições? (marque todas)',
         options:COMORB.map(c=>({v:c.v,badge:c.v==='nenhuma'?'—':'•',label:c.label}))});
@@ -4035,29 +4193,69 @@ document.documentElement.setAttribute('data-tema',t)})();
           text:'Há médico externo responsável por esse acompanhamento?',
           options:[{v:'sim',badge:'✓',label:'Sim, em acompanhamento'},{v:'nao',badge:'!',label:'Não tem acompanhamento'}]});
       }
-      s.push({id:'medsRisco',kind:'opts',multi:true,step:D,eyebrow:'Medicações em uso',
-        text:'Usa alguma destas medicações? (marque todas)', options:MEDS.map(m=>({v:m.v,badge:'•',label:m.label}))});
-      if (!pularEst) s.push({id:'alergia',kind:'opts',multi:true,step:D,eyebrow:'Alergias',
+    }
+    if (pede1('meds')) s.push({id:'medsRisco',kind:'opts',multi:true,step:D,eyebrow:'Medicações em uso',
+        text: S.visita==='reav' ? 'Medicações em uso além do que a clínica prescreveu (marque todas)' : 'Usa alguma destas medicações? (marque todas)',
+        options:MEDS.map(m=>({v:m.v,badge:'•',label:m.label}))});
+    if (pede1('alergia')) s.push({id:'alergia',kind:'opts',multi:true,step:D,eyebrow:'Alergias',
       text:'O paciente tem alergia conhecida a algum destes? (marque todos; se nenhum, marque a última opção)',
       options:ALERG.map(a=>({v:a.v,badge:a.v==='nenhuma'?'✓':'•',label:a.label}))});
-    }
-    if (!pularEst) s.push({id:'contra',kind:'opts',step:D,eyebrow:'Segurança',text:'Usa nitrato ou doador de óxido nítrico? Teve infarto ou AVC nos últimos 6 meses? Angina instável, hipotensão, IC classe III-IV ou neuropatia óptica isquêmica?',
+    if (pede2('contra')) s.push({id:'contra',kind:'opts',step:D,eyebrow:'Segurança',text:'Usa nitrato ou doador de óxido nítrico? Teve infarto ou AVC nos últimos 6 meses? Angina instável, hipotensão, IC classe III-IV ou neuropatia óptica isquêmica?',
       options:[{v:'sim',badge:'!',label:'SIM a pelo menos um'},{v:'nao',badge:'✓',label:'NÃO a todos'}]});
     if (S.hasDE){
-      s.push({id:'caracteriza',kind:'grupo',step:D,eyebrow:'Caracterização da ereção',
-        text:'Ereção fora da relação',
-        hint:'As duas respostas juntas separam componente psicogênico de orgânico.',
-        fields:[{id:'mast',label:'A ereção é satisfatória durante a masturbação?',
-                 options:[{v:'sim',label:'Sim'},{v:'nao',label:'Não, também falha'}]},
-                {id:'matinal',label:'Acorda com ereção matinal algumas vezes por semana?',
-                 options:[{v:'sim',label:'Sim'},{v:'nao',label:'Não / raramente'}]}]});
-      if (!pularEst) s.push({id:'previa',kind:'opts',step:D,eyebrow:'Tratamento prévio',text:'Já usou medicação para ereção (sildenafila, tadalafila, vardenafila, lodenafila)?',
+      // v2.4: no retorno com a primeira avaliação registrada, a caracterização vira
+      // pergunta de evolução. Os valores continuam os mesmos (sim = satisfatória /
+      // presente hoje), então a conduta é calculada exatamente como antes.
+      const pa = (S.visita==='reav' && S.primeiraAval) ? S.primeiraAval : null;
+      const evM = pa && (pa.mast==='sim' || pa.mast==='nao'), evT = pa && (pa.matinal==='sim' || pa.matinal==='nao');
+      s.push({id:'caracteriza',kind:'grupo',step:D,eyebrow:(evM||evT) ? 'Ereção fora da relação · evolução' : 'Caracterização da ereção',
+        text:(evM||evT) ? 'Ereção fora da relação — comparada à primeira avaliação' : 'Ereção fora da relação',
+        hint:(evM||evT) ? 'Entre parênteses, a resposta da primeira avaliação. As duas respostas juntas separam componente psicogênico de orgânico.'
+                        : 'As duas respostas juntas separam componente psicogênico de orgânico.',
+        fields:[evM ? (pa.mast==='nao'
+                  ? {id:'mast',label:'A ereção na masturbação melhorou? (primeira avaliação: também falhava)',
+                     options:[{v:'sim',label:'Sim, agora é satisfatória'},{v:'nao',label:'Não, ainda falha'}]}
+                  : {id:'mast',label:'A ereção na masturbação continua satisfatória? (primeira avaliação: satisfatória)',
+                     options:[{v:'sim',label:'Sim, continua'},{v:'nao',label:'Não, passou a falhar'}]})
+                : {id:'mast',label:'A ereção é satisfatória durante a masturbação?',
+                   options:[{v:'sim',label:'Sim'},{v:'nao',label:'Não, também falha'}]},
+                evT ? (pa.matinal==='nao'
+                  ? {id:'matinal',label:'Mais ereções matinais? (primeira avaliação: não / raramente)',
+                     options:[{v:'sim',label:'Sim, algumas vezes por semana'},{v:'nao',label:'Não, ainda raramente'}]}
+                  : {id:'matinal',label:'Continua acordando com ereção matinal algumas vezes por semana? (primeira avaliação: sim)',
+                     options:[{v:'sim',label:'Sim, continua'},{v:'nao',label:'Não, diminuíram'}]})
+                : {id:'matinal',label:'Acorda com ereção matinal algumas vezes por semana?',
+                   options:[{v:'sim',label:'Sim'},{v:'nao',label:'Não / raramente'}]}]});
+      if (pede2('previa')) s.push({id:'previa',kind:'opts',step:D,eyebrow:'Tratamento prévio',text:'Já usou medicação para ereção (sildenafila, tadalafila, vardenafila, lodenafila)?',
         options:[{v:'nunca',badge:'—',label:'Nunca usou'},{v:'func',badge:'✓',label:'Usou e funcionou'},{v:'falhou',badge:'!',label:'Usou e NÃO funcionou'}]});
-      if (S.previa==='falhou' && !pularEst) s.push({id:'adequado',kind:'opts',step:D,eyebrow:'Tratamento prévio',text:'Nessa tentativa: dose plena, 6 ou mais vezes, com estímulo sexual adequado?',
+      if (S.previa==='falhou' && pede2('previa')) s.push({id:'adequado',kind:'opts',step:D,eyebrow:'Tratamento prévio',text:'Nessa tentativa: dose plena, 6 ou mais vezes, com estímulo sexual adequado?',
         options:[{v:'nao',badge:'—',label:'Não — dose baixa, poucas tentativas ou sem estímulo'},{v:'sim',badge:'!',label:'Sim — dose plena, 6+ tentativas'}]});
-      if (!(S.filaAplicada && S.refazer!=='sim' && (S.adam||[]).length)) s.push({id:'adam',kind:'opts',multi:true,step:D,eyebrow:'Questionário ADAM',
+      const telaAdam = () => s.push({id:'adam',kind:'opts',multi:true,step:D,eyebrow:'Questionário ADAM',
         text:'Marque todos os sintomas que o paciente apresenta:',
         options:ADAM.map(a=>({v:a.v,badge:a.chave?'★':'•',label:a.label})).concat([{v:'nenhum',badge:'—',label:'Nenhum destes sintomas'}])});
+      if (adamDaFila){ /* ADAM respondido na recepção hoje */ }
+      else if (refAdam && refAdam.length){
+        // v2.4: ADAM não é reaplicado no retorno — mostra o que ele marcou na primeira
+        // avaliação e pergunta, item a item, se melhorou. Fica no ADAM de hoje o que
+        // não melhorou; sintoma novo só se o médico disser que surgiu.
+        s.push({id:'adamEvol',kind:'grupo',step:D,eyebrow:'Questionário ADAM · evolução',
+          text:'Sintomas que ele marcou na primeira avaliação — melhoraram?',
+          hint:'O que melhorou sai do ADAM de hoje; o que não melhorou continua. Se surgiu sintoma novo, a lista completa abre em seguida, já marcada com o que continua.',
+          fields: refAdam.map(v=>({id:'adamEv_'+v, label:(ADAM.find(a=>a.v===v)||{label:v}).label,
+                    options:[{v:'sim',label:'Melhorou'},{v:'nao',label:'Não melhorou'}]}))
+                  .concat([{id:'adamNovo', label:'Surgiu algum outro sintoma do ADAM?', options:[{v:'nao',label:'Não'},{v:'sim',label:'Sim'}]}])});
+        const resto = refAdam.filter(v=>S['adamEv_'+v]==='nao');
+        if (S.adamNovo==='sim'){
+          if (!S.adamEvolEditado){ S.adam = resto.slice(); S.adamEvolEditado = true; }
+          telaAdam();
+        } else if (refAdam.every(v=>S['adamEv_'+v]!==undefined)){
+          S.adam = resto.length ? resto : ['nenhum']; S.adamEvolEditado = false;
+        } else S.adam = undefined;
+      } else if (refAdam && !refAdam.length && temEst){
+        // primeira avaliação sem sintoma de ADAM: só volta se o médico marcar que mudou
+        if (mudouEst.indexOf('adam')>=0) telaAdam();
+        else if (Array.isArray(S.confirmaEstavel) ? S.confirmaEstavel.length : S.confirmaEstavel) S.adam = ['nenhum'];
+      } else telaAdam();
       // a libido sai do ADAM respondido agora: sem recalcular aqui, a pergunta de
       // testosterona entrava no fluxo tarde demais e nunca era feita
       S.libido = (S.adam||[]).filter(v=>v!=='nenhum').indexOf('a1')>=0 ? 'sim' : 'nao';
@@ -4070,12 +4268,12 @@ document.documentElement.setAttribute('data-tema',t)})();
         options:[{v:'nao',badge:'✓',label:'NÃO a todos'},{v:'sim',badge:'!',label:'SIM a pelo menos um'}]});
     }
     if (S.hasEP){
-      if (!pularEst) s.push({id:'freq',kind:'opts',step:D,eyebrow:'Frequência',text:'Quantas relações sexuais por semana, em média?',
+      if (pede2('freq')) s.push({id:'freq',kind:'opts',step:D,eyebrow:'Frequência',text:'Quantas relações sexuais por semana, em média?',
         options:[{v:'alta',badge:'2+',label:'Duas ou mais'},{v:'baixa',badge:'<2',label:'Menos de duas / esporádico'}]});
-      if (!pularEst) s.push({id:'biotens',kind:'num',min:0,max:100,step:D,eyebrow:'Biotensiômetro',
+      if (pede2('biotens')) s.push({id:'biotens',kind:'num',min:0,max:100,step:D,eyebrow:'Biotensiômetro',
         text:'Sensibilidade da glande medida no biotensiômetro (0 a 100)',ph:'ex.: 14',
         hint:'Abaixo de 10 indica hipersensibilidade e prioriza o anestésico tópico.'});
-      if (!pularEst) s.push({id:'topico',kind:'opts',step:D,eyebrow:'Recursos tópicos',
+      if (pede2('topico')) s.push({id:'topico',kind:'opts',step:D,eyebrow:'Recursos tópicos',
         text:'Há restrição ao uso de anestésico tópico?',
         options:[{v:'ambos',badge:'✓',label:'Sem restrição'},
                  {v:'so_pomada',badge:'C',label:'Sem restrição — prefere pomada anestésica'},
@@ -4084,10 +4282,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (S.visita==='primeira') s.push({id:'parox',kind:'opts',step:D,eyebrow:'Tratamento prévio',
         text:'Já usa paroxetina 20 mg/dia e permanece insatisfeito?',
         options:[{v:'nao',badge:'—',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
-      if (!pularEst) s.push({id:'depre',kind:'opts',step:D,eyebrow:'Segurança',text:'História de depressão maior, ideação ou acompanhamento psiquiátrico ativo?',
+      if (pede2('depre')) s.push({id:'depre',kind:'opts',step:D,eyebrow:'Segurança',text:'História de depressão maior, ideação ou acompanhamento psiquiátrico ativo?',
         options:[{v:'nao',badge:'✓',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
     }
-    if (!pularEst) s.push({id:'fert',kind:'opts',step:D,eyebrow:'Planejamento',text:'Deseja engravidar nos próximos 12 meses?',
+    if (pede2('fert')) s.push({id:'fert',kind:'opts',step:D,eyebrow:'Planejamento',text:'Deseja engravidar nos próximos 12 meses?',
       options:[{v:'nao',badge:'—',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
 
     const adamSet = (S.adam||[]).filter(v=>v!=='nenhum');
@@ -5447,7 +5645,12 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.filaAplicada) notas.push('Questionários preenchidos pelo paciente na recepção'+((S.fila||[]).find(x=>x.codigo===S.daFila)?.hora?(' às '+(S.fila||[]).find(x=>x.codigo===S.daFila).hora):'')+' e importados automaticamente. Confirme com ele se as respostas refletem o quadro atual.');
     if (S.queixaMudouDoCiclo) notas.push('<b>A queixa mudou desde o último ciclo.</b> O protocolo anterior ('+(prev&&prev.protocolo||'—')+') tratava outra coisa — não é continuação, é um novo eixo de tratamento. Se o problema anterior foi resolvido, registrar; se apenas saiu de foco, ele volta depois.');
     if (S.semPreenchAnterior) notas.push('<b>Marcado como retorno, mas não há preenchimento registrado</b> para este código. O sistema seguiu como avaliação inicial. Se o procedimento foi feito em outro lugar ou antes do sistema, registre as medidas de partida hoje.');
-    if (reav && S.confirmaEstavel==='nao') notas.push('Dados estáveis confirmados sem alteração — contraindicações, alergias, comorbidades, medicações e planejamento reprodutivo foram mantidos do ciclo anterior.');
+    const ceN = S.confirmaEstavel, mudN = Array.isArray(ceN) ? ceN.filter(v=>v!=='nao') : [];
+    const NOME_EST = {contra:'contraindicação cardiovascular',alergia:'alergias',comorb:'comorbidades',meds:'medicações em uso',tempo:'início dos sintomas',
+      parceira:'parceria',previa:'tratamento prévio',adam:'sintomas do ADAM',freq:'frequência',biotens:'biotensiômetro',topico:'anestésico tópico',depre:'história psiquiátrica',fert:'planejamento reprodutivo'};
+    if (reav && Array.isArray(ceN) && ceN.length && !mudN.length) notas.push('Dados estáveis confirmados sem alteração — contraindicações, alergias, comorbidades, medicações e planejamento reprodutivo foram mantidos do ciclo anterior.');
+    if (reav && mudN.length) notas.push('<b>Houve mudança nos dados estáveis</b> desde a última consulta — revisado nesta consulta: '+mudN.map(v=>NOME_EST[v]||v).join(', ')+'. O restante foi mantido do ciclo anterior.');
+    if (reav && ceN==='nao') notas.push('Dados estáveis confirmados sem alteração — contraindicações, alergias, comorbidades, medicações e planejamento reprodutivo foram mantidos do ciclo anterior.');
     if (reav && S.confirmaEstavel==='sim') notas.push('<b>Houve mudança nos dados estáveis</b> desde a última consulta — revisados item a item nesta consulta.');
     if (reav) notas.push('<b>Uma mudança por ciclo:</b> '+(mudanca||'manter o protocolo')+'. Alterar duas variáveis ao mesmo tempo impede atribuir o efeito na próxima reavaliação.');
 
@@ -5737,7 +5940,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
       iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:kit.map(e=>Array.isArray(e)?e[0]:e),biotens:(bio===null?null:bio),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?(S.formulasAnt||[]).join(', '):S.protAnt)||null,mudanca:mudanca||'manter',
-      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||null,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:(S.iciQualidade!==undefined?{qualidade:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
+      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||null,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:(S.iciQualidade!==undefined?{qualidade:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);
     pintaStatus(ok?'Ciclo salvo.':'Não foi possível salvar — guarde o relatório impresso.');
@@ -6420,7 +6623,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   // Só registra telas que entram no fluxo depois de uma resposta clínica (as
   // regras atuais já fazem isso); identificação e troca de queixa não contam.
   let mxVistas = null, mxNovas = {}, mxUltTela = null, mxCodVisto = null;
-  const MX_ESTRUTURAIS = ['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa','queixa','confirma','confirmaEstavel','refazer'];
+  const MX_ESTRUTURAIS = ['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa','novaQueixa','queixa','confirma','confirmaEstavel','refazer'];
   function mxMotivoDe(sc){
     let l = null; try{ l = linhasDaTela(sc)[0]; }catch(e){}
     let t = rotuloTela(sc) + (l ? ': '+explicaSiglas(String(l[1])) : '');

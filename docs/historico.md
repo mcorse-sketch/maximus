@@ -182,6 +182,36 @@ fictícios (MX9101–MX9140) é a mesma da v2.3.1. Entregue em PRs empilhados:
   inicial dela (antes de entregar o tablet), "N aguardando · M atendidos" com a
   lista e "Devolver à fila" (com confirmação) para marcação por engano.
 
+**PR C — retorno (itens 4, 5)**
+- **Identificação do retorno:** só "Confirmar e continuar" — consulta anterior é
+  registro fechado (saiu "Corrigir protocolo ou escores anteriores").
+- **Queixa no retorno:** "O paciente está em tratamento para disfunção erétil e
+  ejaculação precoce (queixas da primeira avaliação). Alguma nova queixa?" — Não
+  segue o tratamento atual; Sim pergunta a nova (sem repetir as que já estão em
+  tratamento). As queixas vêm do prontuário (`queixasDoRegistro`), só para o texto.
+- **"Algum destes mudou?"** no lugar de "Algo mudou desde a última consulta? /
+  Nada mudou — confirmo tudo acima": cada item da ficha é uma linha com a
+  pergunta curta e a resposta anterior ao lado; o médico toca só no que mudou e
+  só esses itens voltam, com a resposta anterior já marcada. "Nada mudou" faz o
+  mesmo que o antigo "confirmo tudo". Medicação: "Além do que a clínica
+  prescreveu, alguma medicação mudou ou iniciou outra?".
+- **Antecedentes e ADAM não são reaplicados.** Ereção na masturbação e matinal
+  viram pergunta de evolução ("continua satisfatória? (primeira avaliação: …)"),
+  com os mesmos valores sim/não de antes. O ADAM mostra só os sintomas marcados
+  na primeira avaliação e pergunta se melhoraram; o ADAM de hoje é o que não
+  melhorou (sintoma novo abre a lista completa). O ciclo passa a gravar `mast` e
+  `matinal` (só acréscimo).
+- **Questionários da recepção:** "O paciente respondeu na recepção: IIEF-5 17
+  (disfunção erétil leve) e PEDT 11 (ejaculação precoce confirmada). Confirma?" —
+  Confirmo / Revisar (o IIEF-5 ou o PEDT) com o paciente. Revisar abre só aquele
+  questionário com as respostas dele marcadas; a confirmação mostra "Revisado com
+  o paciente: IIEF-5 17 → 15" e oferece voltar às respostas da recepção (com
+  confirmação). O registro da recepção nunca é alterado.
+- Banco fictício regravado pelo app: mesma conduta nos 40; só entram `mast`/
+  `matinal` nos ciclos e o MX9140 responde a evolução do ADAM (os quatro
+  sintomas melhoraram = mesmo ADAM "nenhum" de antes). Teste novo:
+  `tests/teste_retorno.js` (etapa 7g).
+
 ## v2.3.1 · 01/10/2026 — receita só quando há fórmula; novas orientações pós-preenchimento; banco de teste
 
 Pedidos do Dr. Marco:

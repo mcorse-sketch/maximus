@@ -232,7 +232,10 @@ pac('MX9139', 'segurança · risco CV alto', 'LKN', 64, 101, 172, [
 ], null, 'DE com risco cardiovascular alto (coronariopata, DM, HAS e tabagismo não controlados)');
 pac('MX9140', 'segurança · testosterona limítrofe', 'MCD', 56, 98, 175, [
   { d: 112, h: '11:30', r: primeira('de', DE(13, { adam: ['a1', 'a2', 'a3', 'a7'], testo: 'baixa' })) },
-  { d: 48, h: '11:40', r: reav('de', DE(15, { examesFeitos: 'sim', labs: { tTotal: 290, tLivre: 55, lh: 4.5 }, satisfNps: { satisf: 6, nps: 8 } })) }
+  // v2.4: o ADAM do retorno é a evolução dos sintomas da primeira avaliação (antes,
+  // reaplicado e respondido "nenhum"): os quatro melhoraram — mesmo ADAM de hoje
+  { d: 48, h: '11:40', r: reav('de', DE(15, { examesFeitos: 'sim', labs: { tTotal: 290, tLivre: 55, lh: 4.5 }, satisfNps: { satisf: 6, nps: 8 },
+    adamEvol: { adamEv_a1: 'sim', adamEv_a2: 'sim', adamEv_a3: 'sim', adamEv_a7: 'sim', adamNovo: 'nao' } })) }
 ], null, 'DE com libido baixa e testosterona na zona cinzenta (290 ng/dL, livre 55 pg/mL)');
 
 // ---------- registros --------------------------------------------------------------

@@ -2,7 +2,7 @@
  "versao": 1,
  "descricao": "Banco de teste fictício (40 pacientes, MX9101–MX9140). Carregar com: python3 servidor_maximus.py --carregar-teste",
  "referencia": "2026-10-01",
- "geradoEm": "2026-10-01T03:10:52.787Z",
+ "geradoEm": "2026-10-01T10:37:58.092Z",
  "pacientes": {
   "MX9101": [
    {
@@ -78,6 +78,8 @@
     "fertilidade": "nao",
     "previaTrat": "falhou",
     "previaAdequado": "sim",
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -107,7 +109,7 @@
     "iniciais": "ARF",
     "telefone": "(21)90000-9101",
     "email": "teste9101@exemplo.invalid",
-    "opId": "MX9101-primeira-2026-01-26T12:10:01.038Z",
+    "opId": "MX9101-primeira-2026-01-26T12:10:01.227Z",
     "dataLocal": "2026-01-26",
     "demo": true
    },
@@ -185,6 +187,8 @@
     "fertilidade": "nao",
     "previaTrat": "falhou",
     "previaAdequado": "sim",
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -216,7 +220,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9101-reavaliacao-2026-04-14T13:30:00.972Z",
+    "opId": "MX9101-reavaliacao-2026-04-14T13:30:00.902Z",
     "dataLocal": "2026-04-14",
     "demo": true
    }
@@ -295,6 +299,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -323,7 +329,7 @@
     "iniciais": "CMS",
     "telefone": "(21)90000-9102",
     "email": "teste9102@exemplo.invalid",
-    "opId": "MX9102-primeira-2025-11-25T17:00:00.811Z",
+    "opId": "MX9102-primeira-2025-11-25T17:00:00.793Z",
     "dataLocal": "2025-11-25",
     "demo": true
    },
@@ -400,6 +406,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -425,7 +433,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9102-reavaliacao-2026-02-07T17:30:00.753Z",
+    "opId": "MX9102-reavaliacao-2026-02-07T17:30:00.668Z",
     "dataLocal": "2026-02-07",
     "demo": true
    },
@@ -502,6 +510,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -527,7 +537,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9102-reavaliacao-2026-05-04T18:00:00.716Z",
+    "opId": "MX9102-reavaliacao-2026-05-04T18:00:00.643Z",
     "dataLocal": "2026-05-04",
     "demo": true
    }
@@ -606,6 +616,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -636,7 +648,7 @@
     "iniciais": "JPL",
     "telefone": "(21)90000-9103",
     "email": "teste9103@exemplo.invalid",
-    "opId": "MX9103-primeira-2026-03-10T11:40:00.775Z",
+    "opId": "MX9103-primeira-2026-03-10T11:40:00.764Z",
     "dataLocal": "2026-03-10",
     "demo": true
    },
@@ -715,6 +727,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -742,7 +756,7 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 7,
-    "opId": "MX9103-reavaliacao-2026-05-23T12:00:00.677Z",
+    "opId": "MX9103-reavaliacao-2026-05-23T12:00:00.693Z",
     "dataLocal": "2026-05-23",
     "demo": true
    }
@@ -820,6 +834,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -846,7 +862,7 @@
     "iniciais": "RTB",
     "telefone": "(21)90000-9104",
     "email": "teste9104@exemplo.invalid",
-    "opId": "MX9104-primeira-2026-04-04T14:00:00.746Z",
+    "opId": "MX9104-primeira-2026-04-04T14:00:00.790Z",
     "dataLocal": "2026-04-04",
     "demo": true
    },
@@ -923,6 +939,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -946,7 +964,7 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 7,
-    "opId": "MX9104-reavaliacao-2026-06-11T14:15:00.872Z",
+    "opId": "MX9104-reavaliacao-2026-06-11T14:15:00.846Z",
     "dataLocal": "2026-06-11",
     "demo": true
    }
@@ -1024,6 +1042,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1050,7 +1070,7 @@
     "iniciais": "LGV",
     "telefone": "(21)90000-9105",
     "email": "teste9105@exemplo.invalid",
-    "opId": "MX9105-primeira-2026-05-14T19:00:00.705Z",
+    "opId": "MX9105-primeira-2026-05-14T19:00:00.696Z",
     "dataLocal": "2026-05-14",
     "demo": true
    },
@@ -1127,6 +1147,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1152,7 +1174,7 @@
     ],
     "satisf": 6,
     "nps": 8,
-    "opId": "MX9105-reavaliacao-2026-07-15T19:20:00.677Z",
+    "opId": "MX9105-reavaliacao-2026-07-15T19:20:00.703Z",
     "dataLocal": "2026-07-15",
     "demo": true
    }
@@ -1230,6 +1252,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "sim",
     "adam": [
      "nenhum"
     ],
@@ -1256,7 +1280,7 @@
     "iniciais": "TAN",
     "telefone": "(21)90000-9106",
     "email": "teste9106@exemplo.invalid",
-    "opId": "MX9106-primeira-2026-06-27T21:00:00.692Z",
+    "opId": "MX9106-primeira-2026-06-27T21:00:00.696Z",
     "dataLocal": "2026-06-27",
     "demo": true
    }
@@ -1335,6 +1359,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1363,7 +1389,7 @@
     "iniciais": "EMC",
     "telefone": "(21)90000-9107",
     "email": "teste9107@exemplo.invalid",
-    "opId": "MX9107-primeira-2025-10-16T13:00:00.747Z",
+    "opId": "MX9107-primeira-2025-10-16T13:00:00.788Z",
     "dataLocal": "2025-10-16",
     "demo": true
    },
@@ -1438,6 +1464,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1463,7 +1491,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9107-reavaliacao-2025-12-25T13:00:00.673Z",
+    "opId": "MX9107-reavaliacao-2025-12-25T13:00:00.647Z",
     "dataLocal": "2025-12-25",
     "demo": true
    },
@@ -1538,6 +1566,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1563,7 +1593,7 @@
     "eaQuais": [],
     "satisf": 10,
     "nps": 10,
-    "opId": "MX9107-reavaliacao-2026-03-19T13:20:00.654Z",
+    "opId": "MX9107-reavaliacao-2026-03-19T13:20:00.618Z",
     "dataLocal": "2026-03-19",
     "demo": true
    }
@@ -1642,6 +1672,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1670,7 +1702,7 @@
     "iniciais": "OBF",
     "telefone": "(21)90000-9108",
     "email": "teste9108@exemplo.invalid",
-    "opId": "MX9108-primeira-2026-08-02T16:30:00.747Z",
+    "opId": "MX9108-primeira-2026-08-02T16:30:00.790Z",
     "dataLocal": "2026-08-02",
     "demo": true
    }
@@ -1753,6 +1785,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "a1",
      "a2",
@@ -1781,7 +1815,7 @@
     "iniciais": "HSD",
     "telefone": "(21)90000-9109",
     "email": "teste9109@exemplo.invalid",
-    "opId": "MX9109-primeira-2026-08-17T18:40:00.782Z",
+    "opId": "MX9109-primeira-2026-08-17T18:40:00.868Z",
     "dataLocal": "2026-08-17",
     "demo": true
    }
@@ -1859,6 +1893,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1885,7 +1921,7 @@
     "iniciais": "GIP",
     "telefone": "(21)90000-9110",
     "email": "teste9110@exemplo.invalid",
-    "opId": "MX9110-primeira-2026-08-29T12:30:00.679Z",
+    "opId": "MX9110-primeira-2026-08-29T12:30:00.693Z",
     "dataLocal": "2026-08-29",
     "demo": true
    }
@@ -1964,6 +2000,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -1993,7 +2031,7 @@
     "iniciais": "NCR",
     "telefone": "(21)90000-9111",
     "email": "teste9111@exemplo.invalid",
-    "opId": "MX9111-primeira-2026-06-03T11:20:00.765Z",
+    "opId": "MX9111-primeira-2026-06-03T11:20:00.741Z",
     "dataLocal": "2026-06-03",
     "demo": true
    }
@@ -2072,6 +2110,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -2100,7 +2140,7 @@
     "iniciais": "VSO",
     "telefone": "(21)90000-9112",
     "email": "teste9112@exemplo.invalid",
-    "opId": "MX9112-primeira-2026-07-31T13:40:00.731Z",
+    "opId": "MX9112-primeira-2026-07-31T13:40:00.798Z",
     "dataLocal": "2026-07-31",
     "demo": true
    },
@@ -2262,6 +2302,8 @@
     "fertilidade": "nao",
     "previaTrat": "func",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -2288,7 +2330,7 @@
     "iniciais": "BRM",
     "telefone": "(21)90000-9114",
     "email": "teste9114@exemplo.invalid",
-    "opId": "MX9114-primeira-2026-09-06T20:10:00.682Z",
+    "opId": "MX9114-primeira-2026-09-06T20:10:00.734Z",
     "dataLocal": "2026-09-06",
     "demo": true
    }
@@ -2366,6 +2408,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -2390,7 +2434,7 @@
     "iniciais": "FDS",
     "telefone": "(21)90000-9115",
     "email": "teste9115@exemplo.invalid",
-    "opId": "MX9115-primeira-2025-12-15T22:00:00.772Z",
+    "opId": "MX9115-primeira-2025-12-15T22:00:00.903Z",
     "dataLocal": "2025-12-15",
     "demo": true
    },
@@ -2466,6 +2510,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -2487,7 +2533,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 9,
-    "opId": "MX9115-reavaliacao-2026-02-23T22:00:00.606Z",
+    "opId": "MX9115-reavaliacao-2026-02-23T22:00:00.702Z",
     "dataLocal": "2026-02-23",
     "demo": true
    },
@@ -2562,6 +2608,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -2583,7 +2631,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9115-reavaliacao-2026-05-04T21:40:00.574Z",
+    "opId": "MX9115-reavaliacao-2026-05-04T21:40:00.713Z",
     "dataLocal": "2026-05-04",
     "demo": true
    }
@@ -2660,6 +2708,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -2684,7 +2734,7 @@
     "iniciais": "ICT",
     "telefone": "(21)90000-9116",
     "email": "teste9116@exemplo.invalid",
-    "opId": "MX9116-primeira-2026-04-24T15:00:00.776Z",
+    "opId": "MX9116-primeira-2026-04-24T15:00:00.772Z",
     "dataLocal": "2026-04-24",
     "demo": true
    },
@@ -2759,6 +2809,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -2780,7 +2832,7 @@
     "eaQuais": [],
     "satisf": 8,
     "nps": 9,
-    "opId": "MX9116-reavaliacao-2026-06-28T15:10:00.570Z",
+    "opId": "MX9116-reavaliacao-2026-06-28T15:10:00.595Z",
     "dataLocal": "2026-06-28",
     "demo": true
    }
@@ -2858,6 +2910,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -2882,7 +2936,7 @@
     "iniciais": "MAV",
     "telefone": "(21)90000-9117",
     "email": "teste9117@exemplo.invalid",
-    "opId": "MX9117-primeira-2026-03-15T20:30:00.774Z",
+    "opId": "MX9117-primeira-2026-03-15T20:30:00.809Z",
     "dataLocal": "2026-03-15",
     "demo": true
    },
@@ -2959,6 +3013,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -2980,7 +3036,7 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 6,
-    "opId": "MX9117-reavaliacao-2026-05-20T20:30:00.579Z",
+    "opId": "MX9117-reavaliacao-2026-05-20T20:30:00.594Z",
     "dataLocal": "2026-05-20",
     "demo": true
    }
@@ -3057,6 +3113,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -3081,7 +3139,7 @@
     "iniciais": "SLB",
     "telefone": "(21)90000-9118",
     "email": "teste9118@exemplo.invalid",
-    "opId": "MX9118-primeira-2026-08-10T23:00:00.846Z",
+    "opId": "MX9118-primeira-2026-08-10T23:00:00.875Z",
     "dataLocal": "2026-08-10",
     "demo": true
    }
@@ -3159,6 +3217,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -3183,7 +3243,7 @@
     "iniciais": "DCG",
     "telefone": "(21)90000-9119",
     "email": "teste9119@exemplo.invalid",
-    "opId": "MX9119-primeira-2026-07-18T14:45:00.779Z",
+    "opId": "MX9119-primeira-2026-07-18T14:45:00.908Z",
     "dataLocal": "2026-07-18",
     "demo": true
    }
@@ -3261,6 +3321,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -3285,7 +3347,7 @@
     "iniciais": "RPN",
     "telefone": "(21)90000-9120",
     "email": "teste9120@exemplo.invalid",
-    "opId": "MX9120-primeira-2026-02-13T19:00:00.787Z",
+    "opId": "MX9120-primeira-2026-02-13T19:00:00.791Z",
     "dataLocal": "2026-02-13",
     "demo": true
    },
@@ -3362,6 +3424,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -3385,7 +3449,7 @@
     ],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9120-reavaliacao-2026-04-24T19:15:00.616Z",
+    "opId": "MX9120-reavaliacao-2026-04-24T19:15:00.709Z",
     "dataLocal": "2026-04-24",
     "demo": true
    }
@@ -3463,6 +3527,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -3487,7 +3553,7 @@
     "iniciais": "AJT",
     "telefone": "(21)90000-9121",
     "email": "teste9121@exemplo.invalid",
-    "opId": "MX9121-primeira-2026-07-23T21:20:00.783Z",
+    "opId": "MX9121-primeira-2026-07-23T21:20:00.838Z",
     "dataLocal": "2026-07-23",
     "demo": true
    },
@@ -3656,6 +3722,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -3682,7 +3750,7 @@
     "iniciais": "CEF",
     "telefone": "(21)90000-9123",
     "email": "teste9123@exemplo.invalid",
-    "opId": "MX9123-primeira-2025-11-05T12:00:01.022Z",
+    "opId": "MX9123-primeira-2025-11-05T12:00:01.179Z",
     "dataLocal": "2025-11-05",
     "demo": true
    },
@@ -3765,6 +3833,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -3788,7 +3858,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9123-reavaliacao-2026-01-12T12:20:00.890Z",
+    "opId": "MX9123-reavaliacao-2026-01-12T12:20:00.830Z",
     "dataLocal": "2026-01-12",
     "demo": true
    },
@@ -3871,6 +3941,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -3894,7 +3966,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9123-reavaliacao-2026-03-25T12:00:00.822Z",
+    "opId": "MX9123-reavaliacao-2026-03-25T12:00:00.814Z",
     "dataLocal": "2026-03-25",
     "demo": true
    }
@@ -3979,6 +4051,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -4005,7 +4079,7 @@
     "iniciais": "GTR",
     "telefone": "(21)90000-9124",
     "email": "teste9124@exemplo.invalid",
-    "opId": "MX9124-primeira-2026-05-04T17:40:00.979Z",
+    "opId": "MX9124-primeira-2026-05-04T17:40:00.992Z",
     "dataLocal": "2026-05-04",
     "demo": true
    },
@@ -4089,6 +4163,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -4112,7 +4188,7 @@
     "eaQuais": [],
     "satisf": 6,
     "nps": 7,
-    "opId": "MX9124-reavaliacao-2026-07-08T18:00:00.877Z",
+    "opId": "MX9124-reavaliacao-2026-07-08T18:00:00.823Z",
     "dataLocal": "2026-07-08",
     "demo": true
    }
@@ -4198,6 +4274,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -4227,7 +4305,7 @@
     "iniciais": "PHS",
     "telefone": "(21)90000-9125",
     "email": "teste9125@exemplo.invalid",
-    "opId": "MX9125-primeira-2026-02-28T13:10:01.127Z",
+    "opId": "MX9125-primeira-2026-02-28T13:10:01.058Z",
     "dataLocal": "2026-02-28",
     "demo": true
    },
@@ -4311,6 +4389,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -4337,7 +4417,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9125-reavaliacao-2026-05-09T13:10:00.840Z",
+    "opId": "MX9125-reavaliacao-2026-05-09T13:10:00.805Z",
     "dataLocal": "2026-05-09",
     "demo": true
    }
@@ -4422,6 +4502,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -4448,7 +4530,7 @@
     "iniciais": "NBA",
     "telefone": "(21)90000-9126",
     "email": "teste9126@exemplo.invalid",
-    "opId": "MX9126-primeira-2026-08-22T22:30:00.989Z",
+    "opId": "MX9126-primeira-2026-08-22T22:30:01.127Z",
     "dataLocal": "2026-08-22",
     "demo": true
    }
@@ -4533,6 +4615,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -4559,7 +4643,7 @@
     "iniciais": "OVC",
     "telefone": "(21)90000-9127",
     "email": "teste9127@exemplo.invalid",
-    "opId": "MX9127-primeira-2026-07-27T14:20:01.018Z",
+    "opId": "MX9127-primeira-2026-07-27T14:20:01.118Z",
     "dataLocal": "2026-07-27",
     "demo": true
    },
@@ -4737,7 +4821,7 @@
     "iniciais": "KWE",
     "telefone": "(21)90000-9129",
     "email": "teste9129@exemplo.invalid",
-    "opId": "MX9129-preench-inicial-2026-05-26T16:00:00.550Z",
+    "opId": "MX9129-preench-inicial-2026-05-26T16:00:00.552Z",
     "dataLocal": "2026-05-26",
     "demo": true
    },
@@ -4821,7 +4905,7 @@
      "satisfPaciente": 7,
      "novaAplicacao": null
     },
-    "opId": "MX9129-preench-retorno-2026-06-17T16:30:00.449Z",
+    "opId": "MX9129-preench-retorno-2026-06-17T16:30:00.475Z",
     "dataLocal": "2026-06-17",
     "demo": true
    }
@@ -4905,7 +4989,7 @@
     "iniciais": "DRZ",
     "telefone": "(21)90000-9130",
     "email": "teste9130@exemplo.invalid",
-    "opId": "MX9130-preench-inicial-2026-09-08T17:00:00.584Z",
+    "opId": "MX9130-preench-inicial-2026-09-08T17:00:00.562Z",
     "dataLocal": "2026-09-08",
     "demo": true
    },
@@ -5031,7 +5115,7 @@
     "iniciais": "ELU",
     "telefone": "(21)90000-9131",
     "email": "teste9131@exemplo.invalid",
-    "opId": "MX9131-preench-inicial-2026-03-05T18:00:00.547Z",
+    "opId": "MX9131-preench-inicial-2026-03-05T18:00:00.591Z",
     "dataLocal": "2026-03-05",
     "demo": true
    },
@@ -5117,7 +5201,7 @@
      "satisfPaciente": 6,
      "novaAplicacao": null
     },
-    "opId": "MX9131-preench-retorno-2026-03-27T18:20:00.459Z",
+    "opId": "MX9131-preench-retorno-2026-03-27T18:20:00.510Z",
     "dataLocal": "2026-03-27",
     "demo": true
    }
@@ -5201,7 +5285,7 @@
     "iniciais": "FAG",
     "telefone": "(21)90000-9132",
     "email": "teste9132@exemplo.invalid",
-    "opId": "MX9132-preench-inicial-2026-09-13T19:30:00.454Z",
+    "opId": "MX9132-preench-inicial-2026-09-13T19:30:00.568Z",
     "dataLocal": "2026-09-13",
     "demo": true
    }
@@ -5281,6 +5365,8 @@
     "fertilidade": "nao",
     "previaTrat": "falhou",
     "previaAdequado": "sim",
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -5310,7 +5396,7 @@
     "iniciais": "UMB",
     "telefone": "(21)90000-9133",
     "email": "teste9133@exemplo.invalid",
-    "opId": "MX9133-primeira-2026-01-04T11:30:00.761Z",
+    "opId": "MX9133-primeira-2026-01-04T11:30:00.954Z",
     "dataLocal": "2026-01-04",
     "demo": true
    },
@@ -5337,7 +5423,7 @@
      "ir": 0.5,
      "suspeita": "Disfunção mista — arterial e veno-oclusiva"
     },
-    "opId": "MX9133-tefi-2026-01-26T11:00:00.586Z",
+    "opId": "MX9133-tefi-2026-01-26T11:00:00.536Z",
     "dataLocal": "2026-01-26",
     "demo": true
    },
@@ -5413,6 +5499,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -5442,7 +5530,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9133-reavaliacao-2026-04-04T11:30:00.885Z",
+    "opId": "MX9133-reavaliacao-2026-04-04T11:30:00.884Z",
     "dataLocal": "2026-04-04",
     "demo": true
    }
@@ -5521,6 +5609,8 @@
     "fertilidade": "nao",
     "previaTrat": "falhou",
     "previaAdequado": "sim",
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -5550,7 +5640,7 @@
     "iniciais": "WCA",
     "telefone": "(21)90000-9134",
     "email": "teste9134@exemplo.invalid",
-    "opId": "MX9134-primeira-2026-06-03T12:30:00.805Z",
+    "opId": "MX9134-primeira-2026-06-03T12:30:00.898Z",
     "dataLocal": "2026-06-03",
     "demo": true
    },
@@ -5577,7 +5667,7 @@
      "ir": 0.5,
      "suspeita": "Disfunção veno-oclusiva"
     },
-    "opId": "MX9134-tefi-2026-06-24T11:00:00.564Z",
+    "opId": "MX9134-tefi-2026-06-24T11:00:00.587Z",
     "dataLocal": "2026-06-24",
     "demo": true
    }
@@ -5657,6 +5747,8 @@
     "fertilidade": "nao",
     "previaTrat": "falhou",
     "previaAdequado": "sim",
+    "mast": "nao",
+    "matinal": "sim",
     "adam": [
      "nenhum"
     ],
@@ -5683,7 +5775,7 @@
     "iniciais": "YRP",
     "telefone": "(21)90000-9135",
     "email": "teste9135@exemplo.invalid",
-    "opId": "MX9135-primeira-2026-07-05T13:45:00.704Z",
+    "opId": "MX9135-primeira-2026-07-05T13:45:00.712Z",
     "dataLocal": "2026-07-05",
     "demo": true
    },
@@ -5710,7 +5802,7 @@
      "ir": null,
      "suspeita": null
     },
-    "opId": "MX9135-tefi-2026-07-23T11:15:00.507Z",
+    "opId": "MX9135-tefi-2026-07-23T11:15:00.517Z",
     "dataLocal": "2026-07-23",
     "demo": true
    }
@@ -5787,6 +5879,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -5816,7 +5910,7 @@
     "iniciais": "IGH",
     "telefone": "(21)90000-9136",
     "email": "teste9136@exemplo.invalid",
-    "opId": "MX9136-primeira-2026-08-07T12:50:00.739Z",
+    "opId": "MX9136-primeira-2026-08-07T12:50:00.771Z",
     "dataLocal": "2026-08-07",
     "demo": true
    }
@@ -5894,6 +5988,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [
@@ -5920,7 +6016,7 @@
     "iniciais": "BPE",
     "telefone": "(21)90000-9137",
     "email": "teste9137@exemplo.invalid",
-    "opId": "MX9137-primeira-2026-05-14T21:00:00.809Z",
+    "opId": "MX9137-primeira-2026-05-14T21:00:00.803Z",
     "dataLocal": "2026-05-14",
     "demo": true
    },
@@ -5996,6 +6092,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [
@@ -6019,7 +6117,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9137-reavaliacao-2026-07-21T21:10:00.620Z",
+    "opId": "MX9137-reavaliacao-2026-07-21T21:10:00.593Z",
     "dataLocal": "2026-07-21",
     "demo": true
    },
@@ -6138,6 +6236,8 @@
     "fertilidade": "nao",
     "previaTrat": null,
     "previaAdequado": null,
+    "mast": null,
+    "matinal": null,
     "adam": null,
     "adamPositivo": false,
     "alergias": [],
@@ -6164,7 +6264,7 @@
     "iniciais": "JTF",
     "telefone": "(21)90000-9138",
     "email": "teste9138@exemplo.invalid",
-    "opId": "MX9138-primeira-2026-09-01T20:00:00.846Z",
+    "opId": "MX9138-primeira-2026-09-01T20:00:00.787Z",
     "dataLocal": "2026-09-01",
     "demo": true
    }
@@ -6244,6 +6344,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -6276,7 +6378,7 @@
     "iniciais": "LKN",
     "telefone": "(21)90000-9139",
     "email": "teste9139@exemplo.invalid",
-    "opId": "MX9139-primeira-2026-03-25T11:50:00.777Z",
+    "opId": "MX9139-primeira-2026-03-25T11:50:00.831Z",
     "dataLocal": "2026-03-25",
     "demo": true
    },
@@ -6354,6 +6456,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -6385,7 +6489,7 @@
     ],
     "satisf": 6,
     "nps": 7,
-    "opId": "MX9139-reavaliacao-2026-06-05T12:00:00.739Z",
+    "opId": "MX9139-reavaliacao-2026-06-05T12:00:00.765Z",
     "dataLocal": "2026-06-05",
     "demo": true
    }
@@ -6469,6 +6573,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "sim",
+    "matinal": "nao",
     "adam": [
      "a1",
      "a2",
@@ -6498,7 +6604,7 @@
     "iniciais": "MCD",
     "telefone": "(21)90000-9140",
     "email": "teste9140@exemplo.invalid",
-    "opId": "MX9140-primeira-2026-06-11T14:30:00.728Z",
+    "opId": "MX9140-primeira-2026-06-11T14:30:00.816Z",
     "dataLocal": "2026-06-11",
     "demo": true
    },
@@ -6575,6 +6681,8 @@
     "fertilidade": "nao",
     "previaTrat": "nunca",
     "previaAdequado": null,
+    "mast": "nao",
+    "matinal": "nao",
     "adam": [
      "nenhum"
     ],
@@ -6605,7 +6713,7 @@
     "eaQuais": [],
     "satisf": 6,
     "nps": 8,
-    "opId": "MX9140-reavaliacao-2026-08-14T14:40:00.742Z",
+    "opId": "MX9140-reavaliacao-2026-08-14T14:40:00.951Z",
     "dataLocal": "2026-08-14",
     "demo": true
    }

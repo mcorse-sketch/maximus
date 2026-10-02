@@ -54,6 +54,9 @@ node teste_envio.js || falhas=$((falhas+1))
 linha "7f. banco de teste fictício (data/banco_teste.json) confere com o app"
 node banco_teste.js --conferir || falhas=$((falhas+1))
 
+linha "7g. retorno e questionários da recepção (v2.4) — nova queixa, ficha estável, evolução, confirmação"
+node teste_retorno.js "$CLIN" || falhas=$((falhas+1))
+
 linha "8. tela de senha dos três apps"
 node teste_sessao.js || falhas=$((falhas+1))
 
