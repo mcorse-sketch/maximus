@@ -182,6 +182,58 @@ fictícios (MX9101–MX9140) é a mesma da v2.3.1. Entregue em PRs empilhados:
   inicial dela (antes de entregar o tablet), "N aguardando · M atendidos" com a
   lista e "Devolver à fila" (com confirmação) para marcação por engano.
 
+**PR C — retorno (itens 4, 5)**
+- **Identificação do retorno:** só "Confirmar e continuar" — consulta anterior é
+  registro fechado (saiu "Corrigir protocolo ou escores anteriores").
+- **Queixa no retorno:** "O paciente está em tratamento para disfunção erétil e
+  ejaculação precoce (queixas da primeira avaliação). Alguma nova queixa?" — Não
+  segue o tratamento atual; Sim pergunta a nova (sem repetir as que já estão em
+  tratamento). As queixas vêm do prontuário (`queixasDoRegistro`), só para o texto.
+- **"Algum destes mudou?"** no lugar de "Algo mudou desde a última consulta? /
+  Nada mudou — confirmo tudo acima": cada item da ficha é uma linha com a
+  pergunta curta e a resposta anterior ao lado; o médico toca só no que mudou e
+  só esses itens voltam, com a resposta anterior já marcada. "Nada mudou" faz o
+  mesmo que o antigo "confirmo tudo". Medicação: "Além do que a clínica
+  prescreveu, alguma medicação mudou ou iniciou outra?".
+- **Antecedentes e ADAM não são reaplicados.** Ereção na masturbação e matinal
+  viram pergunta de evolução ("continua satisfatória? (primeira avaliação: …)"),
+  com os mesmos valores sim/não de antes. O ADAM mostra só os sintomas marcados
+  na primeira avaliação e pergunta se melhoraram; o ADAM de hoje é o que não
+  melhorou (sintoma novo abre a lista completa). O ciclo passa a gravar `mast` e
+  `matinal` (só acréscimo).
+- **Questionários da recepção:** "O paciente respondeu na recepção: IIEF-5 17
+  (disfunção erétil leve) e PEDT 11 (ejaculação precoce confirmada). Confirma?" —
+  Confirmo / Revisar (o IIEF-5 ou o PEDT) com o paciente. Revisar abre só aquele
+  questionário com as respostas dele marcadas; a confirmação mostra "Revisado com
+  o paciente: IIEF-5 17 → 15" e oferece voltar às respostas da recepção (com
+  confirmação). O registro da recepção nunca é alterado.
+- Banco fictício regravado pelo app: mesma conduta nos 40; só entram `mast`/
+  `matinal` nos ciclos e o MX9140 responde a evolução do ADAM (os quatro
+  sintomas melhoraram = mesmo ADAM "nenhum" de antes). Teste novo:
+  `tests/teste_retorno.js` (etapa 7g).
+
+**PR D — tela da conduta (itens 9, 10)**
+- **Situação das ondas de choque e do TEFI** numa linha própria no cabeçalho da
+  conduta: "Ondas de choque: no protocolo / oferta complementar · custo à parte /
+  não indicadas" e "TEFI com Doppler: indicado · a agendar / realizado / não
+  indicado" (só na linha DE; os chips não repetem). Antes, o kit gravava `ONDAS`
+  também quando elas eram só oferta complementar, e o painel do retorno dizia
+  "Ondas de choque em curso" para qualquer ONDAS no kit; agora "em curso" só
+  quando o protocolo anterior registrado inclui as sessões, e os demais casos
+  dizem "no protocolo — confirmar se iniciou" ou "oferecidas (complementar) —
+  confirmar se aceitou". O histórico e as pendências do financeiro passam a
+  mostrar a oferta complementar. O racional não diz mais "ondas de choque ficaram
+  de fora" quando elas estão no kit como complemento. Só exibição: a regra das
+  ondas e do TEFI não mudou.
+- **Racional curto, uma vez só.** Uma frase por item (o que faz e por que entrou
+  no kit), sem ensaio clínico, mecanismo ou comparação com outros remédios; o
+  que já está nas observações clínicas (perfil psicogênico/orgânico,
+  hipersensibilidade, "uma mudança por ciclo", ondas opcionais) não se repete no
+  racional. O relatório da consulta não traz mais o racional de novo, e o
+  "Protocolo prescrito" sai só no papel (na tela os quadrinhos já mostram o
+  kit) — o texto do prontuário continua igual. "Explicações e racional clínico"
+  passou a "Observações clínicas". Teste novo: `tests/teste_conduta.js` (7h).
+
 ## v2.3.1 · 01/10/2026 — receita só quando há fórmula; novas orientações pós-preenchimento; banco de teste
 
 Pedidos do Dr. Marco:

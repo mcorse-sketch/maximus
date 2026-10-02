@@ -117,6 +117,11 @@ app (`tests/banco_teste.js`), nunca escrita à mão.
 índice de resistividade 0–1): não existe "valor fora da faixa" neles.
 Laboratório e medidas anatômicas têm saída para valor atípico.
 
+**Racional da conduta (v2.4):** uma frase curta por item — o que faz e por que
+entrou no kit. Sem ensaio clínico, mecanismo, dose licenciada ou comparação com
+outros remédios (pedido do Dr. Marco). Aparece uma vez só (seção "Racional da
+conduta"); o relatório da consulta não o repete. `tests/teste_conduta.js` confere.
+
 **Biotensiômetro:** abaixo de 10 vermelho, 10 a 20 verde, acima de 20 âmbar.
 
 ---
