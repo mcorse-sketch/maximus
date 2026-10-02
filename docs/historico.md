@@ -212,6 +212,28 @@ fictícios (MX9101–MX9140) é a mesma da v2.3.1. Entregue em PRs empilhados:
   sintomas melhoraram = mesmo ADAM "nenhum" de antes). Teste novo:
   `tests/teste_retorno.js` (etapa 7g).
 
+**PR D — tela da conduta (itens 9, 10)**
+- **Situação das ondas de choque e do TEFI** numa linha própria no cabeçalho da
+  conduta: "Ondas de choque: no protocolo / oferta complementar · custo à parte /
+  não indicadas" e "TEFI com Doppler: indicado · a agendar / realizado / não
+  indicado" (só na linha DE; os chips não repetem). Antes, o kit gravava `ONDAS`
+  também quando elas eram só oferta complementar, e o painel do retorno dizia
+  "Ondas de choque em curso" para qualquer ONDAS no kit; agora "em curso" só
+  quando o protocolo anterior registrado inclui as sessões, e os demais casos
+  dizem "no protocolo — confirmar se iniciou" ou "oferecidas (complementar) —
+  confirmar se aceitou". O histórico e as pendências do financeiro passam a
+  mostrar a oferta complementar. O racional não diz mais "ondas de choque ficaram
+  de fora" quando elas estão no kit como complemento. Só exibição: a regra das
+  ondas e do TEFI não mudou.
+- **Racional curto, uma vez só.** Uma frase por item (o que faz e por que entrou
+  no kit), sem ensaio clínico, mecanismo ou comparação com outros remédios; o
+  que já está nas observações clínicas (perfil psicogênico/orgânico,
+  hipersensibilidade, "uma mudança por ciclo", ondas opcionais) não se repete no
+  racional. O relatório da consulta não traz mais o racional de novo, e o
+  "Protocolo prescrito" sai só no papel (na tela os quadrinhos já mostram o
+  kit) — o texto do prontuário continua igual. "Explicações e racional clínico"
+  passou a "Observações clínicas". Teste novo: `tests/teste_conduta.js` (7h).
+
 ## v2.3.1 · 01/10/2026 — receita só quando há fórmula; novas orientações pós-preenchimento; banco de teste
 
 Pedidos do Dr. Marco:

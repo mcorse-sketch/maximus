@@ -943,7 +943,8 @@
     const pend=[]; if(ultimo.tefiIndicado) pend.push('Teste de ereção com Doppler');
     if(ultimo.examesSolicitados) pend.push('Perfil hormonal');
     if(ultimo.ondasIndicado) pend.push('Ondas de choque — indicadas no protocolo');
-    else if(ultimo.ondasOpcional) pend.push('Ondas de choque — oferecidas como opção');
+    // v2.4: o kit grava 'ONDAS' também quando elas são só oferta complementar
+    else if(ultimo.ondasOpcional || (ultimo.kitCodes||[]).includes('ONDAS')) pend.push('Ondas de choque — oferta complementar, custo à parte');
     const d=dias(ultimo.data);
     const nReav = clin.filter(c=>c.tipo==='reavaliacao').length;
     const idx = ultimo.custoIndice||null;

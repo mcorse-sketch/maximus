@@ -273,6 +273,14 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-cdproto.longo{font-size:34px;letter-spacing:-.03em;line-height:1.1}
   .mx-cdtit{font-size:17px;color:var(--mx-text2);margin-top:8px;max-width:520px}
   .mx-cdhead .mx-chips{margin-top:12px}
+  /* v2.4 (item 10): só no papel — na tela os quadrinhos do protocolo já mostram o kit */
+  @media screen{ .so-papel{display:none!important} }
+  /* v2.4 (item 9): situação das ondas de choque e do TEFI, sempre no mesmo lugar */
+  .mx-cdstatus{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .mx-cdstatus span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:4px 11px;border-radius:999px;border:1px solid var(--mx-line);background:var(--mx-surf2);color:var(--mx-text2)}
+  .mx-cdstatus span b{font-weight:600;color:var(--mx-text)}
+  .mx-cdstatus span.sim{border-color:var(--mx-ok);background:var(--mx-okbg);color:var(--mx-ok)}
+  .mx-cdstatus span.opc{border-color:var(--mx-warnln);background:var(--mx-warnbg);color:var(--mx-warn)}
   .mx-scores{display:flex;gap:18px;flex:none;align-items:flex-start}
   .mx-scores .mx-esc{display:grid;grid-template-columns:auto auto;align-items:center;gap:4px 6px;text-align:right}
   .mx-scores .mx-qn{font-size:12px;justify-self:end}
@@ -2399,8 +2407,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       add('Fórmulas', formulasDoCiclo(c) || null);
       const ped = [c.examesSolicitados?'perfil hormonal':null, c.tefiIndicado?'TEFI com Doppler':null].filter(Boolean);
       if (ped.length) add('Solicitado', ped.join(' · '));
-      if (c.ondasIndicado) add('Ondas de choque', 'no protocolo');
-      else if (c.ondasOpcional) add('Ondas de choque', 'oferta complementar');
+      { const so = statusOndasCiclo(c);
+        if (so==='protocolo') add('Ondas de choque', 'no protocolo');
+        else if (so==='complementar') add('Ondas de choque', 'oferta complementar · custo à parte'); }
     } else if (c.tipo==='tefi' && c.tefiExame){
       const t = c.tefiExame;
       add('Fármaco e dose', [t.farmaco, t.dose, t.doseComp?('complementar '+t.doseComp):null].filter(Boolean).map(escH).join(' · ')||null);
@@ -3352,9 +3361,14 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (tb) ex.push(lin('TEFI '+(S.tefiBanco.dataBR||'')+' \u00b7 '+(tb.suspeita||(tb.eau?'positivo':'negativo'))));
     else if (prev && prev.tefi && prev.tefi.resp) ex.push(lin('TEFI realizado \u00b7 Doppler '+(prev.tefi.doppler||'\u2014')));
     else if (prev && prev.tefiIndicado) ex.push(lin('TEFI indicado, n\u00e3o realizado','sub'));
-    const usaOndas = prev && ((prev.kitCodes||[]).includes('ONDAS') || (prev.formulasAnt||[]).includes('ONDAS'));
+    // v2.4 (item 9): "em curso" só quando o protocolo anterior registrado inclui as
+    // sessões; antes, qualquer ONDAS no kit (inclusive só oferecida) virava "em curso"
+    const protAntTxt = (S.protAnt==='Outro / combinação não listada' ? (S.formulasAnt||[]).join(' ') : (S.protAnt||''));
+    const usaOndas = prev && (/ONDAS/.test(protAntTxt) || (prev.formulasAnt||[]).includes('ONDAS'));
+    const stOndas = (prev && prev.tefi && prev.tefi.conduta==='ondas') ? 'protocolo' : statusOndasCiclo(prev);
     if (usaOndas) ex.push(lin('Ondas de choque em curso'));
-    else if (prev && prev.ondasIndicado) ex.push(lin('Ondas indicadas, n\u00e3o iniciadas','sub'));
+    else if (stOndas==='protocolo') ex.push(lin('Ondas de choque no protocolo \u2014 confirmar se iniciou','sub'));
+    else if (stOndas==='complementar') ex.push(lin('Ondas de choque oferecidas (complementar) \u2014 confirmar se aceitou','sub'));
     bloco('Exames', ex);
 
     // intracavernosa
@@ -3393,6 +3407,15 @@ document.documentElement.setAttribute('data-tema',t)})();
       (linhas.length ? linhas.join('<br>') : 'Fórmulas não registradas no ciclo anterior.');
   }
 
+  // v2.4 (item 9): situação das ondas de choque de um ciclo gravado. O kit grava
+  // só 'ONDAS' tanto para indicação no protocolo quanto para oferta complementar
+  // ou opcional; o que separa as duas é ondasIndicado. Só exibição.
+  function statusOndasCiclo(c){
+    if (!c) return null;
+    if (c.ondasIndicado) return 'protocolo';
+    if (c.ondasOpcional || (c.kitCodes||[]).indexOf('ONDAS')>=0) return 'complementar';
+    return null;
+  }
   function queixasDoRegistro(ciclos){
     const q = [];
     const poe = v => { if (q.indexOf(v)<0) q.push(v); };
@@ -4545,7 +4568,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     else alt.style.display='none';
     const mais = el('notasMais');
     mais.innerHTML = demais.length
-      ? '<details'+(abrirPadrao?' open':'')+'><summary>Explicações e racional clínico — '+demais.length+' item'+(demais.length>1?'s':'')+'</summary>'
+      ? '<details'+(abrirPadrao?' open':'')+'><summary>Observações clínicas — '+demais.length+' item'+(demais.length>1?'s':'')+'</summary>'
         + demais.map(n=>'<p>'+explicaSiglas(n)+'</p>').join('') + '</details>'
       : '';
   }
@@ -5705,82 +5728,81 @@ document.documentElement.setAttribute('data-tema',t)})();
     el('custoBox').innerHTML = custoHtml;
 
     // ---------------- RACIONAL DA CONDUTA ----------------
+    // v2.4 (item 10): uma frase curta por item — o que faz e por que entrou no kit.
+    // Sem ensaio clínico, mecanismo ou comparação com outros remédios.
     const RAZAO = {
-      'BASE-T5':'Tadalafila 5 mg de uso contínuo — dose licenciada para uso diário, mantém a via do óxido nítrico ativa entre as relações. A arginina com picnogenol é a única combinação fitoterápica com meta-análise positiva em disfunção erétil, e o ginseng tem meta-análise própria de melhora do IIEF.',
-      'BASE-T10':'Tadalafila 10 mg contínuos — acima da licença de uso diário, escolhida pela gravidade do escore. Mesma base fitoterápica: arginina com picnogenol e ginseng padronizado.',
-      'BASE-T20':'Tadalafila 20 mg contínuos — quatro vezes a dose licenciada para uso diário, justificada pelo escore e pela falha de degraus anteriores. Reavaliar a necessidade a cada ciclo.',
-      'MOD-PAROX-10':'Paroxetina 10 mg diária — ISRS contínuo é o que tem melhor efeito sobre o tempo intravaginal, e a frequência de relações do paciente torna o uso diário mais prático que o sob demanda.',
-      'MOD-PAROX-20':'Paroxetina 20 mg diária — dose plena do ISRS contínuo, pela intensidade da queixa ou por resposta insuficiente à dose menor.',
-      'MOD-DAPO-30':'Dapoxetina 30 mg sob demanda — desenhada exatamente para uso pontual, com meia-vida curta e perfil de superdose muito mais benigno que o tricíclico.',
+      'BASE-T5':'Tadalafila 5 mg diária — base do tratamento da ereção, na dose de entrada.',
+      'BASE-T10':'Tadalafila 10 mg diária — base do tratamento da ereção, dose escolhida pela gravidade do escore.',
+      'BASE-T20':'Tadalafila 20 mg diária — base na dose mais alta, pelo escore ou falha da dose anterior; reavaliar a cada ciclo.',
+      'MOD-PAROX-10':'Paroxetina 10 mg diária — retarda a ejaculação; uso diário porque as relações são frequentes.',
+      'MOD-PAROX-20':'Paroxetina 20 mg diária — dose plena, pela intensidade da queixa ou resposta insuficiente à dose menor.',
+      'MOD-DAPO-30':'Dapoxetina 30 mg sob demanda — retarda a ejaculação só quando há relação.',
       'MOD-DAPO-60':'Dapoxetina 60 mg sob demanda — dose plena, pela intensidade da queixa.',
-      'MOD-CLOMI-25':'Clomifeno 25 mg em dias alternados — eleva a testosterona preservando a espermatogênese, ao contrário da testosterona exógena, que suprime o eixo.',
-      'MOD-CLOMI-50':'Clomifeno 50 mg em dias alternados — escalonamento por resposta hormonal insuficiente.',
-      'NOITE-1':'Composto noturno — maca tem RCT de aumento de libido independente da testosterona, ashwagandha reduz cortisol de forma consistente em meta-análise, e zinco, selênio e vitamina D corrigem deficiências que impactam o eixo.',
-      'NOITE-2':'Composto noturno com ioimbina — a ioimbina dividida entre manhã e noite chega a 10,8 mg/dia, mais perto do regime do ensaio clássico, porque o efeito dela depende de exposição contínua e leva 2 a 3 semanas.',
-      'FERT-SUP':'Composto de suporte à espermatogênese — CoQ10 e L-carnitina nas doses dos ensaios. É suporte, não tratamento: os dois maiores ECRs de antioxidantes em infertilidade masculina foram negativos.',
-      'SP-DE':'Spray sublingual de tadalafila — entrega a dose sob demanda por via que pula o primeiro passo hepático, com início mais rápido que o comprimido.',
-      'SP-DUO':'Spray sublingual com tadalafila e clomipramina no mesmo jato — trata ereção e ejaculação numa aplicação só, titulável em 1 ou 2 jatos.',
-      'SP-DUO-1J':'Spray com tadalafila e clomipramina, limitado a 1 jato — a paroxetina em uso inibe CYP2D6 e eleva os níveis do tricíclico.',
-      'RET-1':'Creme retardante com lidocaína e prilocaína base — reduz a aferência sensorial da glande, que é o braço periférico do reflexo ejaculatório.',
-      'PRESERV':'Preservativo com benzocaína — recurso mais barato, sem prescrição e sem efeito sistêmico, e que soma proteção contra IST.',
-      'ICI':'Terapia intracavernosa — atua distalmente à via do óxido nítrico, por isso funciona mesmo quando o PDE5i oral falha.',
-      'ONDAS':'Ondas de choque de baixa intensidade — estímulo de neovascularização, com melhor resposta em disfunção vascular leve a moderada.',
-      'TEFI':'Teste de ereção fármaco-induzida com Doppler — separa insuficiência arterial de escape venoso e define qual é a via seguinte.',
-      'LABS':'Perfil hormonal — libido reduzida sem testosterona documentada não tem diagnóstico, e tratar sintoma sem saber a causa costuma falhar.',
-      'POWER MIX':'Suplemento de suporte — não é tratamento, é manutenção de vitalidade e libido.',
+      'MOD-CLOMI-25':'Clomifeno 25 mg em dias alternados — eleva a testosterona preservando a fertilidade.',
+      'MOD-CLOMI-50':'Clomifeno 50 mg em dias alternados — dose maior, por resposta hormonal insuficiente.',
+      'NOITE-1':'Composto noturno — suporte à libido, ao estresse e ao eixo hormonal.',
+      'NOITE-2':'Composto noturno com ioimbina — suporte à libido, com ioimbina pela queda de desejo.',
+      'FERT-SUP':'Composto de suporte à espermatogênese — suporte, não tratamento.',
+      'SP-DE':'Spray sublingual de tadalafila — dose sob demanda antes da relação, de ação rápida.',
+      'SP-DUO':'Spray sublingual com tadalafila e clomipramina — ereção e ejaculação no mesmo jato (1 ou 2 jatos).',
+      'SP-DUO-1J':'Spray com tadalafila e clomipramina, no máximo 1 jato — limite pela paroxetina em uso.',
+      'RET-1':'Creme retardante com lidocaína e prilocaína — reduz a sensibilidade da glande.',
+      'PRESERV':'Preservativo com benzocaína — retardante sem receita, que também protege contra IST.',
+      'ICI':'Terapia intracavernosa — funciona mesmo quando a via oral falha.',
+      'ONDAS':'Ondas de choque de baixa intensidade — sessões na clínica para melhorar a circulação do pênis.',
+      'TEFI':'Teste de ereção com Doppler — mostra se a causa é arterial ou escape venoso e define a próxima via.',
+      'LABS':'Perfil hormonal — documenta a testosterona antes de tratar a queda de libido.',
+      'POWER MIX':'Suplemento de suporte — manutenção, não tratamento.',
     };
     const rc_porque=[], rc_comp=[], rc_fora=[], rc_mud=[];
 
-    if (S.hasDE && bDE) rc_porque.push('IIEF-5 de '+sIIEF+'/25 classifica como <b>'+bDE.label+'</b>, o que define o nível da base.');
-    if (S.hasEP && bEP) rc_porque.push('PEDT de '+sPEDT+'/20 classifica como <b>'+bEP.label+'</b>.');
-    if (psico) rc_porque.push('Ereção preservada na masturbação e ereção matinal presente apontam <b>componente psicogênico</b> — por isso a via é oral e comportamental, sem investigação vascular.');
-    if (organico) rc_porque.push('Falha na masturbação e ausência de ereção matinal apontam <b>componente orgânico</b>, o que justifica investigar antes de apenas escalonar dose.');
-    if (hipersens) rc_porque.push('Biotensiômetro em '+bio+' confirma <b>hipersensibilidade da glande</b> — braço periférico do reflexo. Por isso o anestésico tópico entra somado à medicação, não no lugar dela.');
-    if (S.freq==='alta' && S.hasEP) rc_porque.push('Duas ou mais relações por semana tornam o <b>uso contínuo</b> mais prático e mais eficaz que o sob demanda.');
-    if (S.freq==='baixa' && S.hasEP) rc_porque.push('Frequência baixa de relações favorece o <b>uso sob demanda</b> — não faz sentido medicar todos os dias quem tem relação esporádica.');
-    if (vascular && S.hasDE) rc_porque.push('Comorbidade vascular ou metabólica muda o prognóstico e acelera a indicação de avaliação hemodinâmica.');
-    if (S.fert==='sim') rc_porque.push('Desejo de engravidar nos próximos 12 meses tem <b>prioridade sobre as demais decisões</b> e exclui ISRS contínuo.');
-    if (semTada) rc_porque.push('Contraindicação cardiovascular à tadalafila <b>bloqueia toda a linha oral e sublingual</b>, independentemente do escore.');
+    if (S.hasDE && bDE) rc_porque.push('IIEF-5 '+sIIEF+'/25: <b>'+bDE.label+'</b> — define a dose da base.');
+    if (S.hasEP && bEP) rc_porque.push('PEDT '+sPEDT+'/20: <b>'+bEP.label+'</b>.');
+    // perfil psicogênico/orgânico e hipersensibilidade da glande já estão nas observações clínicas
+    if (S.freq==='alta' && S.hasEP) rc_porque.push('Duas ou mais relações por semana: <b>uso contínuo</b>.');
+    if (S.freq==='baixa' && S.hasEP) rc_porque.push('Relações esporádicas: <b>uso sob demanda</b>.');
+    if (vascular && S.hasDE) rc_porque.push('Comorbidade vascular ou metabólica: antecipa a avaliação hemodinâmica.');
+    if (S.fert==='sim') rc_porque.push('Deseja engravidar em 12 meses: <b>tem prioridade</b> e exclui ISRS contínuo.');
+    if (semTada) rc_porque.push('Contraindicação cardiovascular à tadalafila: <b>sem linha oral e sublingual</b>.');
 
     kit.forEach(e=>{ const c=Array.isArray(e)?e[0]:e;
       if (RAZAO[c] && !rc_comp.some(x=>x.startsWith('<b>'+c))) rc_comp.push('<b>'+c+'</b> — '+RAZAO[c]); });
     if (/-I$/.test((kit[0]&&(Array.isArray(kit[0])?kit[0][0]:kit[0]))||''))
-      rc_comp.push('<b>Ioimbina na base</b> — libido reduzida com testosterona normal e sem contraindicação. Meta-análise de 7 ECRs, OR 3,85 contra placebo, com efeito sobre desejo além da ereção.');
+      rc_comp.push('<b>Ioimbina na base</b> — libido reduzida com testosterona normal e sem contraindicação.');
 
     if (!ramoL && S.hasDE){
-      if (S.libido!=='sim') rc_fora.push('<b>Ioimbina</b> — não há queixa de queda de desejo, e sem isso ela só acrescenta risco cardiovascular.');
-      else if (S.testo==='baixa') rc_fora.push('<b>Ioimbina</b> — a libido reduzida tem causa hormonal. Tratar hipogonadismo resolve; ioimbina em cima não.');
-      else if (S.contraIoim==='sim') rc_fora.push('<b>Ioimbina</b> — há contraindicação declarada (ansiedade, HAS não controlada, doença renal ou uso de serotoninérgico).');
-      else if (trataEP) rc_fora.push('<b>Ioimbina</b> — não se associa a agente serotoninérgico, e a ejaculação precoce é a prioridade deste ciclo.');
+      if (S.libido!=='sim') rc_fora.push('<b>Ioimbina</b> — sem queixa de queda de desejo.');
+      else if (S.testo==='baixa') rc_fora.push('<b>Ioimbina</b> — a libido baixa tem causa hormonal: tratar o hipogonadismo.');
+      else if (S.contraIoim==='sim') rc_fora.push('<b>Ioimbina</b> — contraindicação declarada.');
+      else if (trataEP) rc_fora.push('<b>Ioimbina</b> — não se associa a serotoninérgico; a ejaculação precoce é a prioridade.');
     }
-    if (usaISRS) rc_fora.push('<b>Paroxetina, dapoxetina e clomipramina</b> — o paciente já usa antidepressivo serotoninérgico, e somar outro é duplicação de risco.');
-    else if (S.hasEP && S.freq==='baixa' && kit.every(e=>!/PAROX/.test(Array.isArray(e)?e[0]:e))) rc_fora.push('<b>ISRS contínuo</b> — a frequência baixa de relações não justifica medicar todos os dias.');
-    if (S.depre==='sim') rc_fora.push('<b>Spray com clomipramina</b> — história psiquiátrica relevante, e o frasco guarda 900 mg de tricíclico.');
-    if (semTada && S.hasEP) rc_fora.push('<b>Spray SP-DUO</b> — contém tadalafila, que está contraindicada neste paciente.');
-    if (S.topico==='nenhum' && S.hasEP) rc_fora.push('<b>Anestésico tópico</b> — o paciente declarou restrição às duas vias. Se houver indicação, vale reabordar.');
-    else if (S.topico==='so_pomada' && S.hasEP) rc_fora.push('<b>Preservativo retardante</b> — o paciente prefere a pomada. Continua sendo opção se a resposta for parcial.');
-    else if (S.topico==='so_preserv' && S.hasEP) rc_fora.push('<b>Pomada anestésica</b> — o paciente prefere o preservativo. Continua sendo opção se a resposta for parcial.');
-    if (ondasOpc) rc_porque.push('As ondas de choque entram como <b>oferta opcional</b>, não como parte obrigatória do protocolo — o paciente não preenche indicação estrita, mas não progrediu com o que foi instituído.');
-    if (psico && !ondasOpc) rc_fora.push('<b>Ondas de choque e Doppler</b> — o perfil é psicogênico. Não há disfunção vascular a corrigir, e oferecer equipamento aqui não ajuda o paciente.');
-    else if (!ondas && !ondasOpc && S.hasDE) rc_fora.push('<b>Ondas de choque</b> — não há, até aqui, falha oral, contraindicação a tadalafila nem comorbidade vascular que as justifique.');
-    if (S.fert==='sim') rc_fora.push('<b>Testosterona exógena</b> — suprimiria a espermatogênese. O clomifeno faz o mesmo trabalho hormonal preservando a fertilidade.');
+    if (usaISRS) rc_fora.push('<b>Paroxetina, dapoxetina e clomipramina</b> — já usa antidepressivo serotoninérgico.');
+    else if (S.hasEP && S.freq==='baixa' && kit.every(e=>!/PAROX/.test(Array.isArray(e)?e[0]:e))) rc_fora.push('<b>ISRS contínuo</b> — relações esporádicas.');
+    if (S.depre==='sim') rc_fora.push('<b>Spray com clomipramina</b> — história psiquiátrica relevante.');
+    if (semTada && S.hasEP) rc_fora.push('<b>Spray SP-DUO</b> — contém tadalafila, contraindicada neste paciente.');
+    if (S.topico==='nenhum' && S.hasEP) rc_fora.push('<b>Anestésico tópico</b> — restrição declarada às duas vias.');
+    else if (S.topico==='so_pomada' && S.hasEP) rc_fora.push('<b>Preservativo retardante</b> — prefere a pomada.');
+    else if (S.topico==='so_preserv' && S.hasEP) rc_fora.push('<b>Pomada anestésica</b> — prefere o preservativo.');
+    // v2.4: ondas opcionais e perfil psicogênico já têm nota própria — não se repetem aqui.
+    // "Ficou de fora" só quando as ondas não estão no kit nem como complemento.
+    if (!psico && !ondas && !ondasOpc && !ondasComp && S.hasDE) rc_fora.push('<b>Ondas de choque</b> — sem falha oral, contraindicação à tadalafila ou comorbidade vascular.');
+    if (S.fert==='sim') rc_fora.push('<b>Testosterona exógena</b> — suprime a espermatogênese; o clomifeno preserva a fertilidade.');
 
     if (reav){
-      if (travado && (S.adesao==='baixa'||S.adesao==='parou')) rc_mud.push('<b>Protocolo mantido.</b> A adesão foi insuficiente, então o ciclo não testou de fato o tratamento. Subir dose aqui mediria a dose errada.');
-      else if (travado) rc_mud.push('<b>Protocolo ajustado por efeito adverso, não por falta de eficácia.</b> Trocar o componente responsável tende a render mais que aumentar a dose.');
-      else if (mudanca && /Subir/.test(mudanca)) rc_mud.push('<b>Subimos um degrau</b> porque houve ganho, mas abaixo da diferença clinicamente relevante — o caminho está certo, a dose é que ficou curta.');
-      else if (mudanca && /Trocar/.test(mudanca)) rc_mud.push('<b>Trocamos o mecanismo</b> porque não houve ganho com boa adesão e sem efeito limitante. Repetir a mesma via em dose maior teria baixa chance.');
-      else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) rc_mud.push('<b>Saímos da via oral.</b> O paciente já estava no degrau mais alto sem ganho relevante, e insistir apenas adia a avaliação que define a conduta.');
-      else rc_mud.push('<b>Protocolo mantido.</b> O ganho foi consistente e a regra é não mexer no que está funcionando.');
-      rc_mud.push('Alteramos <b>uma variável só</b> neste ciclo. Duas mudanças simultâneas tornariam impossível saber qual delas funcionou na próxima reavaliação.');
+      if (travado && (S.adesao==='baixa'||S.adesao==='parou')) rc_mud.push('<b>Protocolo mantido</b> — adesão insuficiente: o ciclo não testou o tratamento.');
+      else if (travado) rc_mud.push('<b>Ajustado por efeito adverso</b>, não por falta de eficácia.');
+      else if (mudanca && /Subir/.test(mudanca)) rc_mud.push('<b>Subimos um degrau</b> — houve ganho, mas abaixo do clinicamente relevante.');
+      else if (mudanca && /Trocar/.test(mudanca)) rc_mud.push('<b>Trocamos o mecanismo</b> — sem ganho, com boa adesão e sem efeito limitante.');
+      else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) rc_mud.push('<b>Saímos da via oral</b> — já no degrau mais alto, sem ganho relevante.');
+      else rc_mud.push('<b>Protocolo mantido</b> — ganho consistente.');
     }
 
     const secao=(t,arr,cls)=> arr.length ? '<h5>'+t+'</h5><ul class="'+(cls||'')+'">'+arr.map(x=>'<li>'+x+'</li>').join('')+'</ul>' : '';
     const racHtml = '<div class="rac">'
       + secao('Por que este protocolo', rc_porque)
       + secao('O que cada item faz', rc_comp)
-      + secao('O que ficou de fora e por quê', rc_fora, 'fora')
-      + secao(reav?'Por que mudamos ou mantivemos':'', rc_mud)
+      + secao('O que ficou de fora', rc_fora, 'fora')
+      + secao(reav?'Mudança deste ciclo':'', rc_mud)
       + '</div>';
     el('racBox').innerHTML = racHtml;
     el('racTitulo').style.display = 'block';
@@ -5825,9 +5847,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     add('Custo estimado do ciclo', CUS.idx+'/10'+(CUS.temOpc?'  ·  com opcional: '+CUS.idxComOpc+'/10':'')+'  ('+CUS.total+' pontos · maior peso: '+(CUS.itens.slice(0,3).map(i=>i.cod).join(', ')||'—')+')');
     const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=F[c];return i?`<b>${c.replace('-1J','')}</b> — ${i.txt} · ${i.pos}`:'';}).filter(Boolean).join('<br>');
     el('report').innerHTML=`<h4>Relatório da consulta</h4><table>${rows.join('')}</table>
-      <h4>Protocolo prescrito</h4><div style="font-size:14px;line-height:1.6;">${kitTxt||'—'}</div>
-      <h4>Racional da conduta</h4><div style="font-size:13px;line-height:1.55;">${racHtml}</div>
-      <div style="margin-top:28px;font-size:13px;opacity:.7;">_______________________________________<br>Dr. Marco Corsetti — CRM 52.94351-7 — RQE 31969</div>`;
+      <h4 class="so-papel">Protocolo prescrito</h4><div class="so-papel" style="font-size:14px;line-height:1.6;">${kitTxt||'—'}</div>
+      <div class="assinatura" style="margin-top:28px;font-size:13px;opacity:.7;">_______________________________________<br>Dr. Marco Corsetti — CRM 52.94351-7 — RQE 31969</div>`;
 
 
     // ---------------- RELATÓRIO DO PACIENTE ----------------
@@ -5994,6 +6015,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const dados = [], blocos = [];
     [...el('report').children].forEach(n=>{
       if (n.tagName==='H4'){ secao = txt(n); return; }
+      if (n.classList && n.classList.contains('assinatura')) return;   // v2.4: assinatura não entra no texto
       if (!secao || !MANTER.test(secao)) return;
       if (n.tagName==='TABLE'){
         const principal = /^(Relatório|Registro)/.test(secao);
@@ -6887,7 +6909,24 @@ document.documentElement.setAttribute('data-tema',t)})();
     const sub = ativo ? '· '+ativo : (codigoCurto ? classe : txt('recoLine'));
     const vis = {reav:'Reavaliação', primeira:'Primeira avaliação'}[S.visita] || '';
     const queixa = MX_QUEIXA[S.queixa] || '';
-    const chips = txt('marcador').split(' · ').map(s=>s.trim()).filter(c=>c && c.toLowerCase()!==vis.toLowerCase());
+    // v2.4 (item 9): ondas de choque e TEFI ganham uma linha própria de situação
+    // (no protocolo / oferta complementar / não indicadas; TEFI a agendar / realizado)
+    const linhaDE = !!(reg && S.hasDE && (reg.tipo==='primeira' || reg.tipo==='reavaliacao'));
+    const st = [];
+    if (linhaDE){
+      const so = statusOndasCiclo(reg);
+      st.push(so==='protocolo' ? ['sim','Ondas de choque','no protocolo']
+            : so==='complementar' ? ['opc','Ondas de choque','oferta complementar · custo à parte']
+            : ['','Ondas de choque','não indicadas']);
+      const tb = S.tefiBanco && S.tefiBanco.tefiExame ? S.tefiBanco : null;
+      st.push(reg.tefi ? ['sim','TEFI com Doppler','realizado hoje']
+            : reg.tefiIndicado ? ['opc','TEFI com Doppler','indicado · a agendar']
+            : tb ? ['','TEFI com Doppler','realizado'+(tb.dataBR?' em '+tb.dataBR:'')]
+            : (prev && prev.tefi && prev.tefi.resp) ? ['','TEFI com Doppler','realizado']
+            : ['','TEFI com Doppler','não indicado']);
+    }
+    const chips = txt('marcador').split(' · ').map(s=>s.trim()).filter(c=>c && c.toLowerCase()!==vis.toLowerCase())
+      .filter(c=>!linhaDE || !/^(ondas de choque|TEFI)/i.test(c));
     const esc = [];
     const iief = reg && reg.iief!=null ? reg.iief : null, pedt = reg && reg.pedt!=null ? reg.pedt : null;
     if (iief!=null) esc.push(['IIEF-5', iief, prev && prev.iief!=null ? 'antes '+prev.iief : 'de 25']);
@@ -6898,6 +6937,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+'">'+escH(titulo)+'</div>'
       + (sub && sub!==titulo ? '<div class="mx-cdtit">'+(ativo ? '<span class="sig-ativo">'+escH(sub)+'</span>' : escH(explicaSiglas(sub)))+'</div>' : '')
       + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(explicaSiglas(c))+'</span>').join('')+'</div>' : '')
+      + (st.length ? '<div class="mx-cdstatus" id="mxCdStatus">'+st.map(([c,n,v])=>'<span class="'+c+'"><b>'+escH(n)+'</b>'+escH(v)+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
       + '</div>'
       + (esc.length ? '<div class="mx-scores">'+esc.map(([n,v,d])=>'<div class="mx-esc">'+qn(escH(n))+qv(escH(String(v)))+'<small>'+escH(d)+'</small></div>').join('')+'</div>' : '');
