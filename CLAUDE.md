@@ -287,7 +287,18 @@ opção por `data-v` / `data-campo`. Não remova essas marcações.
   (`qn()`/`qv()`/`qEscore()` — envolvem o texto existente, o prontuário copiado
   não muda; dica de tela com HTML via `hintHtml`); botões do trilho com a mesma
   caixa; "Ir para a conduta ⌘↵" e, com pendência, a lista clicável
-  `#mxFaltam` ("Falta responder N perguntas:").
+  `#mxFaltam` ("Falta responder N perguntas:"). ⌘K não inicia atendimento:
+  escolher abre "Iniciar atendimento" / "Só consultar prontuário"
+  (`mxIniciaPaciente`, `mxConsultaProntuario` → `abreHistorico(cod)`, gaveta
+  só leitura que não toca em `S`); "Consultar prontuário" na abertura
+  (`#mxConsultaInicio`). "Fila de hoje" é botão (`#mxFilaTopo` →
+  `#mxFilaSheet`). **Fila × atendidos:** `S.fila` só com quem aguarda,
+  `S.filaAtendidos` à parte (`mxSeparaFila`); "Concluir atendimento"
+  (`#concluirBtn`, `mxConcluir`) marca o registro da recepção de hoje com
+  `Store.marcarAtendido` → `PUT /api/triagem/<cod>/atendido` (perfis médico e
+  recepção; nunca apaga, só acrescenta `atendido`/`atendidoEm`/`atendimentoLog`;
+  no modo artefato, coleção `atendidos` só de acréscimos). A recepção mostra
+  aguardando × atendidos só na tela do código (`#filaHoje`).
 - **Prévia ao vivo:** o mesmo app num iframe oculto com `?previa=1`
   (`PREVIA`), que roda `showResults()` com uma cópia das respostas e **nunca
   grava** (salvarCiclo, sessão, fila e localStorage viram no-op; Store fica em

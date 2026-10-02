@@ -639,6 +639,17 @@
   .kcod{display:inline-block;margin-top:22px;padding:12px 26px;border-radius:99px;
         background:rgba(11,31,59,.06);font-size:20px;letter-spacing:.1em;font-weight:600}
   .kcod:empty{display:none}
+  .kfila{margin-top:28px;border-top:1px solid rgba(11,31,59,.12);padding-top:14px;font-size:14px;color:#33404f}
+  .kfila-cab b{color:#0b1f3b}
+  .kfila-ver{border:0;background:transparent;color:#0b1f3b;text-decoration:underline;cursor:pointer;font:inherit;font-size:13px;margin-left:8px}
+  .kfila-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:10px}
+  .kfila-tit{font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6b5310;margin-bottom:6px}
+  .kfila ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+  .kfila li{font-size:13.5px} .kfila li .h{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:#4a5464;margin-right:6px}
+  .kfila li .t{font-size:11.5px;border:1px solid #b9c0cb;border-radius:999px;padding:0 7px;color:#44505f}
+  .kfila li .s{font-size:12px;color:#1E7F3C}
+  .kdev{border:1px solid #b9c0cb;background:#fff;border-radius:8px;font:inherit;font-size:12px;padding:2px 8px;cursor:pointer;margin-left:4px}
+  .kfila p{margin:0;font-size:13px;opacity:.7}
 </style>
 
 <main>
@@ -653,6 +664,7 @@
         <button class="kbtn kghost" id="voltar">Voltar</button>
         <button class="kbtn kprim" id="avancar" disabled>Continuar</button>
       </div>
+      <div class="kfila" id="filaHoje" style="display:none;" aria-live="polite"></div>
     </div>
     <div id="fim" style="display:none;">
       <div class="kfim">
@@ -803,10 +815,34 @@
         }
         if (this.modo==='claude'){
           const r=await this.db.collection('recepcao').orderBy('data','desc').limit(60).get();
-          return (r.docs||[]).map(d=>d.data()).filter(ehHoje);
+          const lista=(r.docs||[]).map(d=>Object.assign({}, d.data())).filter(ehHoje);
+          // v2.4: estado "atendido" gravado pelo consultório (coleção só de acréscimos)
+          try{
+            const a=await this.db.collection('atendidos').orderBy('em','asc').get();
+            const est={}; (a.docs||[]).forEach(d=>{ const x=d.data(); est[norm(x.codigo)+'|'+(x.recepcao||'')]=x; });
+            lista.forEach(f=>{ const x=est[norm(f.codigo)+'|'+(f.data||'')];
+              if (x){ f.atendido=!!x.atendido; if (x.atendido) f.atendidoEm=x.em; } });
+          }catch(e){}
+          return lista;
         }
       }catch(e){}
       return [];
+    },
+    // v2.4: devolver à fila um paciente marcado como atendido por engano (nada é apagado)
+    async marcarAtendido(reg, atendido){
+      const marca = atendido!==false;
+      try{
+        if (this.modo==='rede'){
+          const r=await fetch(this.api+'/api/triagem/'+encodeURIComponent(norm(reg.codigo))+'/atendido',
+            {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({atendido:marca, recepcao:reg.data||undefined})});
+          return r.ok;
+        }
+        if (this.modo==='claude'){
+          await this.db.collection('atendidos').add({codigo:norm(reg.codigo), recepcao:reg.data||null, atendido:marca, em:new Date().toISOString()});
+          return true;
+        }
+      }catch(e){}
+      return false;
     },
     // próximo código LIVRE: maior que tudo o que já existe — o que o servidor
     // sugere, a lista de pacientes, os códigos da recepção e a fila de hoje.
@@ -1139,7 +1175,46 @@
     telas=t; if(i>=telas.length) i=telas.length-1;
   }
 
+  // ---- v2.4 · hoje na clínica: aguardando × atendidos (só na tela da recepção,
+  // antes de entregar o tablet ao paciente) ----
+  let filaCache=null, filaEm=0, filaAberta=false;
+  function horaDe(iso){ const d=new Date(iso); return isNaN(d)?'':String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+  function pintaFilaHoje(forcar){
+    const box=el('filaHoje'); if(!box) return;
+    const naRecepcao = telas[i] && telas[i].id==='codigo' && el('quiz').style.display!=='none';
+    if (!naRecepcao || Store.modo==='manual'){ box.style.display='none'; return; }
+    box.style.display='block';
+    const desenha=()=>{
+      if (Store.modo==='manual'){ box.style.display='none'; return; }
+      const todos=(filaCache||[]).slice().sort((a,b)=>String(a.data||'').localeCompare(String(b.data||'')));
+      const esp=todos.filter(f=>!f.atendido), at=todos.filter(f=>f.atendido);
+      const lin=(f,atendido)=>'<li><span class="h">'+(f.hora||horaDe(f.data)||'—')+'</span><b>'+norm(f.codigo)+'</b> '
+        + (f.iniciais?String(f.iniciais).replace(/[<>&]/g,''):'')
+        + ' <span class="t">'+(f.retorno?'retorno':'novo')+'</span>'
+        + (atendido ? ' <span class="s">atendido às '+(horaDe(f.atendidoEm)||'—')+'</span> <button type="button" class="kdev" data-dev="'+norm(f.codigo)+'" data-rec="'+String(f.data||'').replace(/"/g,'')+'">Devolver à fila</button>' : '')
+        + '</li>';
+      box.innerHTML='<div class="kfila-cab">Hoje na clínica: <b>'+esp.length+'</b> aguardando · <b>'+at.length+'</b> atendido'+(at.length===1?'':'s')
+        + ' <button type="button" class="kfila-ver" id="filaVer">'+(filaAberta?'esconder lista':'ver lista')+'</button></div>'
+        + (filaAberta ? '<div class="kfila-cols"><div><div class="kfila-tit">Aguardando</div>'+(esp.length?'<ul>'+esp.map(f=>lin(f,false)).join('')+'</ul>':'<p>Ninguém.</p>')+'</div>'
+          + '<div><div class="kfila-tit">Atendidos hoje</div>'+(at.length?'<ul>'+at.map(f=>lin(f,true)).join('')+'</ul>':'<p>Nenhum ainda.</p>')+'</div></div>' : '');
+      const v=el('filaVer'); if(v) v.onclick=()=>{ filaAberta=!filaAberta; desenha(); };
+      box.querySelectorAll('[data-dev]').forEach(b=>b.onclick=async()=>{
+        const cod=b.dataset.dev;
+        if (!window.confirm('Devolver '+cod+' à fila do médico? Use só se ele foi marcado como atendido por engano. Nada é apagado.')) return;
+        const okk=await Store.marcarAtendido({codigo:cod, data:b.dataset.rec||undefined}, false);
+        if (!okk){ window.alert('Não foi possível devolver '+cod+' à fila agora.'); return; }
+        filaEm=0; pintaFilaHoje(true);
+      });
+    };
+    if (filaCache) desenha(); else box.innerHTML='<div class="kfila-cab">Consultando a fila de hoje…</div>';
+    if (forcar || !filaCache || Date.now()-filaEm>30000){
+      filaEm=Date.now();
+      (async()=>{ try{ await storePronto; filaCache=(await Store.triagensHoje())||[]; }catch(e){ filaCache=filaCache||[]; } desenha(); })();
+    }
+  }
+
   function pinta(){
+    setTimeout(()=>{ try{ pintaFilaHoje(); }catch(e){} }, 0);
     const sc=telas[i];
     const mostraBarra = sc.kind!=='intro' && sc.kind!=='jornada' && sc.id!=='codigo';
     el('passo').textContent = mostraBarra ? (sc.passo || (i+' de '+(telas.length-1))) : '';
