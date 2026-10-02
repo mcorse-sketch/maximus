@@ -140,6 +140,100 @@ inválido desativa o botão e mostra o motivo ("Informe o código do paciente
 para continuar — o próximo livre é MX0002."). Testes: tests/teste_codigo.js
 (etapa 7c) e três casos novos em teste_servidor.py. Conduta clínica idêntica.
 
+## v2.4.0 · 01/10/2026 — fila de correções de UX do Dr. Marco (sem mudar a conduta)
+
+Só interface, fluxo e texto. A conduta dos pacientes da regressão e dos 40
+fictícios (MX9101–MX9140) é a mesma da v2.3.1. Entregue em PRs empilhados:
+
+**PR A — visual (itens 1, 2, 3)**
+- **Escores em pílulas.** O nome do questionário (IIEF-5, PEDT, ADAM) fica numa
+  caixa com borda e o valor numa pílula cheia, separados, em todo lugar:
+  fila da recepção, ficha (prontuário), histórico, trilho, classificação,
+  cabeçalho da conduta, relatório e dicas das telas. Os auxiliares `qn()`,
+  `qv()` e `qEscore()` só envolvem o texto que já existia, então o prontuário
+  copiado (`__textoCopia`) não muda. Na fila e na lista do histórico "IIEF 19"
+  passou a "IIEF-5 19".
+- **Prontuário R / Histórico H / Panorama P** com a mesma caixa (altura,
+  largura, borda), rótulo e tecla na mesma linha.
+- **"Revisar conduta ⌘↵" virou "Ir para a conduta ⌘↵".** Com pergunta
+  obrigatória em aberto, além do aviso, aparece a caixa "Falta responder N
+  perguntas:" com a lista (módulo + pergunta); cada item leva à pergunta. A
+  caixa some quando não falta nada ou no ×.
+
+**PR B — fila e navegação (itens 6, 7, 8)**
+- **⌘K não inicia atendimento.** Escolher um paciente na busca abre duas
+  opções: "Iniciar atendimento" (o caminho de sempre, com confirmação se houver
+  outro em curso) ou "Só consultar prontuário". A tela inicial ganhou
+  "Consultar prontuário" (busca em modo consulta). O prontuário abre na gaveta
+  do histórico (`abreHistorico(cod)`), só leitura, sem tocar no atendimento em
+  curso — fechar volta exatamente à pergunta onde estava.
+- **"Fila de hoje N" virou botão.** Abre um popup a qualquer momento: quem
+  aguarda (hora, espera, novo × retorno, "em atendimento" para o atual, botões
+  Atender e Prontuário) e os já atendidos hoje. Fechar (× ou Esc) volta ao
+  atendimento.
+- **"Concluir atendimento"** na tela final (além de "Novo paciente"): confere
+  que o ciclo foi gravado (reenvia pendências; pede confirmação se ainda
+  estiver pendente), marca o registro da recepção de hoje como atendido no
+  servidor (`PUT /api/triagem/<código>/atendido` — só acrescenta `atendido`,
+  `atendidoEm`, `atendidoCiclo` e uma linha em `atendimentoLog`; nada é
+  apagado), tira da fila, mantém no histórico e abre a fila com o próximo já
+  indicado (confirmar com Próxima). `/api/triagens-hoje` continua devolvendo
+  todos os registros do dia, agora com o estado. A recepção mostra, na tela
+  inicial dela (antes de entregar o tablet), "N aguardando · M atendidos" com a
+  lista e "Devolver à fila" (com confirmação) para marcação por engano.
+
+**PR C — retorno (itens 4, 5)**
+- **Identificação do retorno:** só "Confirmar e continuar" — consulta anterior é
+  registro fechado (saiu "Corrigir protocolo ou escores anteriores").
+- **Queixa no retorno:** "O paciente está em tratamento para disfunção erétil e
+  ejaculação precoce (queixas da primeira avaliação). Alguma nova queixa?" — Não
+  segue o tratamento atual; Sim pergunta a nova (sem repetir as que já estão em
+  tratamento). As queixas vêm do prontuário (`queixasDoRegistro`), só para o texto.
+- **"Algum destes mudou?"** no lugar de "Algo mudou desde a última consulta? /
+  Nada mudou — confirmo tudo acima": cada item da ficha é uma linha com a
+  pergunta curta e a resposta anterior ao lado; o médico toca só no que mudou e
+  só esses itens voltam, com a resposta anterior já marcada. "Nada mudou" faz o
+  mesmo que o antigo "confirmo tudo". Medicação: "Além do que a clínica
+  prescreveu, alguma medicação mudou ou iniciou outra?".
+- **Antecedentes e ADAM não são reaplicados.** Ereção na masturbação e matinal
+  viram pergunta de evolução ("continua satisfatória? (primeira avaliação: …)"),
+  com os mesmos valores sim/não de antes. O ADAM mostra só os sintomas marcados
+  na primeira avaliação e pergunta se melhoraram; o ADAM de hoje é o que não
+  melhorou (sintoma novo abre a lista completa). O ciclo passa a gravar `mast` e
+  `matinal` (só acréscimo).
+- **Questionários da recepção:** "O paciente respondeu na recepção: IIEF-5 17
+  (disfunção erétil leve) e PEDT 11 (ejaculação precoce confirmada). Confirma?" —
+  Confirmo / Revisar (o IIEF-5 ou o PEDT) com o paciente. Revisar abre só aquele
+  questionário com as respostas dele marcadas; a confirmação mostra "Revisado com
+  o paciente: IIEF-5 17 → 15" e oferece voltar às respostas da recepção (com
+  confirmação). O registro da recepção nunca é alterado.
+- Banco fictício regravado pelo app: mesma conduta nos 40; só entram `mast`/
+  `matinal` nos ciclos e o MX9140 responde a evolução do ADAM (os quatro
+  sintomas melhoraram = mesmo ADAM "nenhum" de antes). Teste novo:
+  `tests/teste_retorno.js` (etapa 7g).
+
+**PR D — tela da conduta (itens 9, 10)**
+- **Situação das ondas de choque e do TEFI** numa linha própria no cabeçalho da
+  conduta: "Ondas de choque: no protocolo / oferta complementar · custo à parte /
+  não indicadas" e "TEFI com Doppler: indicado · a agendar / realizado / não
+  indicado" (só na linha DE; os chips não repetem). Antes, o kit gravava `ONDAS`
+  também quando elas eram só oferta complementar, e o painel do retorno dizia
+  "Ondas de choque em curso" para qualquer ONDAS no kit; agora "em curso" só
+  quando o protocolo anterior registrado inclui as sessões, e os demais casos
+  dizem "no protocolo — confirmar se iniciou" ou "oferecidas (complementar) —
+  confirmar se aceitou". O histórico e as pendências do financeiro passam a
+  mostrar a oferta complementar. O racional não diz mais "ondas de choque ficaram
+  de fora" quando elas estão no kit como complemento. Só exibição: a regra das
+  ondas e do TEFI não mudou.
+- **Racional curto, uma vez só.** Uma frase por item (o que faz e por que entrou
+  no kit), sem ensaio clínico, mecanismo ou comparação com outros remédios; o
+  que já está nas observações clínicas (perfil psicogênico/orgânico,
+  hipersensibilidade, "uma mudança por ciclo", ondas opcionais) não se repete no
+  racional. O relatório da consulta não traz mais o racional de novo, e o
+  "Protocolo prescrito" sai só no papel (na tela os quadrinhos já mostram o
+  kit) — o texto do prontuário continua igual. "Explicações e racional clínico"
+  passou a "Observações clínicas". Teste novo: `tests/teste_conduta.js` (7h).
+
 ## v2.3.1 · 01/10/2026 — receita só quando há fórmula; novas orientações pós-preenchimento; banco de teste
 
 Pedidos do Dr. Marco:

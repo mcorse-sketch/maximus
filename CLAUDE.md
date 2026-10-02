@@ -117,6 +117,11 @@ app (`tests/banco_teste.js`), nunca escrita à mão.
 índice de resistividade 0–1): não existe "valor fora da faixa" neles.
 Laboratório e medidas anatômicas têm saída para valor atípico.
 
+**Racional da conduta (v2.4):** uma frase curta por item — o que faz e por que
+entrou no kit. Sem ensaio clínico, mecanismo, dose licenciada ou comparação com
+outros remédios (pedido do Dr. Marco). Aparece uma vez só (seção "Racional da
+conduta"); o relatório da consulta não o repete. `tests/teste_conduta.js` confere.
+
 **Biotensiômetro:** abaixo de 10 vermelho, 10 a 20 verde, acima de 20 âmbar.
 
 ---
@@ -282,6 +287,23 @@ opção por `data-v` / `data-campo`. Não remova essas marcações.
   racional e custo em `<details class="mx-det">`, que saem abertos na
   impressão). **⌘↵ não calcula nada:** chama `avancar()` em sequência — o mesmo
   caminho do botão Próxima — e para na primeira obrigatória em aberto.
+- **v2.4 · correções de UX** (só apresentação e fluxo; conduta idêntica):
+  escores com o nome do questionário e o valor em pílulas separadas
+  (`qn()`/`qv()`/`qEscore()` — envolvem o texto existente, o prontuário copiado
+  não muda; dica de tela com HTML via `hintHtml`); botões do trilho com a mesma
+  caixa; "Ir para a conduta ⌘↵" e, com pendência, a lista clicável
+  `#mxFaltam` ("Falta responder N perguntas:"). ⌘K não inicia atendimento:
+  escolher abre "Iniciar atendimento" / "Só consultar prontuário"
+  (`mxIniciaPaciente`, `mxConsultaProntuario` → `abreHistorico(cod)`, gaveta
+  só leitura que não toca em `S`); "Consultar prontuário" na abertura
+  (`#mxConsultaInicio`). "Fila de hoje" é botão (`#mxFilaTopo` →
+  `#mxFilaSheet`). **Fila × atendidos:** `S.fila` só com quem aguarda,
+  `S.filaAtendidos` à parte (`mxSeparaFila`); "Concluir atendimento"
+  (`#concluirBtn`, `mxConcluir`) marca o registro da recepção de hoje com
+  `Store.marcarAtendido` → `PUT /api/triagem/<cod>/atendido` (perfis médico e
+  recepção; nunca apaga, só acrescenta `atendido`/`atendidoEm`/`atendimentoLog`;
+  no modo artefato, coleção `atendidos` só de acréscimos). A recepção mostra
+  aguardando × atendidos só na tela do código (`#filaHoje`).
 - **Prévia ao vivo:** o mesmo app num iframe oculto com `?previa=1`
   (`PREVIA`), que roda `showResults()` com uma cópia das respostas e **nunca
   grava** (salvarCiclo, sessão, fila e localStorage viram no-op; Store fica em

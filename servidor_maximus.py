@@ -68,6 +68,7 @@ PERMISSOES = {
     ("GET", "export"):         {"medico"},
     ("POST", "ciclo"):         {"medico", "recepcao"},
     ("PUT", "nota"):           {"medico"},
+    ("PUT", "atendido"):       {"medico", "recepcao"},
 }
 
 _sessoes = {}              # token -> (perfil, expira_em)
@@ -700,11 +701,70 @@ class Handler(BaseHTTPRequestHandler):
 
         self.send_error(404)
 
+    def _put_atendido(self, cod):
+        """PUT /api/triagem/<codigo>/atendido — marca (ou desmarca) como
+        atendido o registro de recepcao de HOJE daquele paciente. Corpo:
+        {"atendido": true|false, "recepcao": "opcional — data do registro",
+         "ciclo": "opcional — data do ciclo clinico gravado"}.
+        Nunca apaga nada: so acrescenta os campos atendido/atendidoEm e uma
+        linha em atendimentoLog. Desmarcar (atendido=false) devolve a fila."""
+        perfil = self._autoriza("PUT", "atendido")
+        if not perfil:
+            return
+        cod = cod.upper()
+        if not COD_OK.match(cod):
+            self._json({"erro": "codigo invalido"}, 400)
+            return
+        corpo = self._corpo_json()
+        if not isinstance(corpo, dict):
+            self._json({"erro": "corpo invalido"}, 400)
+            return
+        marca = corpo.get("atendido", True)
+        if not isinstance(marca, bool):
+            self._json({"erro": "atendido deve ser true ou false"}, 400)
+            return
+        hoje = datetime.date.today().isoformat()
+        with _lock:
+            dados = carregar()
+            ciclos = dados["pacientes"].get(cod) or []
+            do_dia = [c for c in ciclos if c.get("tipo") == "recepcao"
+                      and (c.get("dataLocal") or str(c.get("data", ""))[:10]) == hoje]
+            alvo = None
+            if corpo.get("recepcao"):
+                alvo = next((c for c in do_dia if c.get("data") == corpo["recepcao"]), None)
+            elif do_dia:
+                # o mais recente ainda no estado oposto; senao o mais recente
+                pend = [c for c in do_dia if bool(c.get("atendido")) != marca]
+                alvo = (pend or do_dia)[-1]
+            if alvo is None:
+                self._json({"erro": "sem registro da recepcao de hoje para este paciente"}, 404)
+                return
+            backup_do_dia()
+            agora = datetime.datetime.now().isoformat()
+            alvo["atendido"] = marca
+            if marca:
+                alvo["atendidoEm"] = agora
+                if corpo.get("ciclo"):
+                    alvo["atendidoCiclo"] = str(corpo["ciclo"])
+            else:
+                alvo["devolvidoEm"] = agora
+            log = alvo.get("atendimentoLog") or []
+            log.append({"atendido": marca, "em": agora, "perfil": perfil})
+            alvo["atendimentoLog"] = log
+            gravar(dados)
+        print("  %s: %s" % ("atendido" if marca else "devolvido a fila", cod))
+        self._json({"ok": True, "codigo": cod, "atendido": marca, "recepcao": alvo.get("data")})
+
     def do_PUT(self):
         """PUT /api/triagem/<codigo>/nota  — anexa ou substitui a nota medica
         do ciclo mais recente daquele paciente. Corpo: {"nota": "...",
-        "autor": "opcional", "ciclo": "opcional — id do ciclo"}"""
+        "autor": "opcional", "ciclo": "opcional — id do ciclo"}
+        PUT /api/triagem/<codigo>/atendido — ver _put_atendido."""
         caminho = self.path.split("?")[0]
+        ma = re.match(r"^/api/triagem/([^/]+)/atendido$", caminho)
+        if ma:
+            self._put_atendido(ma.group(1))
+            return
         m = re.match(r"^/api/triagem/([^/]+)/nota$", caminho)
         if not m:
             self.send_error(404)

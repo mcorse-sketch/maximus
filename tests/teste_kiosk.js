@@ -171,7 +171,47 @@ async function roda(i, mem, novo) {
   return rel;
 }
 
+// v2.4: na tela da recepção (antes de entregar o tablet), aguardando × atendidos
+async function filaDeHoje() {
+  const hoje = new Date();
+  const dia = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const reg = (cod, min, ret) => { const d = new Date(hoje.getTime() - min * 60000);
+    return { codigo: cod, tipo: 'recepcao', linha: 'recepcao', data: d.toISOString(), dataLocal: dia(d), hora: d.toTimeString().slice(0, 5), iniciais: 'XYZ', retorno: ret }; };
+  const mem = { recepcao: [reg('MX7001', 50, true), reg('MX7002', 30, false), reg('MX7003', 10, false)], codigos: [] };
+  mem.atendidos = [{ codigo: 'MX7001', recepcao: mem.recepcao[0].data, atendido: true, em: new Date().toISOString() }];
+  const vc = new VirtualConsole(); const errs = [];
+  vc.on('jsdomError', e => errs.push('jsdomError: ' + (e && e.message)));
+  const dom = new JSDOM(HTML, { url: 'file:///k/index.html', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,
+    beforeParse(w) { w.claude = { use: async () => fakeDb(mem) }; w.onerror = m => errs.push('onerror: ' + m); w.scrollTo = () => {}; w.confirm = () => true; w.alert = () => {}; } });
+  const doc = dom.window.document;
+  await espera(150);
+  const box = doc.getElementById('filaHoje');
+  const r = [];
+  const t0 = box ? box.textContent : '';
+  r.push(['na tela da recepção mostra "2 aguardando · 1 atendido"', visivel(box) && /2\s*aguardando/.test(t0) && /1\s*atendido\b/.test(t0), t0]);
+  doc.getElementById('filaVer').click(); await espera(20);
+  const t1 = box.textContent;
+  r.push(['a lista separa aguardando (MX7002, MX7003) de atendidos (MX7001)', /Aguardando.*MX7002.*MX7003.*Atendidos hoje.*MX7001/.test(t1), t1.slice(0, 200)]);
+  const dev = box.querySelector('[data-dev="MX7001"]');
+  r.push(['atendido tem "Devolver à fila"', !!dev]);
+  if (dev) { dev.click(); await espera(80); }
+  const ult = mem.atendidos[mem.atendidos.length - 1];
+  r.push(['devolver (com confirmação) acrescenta atendido=false, sem apagar nada', mem.atendidos.length === 2 && ult.atendido === false && mem.recepcao.length === 3, JSON.stringify(ult)]);
+  r.push(['depois de devolver: 3 aguardando', /3\s*aguardando/.test(box.textContent), box.textContent.slice(0, 80)]);
+  // entregou o tablet: a lista some
+  const fld = doc.querySelector('#opcoes input'); if (fld) { fld.value = 'MX7004'; fld.dispatchEvent(new dom.window.Event('input')); }
+  doc.getElementById('avancar').click(); await espera(60);
+  r.push(['fora da tela da recepção a lista não aparece (paciente com o tablet)', !visivel(box)]);
+  r.push(['sem erro de JS na fila de hoje', errs.length === 0, errs.slice(0, 2).join(' | ')]);
+  dom.window.close();
+  return r;
+}
+
 (async () => {
+  const fh = await filaDeHoje();
+  console.log('fila de hoje na recepção (v2.4)');
+  fh.forEach(([n, okk, extra]) => console.log((okk ? '  ok     ' : '  FALHA  ') + n + (!okk && extra ? '\n         ' + extra : '')));
+  const falhasFila = fh.filter(x => !x[1]).length;
   const mem = memoria();
   const rels = [];
   for (let i = 1; i <= N; i++) { rels.push(await roda(i, mem, i % 3 === 0)); if (i % 20 === 0) console.log('  ' + i + ' pacientes'); }
@@ -197,5 +237,6 @@ async function roda(i, mem, novo) {
   erros.slice(0, 6).forEach(e => console.log('   -', e));
   console.log('falhas de fluxo:', falhas.length);
   falhas.slice(0, 8).forEach(f => console.log('   - paciente', f.i, ':', f.falha));
-  process.exit(falhas.length || erros.length ? 1 : 0);
+  console.log('fila de hoje (v2.4) com falha:', falhasFila);
+  process.exit(falhas.length || erros.length || falhasFila ? 1 : 0);
 })();
