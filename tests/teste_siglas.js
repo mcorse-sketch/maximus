@@ -50,11 +50,14 @@ function soltas(win, txt) {
     if (!win.__maximusSiglas) { console.log('  FALHA  app sem window.__maximusSiglas'); process.exit(1); }
     // o próprio conferidor precisa acusar uma sigla solta e aceitar a sigla com ativo
     if (p === PACIENTES[0]) {
+      // v2.5: BASE-T20 (e BASE-T5/T10, MOD-PAROX-10/20, MOD-DAPO, MOD-CLOMI) já diz
+      // substância e dose — não é sigla solta; SP-DE e EP-2 continuam sendo
       const a = soltas(win, 'Kit: BASE-T20 e SP-DE, depois EP-2.').length;
+      const a2 = soltas(win, 'Kit: BASE-T5 e MOD-PAROX-10.').length;
       const b = soltas(win, 'Kit: BASE-T20 · tadalafila 20 mg e R7 · ' + win.__maximusSiglas.ativo('R7')).length;
       // intracavernosa: nome da substância sem a concentração não vale
       const c = soltas(win, 'Trocar para R8 (papaverina com fentolamina)').length;
-      if (a !== 3 || b !== 0 || c !== 1) { console.log('  FALHA  conferidor de siglas quebrado (' + a + ', ' + b + ', ' + c + ')'); process.exit(1); }
+      if (a !== 2 || a2 !== 0 || b !== 0 || c !== 1) { console.log('  FALHA  conferidor de siglas quebrado (' + a + ', ' + a2 + ', ' + b + ', ' + c + ')'); process.exit(1); }
       console.log('  ok     conferidor acusa sigla solta e aceita sigla com ativo');
     }
     const alvos = [];

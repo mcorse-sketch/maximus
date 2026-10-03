@@ -157,7 +157,10 @@ async function atendimento(p, viaAtalho) {
     ok(c.doc.documentElement.getAttribute('data-tema') === 'claro', 'escolha manual vale mais que o aparelho');
     c.win.close();
     ok(/@media screen\{\s*html\[data-tema="escuro"\]/.test(HTML), 'cores escuras só na tela (impressão continua clara)');
-    ok(/\.mx-acts \.btn,\.mx-acts \.hist-btn\{[^}]*height:36px[^}]*white-space:nowrap/.test(HTML), 'Prontuário / Histórico / Panorama: mesma altura, rótulo e tecla numa linha só');
+    // v2.5: caixas iguais (flex 1 1 0), mesma altura, rótulo sem quebra e tecla embaixo; o
+    // display do Histórico não leva !important (senão o "esconder" não funciona)
+    ok(/\.mx-acts \.btn,\.mx-acts \.hist-btn\{[^}]*flex:1 1 0[^}]*height:46px[^}]*white-space:nowrap/.test(HTML)
+       && !/\.mx-acts \.btn,\.mx-acts \.hist-btn\{[^}]*display:inline-flex!important/.test(HTML), 'Prontuário / Histórico / Panorama: caixas iguais, mesma altura, rótulo sem quebra');
   }
 
   // ---------- atalhos, busca, pendência ----------

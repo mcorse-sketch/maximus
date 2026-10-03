@@ -60,6 +60,18 @@ listas de escolha; em registro antigo aparece como "fórmula retirada".
 `ICI_COMPO` é só exibição — as regras do TEFI (`SEM_PAPA`/`SEM_PGE1`) não a
 leem. Mudou a tabela? Atualize `ICI_COMPO`, a cópia `ATIVO` do financeiro e a
 tabela conferida em `tests/teste_siglas.js`.
+**Exceções e resumo (v2.5, pedido de 03/10/2026).** Sigla que já diz substância
+e dose não é expandida: BASE-T5/T10/T20 e MOD-PAROX-10/20 (e, pela mesma lógica,
+MOD-DAPO-30/60 e MOD-CLOMI-25/50) — `SIGLA_AUTO`/`siglaAuto()`. O painel do
+paciente e o cabeçalho da conduta são resumo (`.sem-ativo`): sem composição
+automática ao lado, uma linha por item, dose só dos remédios-chave (tadalafila,
+paroxetina, dapoxetina, clomifeno, clomipramina) via `painelTxt()`, sem
+apresentação nem horário; o detalhe completo continua no clique da sigla.
+Protocolo de dose variável (DUO-3, DUO-4, DUO-1D, DUO-TOPICO) mostra a dose
+REAL do kit da consulta (`KIT_CTX`), nunca "5, 10 ou 20 mg (conforme o nível)".
+**Kit sem repetição (v2.5).** O kit mistura códigos e pares `[código, etiqueta]`;
+toda checagem "já está no kit?" usa `noKit()` (lê o código dos dois formatos).
+Registro antigo com código repetido é exibido com `unicos()`; nada é apagado.
 
 **Código do paciente novo (v2.2.1).** O próximo código LIVRE vem sempre
 preenchido no campo (nunca só no placeholder), nos dois apps e nos três modos,

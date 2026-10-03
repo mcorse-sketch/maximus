@@ -18,6 +18,21 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   conduta quebrava ao ler `band.key`. Corrigido com fallback; era um erro real
   na versão anterior, detectado por 32 dos 100 pacientes sintéticos.
 
+- **Conduta repetida no kit (v2.5)** — ONDAS (e potencialmente RET-1, PRESERV,
+  TEFI, LABS) saía duas vezes: o kit mistura códigos e pares `[código,
+  etiqueta]`, e `kit.indexOf('ONDAS')` não enxerga `['ONDAS','Opcional — a
+  oferecer']`. A oferta opcional e a complementar entravam as duas. Ex.: MX9103
+  2ª consulta `BASE-T20, NOITE-1, SP-DE, ONDAS, TEFI, ONDAS`. Corrigido na
+  origem com `noKit()`; exibição de registro antigo passa por `unicos()`.
+- **"Ondas de choque em curso" sem estar em curso (v2.5)** — o protocolo
+  gravado como "DUO-3 (mantido)" não está em `PROTOS`, então o ciclo anterior
+  virava "Outro" com o kit inteiro como nome (inclusive ONDAS só oferecida):
+  rótulo longo "BASE-T5 + MOD-PAROX-10 + … + ONDAS (mantido)", painel dizendo
+  "em curso" e cabeçalho dizendo "não indicadas". A exibição passou a usar o
+  nome gravado sem o sufixo (`protAntExibe()`); a lógica da conduta não mudou.
+- **NOITE-1 duas vezes no painel (v2.5)** — o painel escrevia a sigla e, na
+  linha de baixo, a composição (que começa por "NOITE-1 …"). Uma linha por item.
+
 ## Dados e persistência
 
 - **Fila sumindo às 21h** — o filtro de "hoje" usava UTC. Passou a gravar e
