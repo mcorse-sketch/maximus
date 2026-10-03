@@ -107,6 +107,20 @@ fórmula são tons de uma família. Serviços e itens sem embalagem própria nã
 cor. Tabela para a gráfica: `node scripts/cores_formulas.js [pasta]` (CSV, HTML e
 PNG com HEX e CMYK aproximado). Mudou uma cor? Só no mapa, e regere a tabela.
 
+**TEFI feito na consulta (v2.5-F).** Com `tefiFeito==='sim'` no retorno, o teste não
+volta ao kit nem aos lembretes ("Agendar TEFI"), o "teto de escalonamento" não manda
+indicar o teste (a via segue o resultado) e o painel/cabeçalho mostram "TEFI
+realizado hoje · resposta · Doppler".
+
+**Polimento visual (v2.5-F).** Alertas da conduta em lista (`alertasHtml()`): título,
+uma linha de resumo e o detalhe recolhível; o texto original de cada alerta fica num
+`<p class="al-orig">` oculto, que é o que o texto do prontuário, a prévia e a contagem
+do cabeçalho leem — mudar o visual não muda o texto. Campos em grupo: poucas opções
+curtas viram controle segmentado (`.gopts.seg`), fórmulas viram lista (`.gopts.lista`)
+e a dica do campo (`field.hint`) fica junto do rótulo. Pílula da classificação é
+curta (faixa + código, `.sem-ativo`; `teste_siglas` a dispensa). Painel: ICI como
+"R5 · trimix · dose" (`iciApelido()`), escore de hoje só quando respondido.
+
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua
 aceitando um só, e o consultório completa). Telefone é

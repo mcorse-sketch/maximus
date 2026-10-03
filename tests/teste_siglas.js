@@ -19,6 +19,9 @@ function textoDe(win, raiz) {
   while (tw.nextNode()) {
     const n = tw.currentNode, pai = n.parentNode;
     if (pai && pai.closest && pai.closest('script,style,option,select,textarea')) continue;
+    // v2.5-F (pedido do Dr. Marco, 03/10/2026): a pílula da classificação é curta — faixa + código do
+    // protocolo; a composição do protocolo aparece logo abaixo, no protocolo prescrito
+    if (pai && pai.closest && pai.closest('#classPill')) continue;
     partes.push(n.nodeValue);
   }
   return partes.join(' ');

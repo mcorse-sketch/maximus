@@ -4892,6 +4892,8 @@ document.documentElement.setAttribute('data-tema',t)})();
         res = (t.match(/^(.+?[.!?])(\s|$)/) || [null, t])[1];
       }
       res = res.charAt(0).toUpperCase() + res.slice(1);
+      // o detalhe começa em maiúscula, mesmo quando o texto original seguia o título em negrito ("…: máximo 1 jato")
+      det = det.replace(/^(\s*(?:<(?!br)[^>]+>\s*)*)([a-zà-ÿ])/, (x, a, c)=>a + c.toUpperCase());
       const lista2 = /ANTES DE ENCERRAR/i.test(n);
       // tom pelo título: vermelho só para segurança (contraindicação, bloqueio, encaminhamento, registro faltando);
       // "conduta seguiu…" e "dados estáveis…" são informativos

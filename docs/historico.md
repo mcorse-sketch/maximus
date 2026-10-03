@@ -65,6 +65,16 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   ambos" por padrão; passou a declarar que aceita as vias tópicas.
 - **Texto da opção marcada quase invisível (v2.5-E)** — a composição ao lado da
   sigla (`.sig-ativo`) mantinha o cinza sobre o fundo escuro da opção marcada.
+- **TEFI pedido de novo depois de feito (v2.5-F)** — com o TEFI feito na própria
+  consulta, a conduta ainda dizia "Agendar TEFI" e "indicar teste de ereção", e o
+  painel mostrava "TEFI indicado, não realizado". Agora some do kit e dos
+  lembretes, e o painel mostra "realizado hoje" com o resultado.
+- **Escore "9 → 9 · manteve" antes de responder (v2.5-F)** — o painel usava o
+  IIEF/PEDT anterior pré-preenchido como se fosse o de hoje.
+- **"TEFI (… com Doppler peniano) com Doppler peniano" (v2.5-F)** — a expansão da
+  sigla repetia o resto da frase.
+- **Dicas invisíveis nas telas do TEFI → intracavernosa (v2.5-F)** — as telas de
+  opções só mostram a dica com `mostraDica`; faltava nas três telas novas da v2.5-E.
 - **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
   mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
   substâncias; a dose fica no relatório. Apêndice do envio retirado.
