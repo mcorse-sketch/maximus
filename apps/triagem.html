@@ -276,9 +276,9 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   #mxRevisar:disabled{opacity:.45;cursor:not-allowed}
   .mx-cdtag{font-size:13px;font-weight:500;letter-spacing:.02em;vertical-align:middle;padding:3px 10px;border-radius:999px;border:1px solid var(--mx-line);color:var(--mx-text2);margin-left:6px}
   .mx-cdkit{display:flex;flex-direction:column;gap:4px;margin-top:12px;max-width:560px}
-  .mx-cdkit span{display:flex;gap:10px;align-items:baseline;font-size:14px;color:var(--mx-text2);padding:5px 10px;border:1px solid var(--mx-line);border-radius:8px;background:var(--mx-surf2)}
-  .mx-cdkit span b{font-weight:600;color:var(--mx-text);min-width:92px}
-  .mx-cdkit span i{font-style:normal;font-size:12px;color:var(--mx-warn);margin-left:auto}
+  .mx-cdkit > span{display:flex;gap:10px;align-items:baseline;font-size:14px;color:var(--mx-text2);padding:5px 10px;border:1px solid var(--mx-line);border-radius:8px;background:var(--mx-surf2)}
+  .mx-cdkit > span b{font-weight:600;color:var(--mx-text);min-width:92px}
+  .mx-cdkit > span i{font-style:normal;font-size:12px;color:var(--mx-warn);margin-left:auto}
   .mx-cdhead .mx-chips{margin-top:12px}
   /* v2.4 (item 10): só no papel — na tela os quadrinhos do protocolo já mostram o kit */
   @media screen{ .so-papel{display:none!important} }
@@ -1334,7 +1334,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   .mx-cor{position:absolute;top:8px;right:8px;width:12px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(1,8,12,.18);
     -webkit-print-color-adjust:exact;print-color-adjust:exact;pointer-events:none}
   .mx-cor.inl{position:static;display:inline-block;vertical-align:-1px;width:10px;height:10px;margin-left:6px}
-  .kit-card,.mx-cdkit span,.opt,.gop,.pac .med{position:relative}
+  .kit-card,.mx-cdkit > span,.opt,.gop,.pac .med{position:relative}
+  .mx-cdkit > span{padding-right:28px}
   .gop .mx-cor{top:4px;right:4px;width:9px;height:9px}
   .opt .mx-cor{top:10px;right:10px}
   /* v2.5-E: opção marcada tem fundo escuro (claro no tema escuro) — o texto secundário herda a cor da opção */
