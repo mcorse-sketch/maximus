@@ -97,6 +97,42 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     ok(/text:'Usou a dose como recomendado\?'/.test(HTML), 'intracavernosa: adesão perguntada como "Usou a dose como recomendado?"');
   }
 
+  // ---- 2b. v2.5-E: TEFI indica intracavernosa num paciente só com via oral ----
+  console.log('\n--- TEFI indica intracavernosa: avisa que está só no oral e pergunta se acrescenta');
+  for (const aceita of ['sim', 'nao']) {
+    const ciclos = [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const resp = Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao', confirmaEstavel: 'nao',
+      caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso', tefiConduta: 'ici', tefiAddIci: aceita,
+      satisfNps: { satisf: 5, nps: 7 } }, iief(10), aceita === 'sim' ? { iciFormula: 'R5 (trimix clássico)', iciDose: '0,1 mL' } : {});
+    let hint = '';
+    const r = await roda({ id: 'V5', codigo: 'MXV005', ciclos, respostas: resp }, false, { manter: true });
+    const s = r.salvo || {}, kc = s.kitCodes || [];
+    const doc = r.win.document;
+    if (aceita === 'sim') {
+      ok(!r.falha && r.caminho.includes('tefiAddIci') && r.caminho.includes('iciFormula') && r.caminho.includes('iciDose'), 'TEFI → pergunta se acrescenta a intracavernosa, depois fórmula e dose', r.falha || r.caminho.join(' > '));
+      ok(kc.includes('ICI') && kc.some(c => /^BASE-T/.test(c)) && /\+ INTRACAVERNOSA$/.test(s.protocolo || '') && /indicação do TEFI/.test(s.mudanca || ''),
+        'aceitou: intracavernosa entra no kit junto do protocolo oral', JSON.stringify({ p: s.protocolo, k: kc, m: s.mudanca }));
+      ok(s.iciPorTefi && s.iciPorTefi.acrescentada === true && s.iciPorTefi.formula === 'R5 (trimix clássico)' && s.iciPorTefi.dose === '0,1 mL' && s.iciDoseIndicada === '0,1 mL',
+        'registro guarda que a conduta seguiu o TEFI (fórmula e dose)', JSON.stringify(s.iciPorTefi));
+      ok(/Conduta seguiu indicação do TEFI: Intracavernosa acrescentada/.test(r.texto) && /Conduta seguiu indicação do TEFI/.test(doc.getElementById('report').textContent),
+        'relatório e texto do prontuário dizem que a conduta seguiu a indicação do TEFI', r.texto.split('\n').filter(l => /TEFI/.test(l)).join(' | '));
+      r.win.close();
+      // retorno seguinte: já está em intracavernosa — não regride ao oral
+      const ciclos2 = ciclos.concat([Object.assign({}, s, { data: iso(10), dataBR: br(10) })]);
+      const r2 = await roda({ id: 'V5b', codigo: 'MXV005', ciclos: ciclos2, respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao',
+        iciUso: { iciTempo: '1h' }, adesao: 'total', ea: 'nao', iciQual: { iciQualidade: '4', iciFreq: '1a2' }, confirmaEstavel: 'nao',
+        caracteriza: { mast: 'nao', matinal: 'nao' }, satisfNps: { satisf: 8, nps: 9 } }, iief(15)) }, true, {});
+      const s2 = r2.salvo || {};
+      ok(!r2.falha && s2.protocolo === 'INTRACAVERNOSA (mantido)' && (s2.kitCodes || []).includes('ICI') && s2.iciCasa && s2.iciCasa.dose === '0,1 mL',
+        'retorno seguinte: já em intracavernosa (dose 0,1 mL vem preenchida), não volta ao oral', r2.falha || JSON.stringify({ p: s2.protocolo, k: s2.kitCodes, c: s2.iciCasa }));
+    } else {
+      ok(!r.falha && !kc.includes('ICI') && !r.caminho.includes('iciFormula') && s.iciPorTefi && s.iciPorTefi.acrescentada === false
+        && /mantém só a via oral/.test(doc.body.textContent), 'recusou: kit só oral, registro e nota dizem que o TEFI indicou e o médico manteve o oral', r.falha || JSON.stringify({ k: kc, t: s.iciPorTefi }));
+      r.win.close();
+    }
+  }
+
   // ---- 3. via do paciente sem dose dos componentes; pedido de exames; sem apêndice ----
   console.log('\n--- envio: via do paciente sem doses, pedido de exames editável, sem apêndice');
   {

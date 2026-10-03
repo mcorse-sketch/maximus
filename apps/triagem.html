@@ -3180,7 +3180,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     {n:'Medica\u00e7\u00f5es e alergias', ids:['medsRisco','alergia','parox','topico','freq','fert','querFilho','trtPrevio','contraind','pref','experiencia']},
     {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','satisf','nps','satisfNps',
       'i0','i1','i2','i3','i4','p0','p1','p2','p3','p4','p5','refazer','usarTotaisRec']},
-    {n:'Exames', ids:['labs','tTotal','tLivre','shbg','lh','fsh','prolactina','estradiol','ht','psa','testo','biotens','idade','examesFeitos','tefiFeito','tefiResp','tefiDoppler','tefiConduta','tefiMed','tefiDose','t10grau','t20grau','doseComp','doseCompML','t30grau','tefiFinal','dorGrau','dorQuando','curvGrau','dopplerFeito','doppler','psv','edv','ir','iciFormula','iciDose']},
+    {n:'Exames', ids:['labs','tTotal','tLivre','shbg','lh','fsh','prolactina','estradiol','ht','psa','testo','biotens','idade','examesFeitos','tefiFeito','tefiResp','tefiDoppler','tefiConduta','tefiAddIci','tefiMed','tefiDose','t10grau','t20grau','doseComp','doseCompML','t30grau','tefiFinal','dorGrau','dorQuando','curvGrau','dopplerFeito','doppler','psv','edv','ir','iciFormula','iciDose']},
     {n:'Procedimento', ids:['tipoPenis','medPre','compFlac','diamFlac','prepucio','retracao','plano','previsaoML','planoBotox','concordou','termo','medPos','compPos','diamPos','mlUsado','botox','marcaAH','notaMedico','medRet','compRet','diamRet','retracaoRet','nodulos','notaMedicoRet','satisfPac','conduta','botoxUI','mlRetoque','marcaRetoque','aplicacao','mlHialuro']},
     {n:'Escolha da conduta', ids:['escolha','notaFinal']}
   ];
@@ -4174,11 +4174,26 @@ document.documentElement.setAttribute('data-tema',t)})();
                  : (S.tefiDoppler==='normal' ? 'Sugerido: manter o tratamento oral — hemodinâmica sem alteração vascular.'
                  : 'Sugerido: intracavernosa — achado misto ou inconclusivo tem baixa resposta oral.'))),
             options:[{v:'manter',badge:'→',label:'Manter tratamento oral'},{v:'ondas',badge:'📡',label:'Iniciar ondas de choque'},{v:'ici',badge:'💉',label:'Iniciar intracavernosa'}]});
-          if (S.tefiConduta==='ici'){
-            s.push({id:'iciFormula',kind:'select',step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual fórmula intracavernosa?',
-              list:['R1','R2','R4','R5 (trimix clássico)','R6','R7','R8','R9','R10','R11','R12']});
-            s.push({id:'iciDose',kind:'text',step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual dose inicial, em mL?',ph:'ex.: 0,1 mL',
-              hint:'Dose-teste sempre em consultório, com observação da detumescência.'});
+          // v2.5-E (item 2): o TEFI indica intracavernosa e o paciente está só com a via oral —
+          // o app avisa e pergunta se a intracavernosa entra na conduta de hoje (fórmula e dose)
+          const indicaIciTefi = S.tefiConduta==='ici' || S.tefiDoppler==='venoso' || S.tefiDoppler==='misto';
+          if (indicaIciTefi){
+            const kOral = unicos(prev.kitCodes).filter(c=>!['TEFI','LABS','ONDAS','ICI'].includes(c));
+            const pOral = nomeProtocolo(prev.protocolo||'') || 'protocolo oral';
+            const motivoT = S.tefiConduta==='ici' ? 'Conduta definida após o TEFI: iniciar intracavernosa.'
+              : (S.tefiDoppler==='venoso' ? 'Doppler com escape venoso: a via é a intracavernosa.' : 'Doppler misto ou inconclusivo: baixa resposta oral.');
+            s.push({id:'tefiAddIci',kind:'opts',step:'Reavaliação',eyebrow:'TEFI indica intracavernosa',
+              text:'O paciente está hoje só com protocolo oral. Acrescentar a intracavernosa à conduta?',
+              hint:motivoT+' Protocolo atual: '+pOral+(kOral.length?' · '+kOral.join(', '):'')+'.',
+              options:[{v:'sim',badge:'💉',label:'Sim, acrescentar a intracavernosa'},{v:'nao',badge:'→',label:'Não, manter só a via oral por enquanto'}]});
+            if (S.tefiAddIci==='sim'){
+              s.push({id:'iciFormula',kind:'opts',step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual fórmula intracavernosa?',
+                hint:'Fórmulas da Fluka: R1, R2 e R4 a R12.',
+                options:ICI_LISTA.map(x=>({v:x,badge:'R',label:x.replace(' (trimix clássico)','')}))});
+              s.push({id:'iciDose',kind:'opts',step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual dose inicial?',
+                hint:'Dose-teste sempre em consultório, com observação da detumescência.',
+                options:['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'].map(x=>({v:x,badge:'mL',label:x}))});
+            }
           }
         }
       }
@@ -5576,7 +5591,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (S.tefiDoppler==='arterial') notas.push('Insuficiência arterial com função cavernosa preservada é <b>o perfil que mais responde a ondas de choque</b> — é aqui que as sessões valem mais.');
       if (S.tefiDoppler==='venoso') notas.push('Escape venoso <b>responde mal a ondas de choque</b>. Não indicar as sessões; a via é intracavernosa, e discutir prótese se houver falha também nela.');
       if (S.tefiResp==='ausente') notas.push('Resposta ausente ao teste aponta comprometimento vascular importante. Rediscutir expectativa com o paciente antes de qualquer nova tentativa oral.');
-      if (S.tefiConduta==='ici') notas.push('<b>Conduta: intracavernosa</b> — '+(S.iciFormula||'fórmula a definir')+', dose inicial '+(S.iciDose||'a definir')+'. Primeira aplicação em consultório, com orientação escrita de priapismo: ereção acima de 4 horas é urgência.');
+      if (S.tefiConduta==='ici' && S.tefiAddIci===undefined) notas.push('<b>Conduta: intracavernosa</b> — '+(S.iciFormula||'fórmula a definir')+', dose inicial '+(S.iciDose||'a definir')+'. Primeira aplicação em consultório, com orientação escrita de priapismo: ereção acima de 4 horas é urgência.');
     }
     if (S.previa==='falhou'&&S.adequado==='sim'&&lvlDE>0&&lvlDE<4&&!travado){
       lvlDE=Math.min(lvlDE+1,3);
@@ -5844,6 +5859,21 @@ document.documentElement.setAttribute('data-tema',t)})();
       else prot = (S.protAnt&&S.protAnt!=='—') ? (protAntExibe(' + ')||'esquema anterior')+' (mantido)' : prot+' (mantido)';
       mudanca='Nenhuma — manter e resolver a causa';
     }
+    // v2.5-E (item 2): TEFI indicou intracavernosa num paciente só com via oral — se o médico
+    // aceitou, a intracavernosa entra no kit junto do protocolo oral e o registro diz que a
+    // conduta seguiu a indicação do TEFI
+    const iciPorTefi = (reav && !emICIant && S.tefiFeito==='sim' && (S.tefiAddIci==='sim'||S.tefiAddIci==='nao')) ? S.tefiAddIci : null;
+    const protOralTefi = prot;
+    if (iciPorTefi==='sim'){
+      if (!noKit('ICI')) kit = kit.concat(['ICI']);
+      prot = prot + ' + INTRACAVERNOSA';
+      mudanca = 'Intracavernosa acrescentada por indicação do TEFI' + (mudanca && !/^Nenhuma/.test(mudanca) ? ' · ' + mudanca : '');
+      iciDoseIndicada = S.iciDose || null;
+      notas.push('<b>Conduta seguiu a indicação do TEFI:</b> intracavernosa '+String(S.iciFormula||'fórmula a definir').replace(' (trimix clássico)','')
+        +', dose inicial '+(S.iciDose||'a definir')+', acrescentada ao protocolo oral ('+protOralTefi+'). Primeira aplicação em consultório, com orientação escrita de priapismo: acima de 2 horas, medidas em casa; acima de 4 horas, pronto-atendimento.');
+    } else if (iciPorTefi==='nao'){
+      notas.push('<b>O TEFI indicou intracavernosa</b>, mas a conduta de hoje mantém só a via oral, por decisão médica. Reabordar no próximo retorno.');
+    }
     KIT_CTX = unicos(kit);   // v2.5: dose real de DUO-3/DUO-4 etc. nos textos desta consulta
     window.__mxKit = kit.slice();   // v2.5: cabeçalho da conduta, um item por linha (com a etiqueta)
     const lembretes=[];
@@ -5913,6 +5943,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (reav){
       if (travado && (S.adesao==='baixa'||S.adesao==='parou')) marc.push('mantido por adesão insuficiente');
       else if (travado) marc.push('ajustado por efeito adverso');
+      else if (mudanca && /indicação do TEFI/.test(mudanca)) marc.push('intracavernosa pelo TEFI');
+      else if (mudanca && /Reduzir/.test(mudanca)) marc.push('dose reduzida');
       else if (mudanca && /Subir/.test(mudanca)) marc.push('dose aumentada');
       else if (mudanca && /Trocar/.test(mudanca)) marc.push('mecanismo trocado');
       else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) marc.push('saída da via oral');
@@ -6010,6 +6042,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (reav){
       if (travado && (S.adesao==='baixa'||S.adesao==='parou')) rc_mud.push('<b>Protocolo mantido</b> — adesão insuficiente: o ciclo não testou o tratamento.');
       else if (travado) rc_mud.push('<b>Ajustado por efeito adverso</b>, não por falta de eficácia.');
+      else if (mudanca && /indicação do TEFI/.test(mudanca)) rc_mud.push('<b>Acrescentamos a intracavernosa</b> — o teste de ereção em consultório indicou essa via.');
+      else if (mudanca && /Reduzir a dose da intracavernosa/.test(mudanca)) rc_mud.push('<b>Reduzimos a dose da intracavernosa</b> — a ereção está durando mais que o alvo de cerca de 1 hora.');
+      else if (mudanca && /Subir dose ou esquema da intracavernosa/.test(mudanca)) rc_mud.push('<b>Subimos a dose da intracavernosa</b> — a ereção ainda não é suficiente ou dura menos que o alvo.');
       else if (mudanca && /Subir/.test(mudanca)) rc_mud.push('<b>Subimos um degrau</b> — houve ganho, mas abaixo do clinicamente relevante.');
       else if (mudanca && /Trocar/.test(mudanca)) rc_mud.push('<b>Trocamos o mecanismo</b> — sem ganho, com boa adesão e sem efeito limitante.');
       else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) rc_mud.push('<b>Saímos da via oral</b> — já no degrau mais alto, sem ganho relevante.');
@@ -6047,6 +6082,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (comorb.length) add('Comorbidades',comorb.map(v=>({has:'HAS',dm:'Diabetes',disl:'Dislipidemia',vasc:'Doença arterial',tabag:'Tabagismo',obes:'Obesidade',alcool:'Álcool',drogas:'Drogas recreacionais'}[v])).join('; ')+({sim:' · controladas',parcial:' · controle parcial',nao:' · NÃO controladas'}[S.comorbCtrl]||'')+({sim:' · com acompanhamento',nao:' · SEM acompanhamento'}[S.comorbMed]||''));
     if (reav && S.examesFeitos==='sim') add('Perfil hormonal',[S.tTotal&&('T total '+S.tTotal),S.tLivre&&('T livre '+S.tLivre),S.lh&&('LH '+S.lh),S.fsh&&('FSH '+S.fsh),S.estradiol&&('E2 '+S.estradiol),S.prolactina&&('PRL '+S.prolactina)].filter(Boolean).join(' · ')||'—');
     if (reav && S.tefiFeito) add('TEFI',S.tefiFeito==='sim'?('realizado — '+(S.tefiResp||'')+' · Doppler '+(S.tefiDoppler||'')+' · conduta '+(S.tefiConduta||'')+(S.tefiConduta==='ici'?(' · '+(S.iciFormula||'')+' '+(S.iciDose||'')):'')):'ainda não realizado');
+    if (iciPorTefi==='sim') add('Conduta seguiu indicação do TEFI','<b>Intracavernosa acrescentada</b> ao protocolo oral ('+protOralTefi+') — '+String(S.iciFormula||'—').replace(' (trimix clássico)','')+', dose inicial '+(S.iciDose||'—'));
+    else if (iciPorTefi==='nao') add('Indicação do TEFI','intracavernosa indicada; mantida só a via oral por decisão médica');
     if (tefi) add('PENDÊNCIA','Agendar TEFI com Doppler');
     if (pedirLabs) add('PENDÊNCIA','Solicitar perfil hormonal');
     if (ondas) add('PENDÊNCIA','Apresentar ondas de choque');
@@ -6181,7 +6218,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
       iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),biotens:(bio===null?null:bio),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
-      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||null,iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
+      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);
     pintaStatus(ok?'Ciclo salvo.':'Não foi possível salvar — guarde o relatório impresso.');
