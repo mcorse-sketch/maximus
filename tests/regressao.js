@@ -96,7 +96,11 @@ function preenche(doc, win, tela, resp) {
   const texto = wrap.querySelector('input.fld:not([data-campo])');
 
   if (grupos.length) {
-    grupos.forEach(g => escolhe([...g.querySelectorAll('.gop')], r[g.dataset.campo]).click());
+    // campo já preenchido (vindo do registro) e não declarado: o médico confirma o que está lá
+    grupos.forEach(g => {
+      if (r[g.dataset.campo] === undefined && g.querySelector('.gop.selected')) return;
+      escolhe([...g.querySelectorAll('.gop')], r[g.dataset.campo]).click();
+    });
     return;
   }
   if (escalas.length) {
