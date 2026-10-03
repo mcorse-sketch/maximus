@@ -109,7 +109,7 @@ module.exports = [
   P('TEST-009', 'EP com frequência alta — paroxetina diária', ep(13, { freq: 'alta' })),
   P('TEST-010', 'EP intensa com frequência alta — paroxetina 20', ep(17, { freq: 'alta' })),
   P('TEST-011', 'EP refratária à paroxetina 20 — EP-4, limite de 1 jato', ep(13, { parox: 'sim' }), { espera: { protocolo: 'EP-4' } }),
-  P('TEST-012', 'EP em uso de ISRS — só via tópica', ep(13, { freq: 'baixa', medsRisco: ['isrs'] })),
+  P('TEST-012', 'EP em uso de ISRS — só via tópica', ep(13, { freq: 'baixa', medsRisco: ['isrs'], topico: 'ambos' })),   // v2.5-E: aceita as vias tópicas (o padrão do teste era "restrição a ambos")
   P('TEST-013', 'EP com história psiquiátrica — sem SP-DUO', ep(13, { freq: 'baixa', depre: 'sim' })),
   P('TEST-014', 'EP com restrição a tópicos', ep(13, { freq: 'baixa', topico: 'nenhum' })),
   P('TEST-015', 'EP leve, frequência baixa, aceita preservativo — comportamental', ep(9, { freq: 'baixa', topico: 'ambos', biotens: 15 })),

@@ -507,12 +507,14 @@
   "conduta": {
    "protocolo": "EP-TOPICO",
    "kit": [
-    "NOITE-1"
+    "NOITE-1",
+    "RET-1",
+    "PRESERV"
    ],
    "iief": null,
    "pedt": 13
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGTEST012 · <data>\nEP confirmada · EP-TOPICO · creme retardante com lidocaína 2,5% e prilocaína 2,5%, sem nenhum serotoninérgico oral\nPrimeira avaliação · via serotoninérgica bloqueada\n\nTipo de visita: Primeira avaliação\nPEDT total: 13/20 — EP confirmada\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nRelações por semana: Menos de duas / esporádico\nBiotensiômetro: —\nVias tópicas viáveis: Restrição a ambos\nJá usa paroxetina 20 mg: Não\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: Controle tópico — ISRS em uso\n\nPROTOCOLO PRESCRITO\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n\nPENDÊNCIAS E ALERTAS\n- ISRS em uso — toda a via serotoninérgica está bloqueada\n- Conflito entre indicação e restrição\n- Piso terapêutico aplicado\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta."
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGTEST012 · <data>\nEP confirmada · EP-TOPICO · creme retardante com lidocaína 2,5% e prilocaína 2,5%, sem nenhum serotoninérgico oral\nPrimeira avaliação · via serotoninérgica bloqueada\n\nTipo de visita: Primeira avaliação\nPEDT total: 13/20 — EP confirmada\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nRelações por semana: Menos de duas / esporádico\nBiotensiômetro: —\nVias tópicas viáveis: Sem restrição\nJá usa paroxetina 20 mg: Não\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: Controle tópico — ISRS em uso\n\nPROTOCOLO PRESCRITO\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- RET-1 — Lidocaína BASE 2,5% + Prilocaína BASE 2,5% — bisnaga 30 g · 0,5 a 1 g na glande 20-30 min antes, lavar antes da relação\n- PRESERV — Preservativo com benzocaína — produto de farmácia · Primeira tentativa, sem prescrição\n\nPENDÊNCIAS E ALERTAS\n- ISRS em uso — toda a via serotoninérgica está bloqueada\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta."
  },
  "TEST-013": {
   "descricao": "EP com história psiquiátrica — sem SP-DUO",
@@ -631,12 +633,14 @@
    "kit": [
     "BASE-T10",
     "NOITE-1",
-    "SP-DE"
+    "SP-DE",
+    "RET-1",
+    "PRESERV"
    ],
    "iief": 14,
    "pedt": 12
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGTEST021 · <data>\nDE leve a moderada · EP confirmada · DUO-TOPICO · tadalafila 10 mg + tadalafila 50 mg/mL, 1 jato = 10 mg\nPrimeira avaliação · perfil orgânico · via serotoninérgica bloqueada\n\nTipo de visita: Primeira avaliação\nIIEF-5 total: 14/25 — DE leve a moderada\nPEDT total: 12/20 — EP confirmada\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nRelações por semana: Menos de duas / esporádico\nBiotensiômetro: —\nVias tópicas viáveis: Restrição a ambos\nJá usa paroxetina 20 mg: Não\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: DE tratada, EP por via tópica — ISRS em uso\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n\nPENDÊNCIAS E ALERTAS\n- ISRS em uso — toda a via serotoninérgica está bloqueada\n- Conflito entre indicação e restrição\n- Piso terapêutico aplicado\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta."
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGTEST021 · <data>\nDE leve a moderada · EP confirmada · DUO-TOPICO · tadalafila 10 mg + tadalafila 50 mg/mL, 1 jato = 10 mg + lidocaína 2,5% + prilocaína 2,5%\nPrimeira avaliação · perfil orgânico · via serotoninérgica bloqueada\n\nTipo de visita: Primeira avaliação\nIIEF-5 total: 14/25 — DE leve a moderada\nPEDT total: 12/20 — EP confirmada\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nRelações por semana: Menos de duas / esporádico\nBiotensiômetro: —\nVias tópicas viáveis: Sem restrição\nJá usa paroxetina 20 mg: Não\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: DE tratada, EP por via tópica — ISRS em uso\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- RET-1 — Lidocaína BASE 2,5% + Prilocaína BASE 2,5% — bisnaga 30 g · 0,5 a 1 g na glande 20-30 min antes, lavar antes da relação\n- PRESERV — Preservativo com benzocaína — produto de farmácia · Primeira tentativa, sem prescrição\n\nPENDÊNCIAS E ALERTAS\n- ISRS em uso — toda a via serotoninérgica está bloqueada\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta."
  },
  "TEST-022": {
   "descricao": "Hipogonadismo primário (LH 12)",
@@ -874,7 +878,7 @@
   "texto": "MAXIMUS MEDICINA MASCULINA · RGLIM031 · <data>\nDE severa · INTRACAVERNOSA\nPrimeira avaliação · perfil orgânico · TEFI a agendar\n\nTipo de visita: Primeira avaliação\nIIEF-5 total: 7/25 — DE severa\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Segunda linha desde o início\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- TEFI — Teste de ereção fármaco-induzida com Doppler peniano — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL, 0,1 mL · Agendar em consultório — define a via seguinte\n\nPENDÊNCIAS E ALERTAS\n- ALERTA — IIEF-5 com 3 itens em 0 — sem atividade sexual ou sem tentativa de relação\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta.\n  • Agendar TEFI (Teste de ereção fármaco-induzida com Doppler peniano) com Doppler peniano — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL, 0,1 mL. Na próxima consulta o sistema vai perguntar pelo resultado e pela conduta definida."
  },
  "R-06": {
-  "descricao": "Reavaliação ICI: IIEF 7 → 14, ereção com rigidez máxima — manter a intracavernosa",
+  "descricao": "Reavaliação ICI: rigidez máxima, cerca de 1 hora — manter a intracavernosa",
   "conduta": {
    "protocolo": "INTRACAVERNOSA (mantido)",
    "kit": [
@@ -884,10 +888,10 @@
    "iief": 14,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR06 · <data>\nDE leve a moderada · INTRACAVERNOSA (mantido)\n1ª reavaliação · 60 dias desde a última · protocolo mantido · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 14 (+7)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração 15-30 min · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR06 · <data>\nDE leve a moderada · INTRACAVERNOSA (mantido)\n1ª reavaliação · 60 dias desde a última · protocolo mantido · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 14 (+7)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração cerca de 1 hora · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite"
  },
  "R-07": {
-  "descricao": "Reavaliação ICI: IIEF sem ganho, ereção parcial — subir a intracavernosa, não voltar ao oral",
+  "descricao": "Reavaliação ICI: ereção parcial — subir a intracavernosa, não voltar ao oral",
   "conduta": {
    "protocolo": "INTRACAVERNOSA",
    "kit": [
@@ -898,7 +902,7 @@
    "iief": 7,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR07 · <data>\nDE severa · INTRACAVERNOSA\n1ª reavaliação · 60 dias desde a última · dose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 7 (0)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 2 · duração 15-30 min · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir dose ou esquema da intracavernosa\nIIEF-5 total: 7/25 — DE severa\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR07 · <data>\nDE severa · INTRACAVERNOSA\n1ª reavaliação · 60 dias desde a última · dose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 7 (0)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 2 · duração cerca de 1 hora · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir dose ou esquema da intracavernosa\nIIEF-5 total: 7/25 — DE severa\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
  },
  "R-08": {
   "descricao": "Reavaliação ICI com adesão baixa — não escalonar, continua intracavernosa",
@@ -911,7 +915,7 @@
    "iief": 9,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR08 · <data>\nDE moderada · INTRACAVERNOSA (mantido)\n1ª reavaliação · 60 dias desde a última · mantido por adesão insuficiente · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 9 (+2)\nAdesão: Falhou muitos dias\nMotivo: Esquecimento\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 3 · duração 15-30 min · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — manter e resolver a causa\nIIEF-5 total: 9/25 — DE moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n\nPENDÊNCIAS E ALERTAS\n- Adesão insuficiente — não escalonar"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR08 · <data>\nDE moderada · INTRACAVERNOSA (mantido)\n1ª reavaliação · 60 dias desde a última · mantido por adesão insuficiente · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 9 (+2)\nAdesão: Falhou muitos dias\nMotivo: Esquecimento\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 3 · duração cerca de 1 hora · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — manter e resolver a causa\nIIEF-5 total: 9/25 — DE moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n\nPENDÊNCIAS E ALERTAS\n- Adesão insuficiente — não escalonar"
  },
  "R-09": {
   "descricao": "Reavaliação ICI com ereções acima de 2 horas — reduzir, nunca subir",
@@ -925,10 +929,10 @@
    "iief": 9,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR09 · <data>\nDE moderada · INTRACAVERNOSA\n1ª reavaliação · 60 dias desde a última · protocolo mantido · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 9 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração >2 h · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Reduzir a dose da intracavernosa\nIIEF-5 total: 9/25 — DE moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n\nPENDÊNCIAS E ALERTAS\n- ALERTA — ereções ultrapassando 2 horas"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR09 · <data>\nDE moderada · INTRACAVERNOSA\n1ª reavaliação · 60 dias desde a última · dose reduzida · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 9 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração mais de 2 horas · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Reduzir a dose da intracavernosa\nIIEF-5 total: 9/25 — DE moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n\nPENDÊNCIAS E ALERTAS\n- ALERTA — ereções ultrapassando 2 horas"
  },
  "R-10": {
-  "descricao": "Reavaliação DE-3 que saiu do TEFI com intracavernosa, IIEF 7 → 14 — continua intracavernosa",
+  "descricao": "Reavaliação DE-3 que saiu do TEFI com intracavernosa, ereção suficiente de 30 a 60 min — continua intracavernosa",
   "conduta": {
    "protocolo": "INTRACAVERNOSA (mantido)",
    "kit": [
@@ -938,6 +942,60 @@
    "iief": 14,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR10 · <data>\nDE leve a moderada · INTRACAVERNOSA (mantido)\n1ª reavaliação · 60 dias desde a última · protocolo mantido · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-3 · cápsula matinal com tadalafila 20 mg + spray sublingual de tadalafila 50 mg/mL, máximo 1 jato\nIIEF-5 anterior → atual: 7 → 14 (+7)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração <15 min · <1 · dose 0,05 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR10 · <data>\nDE leve a moderada · INTRACAVERNOSA (mantido)\n1ª reavaliação · 60 dias desde a última · protocolo mantido · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-3 · cápsula matinal com tadalafila 20 mg + spray sublingual de tadalafila 50 mg/mL, máximo 1 jato\nIIEF-5 anterior → atual: 7 → 14 (+7)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração 30 a 60 min · <1 · dose 0,05 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite"
+ },
+ "TEST-021B": {
+  "descricao": "DUO com ISRS em uso e restrição às duas vias tópicas — sem recurso para EP",
+  "conduta": {
+   "protocolo": "DUO-TOPICO",
+   "kit": [
+    "BASE-T10",
+    "NOITE-1",
+    "SP-DE"
+   ],
+   "iief": 14,
+   "pedt": 12
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGTEST021B · <data>\nDE leve a moderada · EP confirmada · DUO-TOPICO · tadalafila 10 mg + tadalafila 50 mg/mL, 1 jato = 10 mg\nPrimeira avaliação · perfil orgânico · via serotoninérgica bloqueada\n\nTipo de visita: Primeira avaliação\nIIEF-5 total: 14/25 — DE leve a moderada\nPEDT total: 12/20 — EP confirmada\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nRelações por semana: Menos de duas / esporádico\nBiotensiômetro: —\nVias tópicas viáveis: Restrição a ambos\nJá usa paroxetina 20 mg: Não\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: DE tratada, EP por via tópica — ISRS em uso\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n\nPENDÊNCIAS E ALERTAS\n- ISRS em uso — toda a via serotoninérgica está bloqueada\n- Conflito entre indicação e restrição\n- Sem recurso possível para a ejaculação precoce neste paciente\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta."
+ },
+ "R-11": {
+  "descricao": "Reavaliação ICI: IIEF 7 → 16, mas ereção de menos de 30 min — subir (o IIEF não decide)",
+  "conduta": {
+   "protocolo": "INTRACAVERNOSA",
+   "kit": [
+    "ICI",
+    "NOITE-1"
+   ],
+   "iief": 16,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR11 · <data>\nDE leve a moderada · INTRACAVERNOSA\n1ª reavaliação · 60 dias desde a última · dose aumentada · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 16 (+9)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração menos de 30 min · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir dose ou esquema da intracavernosa\nIIEF-5 total: 16/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite"
+ },
+ "R-12": {
+  "descricao": "Reavaliação ICI: ereção suficiente durando 1 a 2 horas — reduzir um degrau",
+  "conduta": {
+   "protocolo": "INTRACAVERNOSA",
+   "kit": [
+    "ICI",
+    "NOITE-1"
+   ],
+   "iief": 14,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR12 · <data>\nDE leve a moderada · INTRACAVERNOSA\n1ª reavaliação · 60 dias desde a última · dose reduzida · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 14 (+7)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 4 · duração 1 a 2 horas · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Reduzir a dose da intracavernosa\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite"
+ },
+ "R-13": {
+  "descricao": "Reavaliação ICI: IIEF sem ganho, ereção suficiente de cerca de 1 hora — manter (o IIEF não decide)",
+  "conduta": {
+   "protocolo": "INTRACAVERNOSA (mantido)",
+   "kit": [
+    "ICI",
+    "NOITE-1",
+    "ONDAS"
+   ],
+   "iief": 7,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR13 · <data>\nDE severa · INTRACAVERNOSA (mantido)\n1ª reavaliação · 60 dias desde a última · protocolo mantido · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 7 (0)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — 0/10 sintomas\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 3 · duração cerca de 1 hora · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 7/25 — DE severa\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- ICI — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
  }
 }

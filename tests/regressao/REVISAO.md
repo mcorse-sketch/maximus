@@ -47,7 +47,7 @@ errada, o erro é do app — corrija o app, não esta folha.
 | TEST-009 | EP com frequência alta — paroxetina diária | EP-2 | MOD-PAROX-10, NOITE-1, SP-DUO | — | 13 |
 | TEST-010 | EP intensa com frequência alta — paroxetina 20 | EP-3 | MOD-PAROX-20, NOITE-1, SP-DUO | — | 17 |
 | TEST-011 | EP refratária à paroxetina 20 — EP-4, limite de 1 jato | EP-4 | MOD-PAROX-20, SP-DUO-1J, NOITE-1 | — | 13 |
-| TEST-012 | EP em uso de ISRS — só via tópica | EP-TOPICO | NOITE-1 | — | 13 |
+| TEST-012 | EP em uso de ISRS — só via tópica | EP-TOPICO | NOITE-1, RET-1, PRESERV | — | 13 |
 | TEST-013 | EP com história psiquiátrica — sem SP-DUO | EP-1D | MOD-DAPO-30, NOITE-1 | — | 13 |
 | TEST-014 | EP com restrição a tópicos | EP-1 | SP-DUO, NOITE-1 | — | 13 |
 | TEST-015 | EP leve, frequência baixa, aceita preservativo — comportamental | COMPORTAMENTAL | PRESERV, NOITE-1 | — | 9 |
@@ -56,7 +56,8 @@ errada, o erro é do app — corrija o app, não esta folha.
 | TEST-018 | DUO leve a moderada, frequência baixa | DUO-2 | BASE-T10, NOITE-1, SP-DUO | 14 | 12 |
 | TEST-019 | DUO com frequência alta — ISRS contínuo | DUO-3 | BASE-T10, MOD-PAROX-10, NOITE-1, SP-DE, SP-DUO | 14 | 12 |
 | TEST-020 | DUO refratária à paroxetina — DUO-4 | DUO-4 | BASE-T10, MOD-PAROX-20, SP-DUO-1J, NOITE-1 | 14 | 12 |
-| TEST-021 | DUO com ISRS em uso — EP por via tópica | DUO-TOPICO | BASE-T10, NOITE-1, SP-DE | 14 | 12 |
+| TEST-021 | DUO com ISRS em uso — EP por via tópica | DUO-TOPICO | BASE-T10, NOITE-1, SP-DE, RET-1, PRESERV | 14 | 12 |
+| TEST-021B | DUO com ISRS em uso e restrição às duas vias tópicas — sem recurso para EP | DUO-TOPICO | BASE-T10, NOITE-1, SP-DE | 14 | 12 |
 | TEST-022 | Hipogonadismo primário (LH 12) | HIPOGONADISMO PRIMÁRIO | — | — | — |
 | TEST-023 | Hipogonadismo secundário (LH 4) | HIPOGONADISMO SECUNDÁRIO | — | — | — |
 | TEST-024 | Hipogonadismo com testosterona em uso — eixo suprimido | EIXO SUPRIMIDO — REPETIR APÓS WASHOUT | — | — | — |
@@ -70,8 +71,11 @@ errada, o erro é do app — corrija o app, não esta folha.
 | R-03 | Reavaliação DE: IIEF sem ganho — trocar mecanismo | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 12 | — |
 | R-04 | Reavaliação DE com baixa adesão — não escalonar | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 12 | — |
 | R-05 | Reavaliação EP: PEDT caiu 4 — manter | EP-1 (mantido) | SP-DUO, NOITE-1 | — | 10 |
-| R-06 | Reavaliação ICI: IIEF 7 → 14, ereção com rigidez máxima — manter a intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 14 | — |
-| R-07 | Reavaliação ICI: IIEF sem ganho, ereção parcial — subir a intracavernosa, não voltar ao oral | INTRACAVERNOSA | ICI, NOITE-1, ONDAS | 7 | — |
+| R-06 | Reavaliação ICI: rigidez máxima, cerca de 1 hora — manter a intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 14 | — |
+| R-07 | Reavaliação ICI: ereção parcial — subir a intracavernosa, não voltar ao oral | INTRACAVERNOSA | ICI, NOITE-1, ONDAS | 7 | — |
 | R-08 | Reavaliação ICI com adesão baixa — não escalonar, continua intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 9 | — |
 | R-09 | Reavaliação ICI com ereções acima de 2 horas — reduzir, nunca subir | INTRACAVERNOSA | ICI, NOITE-1, ONDAS | 9 | — |
-| R-10 | Reavaliação DE-3 que saiu do TEFI com intracavernosa, IIEF 7 → 14 — continua intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 14 | — |
+| R-11 | Reavaliação ICI: IIEF 7 → 16, mas ereção de menos de 30 min — subir (o IIEF não decide) | INTRACAVERNOSA | ICI, NOITE-1 | 16 | — |
+| R-12 | Reavaliação ICI: ereção suficiente durando 1 a 2 horas — reduzir um degrau | INTRACAVERNOSA | ICI, NOITE-1 | 14 | — |
+| R-13 | Reavaliação ICI: IIEF sem ganho, ereção suficiente de cerca de 1 hora — manter (o IIEF não decide) | INTRACAVERNOSA (mantido) | ICI, NOITE-1, ONDAS | 7 | — |
+| R-10 | Reavaliação DE-3 que saiu do TEFI com intracavernosa, ereção suficiente de 30 a 60 min — continua intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 14 | — |
