@@ -68,7 +68,9 @@ function soltas(win, txt) {
     if (res && res.style.display === 'block') {
       alvos.push(['conduta na tela e impressão', textoDe(win, doc.getElementById('printArea'))]);
       alvos.push(['folha do paciente', textoDe(win, doc.getElementById('printPaciente'))]);
-      alvos.push(['texto do prontuário', win.__textoCopia || '']);
+      // v2.5-G (ponto 3, aprovado pelo Dr. Marco): a 2ª linha do texto — classificação + código do protocolo —
+      // é curta, como a pílula; a composição vem no protocolo prescrito logo abaixo
+      alvos.push(['texto do prontuário', (win.__textoCopia || '').split('\n').filter((l, i) => i !== 1).join('\n')]);
     }
     const fb = doc.getElementById('mxFicha');
     if (fb) { fb.click(); await espera(40); alvos.push(['prontuário (gaveta)', textoDe(win, doc.getElementById('fichaCorpo'))]); }

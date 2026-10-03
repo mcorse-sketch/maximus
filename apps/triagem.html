@@ -2387,6 +2387,26 @@ document.documentElement.setAttribute('data-tema',t)})();
     (screens||[]).forEach(sc=>{ linhasDaTela(sc).forEach(l=>linhas.push(l)); });
     return linhas;
   }
+  // v2.5-G: rótulo curto na ficha (a pergunta inteira fica na tela de perguntas)
+  const ROT_CURTO = {
+    notaFinal:'Observação', trocarQueixa:'Queixa', novaQueixa:'Nova queixa', queixa:'Queixa', confirma:'Diagnóstico confirmado',
+    trtPrevio:'Testosterona/anabolizante prévio', querFilho:'Fertilidade em 12 meses', contraind:'Contraindicações', escolha:'Conduta adotada',
+    tefiMed:'Formulação injetada', tefiDose:'Dose inicial', doseComp:'Dose complementar', doseCompML:'Dose complementar (mL)',
+    dopplerFeito:'Doppler', concordou:'Concordou com o procedimento', termo:'Termo assinado', mlUsado:'Volume usado',
+    botox:'Toxina botulínica', marcaAH:'Marca do ácido hialurônico', notaMedico:'Impressão do médico', retracaoRet:'Retração',
+    nodulos:'Nódulos', notaMedicoRet:'Impressão do médico', satisfPac:'Satisfação do paciente', conduta:'Conduta',
+    botoxUI:'Toxina (UI)', mlHialuro:'Hialuronidase (mL)', protAnt:'Protocolo anterior', formulasAnt:'Fórmulas em uso',
+    adesao:'Adesão', motivo:'Motivo', ea:'Efeitos adversos', eaQuais:'Efeitos', examesFeitos:'Perfil hormonal pedido',
+    tefiFeito:'TEFI realizado', tefiResp:'Resposta ao TEFI', tefiDoppler:'Doppler', tefiConduta:'Conduta após o TEFI',
+    tefiAddIci:'Acrescentar intracavernosa', iciFormula:'Fórmula intracavernosa', iciDose:'Dose inicial',
+    refazer:'Questionário da recepção', usarTotaisRec:'Questionário da recepção', confirmaEstavel:'Mudanças na ficha',
+    tempo:'Tempo de sintomas', parceira:'Parceria fixa', comorb:'Comorbidades', comorbCtrl:'Controle das comorbidades',
+    comorbMed:'Médico externo', medsRisco:'Medicações em uso', alergia:'Alergias', contra:'Contraindicação à tadalafila',
+    previa:'Medicação prévia', adequado:'Tentativa adequada', adam:'Sintomas ADAM', adamEvol:'ADAM · evolução',
+    testo:'Testosterona normal', contraIoim:'Contraindicação à ioimbina', freq:'Relações por semana', biotens:'Biotensiômetro',
+    topico:'Restrição a tópico', parox:'Paroxetina 20 mg sem resposta', depre:'História psiquiátrica', fert:'Deseja engravidar'
+  };
+  const ROT_CAMPO = { satisf:'Satisfação', nps:'Recomendaria a clínica' };
   // as respostas de uma tela, como pares [rótulo, resposta]
   function linhasDaTela(sc){
     const tira = x => String(x==null?'':x).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
@@ -2396,10 +2416,10 @@ document.documentElement.setAttribute('data-tema',t)})();
     const linhas=[];
     [sc].forEach(sc=>{
       if (sc.plumb || ['visita','codigo','confirmHist'].indexOf(sc.id)>=0) return;
-      const q = tira(sc.short || sc.text), rot = q.length>90 ? q.slice(0,87)+'…' : q;
+      const q = tira(ROT_CURTO[sc.id] || sc.short || sc.text), rot = q.length>60 ? q.slice(0,57).replace(/\s+\S*$/,'')+'…' : q;
       if (sc.kind==='campos'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), num(f.id,S[f.id])]); }); return; }
       if (sc.kind==='grupo'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), rotOpt(f.options,S[f.id])]); }); return; }
-      if (sc.kind==='escalas'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), S[f.id]+'/10']); }); return; }
+      if (sc.kind==='escalas'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([ROT_CAMPO[f.id] || tira(f.label), S[f.id]+'/10']); }); return; }
       if (sc.kind==='contato'){ [['iniciais','Iniciais'],['telefone','Telefone'],['email','Email']].forEach(([k,r])=>{ if (preenchido(S[k])) linhas.push([r, S[k]]); }); return; }
       if (sc.kind==='nota'){ if (preenchido(S[sc.id])) linhas.push(['Nota do atendimento', S[sc.id]]); return; }
       const v=S[sc.id];
@@ -2596,7 +2616,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     let h = '<h4>Síntese</h4><table>'
       + linhaFicha('Primeira visita', dataDoCiclo(prim))
-      + linhaFicha('Última visita', dataDoCiclo(ult) + (dias!=null ? ' <span class="vazio">(há '+dias+' dia'+(dias===1?'':'s')+')</span>' : ''))
+      + linhaFicha('Última visita', dataDoCiclo(ult) + (dias!=null ? ' <span class="vazio">('+(dias===0?'hoje':(dias===1?'ontem':'há '+dias+' dias'))+')</span>' : ''))
       + linhaFicha('Atendimentos registrados', String(clin.length))
       + linhaFicha('Linhas de tratamento', linhas.length ? linhas.join(' · ') : null)
       + linhaFicha('Sequência de protocolos', prots.length ? escH(explicaSiglas(prots.join(' → '))) : null)
@@ -4864,6 +4884,19 @@ document.documentElement.setAttribute('data-tema',t)})();
       primeira = false; return r;
     }).join('');
   }
+  // o HTML depois dos primeiros n caracteres visíveis (tags preservadas; entidade conta como 1)
+  function alHtmlDepois(h, n){
+    let i = 0, vis = 0, abertas = [];
+    while (i < h.length && vis < n){
+      if (h[i]==='<'){ const j = h.indexOf('>', i); if (j<0) break;
+        const tag = h.slice(i, j+1), m = /^<(\/?)(\w+)/.exec(tag);
+        if (m && !/\/>$/.test(tag) && !/^(br|img|hr)$/i.test(m[2])){ if (m[1]) abertas.pop(); else abertas.push(m[2]); }
+        i = j+1; continue; }
+      if (h[i]==='&'){ const j = h.indexOf(';', i); if (j>i && j-i<10){ i = j+1; vis++; continue; } }
+      i++; vis++;
+    }
+    return abertas.map(t=>'<'+t+'>').join('') + h.slice(i);
+  }
   function alTexto(h){ const d=document.createElement('div'); d.innerHTML=h; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
   function alertasHtml(lista){
     const itens = lista.map(n=>{
@@ -4874,7 +4907,8 @@ document.documentElement.setAttribute('data-tema',t)})();
         // sem título em negrito: a primeira frase (ou o trecho antes de " — ") vira o título, o resto é o corpo
         const t = alTexto(n);
         const f = (t.match(/^(.{12,90}?[.:!?])\s/) || t.match(/^(.{12,90}?) — /) || [null, null])[1];
-        if (f){ tit = f.replace(/[\s:.!?]+$/,''); corpo = escH(t.slice(f.length).replace(/^\s*—\s*/,'').trim()); }
+        // v2.5-G: o corpo mantém a marcação original (negrito, siglas) — corta só os caracteres visíveis do título
+        if (f){ tit = f.replace(/[\s:.!?]+$/,''); corpo = alHtmlDepois(n, f.length).replace(/^(\s|&nbsp;)*—\s*/,'').trim(); }
         else { tit = t.slice(0,80).replace(/\s+\S*$/,'') + '…'; corpo = n; }
       }
       // a expansão da sigla de exame fica no detalhe, não no título
@@ -4911,14 +4945,16 @@ document.documentElement.setAttribute('data-tema',t)})();
       + '</div>' + itens.join('');
   }
   function renderNotas(notas, abrirPadrao){
-    const alertas = notas.filter(n=>RE_ALERTA.test(n));
-    const demais  = notas.filter(n=>!RE_ALERTA.test(n));
+    // v2.5-G: "Dados estáveis confirmados sem alteração" é informativo (casava com "contraindicaç") — vai para as observações
+    const ehAlerta = n => RE_ALERTA.test(n) && !/^Dados estáveis confirmados/.test(n);
+    const alertas = notas.filter(ehAlerta);
+    const demais  = notas.filter(n=>!ehAlerta(n));
     const alt = el('altNote');
     if (alertas.length){ alt.style.display='block'; alt.innerHTML = alertasHtml(alertas.map(n=>explicaSiglas(n))); }
     else alt.style.display='none';
     const mais = el('notasMais');
     mais.innerHTML = demais.length
-      ? '<details'+(abrirPadrao?' open':'')+'><summary>Observações clínicas — '+demais.length+' item'+(demais.length>1?'s':'')+'</summary>'
+      ? '<details'+(abrirPadrao?' open':'')+'><summary>Observações clínicas — '+demais.length+(demais.length>1?' itens':' item')+'</summary>'
         + demais.map(n=>'<p>'+explicaSiglas(n)+'</p>').join('') + '</details>'
       : '';
   }
@@ -6266,12 +6302,19 @@ document.documentElement.setAttribute('data-tema',t)})();
       add('Adesão',{total:'Todos os dias',parcial:'Falhou alguns dias',baixa:'Falhou muitos dias',parou:'Parou de tomar'}[S.adesao]||'—');
       if (S.motivo) add('Motivo',{ea:'Efeito adverso',esq:'Esquecimento',naoprec:'Achou que não precisava',outro:'Outro'}[S.motivo]);
       add('Efeitos adversos',{nao:'Nenhum',leve:'Leves, toleráveis',atrap:'Atrapalharam o uso'}[S.ea]||'—');
-      if (S.adam){ const a=(S.adam||[]).filter(v=>v!=='nenhum'); add(qn('ADAM'), qv(adamPositivo(a)?'POSITIVO':'negativo')+' — '+a.length+'/10 sintomas'); }
+      // v2.5-G: com DE, a linha do ADAM sai uma vez só (abaixo, com os sintomas); aqui só quando não há DE
+      if (S.adam && !S.hasDE){ const a=(S.adam||[]).filter(v=>v!=='nenhum'); add(qn('ADAM'), qv(adamPositivo(a)?'POSITIVO':'negativo')+' — '+a.length+'/10 sintomas'); }
     if (alg.length) add('Alergias', alg.map(v=>({tada:'PDE5',clomi:'tricíclico',parox:'ISRS',dapo:'dapoxetina',anest:'anestésico local',ioim:'ioimbina',fito:'fitoterápico'}[v])).join('; '));
-    if (S.hasDE && (S.adam||[]).length) add(qn('ADAM'), qv(S.adamPos?'POSITIVO':'negativo')+' — '+(adamSet.length?adamSet.map(v=>(ADAM.find(a=>a.v===v)||{}).label).filter(Boolean).join('; '):'nenhum sintoma'));
+    if (S.hasDE && (S.adam||[]).length) add(qn('ADAM'), qv(S.adamPos?'POSITIVO':'negativo')+' — '+adamSet.length+'/10 · '+(adamSet.length?adamSet.map(v=>(ADAM.find(a=>a.v===v)||{}).label).filter(Boolean).join('; '):'nenhum sintoma'));
     if (comorb.length) add('Comorbidades',comorb.map(v=>({has:'HAS',dm:'Diabetes',disl:'Dislipidemia',vasc:'Doença arterial',tabag:'Tabagismo',obes:'Obesidade',alcool:'Álcool',drogas:'Drogas recreacionais'}[v])).join('; ')+({sim:' · controladas',parcial:' · controle parcial',nao:' · NÃO controladas'}[S.comorbCtrl]||'')+({sim:' · com acompanhamento',nao:' · SEM acompanhamento'}[S.comorbMed]||''));
     if (reav && S.examesFeitos==='sim') add('Perfil hormonal',[S.tTotal&&('T total '+S.tTotal),S.tLivre&&('T livre '+S.tLivre),S.lh&&('LH '+S.lh),S.fsh&&('FSH '+S.fsh),S.estradiol&&('E2 '+S.estradiol),S.prolactina&&('PRL '+S.prolactina)].filter(Boolean).join(' · ')||'—');
-    if (reav && S.tefiFeito) add('TEFI',S.tefiFeito==='sim'?('realizado — '+(S.tefiResp||'')+' · Doppler '+(S.tefiDoppler||'')+' · conduta '+(S.tefiConduta||'')+(S.tefiConduta==='ici'?(' · '+(S.iciFormula||'')+' '+(S.iciDose||'')):'')):'ainda não realizado');
+    // v2.5-G: o TEFI no relatório em texto legível (antes saíam os códigos: "parcial · Doppler venoso · conduta ici")
+    if (reav && S.tefiFeito) add('TEFI',S.tefiFeito==='sim'?('realizado — '+([
+        {completa:'rigidez completa e mantida',parcial:'resposta parcial',ausente:'resposta ausente'}[S.tefiResp],
+        S.tefiDoppler ? 'Doppler: '+({normal:'hemodinâmica normal',arterial:'insuficiência arterial',venoso:'escape venoso',misto:'achado misto ou inconclusivo'}[S.tefiDoppler]||S.tefiDoppler) : '',
+        S.tefiConduta ? 'conduta: '+({manter:'manter o tratamento oral',ondas:'iniciar ondas de choque',ici:'iniciar intracavernosa'}[S.tefiConduta]||S.tefiConduta)
+          + (S.tefiConduta==='ici' && S.iciFormula ? ' ('+String(S.iciFormula).replace(' (trimix clássico)','')+(S.iciDose?', '+S.iciDose:'')+')' : '') : ''
+      ].filter(Boolean).join(' · '))):'ainda não realizado');
     if (iciPorTefi==='sim') add('Conduta seguiu indicação do TEFI','<b>Intracavernosa acrescentada</b> ao protocolo oral ('+protOralTefi+') — '+String(S.iciFormula||'—').replace(' (trimix clássico)','')+', dose inicial '+(S.iciDose||'—'));
     else if (iciPorTefi==='nao') add('Indicação do TEFI','intracavernosa indicada; mantida só a via oral por decisão médica');
     if (tefi) add('PENDÊNCIA','Agendar TEFI com Doppler');
@@ -6332,7 +6375,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     const agendar=[];
     if (tefi) agendar.push('exame de ereção com Doppler');
-    if (ondas || ondasOpc) agendar.push('sessões de ondas de choque');
+    if (ondas) agendar.push('sessões de ondas de choque');   // v2.5-G: oferta opcional não entra no "Agende também"
     if (pedirLabs) agendar.push('coleta dos exames de sangue');
 
     const iciBlock = temICI ? `
@@ -6450,6 +6493,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     L.push('MAXIMUS MEDICINA MASCULINA · ' + (norm(S.codigo)||'sem código') + ' · ' + new Date().toLocaleDateString('pt-BR'));
     const cl = txt(el('classLabel')), mc = txt(el('marcador'));
     // título todo em maiúsculas vira frase normal no prontuário
+    // v2.5-G: a linha da classificação fica curta (faixa + código); a composição vem no protocolo prescrito
+    const iCl = cl ? L.length : -1;
     if (cl) L.push(cl===cl.toUpperCase() ? cl.charAt(0)+cl.slice(1).toLowerCase() : cl);
     // o marcador às vezes repete código e data, que já estão no cabeçalho
     const mcLimpo = mc.replace(/^Código\s+\S+\s*(·\s*\d{2}\/\d{2}\/\d{4}\s*)?(·\s*)?/,'').trim();
@@ -6499,7 +6544,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (alertas.length){ L.push(''); L.push('PENDÊNCIAS E ALERTAS'); alertas.forEach(t=>L.push(t)); }
 
     // nenhuma sigla sem o ativo ao lado (a nota do médico fica como ele escreveu)
-    for (let i=0;i<L.length;i++) L[i] = garanteSiglas(L[i], true);
+    for (let i=0;i<L.length;i++) if (i!==iCl) L[i] = garanteSiglas(L[i], true);
     if (preenchido(S.notaFinal)){ L.push(''); L.push('NOTA DO MÉDICO'); L.push(String(S.notaFinal).trim()); }
     window.__textoCopia = L.join('\n').replace(/\n{3,}/g,'\n\n').trim();
   }
