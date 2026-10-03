@@ -1330,6 +1330,10 @@ document.documentElement.setAttribute('data-tema',t)})();
   /* siglas: o ativo sempre ao lado */
   abbr.sig{border-bottom:1px dotted var(--mx-text3)}
   .sig-ativo{color:var(--mx-text2)}
+  /* v2.5-E: opção marcada tem fundo escuro (claro no tema escuro) — o texto secundário herda a cor da opção */
+  .opt.selected .sig-ativo,.gop.selected .sig-ativo,.scale button.selected .sig-ativo,
+  .opt.selected abbr.sig,.gop.selected abbr.sig{color:inherit!important;border-bottom-color:currentColor!important}
+  .opt.selected .sig-ativo,.gop.selected .sig-ativo{opacity:.8}
   .sig-pop{background:var(--mx-ink)!important;color:var(--mx-inkt)!important}
 
   /* panorama */
@@ -5794,7 +5798,11 @@ document.documentElement.setAttribute('data-tema',t)})();
       else if (!usaISRS && alg.indexOf('dapo')<0 && !cods().some(c=>/PAROX/.test(c))) kit = kit.concat(['MOD-DAPO-30']);
       else if (!semPomada) kit = kit.concat(['RET-1']);
       else if (S.preserv==='nao') kit = kit.concat(['PRESERV']);
-      notas.push('<b>Piso terapêutico aplicado:</b> paciente com queixa de ejaculação precoce não sai da consulta apenas com suplemento. Mesmo com escore abaixo do corte, sai com recurso sob demanda.');
+      // v2.5-E: a nota só diz "aplicado" se algo entrou no kit (TEST-021: ISRS em uso + restrição às duas vias tópicas)
+      if (cods().some(c=>/^SP-DUO|^MOD-DAPO|^RET-1|^PRESERV/.test(c)))
+        notas.push('<b>Piso terapêutico aplicado:</b> paciente com queixa de ejaculação precoce não sai da consulta apenas com suplemento. Mesmo com escore abaixo do corte, sai com recurso sob demanda.');
+      else
+        notas.push('<b>Sem recurso possível para a ejaculação precoce neste paciente.</b> A via serotoninérgica está bloqueada'+(usaISRS?' (ISRS em uso)':'')+' e há restrição às duas vias tópicas. Reabordar a restrição ao creme ou ao preservativo'+(usaISRS?' e conversar com o psiquiatra sobre o antidepressivo':'')+'; até lá, abordagem comportamental.');
     }
     if (S.hasDE && !semTada && !cods().some(c=>/^SP-DE|^SP-DUO|^ICI/.test(c))){
       kit = kit.concat(['SP-DE']);

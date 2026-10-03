@@ -120,7 +120,9 @@ module.exports = [
   P('TEST-018', 'DUO leve a moderada, frequência baixa', duo(14, 12, { freq: 'baixa' })),
   P('TEST-019', 'DUO com frequência alta — ISRS contínuo', duo(14, 12, { freq: 'alta' })),
   P('TEST-020', 'DUO refratária à paroxetina — DUO-4', duo(14, 12, { parox: 'sim' }), { espera: { protocolo: 'DUO-4' } }),
-  P('TEST-021', 'DUO com ISRS em uso — EP por via tópica', duo(14, 12, { freq: 'baixa', medsRisco: ['isrs'] })),
+  // v2.5-E: o paciente declara aceitar as vias tópicas — sem isso o padrão do teste era "restrição a ambos"
+  P('TEST-021', 'DUO com ISRS em uso — EP por via tópica', duo(14, 12, { freq: 'baixa', medsRisco: ['isrs'], topico: 'ambos' })),
+  P('TEST-021B', 'DUO com ISRS em uso e restrição às duas vias tópicas — sem recurso para EP', duo(14, 12, { freq: 'baixa', medsRisco: ['isrs'], topico: 'nenhum' })),
 
   // ---- outras linhas ----------------------------------------------------------
   P('TEST-022', 'Hipogonadismo primário (LH 12)', {
