@@ -1069,6 +1069,18 @@ document.documentElement.setAttribute('data-tema',t)})();
       <div id="printPos"></div>
       <div id="printTermo"></div>
       <div id="printExames"></div>
+      <!-- v2.5-G (item 12): um único botão principal (Concluir); copiar e imprimir ficam agrupados, secundários -->
+      <div class="mx-acoes noprint" id="mxAcoes">
+        <button class="btn btn-ghost mx-acao mx-copiar noprint" id="copyBtn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2"/></svg><span class="mx-acao-t">Copiar relat&oacute;rio para o prontu&aacute;rio</span></button>
+        <div class="mx-acoes-tit">Imprimir</div>
+        <div class="mx-acoes-grid">
+          <button class="btn btn-ghost mx-acao noprint" id="printPacBtn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/></svg><span class="vh">Imprimir </span><span class="mx-acao-t">orienta&ccedil;&otilde;es do paciente</span></button>
+          <button class="btn btn-ghost mx-acao noprint" id="examesBtn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/></svg><span class="vh">Imprimir </span><span class="mx-acao-t">pedido de exames</span></button>
+          <button class="btn btn-ghost mx-acao noprint" id="printBtn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/></svg><span class="vh">Imprimir </span><span class="mx-acao-t">relat&oacute;rio da cl&iacute;nica</span></button>
+          <button class="btn btn-ghost mx-acao noprint" id="posBtn" style="display:none;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/></svg><span class="vh">Imprimir </span><span class="mx-acao-t">orienta&ccedil;&otilde;es p&oacute;s-procedimento</span></button>
+          <button class="btn btn-ghost mx-acao noprint" id="termoBtn" style="display:none;"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/></svg><span class="vh">Imprimir </span><span class="mx-acao-t">termo de consentimento</span></button>
+        </div>
+      </div>
       <div id="envioBox" class="noprint">
         <h4>Enviar ao paciente</h4>
         <label><input type="checkbox" id="envOri" checked> Orienta&ccedil;&otilde;es espec&iacute;ficas deste atendimento</label>
@@ -1076,20 +1088,16 @@ document.documentElement.setAttribute('data-tema',t)})();
         <label><input type="checkbox" id="envGuia" checked> Guia Protocolo de Performance</label>
         <label><input type="checkbox" id="envExa"> Pedido de exames para a pr&oacute;xima consulta</label>
         <div class="canal">
-          <button type="button" id="envWpp">Enviar por WhatsApp</button>
-          <button type="button" id="envMail">Enviar por email</button>
+          <button type="button" id="envWpp" class="mx-env wpp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.6-4.3A8.5 8.5 0 1 1 20.5 11.6z"/><path d="M9 8.5c.3 2.9 3.4 6 6.5 6.5l1-1.6-2-1-1 .9c-1-.4-2.1-1.5-2.6-2.6l.9-1-1-2z" class="f"/></svg><span>Enviar por WhatsApp</span></button>
+          <button type="button" id="envMail" class="mx-env mail"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg><span>Enviar por email</span></button>
           <span class="aviso" id="envAviso"></span>
         </div>
       </div>
-      <button class="btn btn-gold noprint" id="copyBtn" style="width:100%;margin-bottom:10px;">Copiar relat&oacute;rio para o prontu&aacute;rio</button>
-      <button class="btn btn-ghost noprint" id="posBtn" style="width:100%;margin-bottom:10px;display:none;">Imprimir orienta&ccedil;&otilde;es p&oacute;s-procedimento</button>
-      <button class="btn btn-ghost noprint" id="termoBtn" style="width:100%;margin-bottom:10px;display:none;">Imprimir termo de consentimento</button>
-      <button class="btn btn-gold noprint" id="printPacBtn" style="width:100%;margin-bottom:10px;">Imprimir orienta&ccedil;&otilde;es do paciente</button>
-      <button class="btn btn-ghost noprint" id="examesBtn" style="width:100%;margin-bottom:10px;">Imprimir pedido de exames</button>
-      <button class="btn btn-ghost noprint" id="printBtn" style="width:100%;margin-bottom:10px;">Imprimir relat&oacute;rio da cl&iacute;nica</button>
-      <button class="btn btn-primary noprint" id="concluirBtn" style="width:100%;margin-bottom:6px;">Concluir atendimento</button>
-      <div class="mx-concluir-info noprint" id="concluirInfo">Grava, marca como atendido, tira da fila (o histórico fica) e chama o próximo.</div>
-      <button class="btn btn-ghost noprint" id="restartBtn" style="width:100%;">Novo paciente</button>
+      <div class="mx-fim noprint">
+        <button class="btn btn-primary noprint" id="concluirBtn">Concluir atendimento</button>
+        <div class="mx-concluir-info noprint" id="concluirInfo">Grava, marca como atendido, tira da fila (o histórico fica) e chama o próximo.</div>
+      </div>
+      <button class="btn btn-ghost mx-novo noprint" id="restartBtn">Novo paciente</button>
     </div>
     </section>
     <aside class="mx-prev noprint" id="previaCard" aria-live="polite" aria-label="Prévia da conduta"></aside>
@@ -1257,6 +1265,33 @@ document.documentElement.setAttribute('data-tema',t)})();
   .btn-primary:hover:not(:disabled),.btn-gold:hover{filter:brightness(1.12)}
   .btn-ghost{background:var(--mx-surf)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important}
   .btn-ghost:hover:not(:disabled){background:var(--mx-surf2)!important}
+  /* v2.5-G (item 12): rodapé da conduta — hierarquia clara */
+  .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .mx-acoes{margin:18px 0 0;padding-top:18px;border-top:1px solid var(--mx-line)}
+  .mx-acao{display:flex!important;align-items:center;gap:10px;width:100%;text-align:left;padding:12px 14px!important;font-weight:600;font-size:13.5px;border-radius:12px!important;min-height:46px}
+  .mx-acao .ic,.mx-env .ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+  .mx-env .ic .f{fill:currentColor;stroke:none}
+  .mx-acao-t{display:inline-block;min-width:0}
+  .mx-acao .vh + .mx-acao-t::first-letter{text-transform:uppercase}
+  .mx-copiar{justify-content:center;text-align:center}
+  .mx-copiar.ok{border-color:var(--mx-ok,#1f8a5b)!important;color:var(--mx-ok,#1f8a5b)!important}
+  .mx-acoes-tit{margin:16px 0 8px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mx-text3)}
+  .mx-acoes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+  .mx-acoes-grid .mx-acao[style*="display: block"],.mx-acoes-grid .mx-acao[style*="display:block"]{display:flex!important}
+  .mx-acoes-grid .mx-acao[style*="display: none"],.mx-acoes-grid .mx-acao[style*="display:none"]{display:none!important}
+  .mx-fim{margin:22px 0 0;padding-top:20px;border-top:1px solid var(--mx-line)}
+  #concluirBtn{width:100%;min-height:54px;font-size:15.5px!important;border-radius:14px!important;letter-spacing:0}
+  .mx-fim .mx-concluir-info{margin:8px 0 6px}
+  .mx-novo{display:block;margin:2px auto 0;background:transparent!important;border:none!important;color:var(--mx-text2)!important;font-weight:600;padding:10px 16px!important}
+  .mx-novo:hover{color:var(--mx-text)!important;text-decoration:underline}
+  #envioBox .canal{display:grid!important;grid-template-columns:1fr 1fr;gap:10px!important;align-items:stretch}
+  #envioBox .canal .aviso{grid-column:1/-1}
+  #envioBox .canal button.mx-env{display:flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:12px 16px!important;border-radius:12px!important;font-size:14.5px!important;font-weight:600;border:1px solid transparent!important}
+  #envioBox .canal button.mx-env.wpp{background:rgba(31,138,91,.11)!important;color:#15704a!important;border-color:rgba(31,138,91,.28)!important}
+  #envioBox .canal button.mx-env.mail{background:var(--mx-surf)!important;color:var(--mx-text)!important;border-color:var(--mx-line2)!important}
+  html[data-tema="escuro"] #envioBox .canal button.mx-env.wpp{background:rgba(70,200,140,.13)!important;color:#7fdcae!important;border-color:rgba(70,200,140,.3)!important}
+  #envioBox .canal button.mx-env:hover:not(:disabled){filter:brightness(1.08)}
+  #envioBox .canal button.mx-env .ic{width:20px;height:20px;opacity:1}
   .btn:disabled{opacity:.4}
   /* v2.5-F: "Próxima" e "Ir para a conduta" sem resposta — claramente inativos (fundo claro, texto apagado,
      como no iOS), em vez de um bloco cinza-escuro translúcido; ativos em tinta cheia com sombra leve */
@@ -6626,6 +6661,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     window.__textoCopia = L.join('\n').replace(/\n{3,}/g,'\n\n').trim();
   }
 
+  function rotCopia(b,t){ const sp=b.querySelector('.mx-acao-t'); if(sp) sp.textContent=t; else b.textContent=t; }
   el('copyBtn').onclick = async () => {
     const b = el('copyBtn'), txt = window.__textoCopia || '';
     try{
@@ -6635,10 +6671,10 @@ document.documentElement.setAttribute('data-tema',t)})();
         ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
         ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
       }
-      b.textContent='Copiado — cole no prontuário'; setTimeout(()=>b.textContent='Copiar relatório para o prontuário',2200);
+      rotCopia(b,'Copiado — cole no prontuário'); b.classList.add('ok'); setTimeout(()=>{ rotCopia(b,'Copiar relatório para o prontuário'); b.classList.remove('ok'); },2200);
     }catch(e){
-      b.textContent='Não foi possível copiar — selecione o texto manualmente';
-      setTimeout(()=>b.textContent='Copiar relatório para o prontuário',3000);
+      rotCopia(b,'Não foi possível copiar — selecione o texto manualmente');
+      setTimeout(()=>rotCopia(b,'Copiar relatório para o prontuário'),3000);
     }
   };
   el('posBtn').onclick=()=>imprimeEmAba(el('printPos'),'Orientações pós-procedimento','po');
