@@ -296,6 +296,9 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-alertas{display:inline-flex;margin-top:12px;font-size:12.5px;color:var(--mx-warn);border:1px solid var(--mx-warnln);background:var(--mx-warnbg);
     border-radius:999px;padding:3px 10px;cursor:pointer}
   #resultsCard.mx-cd-on .result-top .gauge-wrap,#resultsCard.mx-cd-on #marcador{display:none!important}
+  /* v2.5-H (item 5): na tela o cabeçalho da conduta já diz classificação, escore e contexto; o bloco
+     "Classificação IIEF-5" só repetia. Continua no relatório impresso. */
+  @media screen{ #resultsCard.mx-cd-on #printArea > .result-top{display:none!important} }
   #resultsCard.mx-cd-on #printArea{display:flex;flex-direction:column}
   #resultsCard.mx-cd-on #printArea > *{order:3}
   #resultsCard.mx-cd-on #printArea > .result-top{order:0}
@@ -2474,7 +2477,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         + linhaFicha('Protocolo', prev.protocolo||null)
         + linhaFicha('Fórmulas', unicos(prev.kitCodes).filter(c=>!['TEFI','LABS'].includes(c))
             .map(c=>{ const comp=siglaAuto(c)?'':compoTxt(c); return c+(comp?' <span class="vazio">('+comp+')</span>':''); }).join('<br>') || null)
-        + linhaFicha('Adesão relatada', prev.adesao?({total:'regular',parcial:'falhas ocasionais',baixa:'baixa',parou:'interrompida'}[prev.adesao]||prev.adesao):null)
+        + linhaFicha('Adesão relatada', prev.adesao ? rotAdesao(prev.adesao, !!prev.iciCasa) : null)
         + '</table>';
     }
 
@@ -2597,6 +2600,13 @@ document.documentElement.setAttribute('data-tema',t)})();
     const b = document.getElementById('histBtn'); if (!b) return;
     b.style.display = temHistorico() ? 'inline-flex' : 'none';
   }
+  // v2.5-H (item 3): adesão com o mesmo texto em todo lugar (relatório, histórico, ficha, painel) —
+  // o da pergunta; em intracavernosa a pergunta é outra, então o texto também
+  const ROT_ADESAO = {
+    oral:{total:'todos os dias',parcial:'falhou alguns dias',baixa:'falhou muitos dias',parou:'parou de tomar'},
+    ici:{total:'sempre como recomendado',parcial:'às vezes mudou a dose ou deixou de aplicar',baixa:'raramente como recomendado',parou:'parou de aplicar'}
+  };
+  function rotAdesao(v, ici, maiusc){ const t = ROT_ADESAO[ici?'ici':'oral'][v] || v || ''; return maiusc && t ? t.charAt(0).toUpperCase()+t.slice(1) : t; }
   const ROT_HIST = {
     tempo:{curto:'menos de 3 meses',medio:'entre 3 e 6 meses',longo:'mais de 6 meses'},
     parceria:{fixa:'parceria fixa',eventual:'parcerias eventuais',sem:'sem atividade sexual no momento'},
@@ -2640,6 +2650,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     return [['tTotal','T total'],['tLivre','T livre'],['lh','LH'],['fsh','FSH'],['estradiol','estradiol'],['prolactina','prolactina']]
       .filter(([k])=>preenchido(l[k])).map(([k,r])=>r+' '+escH(l[k])).join(' · ');
   }
+  // v2.5-H (item 4): "DE-3 (mantido)" → "DE-3"; a composição fica no toque da sigla
+  function protCurto(p){ return String(p||'').replace(/\s*\((mantido|mantida)\)\s*$/i,'').trim(); }
   function blocoCiclo(c, ant){
     const R = ROT_HIST, lin = [];
     const mudou = k => !ant || JSON.stringify(ant[k]||null)!==JSON.stringify(c[k]||null);
@@ -2649,7 +2661,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (c.iief!=null) add(qn('IIEF-5'), qv(c.iief)+' <span class="vazio">('+faixaIief(c.iief)+')</span>');
       if (c.pedt!=null) add(qn('PEDT'), qv(c.pedt)+' <span class="vazio">('+faixaPedt(c.pedt)+')</span>');
       if (c.tipo==='reavaliacao'){
-        add('Adesão', R.adesao[c.adesao]||c.adesao||null);
+        add('Adesão', c.adesao ? rotAdesao(c.adesao, !!c.iciCasa) : null);
         if (c.ea) add('Efeitos adversos', (R.ea[c.ea]||c.ea) + ((c.eaQuais||[]).length ? ': '+escH(rotLista(c.eaQuais, EA)) : ''));
         if (c.satisf!=null) add('Satisfação', c.satisf+'/10');
         if (c.iciCasa) add('Intracavernosa em casa', [c.iciCasa.qualidade!=null?'qualidade '+escH(c.iciCasa.qualidade):null,
@@ -2764,7 +2776,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const linhas = [...new Set(clin.map(linhaDoCiclo).filter(Boolean))];
     const prots = [];
     clin.filter(c=>c.tipo==='primeira'||c.tipo==='reavaliacao').forEach(c=>{
-      if (c.protocolo && prots[prots.length-1]!==c.protocolo) prots.push(c.protocolo); });
+      const pc = protCurto(c.protocolo); if (pc && prots[prots.length-1]!==pc) prots.push(pc); });
     const serie = k => clin.filter(c=>c[k]!=null).map(c=>qv(c[k])+' <span class="vazio">('+dataDoCiclo(c)+')</span>').join(' → ');
 
     let h = '<h4>Síntese</h4><table>'
@@ -2772,7 +2784,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       + linhaFicha('Última visita', dataDoCiclo(ult) + (dias!=null ? ' <span class="vazio">('+(dias===0?'hoje':(dias===1?'ontem':'há '+dias+' dias'))+')</span>' : ''))
       + linhaFicha('Atendimentos registrados', String(clin.length))
       + linhaFicha('Linhas de tratamento', linhas.length ? linhas.join(' · ') : null)
-      + linhaFicha('Sequência de protocolos', prots.length ? escH(explicaSiglas(prots.join(' → '))) : null)
+      + linhaFicha('Sequência de protocolos', prots.length ? '<span class="sem-ativo so-codigo">'+escH(prots.join(' → '))+'</span>' : null)
       + linhaFicha(qn('IIEF-5'), serie('iief') || null)
       + linhaFicha(qn('PEDT'), serie('pedt') || null)
       + '</table>';
@@ -3187,7 +3199,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       .replace(/\s*\+\s*/g,' + ').replace(/\s{2,}/g,' ').replace(/\s+,/g,',').replace(/^[\s+,]+|[\s+,]+$/g,'').trim();
   }
   function substanciasPaciente(cod){
-    if (cod==='ICI'){ const n = numDaFormulaIci(S.iciAnt||S.iciFormula||'R5') || 5; return tiraDoses(iciTxt(n)); }
+    if (cod==='ICI'){ const n = numDaFormulaIci(iciCodConsulta()) || 5; return tiraDoses(iciTxt(n)); }
     if (SIGLA_FORA[cod]) return '';
     return tiraDoses(ativoTxt(cod));
   }
@@ -3818,7 +3830,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       + (f.efeitoRelatado&&f.efeitoRelatado!=='nao' ? ' \u00b7 efeito '+({leve:'leve',atrap:'atrapalhou'}[f.efeitoRelatado]||'') : '')
       + (f.satisfRelatada!=null ? ' \u00b7 satisfa\u00e7\u00e3o '+f.satisfRelatada+'/10' : '')));
     else if (prev && prev.adesao) rl.push(lin(
-      ({total:'ades\u00e3o total',parcial:'falhou alguns dias',baixa:'falhou bastante',parou:'parou'}[prev.adesao]||prev.adesao)
+      'adesão: '+rotAdesao(prev.adesao, !!prev.iciCasa)
       + (prev.satisf!=null?' \u00b7 satisfa\u00e7\u00e3o '+prev.satisf+'/10':'')));
     bloco('Relato', rl);
 
@@ -6477,13 +6489,13 @@ document.documentElement.setAttribute('data-tema',t)})();
       add('Protocolo anterior',(S.protAnt==='Outro / combinação não listada'?(protAntExibe(', ')||'não especificado'):S.protAnt)||'—');
       if (S.iiefAnt) add(qn('IIEF-5')+' anterior → atual',qv(S.iiefAnt+' → '+sIIEF)+'  ('+(dIIEF>0?'+':'')+dIIEF+')');
       if (S.pedtAnt) add(qn('PEDT')+' anterior → atual',qv(S.pedtAnt+' → '+sPEDT)+'  ('+(dPEDT>0?'+':'')+dPEDT+')');
-      add('Adesão',{total:'Todos os dias',parcial:'Falhou alguns dias',baixa:'Falhou muitos dias',parou:'Parou de tomar'}[S.adesao]||'—');
+      add('Adesão', S.adesao ? rotAdesao(S.adesao, S.emICI!=null ? !!S.emICI : emICIant, true) : '—'); // v2.5-H (item 3): mesmas palavras da pergunta feita
       if (S.motivo) add('Motivo',{ea:'Efeito adverso',esq:'Esquecimento',naoprec:'Achou que não precisava',outro:'Outro'}[S.motivo]);
       add('Efeitos adversos',{nao:'Nenhum',leve:'Leves, toleráveis',atrap:'Atrapalharam o uso'}[S.ea]||'—');
       // v2.5-G: com DE, a linha do ADAM sai uma vez só (abaixo, com os sintomas); aqui só quando não há DE
       if (S.adam && !S.hasDE){ const a=(S.adam||[]).filter(v=>v!=='nenhum'); add(qn('ADAM'), qv(adamPositivo(a)?'POSITIVO':'negativo')+' — '+a.length+'/10 sintomas'); }
     if (alg.length) add('Alergias', alg.map(v=>({tada:'PDE5',clomi:'tricíclico',parox:'ISRS',dapo:'dapoxetina',anest:'anestésico local',ioim:'ioimbina',fito:'fitoterápico'}[v])).join('; '));
-    if (S.hasDE && (S.adam||[]).length) add(qn('ADAM'), qv(S.adamPos?'POSITIVO':'negativo')+' — '+adamSet.length+'/10 · '+(adamSet.length?adamSet.map(v=>(ADAM.find(a=>a.v===v)||{}).label).filter(Boolean).join('; '):'nenhum sintoma'));
+    if (S.hasDE && (S.adam||[]).length) add(qn('ADAM'), qv(S.adamPos?'POSITIVO':'negativo')+' — '+(adamSet.length ? adamSet.length+'/10 · '+adamSet.map(v=>(ADAM.find(a=>a.v===v)||{}).label).filter(Boolean).join('; ') : 'nenhum sintoma'));
     if (comorb.length) add('Comorbidades',comorb.map(v=>({has:'HAS',dm:'Diabetes',disl:'Dislipidemia',vasc:'Doença arterial',tabag:'Tabagismo',obes:'Obesidade',alcool:'Álcool',drogas:'Drogas recreacionais'}[v])).join('; ')+({sim:' · controladas',parcial:' · controle parcial',nao:' · NÃO controladas'}[S.comorbCtrl]||'')+({sim:' · com acompanhamento',nao:' · SEM acompanhamento'}[S.comorbMed]||''));
     if (reav && S.examesFeitos==='sim') add('Perfil hormonal',[S.tTotal&&('T total '+S.tTotal),S.tLivre&&('T livre '+S.tLivre),S.lh&&('LH '+S.lh),S.fsh&&('FSH '+S.fsh),S.estradiol&&('E2 '+S.estradiol),S.prolactina&&('PRL '+S.prolactina)].filter(Boolean).join(' · ')||'—');
     // v2.5-G: o TEFI no relatório em texto legível (antes saíam os códigos: "parcial · Doppler venoso · conduta ici")
@@ -6514,7 +6526,10 @@ document.documentElement.setAttribute('data-tema',t)})();
     add('Custo estimado do ciclo', CUS.idx+'/10'+(CUS.temOpc?'  ·  com opcional: '+CUS.idxComOpc+'/10':'')+'  ('+CUS.total+' pontos · maior peso: '+(CUS.itens.slice(0,3).map(i=>i.cod).join(', ')||'—')+')');
     const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=F[c];if(!i) return '';
       // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
-      if (c==='ICI') return `<b>${iciCodConsulta()}</b> — intracavernosa${iciDoseIndicada?', '+iciDoseIndicada:''} · ${i.pos}`;
+      // v2.5-H (item 1): sem dose indicada (1ª consulta), a dose inicial padrão da clínica para a R5 (a mesma do TEFI)
+      if (c==='ICI'){ const rc=iciCodConsulta();
+        const dz = iciDoseIndicada ? ', '+iciDoseIndicada : (rc==='R5' ? ', dose inicial 0,1 mL (padrão da clínica)' : ', dose inicial a definir em consultório');
+        return `<b>${rc}</b> — intracavernosa${dz} · ${i.pos}`; }
       return `<b>${c.replace('-1J','')}</b> — ${i.txt} · ${i.pos}`;}).filter(Boolean).join('<br>');
     el('report').innerHTML=`<h4>Relatório da consulta</h4><table>${rows.join('')}</table>
       <h4 class="so-papel">Protocolo prescrito</h4><div class="so-papel" style="font-size:14px;line-height:1.6;">${kitTxt||'—'}</div>
@@ -6536,7 +6551,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       const opc = /Opcional/.test(tag||'') ? ' <i>(opcional — converse conosco)</i>' : '';
       const alt = /opção B/.test(tag||'') ? ' <i>(alternativa à opção anterior — use apenas uma)</i>' : '';
       const sub = substanciasPaciente(c);
-      return '<div class="med">'+chipCor(c, iciDaConsulta())+'<b>'+c.replace('-1J','')+'</b>'+(sub?' · '+escH(sub):'')+opc+alt+
+      // v2.5-H (item 2): intracavernosa pelo código da fórmula (R10), só com as substâncias — nunca a dose
+      const rot = c==='ICI' ? '<b class="sem-ativo so-codigo">'+escH(iciCodConsulta())+'</b>' : '<b>'+c.replace('-1J','')+'</b>';
+      return '<div class="med">'+chipCor(c, iciDaConsulta())+rot+(sub?' · '+escH(sub):'')+opc+alt+
              '<span class="como">'+it.pac+'</span><span class="pq">'+it.pacq+'</span></div>';
     }).filter(Boolean).join('');
 
@@ -6678,7 +6695,11 @@ document.documentElement.setAttribute('data-tema',t)})();
     const iCl = cl ? L.length : -1;
     if (cl) L.push(cl===cl.toUpperCase() ? cl.charAt(0)+cl.slice(1).toLowerCase() : cl);
     // o marcador às vezes repete código e data, que já estão no cabeçalho
-    const mcLimpo = mc.replace(/^Código\s+\S+\s*(·\s*\d{2}\/\d{2}\/\d{4}\s*)?(·\s*)?/,'').trim();
+    let mcLimpo = mc.replace(/^Código\s+\S+\s*(·\s*\d{2}\/\d{2}\/\d{4}\s*)?(·\s*)?/,'').trim();
+    // v2.5-H (item 5): "1ª reavaliação · 70 dias desde a última" e "Primeira avaliação" já estão em
+    // "Tipo de visita" e "Intervalo desde a última" logo abaixo
+    if (/Tipo de visita/.test(el('report').textContent))
+      mcLimpo = mcLimpo.replace(/^(\d+ª\s+)?reavaliação(\s*·\s*\d+ dias desde a última)?\s*(·\s*)?/i,'').replace(/^Primeira avaliação\s*(·\s*)?/,'').trim();
     if (mcLimpo) L.push(mcLimpo);
 
     // dados: tabelas do relatório como "Rótulo: valor"; seções de texto como lista
