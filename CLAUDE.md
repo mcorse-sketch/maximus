@@ -128,14 +128,32 @@ confirmados" é observação (não alerta, sai de PENDÊNCIAS), "Agende também:
 só com ondas prescritas. Intracavernosa pelo código da fórmula (`iciCodConsulta()`:
 consulta → TEFI → anterior → R5): cartão do kit, cabeçalho e "Protocolo prescrito"
 dizem R10 quando é R10 (antes o prescrito saía sempre "R5" — `F['ICI'].txt`). A via
-do paciente continua "ICI", sem dose. Painel: dose do registro mais recente que a
+do paciente passou a mostrar o código (v2.5-H), sem dose. Painel: dose do registro mais recente que a
 tenha (`S.iciDoseHist`) ou "dose não registrada". "Próxima" apagado mostra o que
 falta (`faltaTxt()`, `#mxFalta`, atualizado por MutationObserver no `disabled`).
-Progresso numa barra contínua (`.dots.barra`). Banco = ponto discreto (`.db-dot`).
+Progresso numa barra contínua (`.dots.barra`). Banco = ponto discreto (`.db-dot`; no cabeçalho desde a v2.5-H).
 Fim da conduta: Concluir é o único botão principal; copiar/imprimir agrupados
-(`#mxAcoes`), WhatsApp/email maiores. Celular (< 600 px): o trilho vira
-`display:contents` — paciente numa linha, módulos em faixa rolável, pergunta logo
-abaixo, painel depois.
+(`#mxAcoes`), WhatsApp/email maiores. Celular (< 600 px): ajustes
+inofensivos (o `display:contents` do trilho saiu na v2.5-H — fora do alvo).
+
+**Refino (v2.5-H) — alvo: desktop (1280–1920) e iPad (retrato e paisagem, toque).**
+Sem layout de celular (o bloco < 600 px só evita quebrar). Primeira intracavernosa: o
+"Protocolo prescrito" traz a dose (`iciDoseIndicada`; R5 sem dose = "dose inicial 0,1 mL
+(padrão da clínica)", o padrão marcado no TEFI; outra fórmula = "dose inicial a definir
+em consultório"). Via do paciente: código da fórmula (R10) no lugar de "ICI", ainda sem
+dose nem concentração (`.so-codigo`, dispensado no `teste_siglas`). Adesão com as
+palavras da pergunta (`rotAdesao(v, ici)`: oral "todos os dias…", intracavernosa
+"sempre como recomendado…") no histórico, prontuário, painel e relatório. Histórico:
+"Sequência de protocolos" só com códigos (`protCurto`, sem "(mantido)" nem repetição).
+ADAM "negativo — nenhum sintoma"; a 3ª linha da cópia não repete tipo de visita/
+intervalo; o bloco "Classificação IIEF-5" some da tela da conduta (fica na impressão).
+Toque: a linha da intracavernosa no cabeçalho abre a composição (`mxAbreIci`,
+`aria-expanded`); banco no cabeçalho (`#dbTag` em `#mxTopo`: ponto verde ou "Sem banco",
+toque abre `#mxDbPop` com "Configurar servidor"); `(hover:none) and (pointer:coarse)`
+esconde "?" e as teclas. Grade de impressão em 6 colunas (3 · 2×2 · 3+2, via `:has`).
+iPad em retrato (≤ 900 px): o trilho é um cabeçalho em grade — código + ações, pílulas
+de contexto + "Resumo do paciente" (recolhível, 3 colunas aberto), módulos em pílulas
+que quebram linha. Conferido no WebKit (Playwright) com viewport de iPad e toque.
 
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua

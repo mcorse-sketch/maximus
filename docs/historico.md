@@ -83,6 +83,16 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   `mostraDica`.
 - **"Agende também: ondas de choque" com ondas só opcionais (v2.5-G)**, **"há 0
   dias"** no histórico (agora "hoje") e **ADAM em duas linhas** no prontuário.
+- **Primeira intracavernosa sem dose no "Protocolo prescrito" (v2.5-H)** — a linha
+  saía "R5 · … — intracavernosa" sem dose (ex.: LIM-001). Agora traz a dose indicada
+  ou a dose inicial padrão da clínica (R5 0,1 mL).
+- **"Adesão: regular" × "Todos os dias" (v2.5-H)** — histórico, painel e relatório
+  usavam palavras diferentes das da pergunta; agora `rotAdesao()` é a fonte única,
+  com o texto da intracavernosa quando a pergunta foi da intracavernosa.
+- **Histórico com a sequência de protocolos repetida (v2.5-H)** — "DE-2 → DE-2
+  (mantido)" e composições longas; agora só códigos e sem repetição.
+- **Hover sem alternativa no iPad (v2.5-H)** — composição da intracavernosa no
+  cabeçalho e o estado do banco dependiam de `title`; agora abrem com um toque.
 - **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
   mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
   substâncias; a dose fica no relatório. Apêndice do envio retirado.

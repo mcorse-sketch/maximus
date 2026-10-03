@@ -248,6 +248,76 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
       q.win.close(); }
   }
 
+  // ---- 6. v2.5-H: refino aprovado pelo Dr. Marco (desktop + iPad) ----
+  console.log('\n--- v2.5-H: dose inicial na 1ª intracavernosa, código na via do paciente, adesão, histórico curto, redundâncias, toque');
+  {
+    // item 1 e 2: primeira intracavernosa (paciente de regressão LIM-001)
+    const P = require('./regressao/pacientes');
+    const r1 = await roda(P.find(p => p.id === 'LIM-001'), false, { manter: true });
+    { const d = r1.win.document;
+      const lin = r1.texto.split('\n').filter(l => /— intracavernosa/.test(l));
+      ok(lin.length === 1 && /— intracavernosa, dose inicial 0,1 mL/.test(lin[0]), 'item 1: 1ª intracavernosa com a dose inicial indicada', lin.join(' | '));
+      const meds = [...d.querySelectorAll('#printPaciente .med')].map(m => m.textContent.replace(/\s+/g, ' ').trim());
+      const mi = meds.find(m => /alprostadil|papaverina/.test(m)) || '';
+      ok(/^R\d+\b/.test(mi) && !/\bICI\b/.test(mi), 'item 2: via do paciente traz o código da fórmula (R5), não "ICI"', mi);
+      ok(!/\d\s*(mg|mcg|mL)\b/.test(mi) && !d.querySelector('#printPaciente .sig-ativo'), 'item 2: via do paciente continua sem dose nem concentração', mi);
+      r1.win.close(); }
+    // item 3: adesão com as mesmas palavras da pergunta (oral × intracavernosa)
+    const r0 = await roda(P.find(p => p.id === 'R-06'), false, { manter: true });
+    { const m = (r0.texto.match(/^Adesão: .*$/m) || [''])[0];
+      ok(m === 'Adesão: Sempre como recomendado', 'item 3: intracavernosa — adesão com as palavras da pergunta ("Sempre como recomendado")', m);
+      r0.win.close(); }
+    // item 4: histórico — sequência de protocolos só com os códigos
+    const cH = [
+      Object.assign({ codigo: 'MXV007', tipo: 'primeira', linha: 'DE', data: iso(200), dataBR: br(200), protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'],
+        iief: 12, mast: 'nao', matinal: 'nao', adam: ['nenhum'], adesao: 'total' }, ESTAVEL, CONTATO),
+      Object.assign({ codigo: 'MXV007', tipo: 'reavaliacao', linha: 'DE', data: iso(130), dataBR: br(130), protocolo: 'DE-2 (mantido)', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'],
+        iief: 13, mast: 'nao', matinal: 'nao', adam: ['nenhum'], adesao: 'total' }, ESTAVEL, CONTATO),
+      Object.assign({ codigo: 'MXV007', tipo: 'reavaliacao', linha: 'DE', data: iso(60), dataBR: br(60), protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE'],
+        iief: 11, mast: 'nao', matinal: 'nao', adam: ['nenhum'], adesao: 'parcial' }, ESTAVEL, CONTATO)];
+    const r2 = await roda({ id: 'H2', codigo: 'MXV007', ciclos: cH, respostas: { visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: '__parar__' } }, false, { manter: true });
+    { const d = r2.win.document; const hb = d.getElementById('histBtn');
+      if (hb) hb.click(); await new Promise(z => setTimeout(z, 60));
+      const tr = [...d.querySelectorAll('#histCorpo tr')].find(t => /Sequência de protocolos/.test(t.textContent));
+      const seq = tr ? tr.textContent.replace(/\s+/g, ' ').replace('Sequência de protocolos', '').trim() : '';
+      ok(seq === 'DE-2 → DE-3', 'item 4: sequência de protocolos curta (DE-2 → DE-3), sem composição nem repetição', seq);
+      const hc = d.getElementById('histCorpo').textContent;
+      ok(/todos os dias/i.test(hc) && /falhou alguns dias/i.test(hc) && !/\bregular\b/i.test(hc), 'item 3: histórico com as palavras da pergunta (sem "regular")');
+      r2.win.close(); }
+    // itens 5–9 na conduta (MXV005 → R10 0,1 mL)
+    const cOral = () => [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const r3 = await roda({ id: 'H3', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao',
+      confirmaEstavel: 'nao', caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso', tefiConduta: 'ici', tefiAddIci: 'sim',
+      iciFormula: 'R10', iciDose: '0,1 mL', satisfNps: { satisf: 5, nps: 7 } }, iief(10)) }, false, { manter: true });
+    { const d = r3.win.document, L = r3.texto.split('\n');
+      ok(L.some(l => l === 'ADAM: negativo — nenhum sintoma'), 'item 5: ADAM sem "0/10" redundante', L.filter(l => /^ADAM/.test(l)).join(' | '));
+      ok(!/reavaliação ·|dias desde a última ·|^Primeira avaliação ·/.test(L[2] || ''), 'item 5: 3ª linha do prontuário não repete tipo de visita/intervalo', L[2]);
+      ok(L.some(l => /^Adesão: Todos os dias$/.test(l)), 'item 3: paciente oral — "Todos os dias", como na pergunta', L.filter(l => /^Adesão/.test(l)).join(' | '));
+      const ici = d.querySelector('#mxCdKit > span.ici');
+      ok(ici && ici.getAttribute('role') === 'button' && ici.getAttribute('aria-expanded') === 'false', 'item 6: linha da intracavernosa no cabeçalho é um botão');
+      if (ici) { ici.click(); }
+      ok(ici && ici.classList.contains('aberto') && ici.getAttribute('aria-expanded') === 'true', 'item 6: um toque abre a composição completa');
+      if (ici) { ici.click(); }
+      ok(ici && !ici.classList.contains('aberto'), 'item 6: outro toque fecha');
+      const db = d.getElementById('dbTag');
+      ok(db && db.closest('#mxTopo') && !db.closest('#quizCard'), 'item 7: estado do banco no cabeçalho, não solto acima do "Voltar"');
+      const cfg = d.getElementById('cfgLink');
+      ok(cfg && cfg.tagName === 'BUTTON' && !cfg.getAttribute('title'), 'item 7: estado do banco é um botão (toque), sem depender de title');
+      if (cfg) cfg.click(); await new Promise(z => setTimeout(z, 10));
+      ok(!!d.getElementById('mxDbPop') && /Configurar servidor/.test(d.getElementById('mxDbPop').textContent), 'item 7: toque abre os detalhes e "Configurar servidor"');
+      d.body.click(); await new Promise(z => setTimeout(z, 10));
+      ok(!d.getElementById('mxDbPop'), 'item 7: toque fora fecha os detalhes');
+      ok(d.getElementById('mxAjudaBtn') && /hover:\s*none/.test(d.documentElement.innerHTML) && /#mxAjudaBtn\{display:none!important\}/.test(d.documentElement.innerHTML),
+        'item 8: "?" (atalhos de teclado) some em tela de toque');
+      const g = d.querySelector('.mx-acoes-grid');
+      const vis = [...g.children].filter(b => b.style.display !== 'none').length;
+      ok(vis >= 3 && /grid-template-columns:repeat\(6/.test(d.documentElement.innerHTML), 'item 9: grade de impressão em 6 colunas (3 · 2×2 · 3+2)', 'visíveis: ' + vis);
+      const res = d.querySelector('#printArea > .result-top');
+      ok(res && res.textContent.includes('IIEF-5'), 'item 5: bloco "Classificação" continua no relatório impresso (só some da tela)');
+      r3.win.close(); }
+  }
+
   console.log('\n=== v2.5 ===');
   console.log('falhas: ' + falhas);
   process.exit(falhas ? 1 : 0);

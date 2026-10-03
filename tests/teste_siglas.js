@@ -22,6 +22,10 @@ function textoDe(win, raiz) {
     // v2.5-F (pedido do Dr. Marco, 03/10/2026): a pílula da classificação é curta — faixa + código do
     // protocolo; a composição do protocolo aparece logo abaixo, no protocolo prescrito
     if (pai && pai.closest && pai.closest('#classPill')) continue;
+    // v2.5-H (aprovado pelo Dr. Marco, 03/10/2026): onde só o código cabe — a fórmula na via do paciente
+    // (R10, sem dose nem concentração) e a sequência de protocolos do histórico (DE-2 → DE-3). O código
+    // continua tocável (abre a composição) na tela; a composição completa está no relatório da clínica.
+    if (pai && pai.closest && pai.closest('.so-codigo')) continue;
     partes.push(n.nodeValue);
   }
   return partes.join(' ');
