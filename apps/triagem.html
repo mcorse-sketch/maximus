@@ -1502,61 +1502,17 @@ document.documentElement.setAttribute('data-tema',t)})();
   .hist-visita h5{color:var(--mx-text)!important}
   .hist-btn{background:var(--mx-surf)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important}
 
-  /* Mac estreito / iPad: trilho vira faixa no topo, prévia desce para baixo da pergunta */
+  /* janela estreita: trilho vira faixa no topo, prévia desce para baixo da pergunta.
+     v2.5-I: o consultório (triagem) é só desktop — não investir em iPad/celular aqui; o iPad usa a recepção */
   @media (max-width:1180px){
     .mx-shell.com-rail.com-previa{grid-template-columns:var(--mx-rail) minmax(0,1fr)}
     .mx-shell.com-previa .mx-prev{grid-column:2;position:static;height:auto;border-left:0;border-top:1px solid var(--mx-line);background:transparent;padding:20px clamp(20px,4vw,56px)}
   }
-  /* v2.5-H: iPad em retrato (768–834 px) — o paciente vira um cabeçalho compacto acima da pergunta:
-     código + ações numa linha, contexto + "Resumo do paciente" na segunda, módulos em pílulas que quebram
-     linha (nada escondido, nada rolando de lado). O resumo completo abre num toque, em 3 colunas. */
   @media (max-width:900px){
-    .mx-shell.com-rail,.mx-shell.com-rail.com-previa{grid-template-columns:minmax(0,1fr);align-content:start}
-    .mx-shell.com-rail .mx-rail{position:static;height:auto;overflow:visible;border-right:0;border-bottom:1px solid var(--mx-line);
-      display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:10px;align-items:center;align-content:start;padding:16px 28px 14px}
+    .mx-shell.com-rail,.mx-shell.com-rail.com-previa{grid-template-columns:minmax(0,1fr)}
+    .mx-rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--mx-line);padding:14px 20px}
+    .mx-nav{grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto}
     .mx-shell.com-previa .mx-prev{grid-column:1}
-    .mx-rail > *{grid-column:1 / -1;min-width:0}
-    #mxPac{grid-column:1;grid-row:1;display:flex;align-items:baseline;gap:12px;margin:0}
-    #mxPac .mx-eyebrow{display:none}
-    #mxPac .mx-cod{font-size:24px}
-    .mx-busca-btn > span[aria-hidden]{font-size:17px;line-height:1}
-    .mx-rail > .mx-acts{grid-column:2;grid-row:1;gap:6px}
-    .mx-acts .btn,.mx-acts .hist-btn{flex:none;height:36px!important;padding:0 14px!important;flex-direction:row!important;gap:6px!important;
-      font-size:13px!important;border-radius:999px!important}
-    .mx-acts .kbd{display:none!important}
-    #mxChips{grid-column:1;grid-row:2;margin:0!important}
-    #painelCard:not([style*="none"]){display:contents!important}
-    #painelCard .painel-tit{display:none}
-    #painelCard .copiloto:not([style*="none"]){display:contents!important}
-    #painelCard .copiloto .cab{grid-column:1;grid-row:1;margin:0;align-items:baseline;gap:12px}
-    #painelCard .copiloto .cod{font:500 24px var(--mx-disp);letter-spacing:-.03em;color:var(--mx-text)}
-    #painelCard .painel-mais{display:inline-flex!important;grid-column:2;grid-row:2;justify-self:end;align-items:center;gap:7px;width:auto;margin:0;
-      height:30px;padding:0 12px;border:1px solid var(--mx-line2);border-radius:999px;background:var(--mx-surf);color:var(--mx-text);
-      font:500 12.5px var(--mx-font);cursor:pointer;-webkit-tap-highlight-color:transparent}
-    #painelCard .painel-mais::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
-      transform:translateY(-2px) rotate(45deg);transition:transform .2s ease}
-    #painelCard.aberto .painel-mais::after{transform:translateY(1px) rotate(225deg)}
-    #painelCard .cop2{display:none;grid-column:1 / -1;grid-row:3}
-    #painelCard.aberto .cop2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 22px;padding:12px 16px;margin:2px 0 4px;
-      border:1px solid var(--mx-line);border-radius:14px;background:var(--mx-surf)}
-    #painelCard.aberto .cop2 .bloco{border-top:0!important;padding:6px 0}
-    .mx-rail > .mx-nav{grid-row:4;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-    .mx-nav > .mx-eyebrow{display:none}
-    .mx-nav > .mx-sub{flex-basis:100%;margin:2px 2px 0!important}
-    .mx-nav button{width:auto;flex:none;white-space:nowrap;padding:7px 13px;border-radius:999px;border:1px solid var(--mx-line);gap:7px;font-size:13.5px}
-    .mx-nav button.on{border-color:var(--mx-text);box-shadow:none}
-    .mx-nav .n{flex:none}
-    .mx-nav .mx-navcd{margin:0;border-top:1px solid var(--mx-line);border-radius:999px;padding-top:7px}
-    .mx-rail > #mxDisp{grid-row:5}
-    #mxDisp:empty{display:none}
-    details.mx-disp{padding:0 2px}
-  }
-  /* v2.5-H (item 8): tela de toque (iPad) — sem teclado, os atalhos e o botão "?" não servem para nada */
-  @media (hover:none) and (pointer:coarse){
-    #mxAjudaBtn{display:none!important}
-    header .kbd,.mx-rail .kbd,.mx-cta .kbd,.nav-row .kbd{display:none!important}
-    .mx-acts .btn,.mx-acts .hist-btn{flex-direction:row!important}
-    .mx-busca-btn{padding:0 12px!important}
   }
   /* v2.5-G/H: telas estreitas (< 600 px) — não é alvo (app de desktop e iPad); só ajustes inofensivos para não quebrar */
   @media (max-width:600px){
@@ -2367,9 +2323,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (painel) painel.style.display = temPainel ? 'block' : 'none';
     if (painel && temPainel && !painel.querySelector('.painel-mais')){
       const b=document.createElement('button'); b.type='button'; b.className='painel-mais';
-      b.textContent='Resumo do paciente'; b.setAttribute('aria-expanded','false');
+      b.textContent='Ver resumo completo';
       b.onclick=()=>{ const ab=painel.classList.toggle('aberto');
-        b.textContent = ab ? 'Recolher resumo' : 'Resumo do paciente'; b.setAttribute('aria-expanded', ab?'true':'false'); };
+        b.textContent = ab ? 'Recolher resumo' : 'Ver resumo completo'; };
       painel.appendChild(b);
     }
     const linha = document.getElementById('linhaQuiz');
