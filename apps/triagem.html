@@ -1022,6 +1022,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         <button class="btn btn-ghost" id="panBtn" title="Ver todos os módulos">Panorama</button>
         <button class="btn btn-ghost" id="fichaBtn" title="Ficha completa do paciente" style="display:none;">Ficha</button>
         <button class="btn btn-ghost" id="backBtn">Voltar</button>
+        <span class="mx-falta" id="mxFalta" aria-live="polite"></span>
         <button class="btn btn-primary" id="nextBtn" disabled>Pr&oacute;xima</button>
       </div>
     </div>
@@ -1233,6 +1234,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   .progress-row .step-label{color:var(--mx-text3)!important}
   .dots i{background:var(--mx-surf3)!important} .dots i.done{background:var(--mx-ink)!important} .dots i.active{background:var(--mx-focus)!important}
   .dots i.active::after{background:transparent!important}
+  .dots.barra{display:block!important;position:relative;height:3px;border-radius:3px;background:var(--mx-surf3);overflow:hidden;max-width:none}
+  .dots.barra i.fill{position:absolute;left:0;top:0;bottom:0;height:auto;flex:none;border-radius:3px;background:var(--mx-ink)!important;transition:width .36s cubic-bezier(.2,.8,.2,1)}
   .q-eyebrow{color:var(--mx-text3)!important;font-weight:600!important;letter-spacing:.08em!important}
   .q-text{font-family:var(--mx-disp)!important;font-weight:400!important;font-size:clamp(22px,2.4vw,28px)!important;letter-spacing:-.03em;color:var(--mx-text)!important;line-height:1.2!important}
   .opt{background:transparent!important;border:1px solid var(--mx-line2)!important;border-radius:14px!important;color:var(--mx-text)!important;font-weight:450;transition:all .16s cubic-bezier(.2,.8,.2,1)}
@@ -1262,6 +1265,15 @@ document.documentElement.setAttribute('data-tema',t)})();
   .btn-primary:disabled .kbd,#mxRevisar:disabled .kbd{opacity:.5}
   .btn-primary:not(:disabled){box-shadow:0 1px 2px rgba(1,8,12,.12),0 4px 12px -6px rgba(1,8,12,.35)!important}
   .nav-row #panBtn,.nav-row #fichaBtn{display:none!important}
+  /* v2.5-G: o "Próxima" apagado diz o que falta */
+  .mx-falta{margin-left:auto;font-size:12.5px;line-height:1.3;color:var(--mx-text3);text-align:right;max-width:46%;opacity:0;transition:opacity .2s ease}
+  .mx-falta.on{opacity:1}
+  .mx-falta + #nextBtn{margin-left:0}
+  #dbTag{display:flex;align-items:center;gap:6px;min-height:14px}
+  #dbTag .db-dot{width:7px;height:7px;border-radius:50%;background:var(--mx-text3);opacity:.55;flex:none;transition:opacity .2s}
+  #dbTag .db-dot:hover,#dbTag .db-dot:focus-visible{opacity:1;outline:2px solid color-mix(in srgb,var(--mx-focus) 35%,transparent);outline-offset:2px}
+  #dbTag .db-dot.ok{background:var(--mx-ok)} #dbTag .db-dot.sem{background:var(--mx-warn);opacity:.9}
+  #dbTag .db-lbl{font-size:11.5px;color:var(--mx-warn)}
   .dbtag,.salvo-tag{color:var(--mx-text3)!important;background:transparent!important;padding-left:clamp(18px,4vw,32px)!important;padding-right:clamp(18px,4vw,32px)!important}
   .vigia{background:var(--mx-stopbg)!important;color:var(--mx-stop)!important;border:1px solid var(--mx-stopln)!important}
   .retomar{background:var(--mx-warnbg)!important;color:var(--mx-text)!important;border:1px solid var(--mx-warnln)!important}
@@ -1364,6 +1376,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   /* v2.5-E: cor da fórmula (a mesma da embalagem) */
   .mx-cor{position:absolute;top:8px;right:8px;width:12px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(1,8,12,.18);
     -webkit-print-color-adjust:exact;print-color-adjust:exact;pointer-events:none}
+  html[data-tema="escuro"] .mx-cor{box-shadow:inset 0 0 0 1px rgba(255,255,255,.38),0 0 0 .5px rgba(255,255,255,.12)}
   .mx-cor.inl{position:static;display:inline-block;vertical-align:-1px;width:10px;height:10px;margin-left:6px}
   .kit-card,.mx-cdkit > span,.opt,.gop,.pac .med{position:relative}
   .mx-cdkit > span{padding-right:28px}
@@ -1776,7 +1789,12 @@ document.documentElement.setAttribute('data-tema',t)})();
 
   function pintaStatus(extra){
     const t=document.getElementById('dbTag'); if(!t) return;
-    t.innerHTML = (extra||Store.rotulo()) + ' &middot; <a href="#" id="cfgLink" style="text-decoration:underline;">configurar servidor</a>';
+    // v2.5-G: o estado do banco vira um ponto discreto (verde conectado, âmbar sem banco); o texto técnico fica no
+    // title e no aria-label. Sem banco, uma palavra curta ao lado — é o único caso que muda o trabalho do médico.
+    const rot = extra || Store.rotulo();
+    const st = Store.modo==='claude' || Store.modo==='rede' ? 'ok' : (Store.modo==='carregando' ? 'carr' : 'sem');
+    t.innerHTML = '<a href="#" id="cfgLink" class="db-dot '+st+'" title="'+escH(rot)+' Clique para configurar o servidor." aria-label="'+escH(rot)+' Configurar servidor"></a>'
+      + (st==='sem' ? '<span class="db-lbl">sem banco nesta máquina</span>' : '');
     const a=document.getElementById('cfgLink');
     if (a) a.onclick=(e)=>{
       e.preventDefault();
@@ -1883,9 +1901,28 @@ document.documentElement.setAttribute('data-tema',t)})();
   const el2 = id => document.getElementById(id);
   const dotsEl=el('dots'), stepLabel=el('stepLabel'), qText=el('qText'), qEyebrow=el('qEyebrow');
   const optsWrap=el('optsWrap'), backBtn=el('backBtn'), nextBtn=el('nextBtn');
+  // v2.5-G (item 17): sempre que o "Próxima" acende/apaga, a linha ao lado diz o que falta
+  function pintaFalta(){
+    const f=el('mxFalta'); if(!f) return;
+    let t=''; try { t = nextBtn.disabled ? faltaTxt(screens[si]) : ''; } catch(e){ t=''; }
+    f.textContent=t; f.classList.toggle('on', !!t); nextBtn.title = t || '';
+  }
+  if (typeof MutationObserver!=='undefined') new MutationObserver(pintaFalta).observe(nextBtn,{attributes:true,attributeFilter:['disabled']});
   const quizCard=el('quizCard'), resultsCard=el('resultsCard');
 
   function preenchido(v){ return !(v===undefined || v===null || String(v).trim()===''); }
+  // v2.5-G (item 17): o que falta para liberar o "Próxima"
+  function faltaTxt(sc){
+    if (!sc || val(sc) || sc.optional) return '';
+    const rot = f => { const t = (ROT_CAMPO && ROT_CAMPO[f.id]) || f.label || f.short || ''; return String(t).replace(/<[^>]+>/g,'').replace(/\s*\(.*?\)\s*$/,'').trim(); };
+    if (sc.kind==='grupo' || sc.kind==='escalas') { const f=(sc.fields||[]).find(f=>!preenchido(S[f.id])); const r=f?rot(f):''; return r ? 'Falta: '+r.charAt(0).toLowerCase()+r.slice(1) : 'Responda todos os itens'; }
+    if (sc.kind==='campos') return 'Preencha ao menos um campo';
+    if (sc.kind==='contato') return (preenchido(S.telefone)&&telOK(S.telefone)) ? 'Falta: email válido' : 'Falta: telefone válido';
+    if (sc.id==='codigo') return preenchido(S.codigo) ? 'Código incompleto' : 'Informe o código do paciente';
+    if (sc.multi) return 'Marque ao menos uma opção';
+    if (sc.kind==='opts' || sc.options) return 'Escolha uma opção';
+    return 'Preencha para continuar';
+  }
   function val(sc){
     if (sc.kind==='nota') return true;
     if (sc.kind==='contato') return (preenchido(S.telefone) && telOK(S.telefone)) && (preenchido(S.email) && emailOK(S.email));
@@ -1964,9 +2001,11 @@ document.documentElement.setAttribute('data-tema',t)})();
 
   function paint(){
     const sc = screens[si];
-    dotsEl.innerHTML='';
-    for(let i=0;i<screens.length;i++) dotsEl.appendChild(document.createElement('i'));
-    [...dotsEl.children].forEach((d,k)=>{d.classList.toggle('done',k<si);d.classList.toggle('active',k===si);});
+    // v2.5-G: progresso numa barra contínua e fina (antes: um tracinho por pergunta, 18+ segmentos)
+    { const pct = screens.length>1 ? Math.round(100*si/(screens.length-1)) : 0;
+      if (!dotsEl.querySelector('i.fill')) dotsEl.innerHTML='<i class="fill"></i>';
+      dotsEl.classList.add('barra'); dotsEl.querySelector('i.fill').style.width = Math.max(pct, 3)+'%';
+      dotsEl.setAttribute('role','progressbar'); dotsEl.setAttribute('aria-valuenow', String(pct)); dotsEl.setAttribute('aria-valuemin','0'); dotsEl.setAttribute('aria-valuemax','100'); }
     stepLabel.textContent = sc.step || `Passo ${si+1} de ${screens.length}`;
     qEyebrow.textContent = sc.eyebrow || '';
     if (sc.textHtml) qText.innerHTML = sc.textHtml; else qText.textContent = explicaSiglas(sc.text);
@@ -2167,6 +2206,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (pOpen && pOpen.style.display==='block') pintaPanorama();
     backBtn.disabled = si===0;
     nextBtn.disabled = sc.optional ? false : !val(screens[si]);
+    pintaFalta();
     const parcial = screens.some(x=>x.parcial);
     nextBtn.textContent = (si===screens.length-1 && !parcial) ? 'Ver conduta sugerida' : 'Próxima';
     if (typeof mxDepoisPaint==='function') mxDepoisPaint();
@@ -4341,7 +4381,7 @@ document.documentElement.setAttribute('data-tema',t)})();
             options:[{v:'completa',badge:'✓',label:'Rigidez completa e mantida'},{v:'parcial',badge:'~',label:'Resposta parcial'},{v:'ausente',badge:'✗',label:'Resposta ausente'}]});
           s.push({id:'tefiDoppler',kind:'opts',step:'Reavaliação',eyebrow:'TEFI com Doppler',text:'Qual o achado do Doppler?',
             options:[{v:'normal',badge:'✓',label:'Hemodinâmica normal'},{v:'arterial',badge:'A',label:'Insuficiência arterial'},{v:'venoso',badge:'V',label:'Escape venoso'},{v:'misto',badge:'M',label:'Misto ou inconclusivo'}]});
-          s.push({id:'tefiConduta',kind:'opts',step:'Reavaliação',eyebrow:'TEFI com Doppler',text:'Qual a conduta definida?',
+          s.push({id:'tefiConduta',kind:'opts',step:'Reavaliação',eyebrow:'TEFI com Doppler',text:'Qual a conduta definida?', mostraDica:true,
             hint: (S.tefiDoppler==='arterial' ? 'Sugerido: ondas de choque — insuficiência arterial com função cavernosa preservada é o perfil que mais responde.'
                  : (S.tefiDoppler==='venoso' ? 'Sugerido: intracavernosa — escape venoso responde mal a ondas de choque.'
                  : (S.tefiDoppler==='normal' ? 'Sugerido: manter o tratamento oral — hemodinâmica sem alteração vascular.'
