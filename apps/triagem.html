@@ -1484,6 +1484,75 @@ document.documentElement.setAttribute('data-tema',t)})();
     .mx-nav{grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto}
     .mx-shell.com-previa .mx-prev{grid-column:1}
   }
+  /* v2.5-G (item 11): celular de verdade (< 600 px) — cabeçalho compacto, paciente numa linha,
+     módulos numa faixa rolável, a pergunta logo abaixo; o painel do paciente desce para depois dela */
+  @media (max-width:600px){
+    header.brand{padding:8px 12px!important;gap:8px!important;min-height:52px}
+    header.brand .tool-title,header.brand .brand-text .sub{display:none!important}
+    header.brand .mx-logo{max-height:22px;width:auto}
+    .mx-topacts{gap:6px!important;margin-left:auto}
+    .mx-topacts .kbd,.mx-acts .kbd{display:none!important}
+    .mx-busca-btn{padding:0 10px!important;height:34px}
+    .mx-shell,.mx-shell.com-rail,.mx-shell.com-rail.com-previa{display:flex!important;flex-direction:column;min-height:0}
+    .mx-shell.com-rail .mx-rail{display:contents!important}
+    .mx-rail > *{order:4}
+    #mxPac{order:0;display:flex!important;align-items:baseline;gap:10px;padding:12px 16px 0;margin:0}
+    #mxPac .mx-eyebrow{display:none}
+    #mxPac .mx-cod{font-size:22px}
+    #mxPac .mx-sub{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #mxChips{order:0;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;padding:8px 16px 0;margin:0!important}
+    #mxChips::-webkit-scrollbar{display:none}
+    #mxChips > *{flex:none}
+    .mx-acts{order:1;padding:10px 16px 0;gap:6px}
+    .mx-cdstatus span{flex-wrap:wrap;row-gap:0}
+    .mx-cdstatus span b{white-space:nowrap}
+    .mx-acts .btn,.mx-acts .hist-btn{height:36px!important;flex-direction:row!important;font-size:13px!important;border-radius:999px!important}
+    .mx-nav{order:2;display:flex!important;gap:6px;overflow-x:auto;padding:10px 16px 12px;margin:0;border-bottom:1px solid var(--mx-line);
+      scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;
+      -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+    .mx-nav::-webkit-scrollbar{display:none}
+    .mx-nav > .mx-eyebrow,.mx-nav > .mx-sub{display:none}
+    .mx-nav button{width:auto!important;flex:none;scroll-snap-align:start;white-space:nowrap;padding:7px 12px!important;border-radius:999px!important;
+      border:1px solid var(--mx-line)!important;font-size:13px;gap:7px}
+    .mx-nav button.on{border-color:var(--mx-text)!important;box-shadow:none!important}
+    .mx-nav .n{flex:none} .mx-nav small{font-size:10.5px}
+    .mx-nav .mx-navcd{margin:0;border-top:1px solid var(--mx-line)!important;border-radius:999px!important;padding-top:7px}
+    .mx-main{order:3;padding:14px 12px 40px!important}
+    #mxDisp{order:5;padding:0 16px}
+    #painelCard{order:6;padding:18px 16px 8px!important;border-top:1px solid var(--mx-line)!important}
+    .mx-shell.com-previa .mx-prev{order:7;padding:18px 16px!important}
+    .card{border-radius:18px!important}
+    #grupoCard[style*="none"] + #quizCard{border-top-left-radius:18px!important;border-top-right-radius:18px!important}
+    .q-wrap{padding-left:18px!important;padding-right:18px!important}
+    .progress-row{padding-left:18px!important;padding-right:18px!important}
+    .q-text,#quizCard.no-grupo .q-text{font-size:22px!important}
+    .nav-row{padding:0 18px 20px!important}
+    .mx-falta{max-width:52%;font-size:12px}
+    .mx-cta{bottom:10px;padding:6px 6px 6px 14px;border-radius:16px}
+    .mx-bar{width:64px}
+    .mx-cdhead{padding:20px 18px 16px!important;gap:14px}
+    .mx-cdproto{font-size:36px!important}
+    .mx-cdproto.longo{font-size:26px!important}
+    .mx-cdtit{font-size:15px}
+    .mx-cdkit > span b{min-width:64px}
+    .mx-cdhead > div{width:100%;min-width:0;max-width:100%}
+    .mx-cdhead .mx-cdkit{max-width:100%}
+    .mx-cdkit > span{min-width:0;overflow:hidden}
+    .mx-cdkit > span em{min-width:0;overflow:hidden;text-overflow:ellipsis}
+    .gopts.seg{display:grid!important;grid-auto-flow:row!important;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px!important}
+    .mx-cta .kbd,.nav-row .kbd{display:none!important}
+    .gopts.seg .gop{min-width:0;padding-left:6px!important;padding-right:6px!important;white-space:nowrap;font-size:13.5px}
+    .mx-falta{order:-1;flex-basis:100%;max-width:none;text-align:right;margin:0}
+    .nav-row{row-gap:8px}
+    .mx-cta .mx-bar{display:none}
+    .mx-cta .mx-prog{font-size:12px;min-width:0}
+    .mx-cta .mx-faltam-link{font-size:12px;padding:0 2px}
+    .mx-cta .btn{padding:0 12px!important;font-size:13px!important;white-space:nowrap}
+    .kit-grid{grid-template-columns:1fr!important}
+    .mx-acoes-grid{grid-template-columns:1fr!important}
+    #envioBox .canal{grid-template-columns:1fr!important}
+    .ficha-doc{width:100%!important}
+  }
 }
 @media (prefers-reduced-motion:reduce){ .ficha-doc{animation:none} }
 @media print{ .mx-rail,.mx-prev,#grupoCard{display:none!important} .mx-shell{display:block!important} .sig-ativo{color:inherit} }
