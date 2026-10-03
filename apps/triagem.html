@@ -275,7 +275,7 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-faltam-link{appearance:none;background:none;border:0;cursor:pointer;font:inherit;font-size:13px;color:var(--mx-warn);text-decoration:underline;text-underline-offset:3px;padding:0 6px;white-space:nowrap}
   #mxRevisar:disabled{opacity:.45;cursor:not-allowed}
   .mx-cdtag{font-size:13px;font-weight:500;letter-spacing:.02em;vertical-align:middle;padding:3px 10px;border-radius:999px;border:1px solid var(--mx-line);color:var(--mx-text2);margin-left:6px}
-  .mx-cdkit{display:flex;flex-direction:column;gap:4px;margin-top:12px;max-width:560px}
+  .mx-cdkit{display:flex;flex-direction:column;gap:4px;margin-top:12px;max-width:640px}
   .mx-cdkit > span{display:flex;gap:10px;align-items:baseline;font-size:14px;color:var(--mx-text2);padding:5px 10px;border:1px solid var(--mx-line);border-radius:8px;background:var(--mx-surf2)}
   .mx-cdkit > span b{font-weight:600;color:var(--mx-text);min-width:92px}
   .mx-cdkit > span i{font-style:normal;font-size:12px;color:var(--mx-warn);margin-left:auto}
@@ -1045,7 +1045,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           </div>
           <div class="result-meta">
             <div class="eyebrow" id="scoreEyebrow"></div>
-            <div class="class-pill" id="classPill"><span class="dot"></span><span id="classLabel"></span></div>
+            <div class="class-pill sem-ativo" id="classPill" title="Classificação e protocolo — toque na sigla para ver a composição"><span class="dot"></span><span id="classLabel"></span></div>
             <div class="marcador" id="marcador"></div>
             <p id="classDesc"></p>
           </div>
@@ -1255,6 +1255,12 @@ document.documentElement.setAttribute('data-tema',t)})();
   .btn-ghost{background:var(--mx-surf)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important}
   .btn-ghost:hover:not(:disabled){background:var(--mx-surf2)!important}
   .btn:disabled{opacity:.4}
+  /* v2.5-F: "Próxima" e "Ir para a conduta" sem resposta — claramente inativos (fundo claro, texto apagado,
+     como no iOS), em vez de um bloco cinza-escuro translúcido; ativos em tinta cheia com sombra leve */
+  .btn-primary:disabled,.btn-gold:disabled,#mxRevisar:disabled{background:var(--mx-surf2)!important;color:var(--mx-text3)!important;
+    border:1px solid var(--mx-line)!important;opacity:1!important;cursor:not-allowed;filter:none!important;box-shadow:none!important}
+  .btn-primary:disabled .kbd,#mxRevisar:disabled .kbd{opacity:.5}
+  .btn-primary:not(:disabled){box-shadow:0 1px 2px rgba(1,8,12,.12),0 4px 12px -6px rgba(1,8,12,.35)!important}
   .nav-row #panBtn,.nav-row #fichaBtn{display:none!important}
   .dbtag,.salvo-tag{color:var(--mx-text3)!important;background:transparent!important;padding-left:clamp(18px,4vw,32px)!important;padding-right:clamp(18px,4vw,32px)!important}
   .vigia{background:var(--mx-stopbg)!important;color:var(--mx-stop)!important;border:1px solid var(--mx-stopln)!important}
@@ -1306,6 +1312,31 @@ document.documentElement.setAttribute('data-tema',t)})();
   .kit-card .kc-code .sig-ativo{display:block;font:500 13px var(--mx-font);color:var(--mx-text2);letter-spacing:0;margin-top:3px}
   .alt-note{background:var(--mx-warnbg)!important;border:1px solid var(--mx-warnln)!important;color:var(--mx-text)!important;border-radius:16px!important}
   .alt-note b{color:var(--mx-warn)!important}
+  /* v2.5-F: alertas em lista — título, uma linha de resumo, detalhe recolhível */
+  #altNote.alt-note{background:var(--mx-surf)!important;border:1px solid var(--mx-line)!important;border-radius:16px!important;padding:4px 0!important;
+    font-size:14px;line-height:1.45;box-shadow:var(--mx-shadow);overflow:hidden}
+  #altNote .al-cab{display:flex;align-items:center;gap:8px;padding:10px 16px 8px;font:600 11px var(--mx-font);letter-spacing:.08em;text-transform:uppercase;color:var(--mx-text3)}
+  #altNote .al-cab small{font:600 11px var(--mx-font);letter-spacing:0;background:var(--mx-surf2);color:var(--mx-text2);border-radius:999px;padding:1px 7px}
+  #altNote .al-todos{margin-left:auto;appearance:none;border:0;background:none;cursor:pointer;font:500 12px var(--mx-font);letter-spacing:0;text-transform:none;color:var(--mx-focus);padding:2px 0}
+  #altNote .al-item{border-top:1px solid var(--mx-line)}
+  #altNote .al-item > summary{list-style:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 16px;cursor:pointer}
+  #altNote .al-item > summary::-webkit-details-marker{display:none}
+  #altNote .al-item > summary:hover{background:var(--mx-surf2)}
+  #altNote .al-ic{width:8px;height:8px;border-radius:50%;background:var(--mx-warn);box-shadow:0 0 0 4px var(--mx-warnbg)}
+  #altNote .al-stop .al-ic{background:var(--mx-stop);box-shadow:0 0 0 4px var(--mx-stopbg)}
+  #altNote .al-info .al-ic{background:var(--mx-text3);box-shadow:0 0 0 4px var(--mx-surf2)}
+  #altNote .al-lista .al-ic{background:var(--mx-focus);box-shadow:0 0 0 4px color-mix(in srgb,var(--mx-focus) 12%,transparent)}
+  #altNote .al-txt{display:flex;flex-direction:column;min-width:0;gap:1px}
+  #altNote b.al-tit{font-weight:600;font-size:14px;color:var(--mx-text)!important;letter-spacing:-.005em}
+  #altNote .al-stop b.al-tit{color:var(--mx-stop)!important}
+  #altNote .al-res{font-size:13px;color:var(--mx-text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #altNote .al-item[open] .al-res{display:none}
+  #altNote .al-chev{width:8px;height:8px;border-right:1.5px solid var(--mx-text3);border-bottom:1.5px solid var(--mx-text3);transform:rotate(-45deg);transition:transform .18s ease;margin-right:4px}
+  #altNote .al-item[open] .al-chev{transform:rotate(45deg)}
+  #altNote .al-det{padding:0 16px 14px 36px;font-size:13.5px;color:var(--mx-text2);line-height:1.55}
+  #altNote .al-det b{color:var(--mx-text)!important;font-weight:600}
+  #altNote .al-det ul{margin:4px 0 0;padding-left:18px} #altNote .al-det li{margin:4px 0}
+  #altNote .al-orig{display:none!important}
   .rac,.rac li,.rep,.rep td{color:var(--mx-text)!important}
   .rac h5,.rep h4{color:var(--mx-text3)!important}
   .rep table,.rep td{border-color:var(--mx-line)!important}
@@ -1336,8 +1367,19 @@ document.documentElement.setAttribute('data-tema',t)})();
   .mx-cor.inl{position:static;display:inline-block;vertical-align:-1px;width:10px;height:10px;margin-left:6px}
   .kit-card,.mx-cdkit > span,.opt,.gop,.pac .med{position:relative}
   .mx-cdkit > span{padding-right:28px}
-  .gop .mx-cor{top:4px;right:4px;width:9px;height:9px}
-  .opt .mx-cor{top:10px;right:10px}
+  /* v2.5-F: a cor não encosta no texto — a opção reserva o canto direito */
+  .gop .mx-cor{top:50%;right:14px;width:10px;height:10px;transform:translateY(-50%)}
+  .gop.tem-cor{padding-right:36px!important}
+  .opt .mx-cor{top:12px;right:12px}
+  .opt.tem-cor{padding-right:40px!important}
+  /* v2.5-F: campos em grupo — segmentado (uma linha, larguras iguais), lista de fórmulas, dica junto do rótulo */
+  .gopts.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px}
+  .gopts.seg .gop{min-width:0;text-align:center;padding:9px 6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .gopts.lista{display:grid;gap:6px}
+  .gopts.lista .gop{border-radius:12px!important;padding:10px 14px;line-height:1.35}
+  .fld-lab{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .fld-sub{font-size:12px;font-weight:400;color:var(--mx-text3);letter-spacing:0;text-transform:none}
+  .fld-sub::before{content:'· ';opacity:.7}
   /* v2.5-E: opção marcada tem fundo escuro (claro no tema escuro) — o texto secundário herda a cor da opção */
   .opt.selected .sig-ativo,.gop.selected .sig-ativo,.scale button.selected .sig-ativo,
   .opt.selected abbr.sig,.gop.selected abbr.sig{color:inherit!important;border-bottom-color:currentColor!important}
@@ -2019,13 +2061,21 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
     } else if (sc.kind==='grupo'){
       sc.fields.forEach(f=>{
-        const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=f.label; optsWrap.appendChild(lab);
+        // v2.5-F: dica do campo junto do rótulo (não lá embaixo, longe do controle)
+        const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=f.label;
+        if (f.hint){ const h=document.createElement('span'); h.className='fld-sub'; h.textContent=f.hint; lab.appendChild(h); }
+        optsWrap.appendChild(lab);
         const g=document.createElement('div'); g.className='gopts'; g.dataset.campo = f.id;
+        // poucas opções curtas: uma linha só, larguras iguais (controle segmentado);
+        // fórmulas: lista, uma por linha, com a cor da embalagem à direita
+        const temCor = f.options.some(o=>corFormula(o.v));
+        if (temCor) g.classList.add('lista');
+        else if (f.options.length<=7 && f.options.every(o=>String(o.label).length<=10)) g.classList.add('seg');
         f.options.forEach(o=>{
           const b=document.createElement('button'); b.type='button'; b.dataset.v = String(o.v);
           b.className='gop'+(S[f.id]===o.v?' selected':'');
           b.textContent=o.label;
-          if (corFormula(o.v)) b.insertAdjacentHTML('beforeend', chipCor(o.v));
+          if (corFormula(o.v)){ b.insertAdjacentHTML('beforeend', chipCor(o.v)); b.classList.add('tem-cor'); }
           b.onclick=()=>{S[f.id]=o.v;paint();};
           g.appendChild(b);
         });
@@ -2054,6 +2104,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         const sel = sc.multi ? (S[sc.id]||[]).includes(o.v) : S[sc.id]===o.v;
         b.className='opt'+(sel?' selected':''); b.dataset.v = String(o.v);
         b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${o.label}</span>`+chipCor(o.v);
+        if (corFormula(o.v)) b.classList.add('tem-cor');
         b.onclick=()=>{
           if (sc.multi){
             const a=Array.isArray(S[sc.id])?S[sc.id]:[], nada=sc.nada||['nenhum','nenhuma'];
@@ -2815,8 +2866,9 @@ document.documentElement.setAttribute('data-tema',t)})();
   const ICI_LISTA = ['R1','R2','R4','R5 (trimix clássico)','R6','R7','R8','R9','R10','R11','R12'];
   // v2.5-E: duração da ereção com a intracavernosa — alvo de cerca de 1 hora.
   // '<15' e '15a30' são valores gravados antes da v2.5-E: contam como "menos de 30 min".
-  const ICI_TEMPO = [{v:'<30',label:'Menos de 30 min'},{v:'30a60',label:'30 a 60 min'},{v:'1h',label:'Cerca de 1 hora'},
-    {v:'1a2h',label:'1 a 2 horas'},{v:'>2h',label:'Mais de 2 horas'},{v:'>4h',label:'Já passou de 4 horas'}];
+  // v2.5-F: rótulos curtos — as seis faixas cabem numa linha só
+  const ICI_TEMPO = [{v:'<30',label:'< 30 min'},{v:'30a60',label:'30–60 min'},{v:'1h',label:'≈ 1 hora'},
+    {v:'1a2h',label:'1–2 horas'},{v:'>2h',label:'> 2 horas'},{v:'>4h',label:'> 4 horas'}];
   const ICI_TEMPO_TXT = {'<30':'menos de 30 min','<15':'menos de 30 min','15a30':'menos de 30 min','30a60':'30 a 60 min','1h':'cerca de 1 hora',
     '1a2h':'1 a 2 horas','>2h':'mais de 2 horas','>4h':'mais de 4 horas'};
   // faixa em relação ao alvo: curta (sobe), alvo (mantém), acima (reduz), longa (reduz, alerta)
@@ -2919,6 +2971,12 @@ document.documentElement.setAttribute('data-tema',t)})();
   function siglaAuto(cod){ return SIGLA_AUTO.test(String(cod||'')); }
   // fórmula intracavernosa curta: "PGE1 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL"
   function iciCurto(n){ return iciTxt(n).replace('alprostadil (PGE1)','PGE1'); }
+  // v2.5-F: apelido curto da intracavernosa para o painel (a composição completa fica no clique da sigla)
+  function iciApelido(n){
+    const c = ICI_COMPO['R'+(+n)]; if (!c) return '';
+    const k = [c.pge1, c.fento, c.papa, c.atro].filter(v=>v!=null).length;
+    return (['','','bimix','trimix','quadrimix'][k]||'') + (c.pge1==null ? ' sem PGE1' : '');
+  }
   function numDaFormulaIci(f){ const m=/^R(\d{1,2})\b/.exec(String(f||'').trim()); return m ? +m[1] : null; }
   // painel do paciente: só substância e dose, sem apresentação nem horário, e dose
   // só dos remédios-chave (tadalafila, paroxetina, dapoxetina, clomifeno, clomipramina)
@@ -3106,11 +3164,14 @@ document.documentElement.setAttribute('data-tema',t)})();
   function explicaForaDeFormula(txt){
     let saida = txt;
     Object.keys(SIGLA_FORA).forEach(cod=>{
-      const re = new RegExp('(^|[^A-Za-z0-9\\-])(' + cod + ')(?![A-Za-z0-9\\-])');
+      // v2.5-F: "TEFI com Doppler peniano" não vira "TEFI (… com Doppler peniano) com Doppler peniano"
+      const re = new RegExp('(^|[^A-Za-z0-9\\-])(' + cod + ')(?![A-Za-z0-9\\-])' + (cod==='TEFI' ? '(?: com Doppler(?: peniano)?)?' : ''));
       if (!re.test(saida)) return;
-      const texto = PROTO_COMPO[cod] || compoTxt(cod);
+      let texto = PROTO_COMPO[cod] || compoTxt(cod);
       if (!texto) return;
       if (new RegExp('\\(' + cod + '\\b').test(saida)) return;
+      // no meio da frase, a expansão começa em minúscula ("TEFI (teste de ereção…)"); "Li-ESWT" fica como está
+      if (/^[A-ZÀ-Ý][a-zà-ÿ]+(\s|$)/.test(texto)) texto = texto.charAt(0).toLowerCase() + texto.slice(1);
       saida = saida.replace(re, '$1$2 (' + texto + ')');
     });
     return saida;
@@ -3490,7 +3551,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           const f = prev.iciAnterior || (prev.tefi&&prev.tefi.formula) || 'R5';
           const n = numDaFormulaIci(f);
           const dz = prev.iciDoseIndicada || (prev.iciCasa&&prev.iciCasa.dose) || (prev.tefi&&prev.tefi.dose) || '';
-          linhas.push(lin((n ? 'R'+n+chipCor('R'+n, '', true)+' = '+escH(iciCurto(n)) : escH(f))+(dz?' \u00b7 '+escH(dz):'')));
+          linhas.push(lin((n ? 'R'+n+chipCor('R'+n, '', true)+(iciApelido(n)?' \u00b7 '+escH(iciApelido(n)):'') : escH(f))+(dz?' \u00b7 '+escH(dz):'')));
           return;
         }
         if (cd==='ONDAS'){ ondasNoUso = true; linhas.push(lin('ONDAS \u00b7 Li-ESWT'+(txtOndas?' \u00b7 '+txtOndas:''))); return; }
@@ -3502,17 +3563,24 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     // escores com variacao
     const es=[];
-    const iiefHoje = (f&&f.iief!=null) ? f.iief : (preenchido(S.iiefAnt)?+S.iiefAnt:null);
-    const pedtHoje = (f&&f.pedt!=null) ? f.pedt : (preenchido(S.pedtAnt)?+S.pedtAnt:null);
-    const iiefAnt  = (prev && prev.iief!=null) ? prev.iief : null;
-    const pedtAnt  = (prev && prev.pedt!=null) ? prev.pedt : null;
+    // v2.5-F: "hoje" é só o escore desta consulta (recepção ou as 5 perguntas respondidas). Antes, o
+    // IIEF/PEDT anterior pré-preenchido (S.iiefAnt) entrava como "hoje" e o painel mostrava "9 → 9 · manteve"
+    // antes de o escore ser respondido.
+    const somaHoje = Q => Q.every(q=>typeof S[q.id]==='number') ? Q.reduce((a,q)=>a+S[q.id],0) : null;
+    const iiefHoje = (f&&f.iief!=null) ? f.iief : (S.iiefTotalRec!=null ? S.iiefTotalRec : somaHoje(Q_IIEF));
+    const pedtHoje = (f&&f.pedt!=null) ? f.pedt : (S.pedtTotalRec!=null ? S.pedtTotalRec : somaHoje(Q_PEDT));
+    const iiefAnt  = (prev && prev.iief!=null) ? prev.iief : (S.visita==='reav' && preenchido(S.iiefAnt) ? +S.iiefAnt : null);
+    const pedtAnt  = (prev && prev.pedt!=null) ? prev.pedt : (S.visita==='reav' && preenchido(S.pedtAnt) ? +S.pedtAnt : null);
     if (iiefAnt!=null || iiefHoje!=null){
-      const vemDaRecepcao = !!(f && f.iief!=null) && !preenchido(S.iiefAnt);
+      const vemDaRecepcao = !!(f && f.iief!=null) && Q_IIEF.some(q=>typeof S[q.id]!=='number');
       const fa = faixaIief(iiefHoje!=null?iiefHoje:iiefAnt);
       if (iiefAnt!=null && iiefHoje!=null){
         es.push(lin(qEscore('IIEF-5', iiefAnt+' \u2192 '+iiefHoje)+' \u00b7 '+variacao(iiefAnt, iiefHoje, false)+(fa?' \u00b7 '+fa:'')));
+      } else if (iiefHoje==null){
+        es.push(lin(qEscore('IIEF-5', iiefAnt)+' \u00b7 anterior'+(fa?' \u00b7 '+fa:'')));
+        if (S.hasDE) es.push(lin('hoje: a responder','sub'));
       } else {
-        es.push(lin(qEscore('IIEF-5', iiefHoje!=null?iiefHoje:iiefAnt)+(iiefHoje!=null&&iiefAnt==null?' \u00b7 primeira medida':'')+(fa?' \u00b7 '+fa:'')));
+        es.push(lin(qEscore('IIEF-5', iiefHoje)+' \u00b7 primeira medida'+(fa?' \u00b7 '+fa:'')));
       }
       if (vemDaRecepcao) es.push(lin('recep\u00e7\u00e3o, confirmar','sub'));
     }
@@ -3520,8 +3588,11 @@ document.documentElement.setAttribute('data-tema',t)})();
       const fa = faixaPedt(pedtHoje!=null?pedtHoje:pedtAnt);
       if (pedtAnt!=null && pedtHoje!=null){
         es.push(lin(qEscore('PEDT', pedtAnt+' \u2192 '+pedtHoje)+' \u00b7 '+variacao(pedtAnt, pedtHoje, true)+(fa?' \u00b7 '+fa:'')));
+      } else if (pedtHoje==null){
+        es.push(lin(qEscore('PEDT', pedtAnt)+' \u00b7 anterior'+(fa?' \u00b7 '+fa:'')));
+        if (S.hasEP) es.push(lin('hoje: a responder','sub'));
       } else {
-        es.push(lin(qEscore('PEDT', pedtHoje!=null?pedtHoje:pedtAnt)+(pedtHoje!=null&&pedtAnt==null?' \u00b7 primeira medida':'')+(fa?' \u00b7 '+fa:'')));
+        es.push(lin(qEscore('PEDT', pedtHoje)+' \u00b7 primeira medida'+(fa?' \u00b7 '+fa:'')));
       }
     }
     bloco('Escores', es);
@@ -4147,11 +4218,10 @@ document.documentElement.setAttribute('data-tema',t)})();
         }
         s.push({id:'iciUso',kind:'grupo',step:'Reavaliação',eyebrow:'Intracavernosa em uso',
           text:'Fórmula e dose',
-          hint:'Dose em uso diferente da prescrita? A dose em uso é a que vale para a conduta. Duração: o alvo é cerca de 1 hora.',
           fields:[{id:'iciAnt',label:'Fórmula',options:ICI_LISTA.map(x=>({v:x,label:x.replace(' (trimix clássico)','')}))},
                   {id:'iciAntDose',label:'Dose prescrita',options:DOSES_ICI.map(x=>({v:x,label:x}))},
-                  {id:'iciDoseAtual',label:'Dose em uso',options:DOSES_ICI.map(x=>({v:x,label:x}))},
-                  {id:'iciTempo',label:'Duração média da ereção com a aplicação',options:ICI_TEMPO}]});
+                  {id:'iciDoseAtual',label:'Dose em uso',hint:'é a que vale para a conduta, se diferente da prescrita',options:DOSES_ICI.map(x=>({v:x,label:x}))},
+                  {id:'iciTempo',label:'Duração média da ereção',hint:'alvo: cerca de 1 hora',options:ICI_TEMPO}]});
       }
       if (S.hasDE && (!doBanco || S.revisarCiclo==='sim')) s.push({id:'iiefAnt',kind:'num',min:5,max:25,step:'Reavaliação',eyebrow:'Ciclo anterior',
         text:'IIEF-5 anterior', ph:'5 a 25', hint: (achou&&prev.iief!=null) ? 'Recuperado do ciclo anterior: '+prev.iief : 'Consultar o relatório do ciclo anterior'});
@@ -4232,15 +4302,15 @@ document.documentElement.setAttribute('data-tema',t)})();
             const pOral = nomeProtocolo(prev.protocolo||'') || 'protocolo oral';
             const motivoT = S.tefiConduta==='ici' ? 'Conduta definida após o TEFI: iniciar intracavernosa.'
               : (S.tefiDoppler==='venoso' ? 'Doppler com escape venoso: a via é a intracavernosa.' : 'Doppler misto ou inconclusivo: baixa resposta oral.');
-            s.push({id:'tefiAddIci',kind:'opts',step:'Reavaliação',eyebrow:'TEFI indica intracavernosa',
+            s.push({id:'tefiAddIci',kind:'opts',mostraDica:true,step:'Reavaliação',eyebrow:'TEFI indica intracavernosa',
               text:'O paciente está hoje só com protocolo oral. Acrescentar a intracavernosa à conduta?',
               hint:motivoT+' Protocolo atual: '+pOral+(kOral.length?' · '+kOral.join(', '):'')+'.',
               options:[{v:'sim',badge:'💉',label:'Sim, acrescentar a intracavernosa'},{v:'nao',badge:'→',label:'Não, manter só a via oral por enquanto'}]});
             if (S.tefiAddIci==='sim'){
-              s.push({id:'iciFormula',kind:'opts',step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual fórmula intracavernosa?',
+              s.push({id:'iciFormula',kind:'opts',mostraDica:true,step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual fórmula intracavernosa?',
                 hint:'Fórmulas da Fluka: R1, R2 e R4 a R12.',
                 options:ICI_LISTA.map(x=>({v:x,badge:'R',label:x.replace(' (trimix clássico)','')}))});
-              s.push({id:'iciDose',kind:'opts',step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual dose inicial?',
+              s.push({id:'iciDose',kind:'opts',mostraDica:true,step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual dose inicial?',
                 hint:'Dose-teste sempre em consultório, com observação da detumescência.',
                 options:['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'].map(x=>({v:x,badge:'mL',label:x}))});
             }
@@ -4777,11 +4847,72 @@ document.documentElement.setAttribute('data-tema',t)})();
 
 
   const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração/i;
+  // v2.5-F: alertas com hierarquia — título, uma linha de resumo e o detalhe recolhível.
+  // Cada alerta guarda o texto original num <p class="al-orig"> oculto: é dele que o texto do
+  // prontuário, a prévia e a contagem do cabeçalho leem (mesmo conteúdo de antes).
+  const AL_SIGLA = /^(TEFI|ISRS|IIEF-5|PEDT|ICI|PSA|LH|FSH|PDE5i|SHBG|EAU|CV)$/;
+  function alFrase(t){   // "ANTES DE ENCERRAR A CONSULTA" → "Antes de encerrar a consulta" (siglas ficam)
+    const letras = t.replace(/[^A-Za-zÀ-ÿ]/g,''); if (!letras) return t;
+    const maius = letras.replace(/[^A-ZÀ-Ý]/g,'').length / letras.length;
+    if (maius < .6) return t;
+    let primeira = true;
+    return t.split(/(\s+)/).map(w=>{
+      if (/^\s+$/.test(w) || !w) return w;
+      const limpo = w.replace(/[^\wÀ-ÿ\-]/g,'');
+      let r = (AL_SIGLA.test(limpo) || /\d/.test(limpo)) ? w : w.toLowerCase();
+      if (primeira && r===w.toLowerCase()) r = r.charAt(0).toUpperCase() + r.slice(1);
+      primeira = false; return r;
+    }).join('');
+  }
+  function alTexto(h){ const d=document.createElement('div'); d.innerHTML=h; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
+  function alertasHtml(lista){
+    const itens = lista.map(n=>{
+      const m = /^\s*<b>([\s\S]*?)<\/b>\s*([\s\S]*)$/.exec(n);
+      let tit, corpo;
+      if (m && alTexto(m[1]).length <= 90){ tit = alTexto(m[1]).replace(/[\s:.—-]+$/,''); corpo = m[2].replace(/^\s*(<br\s*\/?>\s*)+/i,'').replace(/^[:—–-]\s*/,''); }
+      else {
+        // sem título em negrito: a primeira frase (ou o trecho antes de " — ") vira o título, o resto é o corpo
+        const t = alTexto(n);
+        const f = (t.match(/^(.{12,90}?[.:!?])\s/) || t.match(/^(.{12,90}?) — /) || [null, null])[1];
+        if (f){ tit = f.replace(/[\s:.!?]+$/,''); corpo = escH(t.slice(f.length).replace(/^\s*—\s*/,'').trim()); }
+        else { tit = t.slice(0,80).replace(/\s+\S*$/,'') + '…'; corpo = n; }
+      }
+      // a expansão da sigla de exame fica no detalhe, não no título
+      tit = tit.replace(/\s\(teste de ereção fármaco-induzida com Doppler peniano\)/i,'');
+      const itensLista = corpo.split(/<br\s*\/?>/i).map(x=>x.trim()).filter(x=>/^•/.test(alTexto(x)));
+      let det, res;
+      if (itensLista.length){
+        const antes = corpo.split(/<br\s*\/?>/i).filter(x=>x.trim() && !/^•/.test(alTexto(x))).join(' ');
+        det = (antes ? '<div>'+antes+'</div>' : '') + '<ul>'+itensLista.map(x=>'<li>'+x.replace(/^\s*•\s*/,'')+'</li>').join('')+'</ul>';
+        const pr = alTexto(itensLista[0]).replace(/^•\s*/,'');
+        res = itensLista.length + (itensLista.length>1 ? ' pendências' : ' pendência') + ' · ' + pr;
+      } else {
+        det = corpo;
+        const t = alTexto(corpo);
+        res = (t.match(/^(.+?[.!?])(\s|$)/) || [null, t])[1];
+      }
+      res = res.charAt(0).toUpperCase() + res.slice(1);
+      const lista2 = /ANTES DE ENCERRAR/i.test(n);
+      // tom pelo título: vermelho só para segurança (contraindicação, bloqueio, encaminhamento, registro faltando);
+      // "conduta seguiu…" e "dados estáveis…" são informativos
+      const tom = lista2 ? 'lista'
+        : (/^(Conduta seguiu|Dados estáveis|O TEFI indicou)/i.test(tit) ? 'info'
+        : (/contraindica|síndrome serotoninérgica|Encaminhar|NÃO ASSINAD|NÃO REGISTRADO|impossibilita a penetração|bloquead|Alergias declaradas|priapismo/i.test(tit) ? 'stop' : 'warn'));
+      return '<details class="al-item al-'+tom+'"'+(lista2?' open':'')+'>'
+        + '<summary class="sem-ativo"><span class="al-ic" aria-hidden="true"></span><span class="al-txt"><b class="al-tit">'+escH(alFrase(tit))+'</b>'
+        + '<span class="al-res">'+escH(res)+'</span></span><span class="al-chev" aria-hidden="true"></span></summary>'
+        + '<div class="al-det">'+det+'</div>'
+        + '<p class="al-orig" hidden>'+n+'</p></details>';
+    });
+    return '<div class="al-cab"><span>Alertas e pendências</span><small>'+lista.length+'</small>'
+      + (lista.length>1 ? '<button type="button" class="al-todos" onclick="(function(b){var d=b.closest(\'#altNote\').querySelectorAll(\'details.al-item\');var abrir=[].some.call(d,function(x){return !x.open});[].forEach.call(d,function(x){x.open=abrir});b.textContent=abrir?\'Recolher todos\':\'Abrir todos\';})(this)">Abrir todos</button>' : '')
+      + '</div>' + itens.join('');
+  }
   function renderNotas(notas, abrirPadrao){
     const alertas = notas.filter(n=>RE_ALERTA.test(n));
     const demais  = notas.filter(n=>!RE_ALERTA.test(n));
     const alt = el('altNote');
-    if (alertas.length){ alt.style.display='block'; alt.innerHTML = alertas.map(n=>'<p style="margin:0 0 8px;">'+explicaSiglas(n)+'</p>').join(''); }
+    if (alertas.length){ alt.style.display='block'; alt.innerHTML = alertasHtml(alertas.map(n=>explicaSiglas(n))); }
     else alt.style.display='none';
     const mais = el('notasMais');
     mais.innerHTML = demais.length
@@ -7332,7 +7463,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+'">'+escH(titulo)+(etiqueta?' <span class="mx-cdtag">'+escH(etiqueta)+'</span>':'')+'</div>'
       + (sub && sub!==titulo ? '<div class="mx-cdtit">'+(ativo ? '<span class="sig-ativo">'+escH(sub)+'</span>' : escH(kitTag ? sub : explicaSiglas(sub)))+'</div>' : '')
       + (itensKit.length ? '<div class="mx-cdkit" id="mxCdKit">'+itensKit.map(([c,t,g])=>'<span>'+chipCor(c, iciDaConsulta() || (reg && reg.tefi && reg.tefi.formula) || '')+'<b>'+escH(c)+'</b>'+(t?escH(t):'')+(g?'<i>'+escH(g)+'</i>':'')+'</span>').join('')+'</div>' : '')
-      + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(explicaSiglas(c))+'</span>').join('')+'</div>' : '')
+      + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(garanteSiglas(c, true))+'</span>').join('')+'</div>' : '')
       + (st.length ? '<div class="mx-cdstatus" id="mxCdStatus">'+st.map(([c,n,v])=>'<span class="'+c+'"><b>'+escH(n)+'</b>'+escH(v)+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
       + '</div>'
@@ -7364,7 +7495,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   // impressão pelo navegador (Ctrl+P): seções recolhidas saem abertas
   (function(){
     let abertos = [];
-    window.addEventListener('beforeprint', ()=>{ abertos = [...document.querySelectorAll('details.mx-det:not([open])')]; abertos.forEach(d=>d.open=true); });
+    window.addEventListener('beforeprint', ()=>{ abertos = [...document.querySelectorAll('details.mx-det:not([open]),#altNote details.al-item:not([open])')]; abertos.forEach(d=>d.open=true); });
     window.addEventListener('afterprint', ()=>{ abertos.forEach(d=>d.open=false); abertos = []; });
     const b = el('mxBuscaBtn'); if (b) b.onclick = ()=>mxBusca();
     const fb2 = el('mxFilaTopo'); if (fb2) fb2.onclick = ()=>mxAbreFila();
