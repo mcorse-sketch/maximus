@@ -136,24 +136,32 @@ Fim da conduta: Concluir é o único botão principal; copiar/imprimir agrupados
 (`#mxAcoes`), WhatsApp/email maiores. Celular (< 600 px): ajustes
 inofensivos (o `display:contents` do trilho saiu na v2.5-H — fora do alvo).
 
-**Refino (v2.5-H) — alvo: desktop (1280–1920) e iPad (retrato e paisagem, toque).**
-Sem layout de celular (o bloco < 600 px só evita quebrar). Primeira intracavernosa: o
-"Protocolo prescrito" traz a dose (`iciDoseIndicada`; R5 sem dose = "dose inicial 0,1 mL
-(padrão da clínica)", o padrão marcado no TEFI; outra fórmula = "dose inicial a definir
-em consultório"). Via do paciente: código da fórmula (R10) no lugar de "ICI", ainda sem
-dose nem concentração (`.so-codigo`, dispensado no `teste_siglas`). Adesão com as
-palavras da pergunta (`rotAdesao(v, ici)`: oral "todos os dias…", intracavernosa
-"sempre como recomendado…") no histórico, prontuário, painel e relatório. Histórico:
-"Sequência de protocolos" só com códigos (`protCurto`, sem "(mantido)" nem repetição).
-ADAM "negativo — nenhum sintoma"; a 3ª linha da cópia não repete tipo de visita/
-intervalo; o bloco "Classificação IIEF-5" some da tela da conduta (fica na impressão).
-Toque: a linha da intracavernosa no cabeçalho abre a composição (`mxAbreIci`,
-`aria-expanded`); banco no cabeçalho (`#dbTag` em `#mxTopo`: ponto verde ou "Sem banco",
-toque abre `#mxDbPop` com "Configurar servidor"); `(hover:none) and (pointer:coarse)`
-esconde "?" e as teclas. Grade de impressão em 6 colunas (3 · 2×2 · 3+2, via `:has`).
-iPad em retrato (≤ 900 px): o trilho é um cabeçalho em grade — código + ações, pílulas
-de contexto + "Resumo do paciente" (recolhível, 3 colunas aberto), módulos em pílulas
-que quebram linha. Conferido no WebKit (Playwright) com viewport de iPad e toque.
+**Refino (v2.5-H).** Primeira intracavernosa: o "Protocolo prescrito" traz a dose
+(`iciDoseIndicada`; R5 sem dose = "dose inicial 0,1 mL (padrão da clínica)", o padrão
+marcado no TEFI; outra fórmula = "dose inicial a definir em consultório"). Via do
+paciente: código da fórmula (R10) no lugar de "ICI", ainda sem dose nem concentração
+(`.so-codigo`, dispensado no `teste_siglas`). Adesão com as palavras da pergunta
+(`rotAdesao(v, ici)`) no histórico, prontuário, painel e relatório. Histórico:
+"Sequência de protocolos" só com códigos (`protCurto`). ADAM "negativo — nenhum
+sintoma"; a 3ª linha da cópia não repete tipo de visita/intervalo. Composição da
+intracavernosa no cabeçalho abre com clique (`mxAbreIci`); banco no cabeçalho
+(`#dbTag` em `#mxTopo`, clique abre `#mxDbPop` com "Configurar servidor"); grade de
+impressão em 6 colunas (3 · 2×2 · 3+2, via `:has`).
+
+**Só desktop (v2.5-I).** A triagem (consultório) é usada só no desktop (1280–1920); o
+iPad usa a recepção. Não investir em layout de iPad/celular aqui: o layout de iPad em
+retrato e o bloco `(hover:none)` da v2.5-H saíram; abaixo de 900 px fica só a faixa
+simples da v2.5-G, e abaixo de 600 px só ajustes inofensivos.
+
+**Classificação na tela (v2.5-I).** O Dr. Marco julga a evolução pelo bloco de
+classificação: `mxBlocoEscores()` desenha no fim do cabeçalho da conduta
+(`#mxEscores`) um cartão por escore — IIEF-5 (de 25), PEDT (de 20, menor é melhor) e
+ADAM quando respondido — com o valor de hoje, o anterior e a data, a variação
+(`variacao()`), a faixa (`BANDS_DE`/`BANDS_EP`), a régua das faixas (○ anterior, ● hoje)
+e, com 3+ consultas, a linha da evolução (`S.serieEsc`, montada em
+`carregarHistorico`). Só exibição. Com o bloco novo, `.result-top` some só da tela
+(`.mx-esc-on`) e continua na impressão; nos fluxos sem IIEF/PEDT (hipogonadismo, TEFI,
+preenchimento…) o `.result-top` aparece na tela como antes (a v2.5-H o escondia).
 
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua

@@ -83,6 +83,11 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   `mostraDica`.
 - **"Agende também: ondas de choque" com ondas só opcionais (v2.5-G)**, **"há 0
   dias"** no histórico (agora "hoje") e **ADAM em duas linhas** no prontuário.
+- **Bloco de classificação escondido na tela (v2.5-H → corrigido na v2.5-I)** — a
+  v2.5-H tirou da tela o "Classificação IIEF-5" por repetir a manchete; o Dr. Marco o
+  usa para julgar a evolução. Voltou como cartões (hoje × anterior, variação, faixa,
+  régua e evolução). A v2.5-H também escondia o bloco do resultado nos fluxos sem
+  IIEF/PEDT (TEFI, preenchimento, hipogonadismo), onde ele trazia informação única.
 - **Primeira intracavernosa sem dose no "Protocolo prescrito" (v2.5-H)** — a linha
   saía "R5 · … — intracavernosa" sem dose (ex.: LIM-001). Agora traz a dose indicada
   ou a dose inicial padrão da clínica (R5 0,1 mL).

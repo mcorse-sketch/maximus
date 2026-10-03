@@ -288,17 +288,48 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-cdstatus span b{font-weight:600;color:var(--mx-text)}
   .mx-cdstatus span.sim{border-color:var(--mx-ok);background:var(--mx-okbg);color:var(--mx-ok)}
   .mx-cdstatus span.opc{border-color:var(--mx-warnln);background:var(--mx-warnbg);color:var(--mx-warn)}
-  .mx-scores{display:flex;gap:18px;flex:none;align-items:flex-start}
-  .mx-scores .mx-esc{display:grid;grid-template-columns:auto auto;align-items:center;gap:4px 6px;text-align:right}
-  .mx-scores .mx-qn{font-size:12px;justify-self:end}
-  .mx-scores .mx-qv{font:400 22px/1.25 var(--mx-disp);padding:1px 12px;letter-spacing:-.01em}
-  .mx-scores small{grid-column:1 / -1;font-size:12px;color:var(--mx-text3)}
+  /* v2.5-I: bloco "Classificação IIEF-5" — valor de hoje, anterior, variação, faixa e régua (○ antes · ● hoje) */
+  .mx-cdhead.com-esc{flex-wrap:wrap}
+  .mx-cdhead.com-esc > div:first-child{flex:1 1 0}
+  .mx-escores{flex:1 0 100%;margin-top:4px;padding-top:18px;border-top:1px solid var(--mx-line)}
+  .mx-escores > .mx-eyebrow{margin-bottom:10px}
+  .mx-esc-grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .mx-esc-grade.n1,.mx-esc-grade.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mx-esc-grade.n2.com-adam{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr)}
+  .mx-esc-grade.n3.com-adam{grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr) minmax(0,1fr)}
+  .mx-esct{border:1px solid var(--mx-line);border-radius:14px;background:var(--mx-surf);padding:12px 14px 10px;min-width:0}
+  .mx-esct-cab{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mx-esct-cab .mx-qn{font-size:12px}
+  .mx-esct-fx{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mx-text2);white-space:nowrap}
+  .mx-esct-fx i{width:8px;height:8px;border-radius:50%;flex:none}
+  .mx-esct-val{display:flex;align-items:baseline;gap:4px;margin:6px 0 2px}
+  .mx-esct-val .mx-qv{font:400 34px/1.05 var(--mx-disp)!important;letter-spacing:-.03em;background:transparent!important;padding:0!important;color:var(--mx-text)!important}
+  .mx-esct-val .de{font-size:14px;color:var(--mx-text3)}
+  .mx-esct-d{margin-left:8px;align-self:center;font:600 12.5px var(--mx-font);padding:2px 8px;border-radius:999px;background:var(--mx-surf2);color:var(--mx-text2)}
+  .mx-esct-d.melhor{background:color-mix(in srgb,var(--mx-ok) 14%,transparent);color:var(--mx-ok)}
+  .mx-esct-d.pior{background:color-mix(in srgb,var(--mx-stop) 12%,transparent);color:var(--mx-stop)}
+  .mx-esct-ant{font-size:12.5px;line-height:1.45;color:var(--mx-text2);min-height:18px}
+  .mx-esct-ant b{font-weight:600;color:var(--mx-text)}
+  .mx-esct-regua{position:relative;height:6px;margin:12px 4px 0;border-radius:999px;background:var(--mx-surf2)}
+  .mx-esct-regua i{position:absolute;top:0;bottom:0;opacity:.28}
+  .mx-esct-regua i:first-child{border-radius:999px 0 0 999px} .mx-esct-regua i:last-of-type{border-radius:0 999px 999px 0}
+  .mx-esct-regua i.on{opacity:1}
+  .mx-esct-regua b{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;box-sizing:border-box}
+  .mx-esct-regua b.hoje{background:var(--mx-text);box-shadow:0 0 0 2px var(--mx-surf)}
+  .mx-esct-regua b.ant{background:var(--mx-surf);border:2px solid var(--mx-text3)}
+  .mx-esct-lim{display:flex;justify-content:space-between;margin:4px 2px 0;font-size:10.5px;color:var(--mx-text3)}
+  .mx-esct-evo{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid var(--mx-line);font-size:12px;color:var(--mx-text2)}
+  .mx-esct-evo svg{flex:none;overflow:visible}
+  .mx-esct-evo polyline{fill:none;stroke:var(--mx-text3);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+  .mx-esct-evo circle{fill:var(--mx-surf);stroke:var(--mx-text3);stroke-width:1.5}
+  .mx-esct-evo circle.hoje{fill:var(--mx-text);stroke:var(--mx-text)}
+  .mx-esct-adv{font:400 26px/1.15 var(--mx-disp);letter-spacing:-.02em;color:var(--mx-text)}
+  .mx-esct-adv.pos{color:var(--mx-stop)}
+  /* na tela, o bloco antigo (pílula + IIEF-5 10/25) dá lugar ao novo; na impressão continua o antigo */
+  @media screen{ #resultsCard.mx-esc-on #printArea > .result-top{display:none!important} }
   .mx-alertas{display:inline-flex;margin-top:12px;font-size:12.5px;color:var(--mx-warn);border:1px solid var(--mx-warnln);background:var(--mx-warnbg);
     border-radius:999px;padding:3px 10px;cursor:pointer}
   #resultsCard.mx-cd-on .result-top .gauge-wrap,#resultsCard.mx-cd-on #marcador{display:none!important}
-  /* v2.5-H (item 5): na tela o cabeçalho da conduta já diz classificação, escore e contexto; o bloco
-     "Classificação IIEF-5" só repetia. Continua no relatório impresso. */
-  @media screen{ #resultsCard.mx-cd-on #printArea > .result-top{display:none!important} }
   #resultsCard.mx-cd-on #printArea{display:flex;flex-direction:column}
   #resultsCard.mx-cd-on #printArea > *{order:3}
   #resultsCard.mx-cd-on #printArea > .result-top{order:0}
@@ -311,7 +342,7 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   details.mx-det > summary small{font-weight:400;color:var(--mx-text3);margin-left:auto}
   details.mx-det #racTitulo{display:none!important}
   details.mx-det #custoBox > div{margin-top:10px!important}
-  @media (max-width:720px){ .mx-cdhead{flex-direction:column;align-items:flex-start} .mx-cdproto{font-size:44px} .mx-scores div{text-align:left} }
+  @media (max-width:720px){ .mx-cdhead{flex-direction:column;align-items:flex-start} .mx-cdproto{font-size:44px} }
 }
 </style></head><body><script>
 
@@ -3927,7 +3958,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     return b;
   }
   async function carregarHistorico(origem){
-    S.hist = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null; S.queixasRegistro = null; S.primeiraAval = null;
+    S.hist = null; S.serieEsc = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null; S.queixasRegistro = null; S.primeiraAval = null;
     S.codigoBuscado = norm(S.codigo);
     if (S.visita !== 'reav'){ prev = null; return; }
     S.tefiBanco = await buscarPorTipo(S.codigo,'tefi');
@@ -3940,6 +3971,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       const ord = todos.slice().sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
       const ult = k => { for (let i=ord.length-1;i>=0;i--){ if (ord[i][k]) return ord[i][k]; } return null; };
       S.contatoBanco = {iniciais:ult('iniciais'), telefone:ult('telefone'), email:ult('email')};
+      // v2.5-I: escores de cada consulta clínica, do mais antigo ao mais recente — só exibição (bloco de classificação)
+      S.serieEsc = ord.filter(c=>c.tipo==='primeira'||c.tipo==='reavaliacao').map(c=>({d:dataDoCiclo(c), iief:c.iief!=null?+c.iief:null, pedt:c.pedt!=null?+c.pedt:null}));
     }catch(e){}
     // v2.4: queixas em tratamento, tiradas do prontuário (primeira avaliação e
     // reavaliações): servem só para o texto do retorno — não entram na conduta
@@ -7684,6 +7717,70 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
   }
 
+  // ---- v2.5-I: bloco "Classificação IIEF-5" na tela da conduta ----
+  // O Dr. Marco julga a evolução por aqui: valor de hoje, o anterior, a variação, a faixa e a régua das faixas
+  // (○ anterior, ● hoje). Com 3+ consultas, a linha da evolução. Só exibição: nada aqui entra na conduta.
+  function mxFaixaCurta(b){ return !b ? '' : b.label.replace(/^Sem disfunção erétil$/,'sem disfunção').replace(/^(DE|EP) /,''); }
+  function mxCartaoEscore(nome, hoje, ant, dataAnt, bands, ini, fim, menorMelhor, serie){
+    const faixa = v => bands.find(b=>v>=b.min && v<=b.max) || null;
+    const bh = faixa(hoje), ba = ant!=null ? faixa(ant) : null;
+    const pos = v => Math.max(0, Math.min(100, (Math.max(ini, Math.min(fim, v)) - ini) / (fim - ini) * 100));
+    const d = ant!=null ? hoje - ant : null;
+    const sentido = d==null ? '' : (d===0 ? 'igual' : ((menorMelhor ? d<0 : d>0) ? 'melhor' : 'pior'));
+    const segs = bands.slice().sort((a,b)=>a.min-b.min).map(b=>{
+      const a0 = Math.max(ini, b.min), a1 = Math.min(fim, b.max+1);
+      if (a1<=a0) return '';
+      return '<i class="'+(b===bh?'on':'')+'" style="left:'+pos(a0)+'%;width:'+(pos(a1)-pos(a0))+'%;background:var(--sev-'+b.key+')"></i>';
+    }).join('');
+    let h = '<div class="mx-esct">'
+      + '<div class="mx-esct-cab">'+qn(escH(nome))
+      + (bh ? '<span class="mx-esct-fx"><i style="background:var(--sev-'+bh.key+')"></i>'+escH(mxFaixaCurta(bh))+'</span>' : '')+'</div>'
+      + '<div class="mx-esct-val">'+qv(escH(String(hoje)))+'<span class="de">/'+fim+'</span>'
+      + (d!=null ? '<span class="mx-esct-d '+sentido+'">'+(d>0?'+':(d<0?'−':''))+(d===0?'=':Math.abs(d))+'</span>' : '')+'</div>'
+      + '<div class="mx-esct-ant">'+(ant!=null
+          ? 'antes <b>'+escH(String(ant))+'</b>'+(dataAnt?' · '+escH(dataAnt):'')+' — '+escH(variacao(ant, hoje, menorMelhor))
+            + (ba && bh && ba!==bh ? '<br>faixa: '+escH(mxFaixaCurta(ba))+' → '+escH(mxFaixaCurta(bh)) : '')
+          : 'primeira medida')+'</div>'
+      + '<div class="mx-esct-regua" aria-hidden="true">'+segs
+      + (ant!=null ? '<b class="ant" style="left:'+pos(ant)+'%"></b>' : '')
+      + '<b class="hoje" style="left:'+pos(hoje)+'%"></b></div>'
+      + '<div class="mx-esct-lim"><span>'+ini+'</span><span>'+fim+'</span></div>';
+    if (serie && serie.length>=3){
+      // escala local (mín–máx da série, com folga) para a forma da evolução aparecer
+      const lo = Math.max(ini, Math.min.apply(null, serie)-2), hi = Math.min(fim, Math.max.apply(null, serie)+2);
+      const W=170, H=36, xs = i => 5 + i*(W-10)/(serie.length-1), ys = v => H-5 - (v-lo)/((hi-lo)||1)*(H-10);
+      const pts = serie.map((v,i)=>xs(i).toFixed(1)+','+ys(v).toFixed(1));
+      h += '<div class="mx-esct-evo"><svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" aria-hidden="true"><polyline points="'+pts.join(' ')+'"/>'
+        + serie.map((v,i)=>'<circle cx="'+xs(i).toFixed(1)+'" cy="'+ys(v).toFixed(1)+'" r="'+(i===serie.length-1?3.2:2.2)+'"'+(i===serie.length-1?' class="hoje"':'')+'/>').join('')
+        + '</svg><span>'+escH(serie.join(' → '))+'</span></div>';
+    }
+    return h + '</div>';
+  }
+  function mxBlocoEscores(iief, pedt){
+    if (iief==null && pedt==null) return '';
+    const p = (S.visita==='reav' && prev) ? prev : null;
+    const dataAnt = p ? dataDoCiclo(p) : '';
+    const serie = k => {
+      const hist = (S.serieEsc||[]).map(c=>c[k]).filter(v=>v!=null);
+      return hist.length>=2 ? hist.concat([k==='iief'?+iief:+pedt]) : null;
+    };
+    const cards = [];
+    if (iief!=null) cards.push(mxCartaoEscore('IIEF-5', +iief, p && p.iief!=null ? +p.iief : null, dataAnt, BANDS_DE, 5, 25, false, serie('iief')));
+    if (pedt!=null) cards.push(mxCartaoEscore('PEDT', +pedt, p && p.pedt!=null ? +p.pedt : null, dataAnt, BANDS_EP, 0, 20, true, serie('pedt')));
+    // ADAM (rastreio androgênico) quando foi respondido hoje — sem régua: positivo/negativo e nº de sintomas
+    const adamOn = !!(S.hasDE && Array.isArray(S.adam) && S.adam.length);
+    if (adamOn){
+      const a = S.adam.filter(v=>v!=='nenhum'), pa = p && Array.isArray(p.adam) ? p.adam.filter(v=>v!=='nenhum') : null;
+      const pos = adamPositivo(a);
+      cards.push('<div class="mx-esct mx-esct-adam"><div class="mx-esct-cab">'+qn('ADAM')+'</div>'
+        + '<div class="mx-esct-val"><span class="mx-esct-adv '+(pos?'pos':'')+'">'+(pos?'positivo':'negativo')+'</span></div>'
+        + '<div class="mx-esct-ant">'+a.length+' de 10 sintomas'+(pa ? '<br>antes '+(adamPositivo(pa)?'positivo':'negativo')+' · '+pa.length+' de 10' : '')+'</div></div>');
+    }
+    const tit = iief!=null && pedt!=null ? 'Classificação IIEF-5 e PEDT' : (iief!=null ? 'Classificação IIEF-5' : 'Classificação PEDT');
+    return '<div class="mx-escores" id="mxEscores"><div class="mx-eyebrow">'+tit+(p?' · hoje × consulta anterior':'')+'</div>'
+      + '<div class="mx-esc-grade n'+cards.length+(adamOn?' com-adam':'')+'">'+cards.join('')+'</div></div>';
+  }
+
   // ---- conduta em 3 níveis ----
   function mxPintaConduta(){
     const head = el('mxCdHead'), rc = el('resultsCard'); if (!head || !rc) return;
@@ -7738,10 +7835,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     const chips = txt('marcador').split(' · ').map(s=>s.trim()).filter(c=>c && c.toLowerCase()!==vis.toLowerCase())
       .filter(c=>!linhaDE || !/^(ondas de choque|TEFI)/i.test(c));
-    const esc = [];
     const iief = reg && reg.iief!=null ? reg.iief : null, pedt = reg && reg.pedt!=null ? reg.pedt : null;
-    if (iief!=null) esc.push(['IIEF-5', iief, prev && prev.iief!=null ? 'antes '+prev.iief : 'de 25']);
-    if (pedt!=null) esc.push(['PEDT', pedt, prev && prev.pedt!=null ? 'antes '+prev.pedt : 'de 20']);
+    const blocoEsc = mxBlocoEscores(iief, pedt);
     const alertas = el('altNote') && el('altNote').style.display!=='none' ? el('altNote').querySelectorAll('p').length : 0;
     head.innerHTML = '<div style="min-width:0">'
       + '<div class="mx-eyebrow">'+escH(['Conduta sugerida', vis, queixa].filter(Boolean).join(' · '))+'</div>'
@@ -7752,8 +7847,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       + (st.length ? '<div class="mx-cdstatus" id="mxCdStatus">'+st.map(([c,n,v])=>'<span class="'+c+'"><b>'+escH(n)+'</b>'+escH(v)+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
       + '</div>'
-      + (esc.length ? '<div class="mx-scores">'+esc.map(([n,v,d])=>'<div class="mx-esc">'+qn(escH(n))+qv(escH(String(v)))+'<small>'+escH(d)+'</small></div>').join('')+'</div>' : '');
+      + blocoEsc;
     head.classList.add('sem-ativo');
+    head.classList.toggle('com-esc', !!blocoEsc);
+    rc.classList.toggle('mx-esc-on', !!blocoEsc);
     head.style.display = 'flex';
     rc.classList.add('mx-cd-on');
     const va = el('mxVerAlertas');
