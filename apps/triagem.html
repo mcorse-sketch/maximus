@@ -1377,6 +1377,15 @@ document.documentElement.setAttribute('data-tema',t)})();
   .gopts.seg .gop{min-width:0;text-align:center;padding:9px 6px;white-space:nowrap;font-variant-numeric:tabular-nums}
   .gopts.lista{display:grid;gap:6px}
   .gopts.lista .gop{border-radius:12px!important;padding:10px 14px;line-height:1.35}
+  /* v2.5-G: fórmula = código + composição em coluna própria (quebra alinhada, nunca no meio do código) */
+  .gopts.lista .gop{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:10px;align-items:baseline}
+  .gop .fcod,.opt .fcod{font-weight:600;letter-spacing:-.01em}
+  .gop .fcmp,.opt .fcmp{font-size:12.5px;color:var(--mx-text2);line-height:1.4}
+  .opt .fcmp{display:block;margin-top:2px}
+  .opt.selected .fcmp,.gop.selected .fcmp{color:inherit;opacity:.78}
+  /* v2.5-G: linha da intracavernosa no cabeçalho numa linha só (composição completa no title) */
+  .pn-sub{color:var(--mx-text3)}
+  .mx-cdkit > span em{font-style:normal;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .fld-lab{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
   .fld-sub{font-size:12px;font-weight:400;color:var(--mx-text3);letter-spacing:0;text-transform:none}
   .fld-sub::before{content:'· ';opacity:.7}
@@ -2074,7 +2083,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         f.options.forEach(o=>{
           const b=document.createElement('button'); b.type='button'; b.dataset.v = String(o.v);
           b.className='gop'+(S[f.id]===o.v?' selected':'');
-          b.textContent=o.label;
+          if (temCor) b.innerHTML = rotuloFormula(o.label); else b.textContent=o.label;
           if (corFormula(o.v)){ b.insertAdjacentHTML('beforeend', chipCor(o.v)); b.classList.add('tem-cor'); }
           b.onclick=()=>{S[f.id]=o.v;paint();};
           g.appendChild(b);
@@ -2103,7 +2112,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         const b=document.createElement('button'); b.type='button';
         const sel = sc.multi ? (S[sc.id]||[]).includes(o.v) : S[sc.id]===o.v;
         b.className='opt'+(sel?' selected':''); b.dataset.v = String(o.v);
-        b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${o.label}</span>`+chipCor(o.v);
+        b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${corFormula(o.v)?rotuloFormula(o.label):o.label}</span>`+chipCor(o.v);
         if (corFormula(o.v)) b.classList.add('tem-cor');
         b.onclick=()=>{
           if (sc.multi){
@@ -2969,6 +2978,19 @@ document.documentElement.setAttribute('data-tema',t)})();
     return '<span class="mx-cor'+(inl?' inl':'')+'" style="background:'+cor+'" title="Cor da embalagem: '+nome+'" aria-hidden="true"></span>';
   }
   const iciDaConsulta = () => S.iciAnt || S.iciFormula || '';
+  // v2.5-G: opção de fórmula em duas linhas — código em destaque e a composição embaixo (sem quebrar no meio)
+  function rotuloFormula(label){
+    const cod = String(label||'').trim(), c0 = cod.split(' ')[0];
+    const cmp = siglaAuto(c0) ? '' : (ativoTxt(c0) || '');
+    return '<b class="fcod">'+escH(cod)+'</b>'+(cmp ? '<span class="sig-ativo fcmp">'+escH(cmp)+'</span>' : '');
+  }
+  // v2.5-G: a intracavernosa aparece pelo código da fórmula (R5, R10…) no cartão, no cabeçalho, no painel e no
+  // protocolo prescrito. Antes o cartão e o protocolo prescrito diziam sempre "R5" (F.ICI.txt), mesmo com outra fórmula.
+  function iciCodConsulta(){
+    const reg = window.__mxReg || {};
+    const n = numDaFormulaIci(iciDaConsulta() || (reg.tefi && reg.tefi.formula) || (prev && (prev.iciAnterior || (prev.tefi && prev.tefi.formula))) || '');
+    return 'R' + (n || 5);
+  }
 
   function unicos(codes){
     const v=[]; (codes||[]).forEach(c=>{ const k=Array.isArray(c)?c[0]:c; if (k && v.indexOf(k)<0) v.push(k); }); return v;
@@ -3570,8 +3592,11 @@ document.documentElement.setAttribute('data-tema',t)})();
         if (cd==='ICI'){
           const f = prev.iciAnterior || (prev.tefi&&prev.tefi.formula) || 'R5';
           const n = numDaFormulaIci(f);
-          const dz = prev.iciDoseIndicada || (prev.iciCasa&&prev.iciCasa.dose) || (prev.tefi&&prev.tefi.dose) || '';
-          linhas.push(lin((n ? 'R'+n+chipCor('R'+n, '', true)+(iciApelido(n)?' \u00b7 '+escH(iciApelido(n)):'') : escH(f))+(dz?' \u00b7 '+escH(dz):'')));
+          // v2.5-G: sem dose no último ciclo, a última registrada (com a data); sem nenhuma, diz que não há registro
+          const dz = prev.iciDoseIndicada || (prev.iciCasa&&prev.iciCasa.dose) || (prev.iciPorTefi&&prev.iciPorTefi.dose) || (prev.tefi&&prev.tefi.dose) || prev.iciDosePrescrita || '';
+          const dh = !dz && S.iciDoseHist ? S.iciDoseHist : null;
+          const dTxt = dz ? ' \u00b7 '+escH(dz) : (dh ? ' \u00b7 '+escH(dh.dose)+' <span class="pn-sub">(registro de '+escH(dh.dataBR)+')</span>' : ' \u00b7 <span class="pn-sub">dose não registrada</span>');
+          linhas.push(lin((n ? 'R'+n+chipCor('R'+n, '', true)+(iciApelido(n)?' \u00b7 '+escH(iciApelido(n)):'') : escH(f))+dTxt));
           return;
         }
         if (cd==='ONDAS'){ ondasNoUso = true; linhas.push(lin('ONDAS \u00b7 Li-ESWT'+(txtOndas?' \u00b7 '+txtOndas:''))); return; }
@@ -3728,6 +3753,14 @@ document.documentElement.setAttribute('data-tema',t)})();
     // v2.4: queixas em tratamento, tiradas do prontuário (primeira avaliação e
     // reavaliações): servem só para o texto do retorno — não entram na conduta
     S.queixasRegistro = queixasDoRegistro(todos);
+    // v2.5-G: última dose de intracavernosa registrada em qualquer consulta (o painel usa quando o último ciclo não tem)
+    S.iciDoseHist = (function(){
+      const o = todos.slice().sort((a,b)=>new Date(b.data||0)-new Date(a.data||0));
+      for (const c of o){ if (!c) continue;
+        const d = c.iciDoseIndicada || (c.iciCasa && c.iciCasa.dose) || (c.iciPorTefi && c.iciPorTefi.dose) || (c.tefi && c.tefi.dose) || c.iciDosePrescrita;
+        if (d) return {dose:d, dataBR:c.dataBR || (c.data ? new Date(c.data).toLocaleDateString('pt-BR') : '')}; }
+      return null;
+    })();
     // v2.4/v2.5: respostas de referência (caracterização e ADAM) para as perguntas
     // de evolução do retorno. v2.5: a referência é a ÚLTIMA consulta clínica com o
     // campo (antes era a primeira) — assim o que melhorou numa consulta (ADAM zerado,
@@ -4655,9 +4688,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       const code=Array.isArray(entry)?entry[0]:entry, tag=Array.isArray(entry)?entry[1]:null, it=F[code];
       if(!it) return;
       const d=document.createElement('div'); d.className='kit-card';
-      d.innerHTML=chipCor(code, iciDaConsulta())+`<span class="kc-role"><span class="kc-icon">${ICON[it.role]||'•'}</span>${tag||it.role}</span>
-        <span class="kc-code">${code.replace('-1J','')}</span>
-        <span class="kc-formula">${it.txt}<br><b>${it.pos}</b></span>`;
+      const ehIci = code==='ICI', rc = ehIci ? iciCodConsulta() : '';
+      d.innerHTML=(ehIci ? chipCor(rc) : chipCor(code, iciDaConsulta()))+`<span class="kc-role"><span class="kc-icon">${ICON[it.role]||'•'}</span>${tag||it.role}</span>
+        <span class="kc-code">${ehIci ? rc : code.replace('-1J','')}</span>
+        <span class="kc-formula">${ehIci ? rc : it.txt}<br><b>${it.pos}</b></span>`;
       k.appendChild(d);
     });
     if(!codes.length){const d=document.createElement('div');d.className='kit-card empty';d.innerHTML='<span class="kc-code">Nenhuma formulação indicada</span>';k.appendChild(d);}
@@ -6334,7 +6368,10 @@ document.documentElement.setAttribute('data-tema',t)})();
     const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
     screens.filter(s=>LBL[s.id]).forEach(s=>{const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
     add('Custo estimado do ciclo', CUS.idx+'/10'+(CUS.temOpc?'  ·  com opcional: '+CUS.idxComOpc+'/10':'')+'  ('+CUS.total+' pontos · maior peso: '+(CUS.itens.slice(0,3).map(i=>i.cod).join(', ')||'—')+')');
-    const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=F[c];return i?`<b>${c.replace('-1J','')}</b> — ${i.txt} · ${i.pos}`:'';}).filter(Boolean).join('<br>');
+    const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=F[c];if(!i) return '';
+      // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
+      if (c==='ICI') return `<b>${iciCodConsulta()}</b> — intracavernosa${iciDoseIndicada?', '+iciDoseIndicada:''} · ${i.pos}`;
+      return `<b>${c.replace('-1J','')}</b> — ${i.txt} · ${i.pos}`;}).filter(Boolean).join('<br>');
     el('report').innerHTML=`<h4>Relatório da consulta</h4><table>${rows.join('')}</table>
       <h4 class="so-papel">Protocolo prescrito</h4><div class="so-papel" style="font-size:14px;line-height:1.6;">${kitTxt||'—'}</div>
       <div class="assinatura" style="margin-top:28px;font-size:13px;opacity:.7;">_______________________________________<br>Dr. Marco Corsetti — CRM 52.94351-7 — RQE 31969</div>`;
@@ -7472,7 +7509,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         const cd = Array.isArray(e) ? e[0] : e, tag = Array.isArray(e) ? String(e[1]||'') : '';
         if (!cd || vistos.indexOf(cd)>=0 || cd==='LABS' || cd==='TEFI') return; vistos.push(cd);
         let t = '';
-        if (cd==='ICI'){ const n = numDaFormulaIci(S.iciAnt||(reg.tefi&&reg.tefi.formula)||'R5') || 5; t = 'R'+n+' = '+iciCurto(n); }
+        if (cd==='ICI'){ const n = numDaFormulaIci(iciCodConsulta()) || 5; t = iciCurto(n); itensKit.push(['R'+n, t, '', true]); return; }
         else t = painelTxt(cd);
         const tg = cd==='ONDAS' ? (/opcional/i.test(tag) ? 'opcional, custo à parte' : (tag ? tag.split(' — ')[0].toLowerCase() : '')) : '';
         itensKit.push([cd, t, tg]);
@@ -7509,7 +7546,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       + '<div class="mx-eyebrow">'+escH(['Conduta sugerida', vis, queixa].filter(Boolean).join(' · '))+'</div>'
       + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+'">'+escH(titulo)+(etiqueta?' <span class="mx-cdtag">'+escH(etiqueta)+'</span>':'')+'</div>'
       + (sub && sub!==titulo ? '<div class="mx-cdtit">'+(ativo ? '<span class="sig-ativo">'+escH(sub)+'</span>' : escH(kitTag ? sub : explicaSiglas(sub)))+'</div>' : '')
-      + (itensKit.length ? '<div class="mx-cdkit" id="mxCdKit">'+itensKit.map(([c,t,g])=>'<span>'+chipCor(c, iciDaConsulta() || (reg && reg.tefi && reg.tefi.formula) || '')+'<b>'+escH(c)+'</b>'+(t?escH(t):'')+(g?'<i>'+escH(g)+'</i>':'')+'</span>').join('')+'</div>' : '')
+      + (itensKit.length ? '<div class="mx-cdkit" id="mxCdKit">'+itensKit.map(([c,t,g,ici])=>'<span'+(ici?' class="ici"':'')+'>'+chipCor(c, iciDaConsulta() || (reg && reg.tefi && reg.tefi.formula) || '')+'<b>'+escH(c)+'</b>'+(t?'<em title="'+escH(t)+'">'+escH(t)+'</em>':'')+(g?'<i>'+escH(g)+'</i>':'')+'</span>').join('')+'</div>' : '')
       + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(garanteSiglas(c, true))+'</span>').join('')+'</div>' : '')
       + (st.length ? '<div class="mx-cdstatus" id="mxCdStatus">'+st.map(([c,n,v])=>'<span class="'+c+'"><b>'+escH(n)+'</b>'+escH(v)+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
