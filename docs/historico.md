@@ -75,6 +75,14 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   sigla repetia o resto da frase.
 - **Dicas invisíveis nas telas do TEFI → intracavernosa (v2.5-F)** — as telas de
   opções só mostram a dica com `mostraDica`; faltava nas três telas novas da v2.5-E.
+- **"Protocolo prescrito" sempre com R5 (v2.5-G)** — o texto da intracavernosa
+  vinha de `F['ICI'].txt='R5'` fixo; com R10 escolhida, o cartão do kit, o
+  relatório da clínica e o texto do prontuário diziam "ICI — R5". Agora usam a
+  fórmula da consulta (`iciCodConsulta()`).
+- **Dica do TEFI invisível na tela "Qual a conduta definida?" (v2.5-G)** — faltava
+  `mostraDica`.
+- **"Agende também: ondas de choque" com ondas só opcionais (v2.5-G)**, **"há 0
+  dias"** no histórico (agora "hoje") e **ADAM em duas linhas** no prontuário.
 - **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
   mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
   substâncias; a dose fica no relatório. Apêndice do envio retirado.

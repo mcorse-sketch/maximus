@@ -72,7 +72,7 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     const notas = r.win.document.getElementById('rc-notas') ? r.win.document.getElementById('rc-notas').textContent : r.win.document.body.textContent;
     ok(/não volta para a via oral/.test(notas) && /conta só para a satisfação/.test(notas), 'item 19: nota explica que a melhora do escore reflete a medicação');
     ok(r.caminho.includes('iciUso') && s.iciCasa && s.iciCasa.tempo === '1h', 'v2.5-E: duração da ereção perguntada na tela "Fórmula e dose"', JSON.stringify(s.iciCasa));
-    const chIci = [...r.win.document.querySelectorAll('#kitGrid .kit-card')].find(k => /^ICI/.test(k.querySelector('.kc-code').textContent.trim()));
+    const chIci = [...r.win.document.querySelectorAll('#kitGrid .kit-card')].find(k => /^(ICI|R\d+)\b/.test(k.querySelector('.kc-code').textContent.trim())); // v2.5-G: o cartão mostra o código (R5)
     ok(chIci && chIci.querySelector('.mx-cor') && /R5/.test(chIci.querySelector('.mx-cor').title), 'cartão da intracavernosa leva a cor da fórmula em uso (R5)');
     r.win.close();
   }
@@ -203,6 +203,49 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     ok(linhas.length && linhas.every(l => !COR[l.querySelector('b').textContent.trim()] || l.querySelector('.mx-cor')), 'cabeçalho da conduta: cada fórmula com a sua cor');
     ok([...doc.querySelectorAll('#printPaciente .med')].some(m => m.querySelector('.mx-cor')), 'via do paciente: a cor da embalagem ao lado da fórmula');
     r.win.close();
+  }
+
+  // ---- 5. v2.5-G: autocrítica aprovada pelo Dr. Marco (20 itens) ----
+  console.log('\n--- v2.5-G: prontuário enxuto, nome da fórmula (R10), dica do TEFI, "Próxima" diz o que falta');
+  {
+    const cOral = () => [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const base = { visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao', confirmaEstavel: 'nao',
+      caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso' };
+    // a tela da conduta após o TEFI mostra a sugestão, e o "Próxima" apagado diz o que falta
+    const p = await roda({ id: 'G1', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({}, base, { tefiConduta: '__parar__' }, iief(10)) }, false, { manter: true });
+    { const d = p.win.document;
+      ok(/Sugerido: intracavernosa/.test(d.getElementById('quizCard').textContent), 'item 6: "Sugerido: intracavernosa…" aparece na tela da conduta após o TEFI');
+      const f = d.getElementById('mxFalta'), nb = d.getElementById('nextBtn');
+      ok(nb.disabled && f && f.textContent === 'Escolha uma opção', 'item 17: "Próxima" apagado diz o que falta', f && f.textContent);
+      p.win.close(); }
+    const r = await roda({ id: 'G2', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({}, base, { tefiConduta: 'ici', tefiAddIci: 'sim',
+      iciFormula: 'R10', iciDose: '0,1 mL', satisfNps: { satisf: 5, nps: 7 } }, iief(10)) }, false, { manter: true });
+    const d = r.win.document, L = r.texto.split('\n');
+    ok(!r.falha, 'chega à conduta', r.falha);
+    ok(L.filter(l => /^ADAM\b/.test(l)).length === 1, 'item 1: uma única linha de ADAM no prontuário', L.filter(l => /ADAM/.test(l)).join(' | '));
+    ok(L.some(l => /^TEFI: realizado — resposta parcial · Doppler: escape venoso · conduta: iniciar intracavernosa/.test(l)), 'item 2: linha do TEFI em texto legível', L.filter(l => /^TEFI/.test(l)).join(' | '));
+    ok(!/tadalafila|mcg/i.test(L[1] || ''), 'item 3: a linha de classificação não repete a composição', L[1]);
+    ok(/itens/.test(d.getElementById('notasMais').textContent) && !/ITEMS|items/.test(d.getElementById('notasMais').textContent), 'item 4: "itens"');
+    const card = [...d.querySelectorAll('#kitGrid .kit-card .kc-code')].map(k => k.textContent.trim());
+    ok(card.some(c => /^R10\b/.test(c)) && !card.some(c => /^ICI\b/.test(c)), 'item 10: cartão do kit traz o código da fórmula (R10)', card.join(' | '));
+    ok(/^- R10 · .*— intracavernosa, 0,1 mL/m.test(r.texto) && !/ICI — R5/.test(r.texto), 'item 10: "Protocolo prescrito" com a fórmula escolhida (não mais R5 fixo)',
+      L.filter(l => /intracavernosa,/.test(l)).join(' | '));
+    ok([...d.querySelectorAll('#mxCdKit > span b')].some(b => b.textContent.trim() === 'R10'), 'item 10: cabeçalho da conduta com R10');
+    const folha = d.getElementById('printPaciente').textContent;
+    ok(!/Agende também:[^.]*ondas/i.test(folha), 'item 7: ondas só opcionais — a folha não manda agendar', (folha.match(/Agende também[^.]*/) || [''])[0]);
+    ok(!/\d\s*(mg|mcg|mL)\b/.test([...d.querySelectorAll('#printPaciente .med')].map(m => m.textContent).join(' ')), 'via do paciente continua sem dose de fórmula');
+    const bts = [...d.querySelectorAll('#resultsCard .btn-primary')].filter(b => b.offsetParent !== null || b.style.display !== 'none');
+    ok(bts.length === 1 && bts[0].id === 'concluirBtn', 'item 12: um único botão principal no fim da conduta (Concluir)', bts.map(b => b.id).join(','));
+    ok(!/Banco Claude conectado/.test(d.getElementById('dbTag').textContent), 'item 13: sem o texto técnico do banco na tela');
+    r.win.close();
+    // painel: intracavernosa sem dose registrada não fica com a linha vazia
+    const cICI = [Object.assign({ codigo: 'MXV002', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'INTRACAVERNOSA',
+      kitCodes: ['ICI', 'NOITE-1', 'TEFI', 'ONDAS'], tefiIndicado: true, iief: 7, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const q = await roda({ id: 'G3', codigo: 'MXV002', ciclos: cICI, respostas: { visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', iciUso: { iciAnt: '__parar__' } } }, false, { manter: true });
+    { const pn = q.win.document.getElementById('painelCard').textContent.replace(/\s+/g, ' ');
+      ok(/R5 · trimix · dose não registrada/.test(pn), 'item 9: painel — "dose não registrada" quando nenhum registro tem a dose', (pn.match(/R\d+[^·]*·[^·]*·[^·]{0,30}/) || [''])[0]);
+      q.win.close(); }
   }
 
   console.log('\n=== v2.5 ===');

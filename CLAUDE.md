@@ -121,6 +121,22 @@ e a dica do campo (`field.hint`) fica junto do rótulo. Pílula da classificaç�
 curta (faixa + código, `.sem-ativo`; `teste_siglas` a dispensa). Painel: ICI como
 "R5 · trimix · dose" (`iciApelido()`), escore de hoje só quando respondido.
 
+**Autocrítica (v2.5-G).** Prontuário: ADAM numa linha só, TEFI em texto legível
+(resposta · Doppler · conduta), a linha da classificação (`iCl`) não ganha a
+composição das siglas (`teste_siglas` dispensa a linha 1), "Dados estáveis
+confirmados" é observação (não alerta, sai de PENDÊNCIAS), "Agende também: ondas"
+só com ondas prescritas. Intracavernosa pelo código da fórmula (`iciCodConsulta()`:
+consulta → TEFI → anterior → R5): cartão do kit, cabeçalho e "Protocolo prescrito"
+dizem R10 quando é R10 (antes o prescrito saía sempre "R5" — `F['ICI'].txt`). A via
+do paciente continua "ICI", sem dose. Painel: dose do registro mais recente que a
+tenha (`S.iciDoseHist`) ou "dose não registrada". "Próxima" apagado mostra o que
+falta (`faltaTxt()`, `#mxFalta`, atualizado por MutationObserver no `disabled`).
+Progresso numa barra contínua (`.dots.barra`). Banco = ponto discreto (`.db-dot`).
+Fim da conduta: Concluir é o único botão principal; copiar/imprimir agrupados
+(`#mxAcoes`), WhatsApp/email maiores. Celular (< 600 px): o trilho vira
+`display:contents` — paciente numa linha, módulos em faixa rolável, pergunta logo
+abaixo, painel depois.
+
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua
 aceitando um só, e o consultório completa). Telefone é
