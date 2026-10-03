@@ -880,7 +880,12 @@ document.documentElement.setAttribute('data-tema',t)})();
   #quizCard[data-q="pedt"] .q-eyebrow{color:#8a4b12;}
   #quizCard[data-q="pedt"]{box-shadow:inset 5px 0 0 #d98324;}
   .marcador{font-size:12.5px;opacity:.75;margin-top:6px;line-height:1.45;}
-  #printPaciente,#printPos,#printTermo{display:none;}
+  #printPaciente,#printPos,#printTermo,#printExames{display:none;}
+  /* v2.5 (item 11): editor do pedido de exames */
+  .exa-lista{display:flex;flex-direction:column;gap:6px;margin:8px 0 14px}
+  .exa-lista label{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer}
+  .exa-add{display:flex;gap:8px;margin-bottom:12px} .exa-add input{flex:1}
+  .exa-nota{font-size:12.5px;color:var(--mx-text3,#6b6a66);margin:0 0 10px}
   .pac{font-size:11.6px;line-height:1.42;color:#101826;}
   .pac .cab{display:flex;justify-content:space-between;align-items:flex-end;
             border-bottom:2px solid #0b1f3b;padding-bottom:7px;margin-bottom:9px;}
@@ -930,6 +935,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     body.pt #printTermo{display:block!important;}
     body.pt #printTermo,body.pt #printTermo *{visibility:visible!important;}
     body.pt #printTermo{position:absolute;left:0;top:0;width:100%;}
+    body.pe #printExames{display:block!important;}
+    body.pe #printExames,body.pe #printExames *{visibility:visible!important;}
+    body.pe #printExames{position:absolute;left:0;top:0;width:100%;}
     .noprint{display:none!important;}
     @page{margin:11mm;}
   }
@@ -937,6 +945,18 @@ document.documentElement.setAttribute('data-tema',t)})();
 
 <main>
   <div class="stage">
+    <div class="ficha-overlay" id="exaOverlay" style="display:none;">
+      <div class="ficha-doc" role="dialog" aria-modal="true" aria-label="Pedido de exames para a próxima consulta">
+        <div class="ficha-top">
+          <span>Pedido de exames · próxima consulta</span>
+          <span class="ficha-acoes">
+            <button type="button" class="btn btn-ghost" id="exaImprimir">Imprimir</button>
+            <button type="button" class="btn btn-primary" id="exaFechar">Fechar</button>
+          </span>
+        </div>
+        <div class="ficha-corpo" id="exaCorpo"></div>
+      </div>
+    </div>
     <div class="ficha-overlay" id="fichaOverlay" style="display:none;">
       <div class="ficha-doc" role="dialog" aria-modal="true" aria-label="Ficha completa do paciente">
         <div class="ficha-top">
@@ -1047,12 +1067,12 @@ document.documentElement.setAttribute('data-tema',t)})();
       <div id="printPaciente"></div>
       <div id="printPos"></div>
       <div id="printTermo"></div>
+      <div id="printExames"></div>
       <div id="envioBox" class="noprint">
         <h4>Enviar ao paciente</h4>
         <label><input type="checkbox" id="envOri" checked> Orienta&ccedil;&otilde;es espec&iacute;ficas deste atendimento</label>
         <label><input type="checkbox" id="envRec" checked> Receita das f&oacute;rmulas</label>
         <label><input type="checkbox" id="envGuia" checked> Guia Protocolo de Performance</label>
-        <label><input type="checkbox" id="envApend"> Ap&ecirc;ndice: reset do est&iacute;mulo</label>
         <label><input type="checkbox" id="envExa"> Pedido de exames para a pr&oacute;xima consulta</label>
         <div class="canal">
           <button type="button" id="envWpp">Enviar por WhatsApp</button>
@@ -1064,6 +1084,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       <button class="btn btn-ghost noprint" id="posBtn" style="width:100%;margin-bottom:10px;display:none;">Imprimir orienta&ccedil;&otilde;es p&oacute;s-procedimento</button>
       <button class="btn btn-ghost noprint" id="termoBtn" style="width:100%;margin-bottom:10px;display:none;">Imprimir termo de consentimento</button>
       <button class="btn btn-gold noprint" id="printPacBtn" style="width:100%;margin-bottom:10px;">Imprimir orienta&ccedil;&otilde;es do paciente</button>
+      <button class="btn btn-ghost noprint" id="examesBtn" style="width:100%;margin-bottom:10px;">Imprimir pedido de exames</button>
       <button class="btn btn-ghost noprint" id="printBtn" style="width:100%;margin-bottom:10px;">Imprimir relat&oacute;rio da cl&iacute;nica</button>
       <button class="btn btn-primary noprint" id="concluirBtn" style="width:100%;margin-bottom:6px;">Concluir atendimento</button>
       <div class="mx-concluir-info noprint" id="concluirInfo">Grava, marca como atendido, tira da fila (o histórico fica) e chama o próximo.</div>
@@ -2851,6 +2872,22 @@ document.documentElement.setAttribute('data-tema',t)})();
     'ONDAS':'Li-ESWT', 'LABS':'perfil hormonal', 'TEFI':'teste de ereção com Doppler'
   };
   function painelTxt(cod){ return siglaAuto(cod) ? '' : (PAINEL_TXT[cod] || ''); }
+  // v2.5 (item 9): na via do PACIENTE as fórmulas aparecem com as substâncias, sem a
+  // dose de cada componente (para a receita não ser manipulada em outro lugar), e com
+  // a posologia. O relatório da clínica e o prontuário continuam com as doses.
+  function tiraDoses(t){
+    return String(t||'')
+      .replace(/,?\s*1 jato\s*=\s*[\d.,+\s]*(mg)?/gi,'')
+      .replace(/,?\s*m[áa]x(imo|\.)?\s*1 jato/gi,'')
+      .replace(/\s*\d[\d.,]*\s*(mg|mcg|g|UI|%)(\s*\/\s*(mL|jato|dia))?\b/gi,'')
+      .replace(/\s+(diária|di[aá]rio)\b/gi,'')
+      .replace(/\s*\+\s*/g,' + ').replace(/\s{2,}/g,' ').replace(/\s+,/g,',').replace(/^[\s+,]+|[\s+,]+$/g,'').trim();
+  }
+  function substanciasPaciente(cod){
+    if (cod==='ICI'){ const n = numDaFormulaIci(S.iciAnt||S.iciFormula||'R5') || 5; return tiraDoses(iciTxt(n)); }
+    if (SIGLA_FORA[cod]) return '';
+    return tiraDoses(ativoTxt(cod));
+  }
 
   const PROTO_COMPO = {
     'DE-1':'cápsula matinal com tadalafila 5 mg + spray sublingual de tadalafila 50 mg/mL sob demanda',
@@ -4725,7 +4762,6 @@ document.documentElement.setAttribute('data-tema',t)})();
       const lb = rec.closest('label'); if (lb) lb.lastChild.textContent = ' '+rotulo; }
     const principal = linha==='principal';
     mostra('envGuia', principal, principal);
-    mostra('envApend', principal);
     box.dataset.linha = linha; box.dataset.receita = receita ? 'sim' : 'nao';
   }
   async function calculaResultados(){
@@ -5980,7 +6016,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       if(!it||!it.pac) return null;
       const opc = /Opcional/.test(tag||'') ? ' <i>(opcional — converse conosco)</i>' : '';
       const alt = /opção B/.test(tag||'') ? ' <i>(alternativa à opção anterior — use apenas uma)</i>' : '';
-      return '<div class="med"><b>'+c.replace('-1J','')+'</b>'+opc+alt+
+      const sub = substanciasPaciente(c);
+      return '<div class="med"><b>'+c.replace('-1J','')+'</b>'+(sub?' · '+escH(sub):'')+opc+alt+
              '<span class="como">'+it.pac+'</span><span class="pq">'+it.pacq+'</span></div>';
     }).filter(Boolean).join('');
 
@@ -6036,7 +6073,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       </div>` : '';
 
     el('printPaciente').innerHTML = `
-      <div class="pac">
+      <div class="pac sem-ativo">
         <div class="cab">
           <div class="m">MAXIMUS<small>MEDICINA MASCULINA</small></div>
           <div class="d">${norm(S.codigo)}<br>${hoje}</div>
@@ -6049,7 +6086,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
         <h4>Por que este plano</h4>
         <div>${(function(){
-          const lim = t => t.replace(/<b>|<\/b>/g,'');
+          const lim = t => tiraDoses(t.replace(/<b>|<\/b>/g,''));
           if (reav && rc_mud.length) return lim(rc_mud[0]);
           const pq = rc_porque.filter(t=>!/^IIEF-5 de|^PEDT de/.test(t.replace(/<[^>]+>/g,'')));
           if (pq.length) return pq.slice(0,2).map(lim).join(' ');
@@ -6192,6 +6229,55 @@ document.documentElement.setAttribute('data-tema',t)})();
 
   el('printBtn').onclick=()=>imprimeEmAba(el('printArea'),'Relatório da clínica — '+norm(S.codigo||''),'pc');
   el('printPacBtn').onclick=()=>imprimeEmAba(el('printPaciente'),'Orientações do paciente','pp');
+  // v2.5 (item 11): pedido de exames para a próxima consulta. Vem com o perfil
+  // hormonal que a clínica pede (o mesmo de LABS: testosterona total e livre, SHBG,
+  // LH, FSH, estradiol e prolactina); o médico marca/desmarca e acrescenta antes de imprimir.
+  const EXA_BASE = ['Testosterona total','Testosterona livre','SHBG','LH','FSH','Estradiol','Prolactina'];
+  const EXA_OPC  = ['Hemograma completo','PSA total','Perfil hepático (TGO, TGP, GGT, bilirrubinas)','Perfil lipídico','Glicemia de jejum','Espermograma'];
+  let exaSel = null, exaExtra = [], exaCod = null;
+  function exaPadrao(){
+    const sel = {}; EXA_BASE.forEach(x=>sel[x]=true); EXA_OPC.forEach(x=>sel[x]=false);
+    // hipogonadismo: hemograma e PSA entram marcados (acompanhamento da reposição)
+    if (S.hasHipo){ sel['Hemograma completo']=true; sel['PSA total']=true; }
+    return sel;
+  }
+  function pintaExames(){
+    const c = el('exaCorpo'); if (!c) return;
+    const todos = EXA_BASE.concat(EXA_OPC, exaExtra);
+    c.innerHTML = '<p class="exa-nota">Marque o que vai no pedido. Coleta matinal, em jejum, entre 7h e 10h.</p>'
+      + '<div class="exa-lista">'+todos.map((x,i)=>'<label><input type="checkbox" data-exa="'+i+'"'+(exaSel[x]?' checked':'')+'> '+escH(x)+'</label>').join('')+'</div>'
+      + '<div class="exa-add"><input class="fld" id="exaNovo" placeholder="Outro exame (ex.: TSH)"><button type="button" class="btn btn-ghost" id="exaIncluir">Incluir</button></div>';
+    c.querySelectorAll('input[data-exa]').forEach(cb=>cb.onchange=()=>{ exaSel[todos[+cb.dataset.exa]] = cb.checked; });
+    const inc = ()=>{ const v = (el('exaNovo').value||'').trim(); if (!v) return;
+      if (todos.indexOf(v)<0){ exaExtra.push(v); } exaSel[v] = true; pintaExames(); };
+    el('exaIncluir').onclick = inc;
+    el('exaNovo').onkeydown = e=>{ if (e.key==='Enter'){ e.preventDefault(); inc(); } };
+  }
+  function montaPedidoExames(){
+    const lista = EXA_BASE.concat(EXA_OPC, exaExtra).filter(x=>exaSel[x]);
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    el('printExames').innerHTML = '<div class="pac">'
+      + '<div class="cab"><div class="m">MAXIMUS<small>MEDICINA MASCULINA</small></div><div class="d">'+escH(norm(S.codigo||''))+'<br>'+hoje+'</div></div>'
+      + '<h3>Pedido de exames</h3><div class="sub">Para trazer na próxima consulta</div>'
+      + '<ul>'+lista.map(x=>'<li>'+escH(x)+'</li>').join('')+'</ul>'
+      + '<div>Coleta matinal, em jejum, entre 7h e 10h.</div>'
+      + '<div class="assin">______________________________________<br>Dr. Marco Corsetti · CRM 52.94351-7 · RQE 31969</div>'
+      + '<div class="rodape">Clínica Maximus Medicina Masculina · Dr. Marco Corsetti · CRM 52.94351-7 · RQE 31969</div></div>';
+    return lista.length;
+  }
+  window.__mxExames = { abre: ()=>abreExames(), lista: ()=>EXA_BASE.concat(EXA_OPC, exaExtra).filter(x=>exaSel && exaSel[x]), monta: ()=>montaPedidoExames() };
+  function abreExames(){
+    const cod = norm(S.codigo||'') + '|' + ((window.__mxReg||{}).data||'');
+    if (!exaSel || exaCod!==cod){ exaSel = exaPadrao(); exaExtra = []; exaCod = cod; }   // novo atendimento = lista padrão
+    pintaExames(); el('exaOverlay').style.display = 'flex';
+  }
+  el('examesBtn').onclick = abreExames;
+  el('exaFechar').onclick = ()=>{ el('exaOverlay').style.display = 'none'; };
+  el('exaImprimir').onclick = ()=>{
+    if (!montaPedidoExames()){ mxToast('Marque ao menos um exame.'); return; }
+    S.pedidoExames = window.__mxExames.lista();
+    imprimeEmAba(el('printExames'), 'Pedido de exames — '+norm(S.codigo||''), 'pe');
+  };
   el('restartBtn').onclick=()=>{
     Object.keys(S).forEach(k=>delete S[k]);
     si=0; KIT_CTX=null; prev=null; hist=[]; resultsCard.style.display='none';
@@ -6216,7 +6302,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const fFechar = document.getElementById('fichaFechar');
     if (fFechar) fFechar.onclick = ()=>fechaFicha();
     const fImp = document.getElementById('fichaImprimir');
-    if (fImp) fImp.onclick = ()=>imprimeEmAba(document.querySelector('.ficha-doc'), (document.getElementById('fichaTitulo')||{}).textContent||'Ficha do paciente', 'pf');
+    if (fImp) fImp.onclick = ()=>imprimeEmAba(document.querySelector('#fichaOverlay .ficha-doc'), (document.getElementById('fichaTitulo')||{}).textContent||'Ficha do paciente', 'pf');
     const fCop = document.getElementById('fichaCopiar');
     if (fCop) fCop.onclick = ()=>{
       const t=(document.getElementById('fichaCorpo').innerText||'');
@@ -6266,13 +6352,13 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (el('envOri') && el('envOri').checked) m.push('orientações do atendimento');
       if (el('envRec') && el('envRec').checked && el('envRec').closest('label').style.display!=='none') m.push(el('envRec').dataset.rotulo || 'receita das fórmulas');
       if (el('envGuia') && el('envGuia').checked) m.push('Guia Protocolo de Performance');
-      if (el('envApend') && el('envApend').checked) m.push('apêndice de reset do estímulo');
       if (el('envExa') && el('envExa').checked) m.push('pedido de exames');
       return m;
     }
     function contato(){
-      const f = (S.fila||[]).find(x=>x.codigo===S.daFila) || null;
-      return { tel: f && f.telefone ? String(f.telefone).replace(/\D/g,'') : '', mail: f && f.email ? f.email : '' };
+      // v2.5: contato do atendimento (fila, cadastro ou digitado na tela de contato)
+      const c = contatoAtual();
+      return { tel: c.telefone ? String(c.telefone).replace(/\D/g,'') : '', mail: c.email || '' };
     }
     function texto(){
       const m = itensEnvio();

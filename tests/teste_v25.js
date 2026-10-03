@@ -72,6 +72,39 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     ok(/text:'Usou a dose como recomendado\?'/.test(HTML), 'intracavernosa: adesão perguntada como "Usou a dose como recomendado?"');
   }
 
+  // ---- 3. via do paciente sem dose dos componentes; pedido de exames; sem apêndice ----
+  console.log('\n--- envio: via do paciente sem doses, pedido de exames editável, sem apêndice');
+  {
+    const r = await roda({ id: 'V3', codigo: 'MXV003', respostas: Object.assign({ visita: 'primeira', queixa: 'ambos',
+      contato: CONTATO, freq: 'alta' }, iief(14), { p0: 3, p1: 2, p2: 2, p3: 3, p4: 2 }) }, true, { manter: true });
+    ok(!r.falha && r.salvo, 'chega à conduta', r.falha);
+    const doc = r.win.document;
+    const meds = [...doc.querySelectorAll('#printPaciente .med')].map(m => m.textContent.replace(/\s+/g, ' '));
+    ok(meds.length > 0 && meds.every(t => !/\d\s*(mg|mcg)\b/i.test(t)), 'via do paciente: fórmulas sem a dose dos componentes', meds.join(' || '));
+    ok(meds.some(t => /tadalafila/i.test(t)) && meds.every(t => t.length > 20), 'via do paciente: substâncias e posologia continuam', meds.join(' || '));
+    ok(!doc.querySelector('#printPaciente .sig-ativo'), 'via do paciente: sem composição automática com dose');
+    const rel = doc.getElementById('printArea').textContent;
+    ok(/tadalafila \d+ mg/.test(rel), 'relatório da clínica continua com as doses');
+    ok(!doc.getElementById('envApend') && !/reset do est/i.test(doc.getElementById('envioBox').textContent), 'sem "Apêndice: reset do estímulo" no envio');
+    const bt = doc.getElementById('examesBtn');
+    ok(bt && /Imprimir pedido de exames/.test(bt.textContent), 'botão "Imprimir pedido de exames"');
+    bt.click();
+    const api = r.win.__mxExames;
+    const l0 = api.lista();
+    ok(doc.getElementById('exaOverlay').style.display === 'flex' && JSON.stringify(l0) === JSON.stringify(['Testosterona total', 'Testosterona livre', 'SHBG', 'LH', 'FSH', 'Estradiol', 'Prolactina']),
+      'editor abre com o perfil hormonal da clínica marcado', JSON.stringify(l0));
+    const cbs = [...doc.querySelectorAll('#exaCorpo input[data-exa]')];
+    cbs.find(c => /Prolactina/.test(c.parentNode.textContent)).click();
+    cbs.find(c => /PSA total/.test(c.parentNode.textContent)).click();
+    doc.getElementById('exaNovo').value = 'TSH'; doc.getElementById('exaIncluir').click();
+    const l1 = api.lista();
+    ok(l1.indexOf('Prolactina') < 0 && l1.indexOf('PSA total') >= 0 && l1.indexOf('TSH') >= 0, 'médico tira, inclui da lista e acrescenta exame livre', JSON.stringify(l1));
+    api.monta();
+    const ped = doc.getElementById('printExames').textContent;
+    ok(/Pedido de exames/.test(ped) && /TSH/.test(ped) && !/Prolactina/.test(ped) && /jejum/.test(ped), 'pedido impresso traz só o que ficou marcado');
+    r.win.close();
+  }
+
   console.log('\n=== v2.5 ===');
   console.log('falhas: ' + falhas);
   process.exit(falhas ? 1 : 0);

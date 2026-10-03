@@ -136,6 +136,19 @@ oferece receita em preenchimento, consulta urológica, emagrecimento, TEFI,
 hipogonadismo sem via prescrita, nem quando o kit só tem exames, ondas de
 choque, TEFI ou preservativo de farmácia (`ajustaEnvio()`).
 
+**Cópia do paciente sem dose (v2.5, pedido de 03/10/2026).** Exceção à regra da
+sigla: na via do paciente cada item sai como `SIGLA · substâncias` (sem mg,
+mcg/mL, cápsulas), seguido da posologia e do motivo; o texto "Por que este
+plano" passa por `tiraDoses()`. Dose fica no relatório da consulta
+e no prontuário. `substanciasPaciente()` lê só `F`/`PROTO_COMPO`/`ICI_COMPO`.
+O apêndice do relatório no envio foi retirado. **Pedido de exames:** botão
+"Imprimir pedido de exames" abre um editor: marcados por padrão testosterona
+total e livre, SHBG, LH, FSH, estradiol e prolactina (`EXA_BASE`); opcionais
+desmarcados hemograma, PSA, perfil hepático, perfil lipídico, glicemia e
+espermograma (`EXA_OPC`; na linha de hipogonadismo hemograma e PSA já vêm
+marcados); campo livre para acrescentar. Imprime em aba própria com orientação
+de coleta matinal em jejum. A seleção não é gravada no registro.
+
 **Banco de teste fictício:** `MX9101`–`MX9140`, todo registro com `demo: true`.
 Paciente só com registros `demo` não conta para a numeração do próximo código
 (servidor e apps), mas o código fica ocupado. Conduta do banco de teste vem do

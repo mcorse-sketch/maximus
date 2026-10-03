@@ -45,6 +45,9 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
 - **Teste de integração travado (v2.5)** — o resumo final procurava uma
   checagem pelo nome antigo e lançava erro dentro do async: o processo ficava
   parado sem sair. Busca tolerante ao nome.
+- **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
+  mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
+  substâncias; a dose fica no relatório. Apêndice do envio retirado.
 
 ## Dados e persistência
 
