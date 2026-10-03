@@ -111,6 +111,16 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     const r = await roda({ id: 'V5', codigo: 'MXV005', ciclos, respostas: resp }, false, { manter: true });
     const s = r.salvo || {}, kc = s.kitCodes || [];
     const doc = r.win.document;
+    // v2.5-F: TEFI feito nesta consulta — nada de "Agendar TEFI" / "indicar teste de ereção"; painel com o resultado
+    {
+      const corpo = doc.getElementById('resultsCard').textContent.replace(/\s+/g, ' ');
+      const painel = (doc.getElementById('painelCard') || doc.body).textContent.replace(/\s+/g, ' ');
+      const st = (doc.getElementById('mxCdStatus') || { textContent: '' }).textContent.replace(/\s+/g, ' ');
+      ok(!/Agendar TEFI|indicar teste de ereção|Considerar teste de ereção/i.test(corpo) && !kc.includes('TEFI') && s.tefiIndicado === false,
+        'TEFI feito hoje (' + aceita + '): a conduta não pede o teste de novo', JSON.stringify({ k: kc, ind: s.tefiIndicado, m: (corpo.match(/.{40}(Agendar TEFI|indicar teste de ereção).{20}/i) || [''])[0] }));
+      ok(/TEFI realizado hoje · resposta parcial · escape venoso/.test(painel) && !/TEFI indicado, não realizado/.test(painel) && /realizado hoje · resposta parcial · escape venoso/.test(st),
+        'TEFI feito hoje (' + aceita + '): painel e cabeçalho mostram "realizado hoje" com o resultado', (painel.match(/TEFI[^·]{0,30}(·[^·]{0,30}){0,2}/) || [''])[0] + ' | ' + st);
+    }
     if (aceita === 'sim') {
       ok(!r.falha && r.caminho.includes('tefiAddIci') && r.caminho.includes('iciFormula') && r.caminho.includes('iciDose'), 'TEFI → pergunta se acrescenta a intracavernosa, depois fórmula e dose', r.falha || r.caminho.join(' > '));
       ok(kc.includes('ICI') && kc.some(c => /^BASE-T/.test(c)) && /\+ INTRACAVERNOSA$/.test(s.protocolo || '') && /indicação do TEFI/.test(s.mudanca || ''),

@@ -3540,7 +3540,11 @@ document.documentElement.setAttribute('data-tema',t)})();
     const bt = preenchido(S.biotens) ? +S.biotens : ((prev && prev.biotens!=null) ? +prev.biotens : null);
     if (bt!=null && !isNaN(bt)) ex.push(lin('Biotensi\u00f4metro '+bt+' \u00b7 '+rotuloBiotens(bt), classeBiotens(bt)));
     const tb = (S.tefiBanco && S.tefiBanco.tefiExame) || null;
-    if (tb) ex.push(lin('TEFI '+(S.tefiBanco.dataBR||'')+' \u00b7 '+(tb.suspeita||(tb.eau?'positivo':'negativo'))));
+    // v2.5-F: TEFI feito nesta consulta — "realizado hoje" com o resultado, no lugar de "indicado, não realizado"
+    if (S.visita==='reav' && S.tefiFeito==='sim') ex.push(lin('TEFI realizado hoje'
+      + (S.tefiResp ? ' \u00b7 '+({completa:'rigidez completa',parcial:'resposta parcial',ausente:'resposta ausente'}[S.tefiResp]||S.tefiResp) : '')
+      + (S.tefiDoppler ? ' \u00b7 '+({normal:'Doppler normal',arterial:'insufici\u00eancia arterial',venoso:'escape venoso',misto:'Doppler misto'}[S.tefiDoppler]||S.tefiDoppler) : ''), 'verde'));
+    else if (tb) ex.push(lin('TEFI '+(S.tefiBanco.dataBR||'')+' \u00b7 '+(tb.suspeita||(tb.eau?'positivo':'negativo'))));
     else if (prev && prev.tefi && prev.tefi.resp) ex.push(lin('TEFI realizado \u00b7 Doppler '+(prev.tefi.doppler||'\u2014')));
     else if (prev && prev.tefiIndicado) ex.push(lin('TEFI indicado, n\u00e3o realizado','sub'));
     // ondas de choque: uma vez só — na linha ONDAS de "Em uso" quando estão no kit
@@ -5536,8 +5540,12 @@ document.documentElement.setAttribute('data-tema',t)})();
         }
         const antTeto = ((S.protAnt==='Outro / combinação não listada'?(S.formulasAnt||[]).join(' '):S.protAnt)||'').match(/T20|DE-3|DUO-3|EP-4|DUO-4/);
         if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4)||(dPEDT!==null&&dPEDT>-4))){
-          notas.push('<b>Teto de escalonamento.</b> O paciente já estava no degrau oral mais alto e não atingiu ganho relevante. Não subir mais dose: indicar <b>teste de ereção fármaco-induzida</b> e via intracavernosa, ou terapia sexual de casal se o eixo for comportamental.');
-          mudanca='Escalonar de mecanismo (intracavernosa / terapia)';
+          // v2.5-F: o TEFI foi feito nesta consulta — não se pede o teste de novo; a via segue o resultado
+          if (reav && S.tefiFeito==='sim')
+            notas.push('<b>Teto de escalonamento.</b> O paciente já estava no degrau oral mais alto e não atingiu ganho relevante. Não subir mais dose: o teste de ereção foi feito nesta consulta e a via seguinte é a definida pelo resultado.');
+          else
+            notas.push('<b>Teto de escalonamento.</b> O paciente já estava no degrau oral mais alto e não atingiu ganho relevante. Não subir mais dose: indicar <b>teste de ereção fármaco-induzida</b> e via intracavernosa, ou terapia sexual de casal se o eixo for comportamental.');
+          mudanca = (reav && S.tefiFeito==='sim') ? 'Teto oral atingido · via definida pelo TEFI de hoje' : 'Escalonar de mecanismo (intracavernosa / terapia)';
         }
       }
       if (S.satisf!==undefined){
@@ -5641,7 +5649,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     if (S.previa==='falhou'&&S.adequado==='sim'&&lvlDE>0&&lvlDE<4&&!travado){
       lvlDE=Math.min(lvlDE+1,3);
-      notas.push('<b>Falha real a PDE5i em dose plena:</b> nível elevado automaticamente. Considerar teste de ereção fármaco-induzida em consultório.');
+      notas.push('<b>Falha real a PDE5i em dose plena:</b> nível elevado automaticamente.'+((reav && S.tefiFeito==='sim') ? '' : ' Considerar teste de ereção fármaco-induzida em consultório.'));
     }
     if (S.previa==='falhou'&&S.adequado==='nao') notas.push('<b>Não é falha real:</b> a tentativa anterior foi inadequada. Manter o nível do escore e orientar uso correto.');
     const comorb = (S.comorb||[]).filter(v=>v!=='nenhuma');
@@ -5754,6 +5762,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (ondas) tefi = true;
     }
     if (emICIant) tefi = false;   // v2.5 (item 19): já está em intracavernosa — o teste não volta ao kit
+    // v2.5-F: TEFI realizado nesta consulta — não volta ao kit nem aos lembretes ("Agendar TEFI")
+    if (reav && S.tefiFeito==='sim'){ tefi = false; motivoTefi.length = 0; }
     if (iciMud) mudanca = iciMud + (mudanca ? ' · ' + mudanca : '');
     const semProgresso = reav && !travado && ((dIIEF!==null && dIIEF<4) || (dPEDT!==null && dPEDT>-4));
     const insatisfeito  = reav && S.satisf!=null && S.satisf<=6;
@@ -5913,7 +5923,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (iciPorTefi==='sim'){
       if (!noKit('ICI')) kit = kit.concat(['ICI']);
       prot = prot + ' + INTRACAVERNOSA';
-      mudanca = 'Intracavernosa acrescentada por indicação do TEFI' + (mudanca && !/^Nenhuma/.test(mudanca) ? ' · ' + mudanca : '');
+      // "Escalonar de mecanismo" já é isto (a intracavernosa entrou) — não repete
+      mudanca = 'Intracavernosa acrescentada por indicação do TEFI' + (mudanca && !/^Nenhuma|Escalonar de mecanismo|via definida pelo TEFI/.test(mudanca) ? ' · ' + mudanca : '');
       iciDoseIndicada = S.iciDose || null;
       notas.push('<b>Conduta seguiu a indicação do TEFI:</b> intracavernosa '+String(S.iciFormula||'fórmula a definir').replace(' (trimix clássico)','')
         +', dose inicial '+(S.iciDose||'a definir')+', acrescentada ao protocolo oral ('+protOralTefi+'). Primeira aplicação em consultório, com orientação escrita de priapismo: acima de 2 horas, medidas em casa; acima de 4 horas, pronto-atendimento.');
@@ -7301,7 +7312,9 @@ document.documentElement.setAttribute('data-tema',t)})();
             : so==='complementar' ? ['opc','Ondas de choque','oferta complementar · custo à parte']
             : ['','Ondas de choque', (S.visita==='reav' && statusOndasCiclo(prev)) ? 'não indicadas hoje · no ciclo anterior '+(statusOndasCiclo(prev)==='protocolo'?'no protocolo':'oferecidas')+', confirmar se fez' : 'não indicadas']);
       const tb = S.tefiBanco && S.tefiBanco.tefiExame ? S.tefiBanco : null;
-      st.push(reg.tefi ? ['sim','TEFI com Doppler','realizado hoje']
+      const tefiRes = reg.tefi ? [({completa:'rigidez completa',parcial:'resposta parcial',ausente:'resposta ausente'}[reg.tefi.resp]||''),
+        ({normal:'Doppler normal',arterial:'insuficiência arterial',venoso:'escape venoso',misto:'Doppler misto'}[reg.tefi.doppler]||'')].filter(Boolean) : [];
+      st.push(reg.tefi ? ['sim','TEFI com Doppler',['realizado hoje'].concat(tefiRes).join(' · ')]
             : reg.tefiIndicado ? ['opc','TEFI com Doppler','indicado · a agendar']
             : tb ? ['','TEFI com Doppler','realizado'+(tb.dataBR?' em '+tb.dataBR:'')]
             : (prev && prev.tefi && prev.tefi.resp) ? ['','TEFI com Doppler','realizado']
