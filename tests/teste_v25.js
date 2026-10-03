@@ -64,7 +64,28 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     ok(['tefiFeito', 'tefiResp', 'tefiConduta'].every(t => !r.caminho.includes(t)), 'não pergunta se fez o teste de ereção', r.caminho.join(' > '));
     const s = r.salvo || {};
     ok(s.iciDosePrescrita === '0,1 mL' && s.iciCasa && s.iciCasa.dose === '0,15 mL', 'grava a dose prescrita e a dose em uso (a que vale)', JSON.stringify({ rx: s.iciDosePrescrita, casa: s.iciCasa }));
+    // item 19: melhorou em intracavernosa → mantém a intracavernosa, mesma fórmula e dose em uso
+    const kc = (s.kitCodes || []);
+    ok(s.protocolo === 'INTRACAVERNOSA (mantido)' && kc.includes('ICI') && !kc.some(c => /^BASE|^SP-DE|^TEFI$/.test(c)),
+      'item 19: IIEF 7 → 16 em intracavernosa continua intracavernosa (não volta para o oral, sem novo TEFI)', s.protocolo + ' ' + JSON.stringify(kc));
+    ok(s.iciDoseIndicada === '0,15 mL', 'item 19: dose indicada é a dose em uso', s.iciDoseIndicada);
+    const notas = r.win.document.getElementById('rc-notas') ? r.win.document.getElementById('rc-notas').textContent : r.win.document.body.textContent;
+    ok(/não volta para a via oral/.test(notas) && /satisfação e o ajuste da dose/.test(notas), 'item 19: nota explica que a melhora do escore reflete a medicação');
     r.win.close();
+  }
+  // item 19: sem ganho → subir a intracavernosa; ereção acima de 2 h → reduzir, nunca subir
+  for (const [rot, tot, q, tempo, protE, mudE, doseE] of [
+    ['sem ganho', 7, '2', '15a30', 'INTRACAVERNOSA', /Subir dose ou esquema da intracavernosa/, '0,2 mL'],
+    ['ereção acima de 2 h', 9, '4', '>2h', 'INTRACAVERNOSA', /Reduzir a dose da intracavernosa/, '0,1 mL']]) {
+    const ciclos = [Object.assign({ codigo: 'MXV004', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'INTRACAVERNOSA',
+      kitCodes: ['ICI', 'NOITE-1', 'TEFI'], iief: 7, mast: 'nao', matinal: 'nao', adam: ['nenhum'], iciAnterior: 'R5 (trimix clássico)', iciDosePrescrita: '0,15 mL' }, ESTAVEL, CONTATO)];
+    const r = await roda({ id: 'V4', codigo: 'MXV004', ciclos, respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao',
+      adesao: 'total', ea: 'nao',   // fórmula e dose vêm do registro: a tela já chega respondida
+      iciQual: { iciQualidade: q, iciTempo: tempo, iciFreq: '1a2' }, confirmaEstavel: 'nao', caracteriza: { mast: 'nao', matinal: 'nao' },
+      satisfNps: { satisf: 5, nps: 7 } }, iief(tot)) }, false, {});
+    const s = r.salvo || {};
+    ok(!r.falha && s.protocolo === protE && mudE.test(s.mudanca || '') && (s.kitCodes || []).includes('ICI') && !(s.kitCodes || []).some(c => /^BASE|^SP-DE/.test(c)) && s.iciDoseIndicada === doseE,
+      'item 19 — ' + rot + ': ' + protE + ', "' + mudE.source + '", dose ' + doseE, r.falha || JSON.stringify({ p: s.protocolo, m: s.mudanca, k: s.kitCodes, d: s.iciDoseIndicada }));
   }
   {
     const fs = require('fs');

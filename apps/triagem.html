@@ -4067,7 +4067,7 @@ document.documentElement.setAttribute('data-tema',t)})();
            c+' — '+(F[c]?F[c].txt.slice(0,58)+(F[c].txt.length>58?'…':''):''))}))
           .concat([{v:'ONDAS+ICI',badge:'•',label:'ONDAS + ICI — ondas de choque associadas à intracavernosa'}])});
       // v2.5 (itens 16–18): paciente em intracavernosa no retorno
-      const usaICI = achou && ((prev.kitCodes||[]).indexOf('ICI')>=0 || (prev.tefi && prev.tefi.conduta==='ici'));
+      const usaICI = achou && ((prev.kitCodes||[]).indexOf('ICI')>=0 || (prev.tefi && prev.tefi.conduta==='ici') || /INTRACAVERNOSA/.test(prev.protocolo||''));
       const emICI = usaICI || (S.formulasAnt||[]).some(v=>v==='ICI'||v==='ONDAS+ICI');
       S.emICI = emICI;
       const DOSES_ICI = ['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'];
@@ -4078,7 +4078,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           const fAnt = (prev.tefi && prev.tefi.formula) || prev.iciAnterior;
           const fOk = fAnt && ICI_LISTA.find(x=>x===fAnt || x.split(' ')[0]===String(fAnt).split(' ')[0]);
           if (S.iciAnt===undefined && fOk) S.iciAnt = fOk;
-          const dRx = prev.iciDosePrescrita || (prev.tefi && prev.tefi.dose) || (prev.iciCasa && prev.iciCasa.dose);
+          const dRx = prev.iciDoseIndicada || prev.iciDosePrescrita || (prev.tefi && prev.tefi.dose) || (prev.iciCasa && prev.iciCasa.dose);
           if (S.iciAntDose===undefined && DOSES_ICI.indexOf(dRx)>=0) S.iciAntDose = dRx;
           if (S.iciDoseAtual===undefined && S.iciAntDose) S.iciDoseAtual = S.iciAntDose;   // coincidem até o médico dizer que não
         }
@@ -5427,6 +5427,11 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     const dIIEF = reav && S.iiefAnt ? sIIEF-Number(S.iiefAnt) : null;
     const dPEDT = reav && S.pedtAnt ? sPEDT-Number(S.pedtAnt) : null;
+    // v2.5 (item 19): quem já está em intracavernosa não regride para a via oral.
+    // Em intracavernosa = no ciclo anterior o kit tinha ICI, o TEFI definiu ICI, o
+    // protocolo era INTRACAVERNOSA, ou o médico marcou ICI no esquema anterior.
+    const emICIant = reav && S.hasDE && !!(S.emICI || (prev && (unicos(prev.kitCodes).indexOf('ICI')>=0
+      || (prev.tefi && prev.tefi.conduta==='ici') || /INTRACAVERNOSA/.test(prev.protocolo||''))));
 
     if (reav){
       if (S.adesao==='baixa'||S.adesao==='parou'){
@@ -5448,7 +5453,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         if (culpados.length) notas.push('Efeitos leves toleráveis, atribuíveis a '+culpados.join(', ')+'. Não impedem escalonamento, mas registrar para acompanhar no próximo ciclo.');
       }
       if (!travado){
-        if (dIIEF!==null){
+        if (dIIEF!==null && !emICIant){
           if (dIIEF>=4) notas.push('<b>IIEF-5 subiu '+dIIEF+' pontos</b> — ganho acima da diferença clinicamente relevante. Manter o protocolo.');
           else if (dIIEF>=1){ notas.push('<b>IIEF-5 subiu apenas '+dIIEF+' ponto(s)</b> — resposta parcial. Subir um nível de BASE.'); mudanca='Subir um nível de BASE'; }
           else { notas.push('<b>IIEF-5 sem ganho ('+dIIEF+')</b> com boa adesão e sem efeito limitante — trocar mecanismo, não aumentar dose.'); mudanca='Trocar mecanismo'; }
@@ -5459,7 +5464,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           else { notas.push('<b>PEDT sem ganho</b> — trocar classe.'); mudanca=mudanca||'Trocar classe do agente de EP'; }
         }
         const antTeto = ((S.protAnt==='Outro / combinação não listada'?(S.formulasAnt||[]).join(' '):S.protAnt)||'').match(/T20|DE-3|DUO-3|EP-4|DUO-4/);
-        if (antTeto && ((dIIEF!==null&&dIIEF<4)||(dPEDT!==null&&dPEDT>-4))){
+        if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4)||(dPEDT!==null&&dPEDT>-4))){
           notas.push('<b>Teto de escalonamento.</b> O paciente já estava no degrau oral mais alto e não atingiu ganho relevante. Não subir mais dose: indicar <b>teste de ereção fármaco-induzida</b> e via intracavernosa, ou terapia sexual de casal se o eixo for comportamental.');
           mudanca='Escalonar de mecanismo (intracavernosa / terapia)';
         }
@@ -5481,7 +5486,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       const q=Number(S.iciQualidade);
       const tq={4:'rigidez máxima',3:'suficiente para penetração',2:'parcial',1:'apenas tumescência',0:'sem resposta'}[q];
       notas.push('<b>Intracavernosa em casa:</b> ereções com '+tq+', duração '+({'<15':'menor que 15 min','15a30':'de 15 a 30 min','30a60':'de 30 a 60 min','1a2h':'de 1 a 2 horas','>2h':'ACIMA DE 2 HORAS','>4h':'ACIMA DE 4 HORAS'}[S.iciTempo]||'não informada')+', dose atual '+(S.iciDoseAtual||'não informada')+'. '
-        + (q>=3 ? 'Resposta adequada — manter a dose e reforçar o limite de 2 a 3 aplicações por semana.'
+        + (q>=3 ? ((emICIant && !travado && dIIEF!==null && dIIEF<1) ? 'Ereção suficiente nas aplicações, mas o IIEF-5 não subiu — ver o ajuste da intracavernosa abaixo. Reforçar o limite de 2 a 3 aplicações por semana.'
+                                                              : 'Resposta adequada — manter a dose e reforçar o limite de 2 a 3 aplicações por semana.')
                 : (q===2 ? 'Resposta parcial — escalonar a dose em consultório, com observação, antes de liberar o novo volume para casa.'
                          : 'Resposta insuficiente na dose atual. Retestar em consultório com dose maior ou trocar a formulação antes de concluir por falha.')));
       const DEG=['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'];
@@ -5493,6 +5499,41 @@ document.documentElement.setAttribute('data-tema',t)})();
       else if (S.iciTempo==='>2h') notas.push('<b>ALERTA — ereções ultrapassando 2 horas.</b> É o limiar em que o paciente já deve iniciar as medidas em casa, e sinaliza dose acima do necessário.'+sugestaoDose+' Reforçar a orientação: caminhar, subir e descer escadas, compressa fria — e procurar emergência se passar de 4 horas.');
       else if (S.iciTempo==='1a2h') notas.push('Ereções de 1 a 2 horas estão no limite superior do desejável. Se a duração vier subindo entre os ciclos, reduzir um degrau antes de chegar às 2 horas.');
       if (S.iciFreq==='3+') notas.push('Frequência de 3 ou mais aplicações por semana está acima do recomendado. Reforçar o limite e avaliar rodízio de local.');
+    }
+    // v2.5 (item 19): em intracavernosa — manter ou subir, nunca voltar para a via oral
+    let iciMud = null, iciDoseIndicada = null;
+    if (emICIant){
+      const DEGI=['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'];
+      const doseUso = S.iciDoseAtual || S.iciAntDose || '';
+      const iU = DEGI.indexOf(doseUso);
+      const qI = S.iciQualidade!==undefined && S.iciQualidade!==null && S.iciQualidade!=='' ? Number(S.iciQualidade) : null;
+      const longa = S.iciTempo==='>2h' || S.iciTempo==='>4h';
+      const formula = String(S.iciAnt || 'fórmula em uso').replace(' (trimix clássico)','');
+      iciDoseIndicada = doseUso || null;
+      notas.push('<b>Paciente em intracavernosa — não volta para a via oral.</b> O IIEF-5 de hoje mede a ereção com a aplicação: a melhora reflete o efeito do remédio e conta para a satisfação e o ajuste da dose, não para descer de linha.');
+      if (!travado){
+        const melhorou = (dIIEF===null || dIIEF>=1) && (qI===null || qI>=3);
+        if (longa){
+          // segurança: ereção acima de 2 horas nunca escalona (os alertas acima pedem reduzir)
+          iciMud = 'Reduzir a dose da intracavernosa';
+          iciDoseIndicada = iU>0 ? DEGI[iU-1] : (doseUso||null);
+          notas.push('<b>Não subir a intracavernosa:</b> ereções acima de 2 horas. Manter '+formula+' e reduzir a dose'+(iU>0?' de '+doseUso+' para '+DEGI[iU-1]:'')+'.');
+        } else if (melhorou){
+          notas.push('<b>Intracavernosa com boa resposta'+(dIIEF!==null?' (IIEF-5 '+(dIIEF>=0?'+':'')+dIIEF+')':'')+'.</b> Manter '+formula+' na dose em uso'+(doseUso?' ('+doseUso+')':'')+'.');
+        } else {
+          iciMud = 'Subir dose ou esquema da intracavernosa';
+          const prox = iU>=0 && iU<DEGI.length-1 ? DEGI[iU+1] : null;
+          iciDoseIndicada = prox || (doseUso||null);
+          const pq = [];
+          if (dIIEF!==null && dIIEF<1) pq.push('IIEF-5 sem ganho ('+dIIEF+')');
+          if (qI!==null && qI<3) pq.push('ereção insuficiente para penetração nas aplicações');
+          notas.push('<b>Subir a intracavernosa</b> — '+pq.join('; ')+'. '
+            + (prox ? 'Próximo degrau: <b>'+formula+' de '+doseUso+' para '+prox+'</b>, testado em consultório com observação antes de liberar para casa.'
+                    : (iU===DEGI.length-1 ? 'Dose já no topo da escala ('+doseUso+'): <b>trocar a formulação</b> em consultório.'
+                                          : 'Dose em uso não informada: <b>retestar em consultório</b> e subir um degrau a partir da dose que ele aplica.'))
+            + ' Não voltar para a medicação oral.');
+        }
+      }
     }
     if (reav && S.examesFeitos==='nao') notas.push('<b>Exames hormonais não realizados.</b> Reforçar a importância e reemitir o pedido: sem o perfil hormonal, a queixa de libido fica sem diagnóstico e o protocolo continua tratando sintoma.');
     if (reav && S.examesFeitos==='sim'){
@@ -5638,6 +5679,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (reav && travado===false && mudanca && /Escalonar de mecanismo/.test(mudanca)){ tefi = true; motivoTefi.push('teto oral atingido sem ganho relevante'); }
       if (ondas) tefi = true;
     }
+    if (emICIant) tefi = false;   // v2.5 (item 19): já está em intracavernosa — o teste não volta ao kit
+    if (iciMud) mudanca = iciMud + (mudanca ? ' · ' + mudanca : '');
     const semProgresso = reav && !travado && ((dIIEF!==null && dIIEF<4) || (dPEDT!==null && dPEDT>-4));
     const insatisfeito  = reav && S.satisf!=null && S.satisf<=6;
     let ondasOpc = false;
@@ -5665,6 +5708,13 @@ document.documentElement.setAttribute('data-tema',t)})();
       prot='BLOQUEIO'; kit= trataEP?[(lvlEP>=3?'MOD-DAPO-60':'MOD-DAPO-30')].concat(ret,['NOITE-1']):[];
       reco='Linha com tadalafila CONTRAINDICADA';
       recoText='Nitrato e os demais itens do rastreio contraindicam toda a linha com tadalafila, incluindo o SP-DUO. Encaminhar para avaliação cardiológica.';
+    } else if (emICIant){
+      // v2.5 (item 19): intracavernosa em curso — manter ou subir, sem regressão para o oral
+      prot='INTRACAVERNOSA'; kit=['ICI','NOITE-1'].concat(trataEP?ret:[]);
+      reco='Intracavernosa em curso — sem retorno à via oral';
+      recoText= /Subir/.test(iciMud||'') ? 'Subir a dose ou o esquema em consultório, com observação, antes de liberar a nova dose para casa. Orientação escrita de priapismo.'
+              : (/Reduzir/.test(iciMud||'') ? 'Ereções acima de 2 horas: reduzir a dose, sem escalonar. Reforçar por escrito a conduta de priapismo.'
+              : 'Mesma fórmula e mesma dose em uso. Orientação escrita de priapismo mantida.');
     } else if (S.fert==='sim'){
       prot='FERT'; kit=['MOD-CLOMI-25','FERT-SUP', trataEP?'SP-DUO':'SP-DE'];
       if (trataEP) kit=kit.concat(ret);
@@ -5773,6 +5823,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       // sem linha em comum não há o que manter: o rótulo vira "novo eixo"
       if (!mesmaLinha) prot = prot + ' (novo eixo)';
       else if (semTada) prot = prot + ' (mantido)';
+      else if (emICIant) prot = 'INTRACAVERNOSA (mantido)';
       else prot = (S.protAnt&&S.protAnt!=='—') ? (protAntExibe(' + ')||'esquema anterior')+' (mantido)' : prot+' (mantido)';
       mudanca='Nenhuma — manter e resolver a causa';
     }
@@ -6113,7 +6164,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
       iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),biotens:(bio===null?null:bio),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
-      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||null,iciDosePrescrita:S.iciAntDose||null,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:(S.iciQualidade!==undefined?{qualidade:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
+      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||null,iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:(S.iciQualidade!==undefined?{qualidade:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);
     pintaStatus(ok?'Ciclo salvo.':'Não foi possível salvar — guarde o relatório impresso.');

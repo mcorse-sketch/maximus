@@ -45,6 +45,12 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
 - **Teste de integração travado (v2.5)** — o resumo final procurava uma
   checagem pelo nome antigo e lançava erro dentro do async: o processo ficava
   parado sem sair. Busca tolerante ao nome.
+- **Intracavernosa voltando para o oral (v2.5)** — no retorno a conduta saía
+  só da faixa do IIEF-5 de hoje, que mede a ereção COM a aplicação: quem
+  melhorava na intracavernosa voltava para BASE-T10/T20 (MX9101 2ª consulta:
+  "DE-3 (mantido)" com BASE-T20). Com adesão baixa o rótulo dizia
+  "INTRACAVERNOSA (mantido)" mas o kit era oral. Agora em intracavernosa só
+  mantém, sobe ou reduz a dose (`emICIant`).
 - **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
   mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
   substâncias; a dose fica no relatório. Apêndice do envio retirado.

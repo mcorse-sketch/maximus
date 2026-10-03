@@ -153,4 +153,22 @@ module.exports = [
   P('R-05', 'Reavaliação EP: PEDT caiu 4 — manter',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, ep(10, { freq: 'baixa' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'EP', protocolo: 'EP-1', kitCodes: ['SP-DUO', 'NOITE-1'], pedt: 14 }] }),
+
+  // ---- v2.5 (item 19): em intracavernosa nunca regride para a via oral ----------
+  ...[['R-06', 'ICI: IIEF 7 → 14, ereção com rigidez máxima — manter a intracavernosa', 14, '4', '15a30', 'total', 'INTRACAVERNOSA (mantido)'],
+      ['R-07', 'ICI: IIEF sem ganho, ereção parcial — subir a intracavernosa, não voltar ao oral', 7, '2', '15a30', 'total', 'INTRACAVERNOSA'],
+      ['R-08', 'ICI com adesão baixa — não escalonar, continua intracavernosa', 9, '3', '15a30', 'baixa', 'INTRACAVERNOSA (mantido)'],
+      ['R-09', 'ICI com ereções acima de 2 horas — reduzir, nunca subir', 9, '4', '>2h', 'total', 'INTRACAVERNOSA']]
+    .map(([id, d, hoje, q, tempo, adesao, prot]) => P(id, 'Reavaliação ' + d,
+      retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao, ea: 'nao',
+        iciQual: { iciQualidade: q, iciTempo: tempo, iciFreq: '1a2' } }, adesao === 'baixa' ? { motivo: 'esq' } : {}, de(hoje))),
+      { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'INTRACAVERNOSA', kitCodes: ['ICI', 'NOITE-1', 'TEFI'], iief: 7,
+          iciAnterior: 'R5 (trimix clássico)', iciDosePrescrita: '0,1 mL' }],
+        espera: { protocolo: prot } })),
+  P('R-10', 'Reavaliação DE-3 que saiu do TEFI com intracavernosa, IIEF 7 → 14 — continua intracavernosa',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao',
+      iciQual: { iciQualidade: '4', iciTempo: '<15', iciFreq: '<1' } }, de(14))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], iief: 7,
+        tefi: { resp: 'parcial', doppler: 'arterial', conduta: 'ici', formula: 'R1', dose: '0,05 mL' } }],
+      espera: { protocolo: 'INTRACAVERNOSA (mantido)' } }),
 ];

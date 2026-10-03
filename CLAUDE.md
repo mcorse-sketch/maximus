@@ -79,6 +79,20 @@ ADAM zerado e ereção normal não são mais perguntados. Queixa: "Queixa mantid
 uma tela "Fórmula e dose" (fórmula, dose prescrita, dose em uso — a que vale),
 adesão "Usou a dose como recomendado?", sem perguntar TEFI. "Ir para a
 conduta" só ativo com o obrigatório completo ("Faltam N — ver lista" ao lado).
+**Intracavernosa nunca regride para a via oral (v2.5, item 19).** Em
+intracavernosa = no ciclo anterior o kit tinha ICI, o TEFI definiu ICI, o
+protocolo era INTRACAVERNOSA ou o médico marcou ICI no esquema anterior
+(`emICIant`). No retorno com queixa de ereção o protocolo é sempre
+INTRACAVERNOSA (depois do bloqueio por contraindicação, antes de FERT): IIEF-5
+subiu ≥1 e ereção nas aplicações ≥ "suficiente para penetração" → mantém
+fórmula e dose em uso; senão "Subir dose ou esquema da intracavernosa", com o
+próximo degrau da dose em uso (topo da escala: trocar a formulação); ereções
+acima de 2 horas → "Reduzir a dose", nunca subir; adesão baixa ou efeito
+limitante → "INTRACAVERNOSA (mantido)". O IIEF-5 de hoje mede a ereção com a
+aplicação: a melhora conta para satisfação e ajuste, não para descer de linha.
+Sem TEFI no kit e sem a lógica oral (subir BASE, trocar mecanismo, teto). A
+dose decidida vai para `iciDoseIndicada` e preenche a próxima consulta.
+
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua
 aceitando um só, e o consultório completa). Telefone é

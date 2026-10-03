@@ -70,3 +70,8 @@ errada, o erro é do app — corrija o app, não esta folha.
 | R-03 | Reavaliação DE: IIEF sem ganho — trocar mecanismo | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 12 | — |
 | R-04 | Reavaliação DE com baixa adesão — não escalonar | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 12 | — |
 | R-05 | Reavaliação EP: PEDT caiu 4 — manter | EP-1 (mantido) | SP-DUO, NOITE-1 | — | 10 |
+| R-06 | Reavaliação ICI: IIEF 7 → 14, ereção com rigidez máxima — manter a intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 14 | — |
+| R-07 | Reavaliação ICI: IIEF sem ganho, ereção parcial — subir a intracavernosa, não voltar ao oral | INTRACAVERNOSA | ICI, NOITE-1, ONDAS | 7 | — |
+| R-08 | Reavaliação ICI com adesão baixa — não escalonar, continua intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 9 | — |
+| R-09 | Reavaliação ICI com ereções acima de 2 horas — reduzir, nunca subir | INTRACAVERNOSA | ICI, NOITE-1, ONDAS | 9 | — |
+| R-10 | Reavaliação DE-3 que saiu do TEFI com intracavernosa, IIEF 7 → 14 — continua intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 14 | — |
