@@ -51,6 +51,20 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   "DE-3 (mantido)" com BASE-T20). Com adesão baixa o rótulo dizia
   "INTRACAVERNOSA (mantido)" mas o kit era oral. Agora em intracavernosa só
   mantém, sobe ou reduz a dose (`emICIant`).
+- **Dose da intracavernosa pelo IIEF (v2.5-E)** — a regra do item 19 subia a dose
+  quando o IIEF-5 não subia, mesmo com ereção boa. O Dr. Marco definiu: decidem a
+  qualidade (suficiente para penetração) e a duração (alvo de cerca de 1 hora); o
+  IIEF conta só para a satisfação. A duração passou para a tela "Fórmula e dose".
+- **TEFI indicando intracavernosa sem mudar o kit (v2.5-E)** — com "iniciar
+  intracavernosa" após o TEFI, o kit continuava só oral, com uma nota. Agora o app
+  pergunta se acrescenta, com fórmula e dose, e registra que seguiu o TEFI.
+- **"Piso terapêutico aplicado" sem nada aplicado (v2.5-E)** — com ISRS em uso e
+  restrição às duas vias tópicas não há recurso para a EP, mas a nota dizia que o
+  piso entrou. A nota agora diz que não há recurso e o que reabordar. O TEST-021
+  ("EP por via tópica") caía nesse caso porque o teste respondia "restrição a
+  ambos" por padrão; passou a declarar que aceita as vias tópicas.
+- **Texto da opção marcada quase invisível (v2.5-E)** — a composição ao lado da
+  sigla (`.sig-ativo`) mantinha o cinza sobre o fundo escuro da opção marcada.
 - **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
   mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
   substâncias; a dose fica no relatório. Apêndice do envio retirado.

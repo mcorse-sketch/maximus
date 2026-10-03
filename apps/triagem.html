@@ -1330,6 +1330,13 @@ document.documentElement.setAttribute('data-tema',t)})();
   /* siglas: o ativo sempre ao lado */
   abbr.sig{border-bottom:1px dotted var(--mx-text3)}
   .sig-ativo{color:var(--mx-text2)}
+  /* v2.5-E: cor da fórmula (a mesma da embalagem) */
+  .mx-cor{position:absolute;top:8px;right:8px;width:12px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(1,8,12,.18);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;pointer-events:none}
+  .mx-cor.inl{position:static;display:inline-block;vertical-align:-1px;width:10px;height:10px;margin-left:6px}
+  .kit-card,.mx-cdkit span,.opt,.gop,.pac .med{position:relative}
+  .gop .mx-cor{top:4px;right:4px;width:9px;height:9px}
+  .opt .mx-cor{top:10px;right:10px}
   /* v2.5-E: opção marcada tem fundo escuro (claro no tema escuro) — o texto secundário herda a cor da opção */
   .opt.selected .sig-ativo,.gop.selected .sig-ativo,.scale button.selected .sig-ativo,
   .opt.selected abbr.sig,.gop.selected abbr.sig{color:inherit!important;border-bottom-color:currentColor!important}
@@ -2017,6 +2024,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           const b=document.createElement('button'); b.type='button'; b.dataset.v = String(o.v);
           b.className='gop'+(S[f.id]===o.v?' selected':'');
           b.textContent=o.label;
+          if (corFormula(o.v)) b.insertAdjacentHTML('beforeend', chipCor(o.v));
           b.onclick=()=>{S[f.id]=o.v;paint();};
           g.appendChild(b);
         });
@@ -2044,7 +2052,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         const b=document.createElement('button'); b.type='button';
         const sel = sc.multi ? (S[sc.id]||[]).includes(o.v) : S[sc.id]===o.v;
         b.className='opt'+(sel?' selected':''); b.dataset.v = String(o.v);
-        b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${o.label}</span>`;
+        b.innerHTML=`<span class="badge">${o.badge!==undefined?o.badge:(o.v===''+o.v?'•':o.v)}</span><span>${o.label}</span>`+chipCor(o.v);
         b.onclick=()=>{
           if (sc.multi){
             const a=Array.isArray(S[sc.id])?S[sc.id]:[], nada=sc.nada||['nenhum','nenhuma'];
@@ -2852,6 +2860,43 @@ document.documentElement.setAttribute('data-tema',t)})();
   // ---- v2.5: kit sem repetição, siglas autoexplicativas e texto curto do painel ----
   // Registro antigo pode ter o mesmo código duas vezes (ONDAS, ver noKit em
   // calculaResultados): toda exibição de kit gravado passa por aqui. Nada é apagado.
+  // ---- v2.5-E (item 4): cor de cada fórmula — FONTE ÚNICA. A mesma cor vai na embalagem.
+  // Concentrações da mesma fórmula = tons de uma família de cor (claro → escuro conforme a dose).
+  // Serviços e produtos sem embalagem própria (ONDAS, TEFI, LABS, PRESERV) não têm cor.
+  // A tabela para a gráfica sai daqui: node scripts/cores_formulas.js
+  const COR_FORMULA = {
+    'BASE-T5':'#8AA6EA','BASE-T10':'#3C62C9','BASE-T20':'#1F3A8A',                 // azul royal — tadalafila matinal
+    'BASE-T5-I':'#7CC6E0','BASE-T10-I':'#2A93BF','BASE-T20-I':'#145E80',           // azul-celeste — tadalafila + ioimbina
+    'MOD-PAROX-10':'#6CC072','MOD-PAROX-20':'#2E7D32',                             // verde — paroxetina
+    'MOD-DAPO-30':'#4DBFA8','MOD-DAPO-60':'#187563',                               // verde-petróleo — dapoxetina
+    'MOD-CLOMI-25':'#E0A42A','MOD-CLOMI-50':'#9E6A06',                             // âmbar — clomifeno
+    'NOITE-1':'#A0529E','NOITE-2':'#6A2C68',                                       // ameixa — composto noturno
+    'FERT-SUP':'#BFA477',                                                          // areia — suporte à fertilidade
+    'SP-DE':'#F2873A','SP-DUO':'#C2510F',                                          // laranja — sprays sublinguais
+    'RET-1':'#F2D22E',                                                             // amarelo — creme retardante
+    'R1':'#EF7B6E','R2':'#C0271F',                                                 // vermelho — PGE1 + fentolamina
+    'R4':'#E57AA8','R5':'#C2366E','R6':'#85204A',                                  // rosa-carmim — trimix
+    'R7':'#B98559','R8':'#7C5233',                                                 // marrom — sem PGE1
+    'R9':'#8FA6B5','R10':'#627C8C','R11':'#415A69','R12':'#26394A'                 // ardósia — com atropina
+  };
+  const COR_APELIDO = {'SP-DUO-1J':'SP-DUO'};
+  // código do kit ou da lista ('R5 (trimix clássico)', 'SP-DUO-1J', 'ICI' + fórmula) → cor ou null
+  function corFormula(cod, formulaIci){
+    let c = String(cod||'').trim();
+    if (c==='ICI'){ const n = numDaFormulaIci(formulaIci||''); if (!n) return null; c = 'R'+n; }
+    c = c.split(' ')[0];
+    c = COR_APELIDO[c] || c;
+    return COR_FORMULA[c] || null;
+  }
+  // quadradinho de cor (canto superior direito do cartão; 'inl' = dentro da linha)
+  function chipCor(cod, formulaIci, inl){
+    const cor = corFormula(cod, formulaIci);
+    if (!cor) return '';
+    const nome = cod==='ICI' ? 'R'+numDaFormulaIci(formulaIci||'') : String(cod).split(' ')[0].replace('-1J','');
+    return '<span class="mx-cor'+(inl?' inl':'')+'" style="background:'+cor+'" title="Cor da embalagem: '+nome+'" aria-hidden="true"></span>';
+  }
+  const iciDaConsulta = () => S.iciAnt || S.iciFormula || '';
+
   function unicos(codes){
     const v=[]; (codes||[]).forEach(c=>{ const k=Array.isArray(c)?c[0]:c; if (k && v.indexOf(k)<0) v.push(k); }); return v;
   }
@@ -3444,12 +3489,12 @@ document.documentElement.setAttribute('data-tema',t)})();
           const f = prev.iciAnterior || (prev.tefi&&prev.tefi.formula) || 'R5';
           const n = numDaFormulaIci(f);
           const dz = prev.iciDoseIndicada || (prev.iciCasa&&prev.iciCasa.dose) || (prev.tefi&&prev.tefi.dose) || '';
-          linhas.push(lin((n ? 'R'+n+' = '+escH(iciCurto(n)) : escH(f))+(dz?' \u00b7 '+escH(dz):'')));
+          linhas.push(lin((n ? 'R'+n+chipCor('R'+n, '', true)+' = '+escH(iciCurto(n)) : escH(f))+(dz?' \u00b7 '+escH(dz):'')));
           return;
         }
         if (cd==='ONDAS'){ ondasNoUso = true; linhas.push(lin('ONDAS \u00b7 Li-ESWT'+(txtOndas?' \u00b7 '+txtOndas:''))); return; }
         const t = painelTxt(cd);
-        linhas.push(lin(escH(cd)+(t?' \u00b7 '+escH(t):'')));
+        linhas.push(lin(escH(cd)+chipCor(cd, '', true)+(t?' \u00b7 '+escH(t):'')));
       });
       bloco('Em uso', linhas);
     }
@@ -4515,7 +4560,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       const code=Array.isArray(entry)?entry[0]:entry, tag=Array.isArray(entry)?entry[1]:null, it=F[code];
       if(!it) return;
       const d=document.createElement('div'); d.className='kit-card';
-      d.innerHTML=`<span class="kc-role"><span class="kc-icon">${ICON[it.role]||'•'}</span>${tag||it.role}</span>
+      d.innerHTML=chipCor(code, iciDaConsulta())+`<span class="kc-role"><span class="kc-icon">${ICON[it.role]||'•'}</span>${tag||it.role}</span>
         <span class="kc-code">${code.replace('-1J','')}</span>
         <span class="kc-formula">${it.txt}<br><b>${it.pos}</b></span>`;
       k.appendChild(d);
@@ -6122,7 +6167,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       const opc = /Opcional/.test(tag||'') ? ' <i>(opcional — converse conosco)</i>' : '';
       const alt = /opção B/.test(tag||'') ? ' <i>(alternativa à opção anterior — use apenas uma)</i>' : '';
       const sub = substanciasPaciente(c);
-      return '<div class="med"><b>'+c.replace('-1J','')+'</b>'+(sub?' · '+escH(sub):'')+opc+alt+
+      return '<div class="med">'+chipCor(c, iciDaConsulta())+'<b>'+c.replace('-1J','')+'</b>'+(sub?' · '+escH(sub):'')+opc+alt+
              '<span class="como">'+it.pac+'</span><span class="pq">'+it.pacq+'</span></div>';
     }).filter(Boolean).join('');
 
@@ -7272,7 +7317,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       + '<div class="mx-eyebrow">'+escH(['Conduta sugerida', vis, queixa].filter(Boolean).join(' · '))+'</div>'
       + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+'">'+escH(titulo)+(etiqueta?' <span class="mx-cdtag">'+escH(etiqueta)+'</span>':'')+'</div>'
       + (sub && sub!==titulo ? '<div class="mx-cdtit">'+(ativo ? '<span class="sig-ativo">'+escH(sub)+'</span>' : escH(kitTag ? sub : explicaSiglas(sub)))+'</div>' : '')
-      + (itensKit.length ? '<div class="mx-cdkit" id="mxCdKit">'+itensKit.map(([c,t,g])=>'<span><b>'+escH(c)+'</b>'+(t?escH(t):'')+(g?'<i>'+escH(g)+'</i>':'')+'</span>').join('')+'</div>' : '')
+      + (itensKit.length ? '<div class="mx-cdkit" id="mxCdKit">'+itensKit.map(([c,t,g])=>'<span>'+chipCor(c, iciDaConsulta() || (reg && reg.tefi && reg.tefi.formula) || '')+'<b>'+escH(c)+'</b>'+(t?escH(t):'')+(g?'<i>'+escH(g)+'</i>':'')+'</span>').join('')+'</div>' : '')
       + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(explicaSiglas(c))+'</span>').join('')+'</div>' : '')
       + (st.length ? '<div class="mx-cdstatus" id="mxCdStatus">'+st.map(([c,n,v])=>'<span class="'+c+'"><b>'+escH(n)+'</b>'+escH(v)+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')

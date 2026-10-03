@@ -79,19 +79,33 @@ ADAM zerado e ereção normal não são mais perguntados. Queixa: "Queixa mantid
 uma tela "Fórmula e dose" (fórmula, dose prescrita, dose em uso — a que vale),
 adesão "Usou a dose como recomendado?", sem perguntar TEFI. "Ir para a
 conduta" só ativo com o obrigatório completo ("Faltam N — ver lista" ao lado).
-**Intracavernosa nunca regride para a via oral (v2.5, item 19).** Em
-intracavernosa = no ciclo anterior o kit tinha ICI, o TEFI definiu ICI, o
+**Intracavernosa nunca regride para a via oral (v2.5, item 19; dose revista na v2.5-E).**
+Em intracavernosa = no ciclo anterior o kit tinha ICI, o TEFI definiu ICI, o
 protocolo era INTRACAVERNOSA ou o médico marcou ICI no esquema anterior
 (`emICIant`). No retorno com queixa de ereção o protocolo é sempre
-INTRACAVERNOSA (depois do bloqueio por contraindicação, antes de FERT): IIEF-5
-subiu ≥1 e ereção nas aplicações ≥ "suficiente para penetração" → mantém
-fórmula e dose em uso; senão "Subir dose ou esquema da intracavernosa", com o
-próximo degrau da dose em uso (topo da escala: trocar a formulação); ereções
-acima de 2 horas → "Reduzir a dose", nunca subir; adesão baixa ou efeito
-limitante → "INTRACAVERNOSA (mantido)". O IIEF-5 de hoje mede a ereção com a
-aplicação: a melhora conta para satisfação e ajuste, não para descer de linha.
-Sem TEFI no kit e sem a lógica oral (subir BASE, trocar mecanismo, teto). A
-dose decidida vai para `iciDoseIndicada` e preenche a próxima consulta.
+INTRACAVERNOSA (depois do bloqueio por contraindicação, antes de FERT). A dose
+segue a **qualidade** (suficiente para penetração) e a **duração** da ereção
+(alvo de cerca de 1 hora, perguntada na tela "Fórmula e dose", `ICI_TEMPO`):
+acima de 2 horas → "Reduzir a dose", nunca subir; insuficiente para penetração
+ou menos de 30 min → "Subir dose ou esquema da intracavernosa" (próximo degrau
+da dose em uso; no topo, trocar a formulação); suficiente e 1 a 2 horas →
+reduzir um degrau; suficiente e 30 a 60 min ou cerca de 1 hora → manter
+fórmula e dose. O ganho no IIEF-5 conta só para a satisfação. Adesão baixa ou
+efeito limitante → "INTRACAVERNOSA (mantido)". Sem TEFI no kit e sem a lógica
+oral. A dose decidida vai para `iciDoseIndicada` e preenche a próxima consulta.
+**TEFI que indica intracavernosa (v2.5-E).** Paciente só com via oral cujo TEFI
+indica intracavernosa (conduta "iniciar intracavernosa", escape venoso ou achado
+misto): a tela `tefiAddIci` avisa que ele está só no oral e pergunta se a
+intracavernosa entra na conduta; se sim, fórmula (R1, R2, R4–R12, Fluka) e dose.
+A ICI entra no kit junto do oral (protocolo "X + INTRACAVERNOSA"), o registro
+guarda `iciPorTefi` e o relatório/texto trazem "Conduta seguiu indicação do TEFI".
+**Cor das fórmulas (v2.5-E).** `COR_FORMULA` é a fonte única da cor de cada
+fórmula — a mesma da embalagem. Quadradinho no canto superior direito do cartão
+do kit, das linhas do cabeçalho, das opções de fórmula e na via do paciente
+(`chipCor()`); a ICI leva a cor da fórmula R em uso. Concentrações da mesma
+fórmula são tons de uma família. Serviços e itens sem embalagem própria não têm
+cor. Tabela para a gráfica: `node scripts/cores_formulas.js [pasta]` (CSV, HTML e
+PNG com HEX e CMYK aproximado). Mudou uma cor? Só no mapa, e regere a tabela.
 
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua

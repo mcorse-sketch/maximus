@@ -72,6 +72,8 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     const notas = r.win.document.getElementById('rc-notas') ? r.win.document.getElementById('rc-notas').textContent : r.win.document.body.textContent;
     ok(/não volta para a via oral/.test(notas) && /conta só para a satisfação/.test(notas), 'item 19: nota explica que a melhora do escore reflete a medicação');
     ok(r.caminho.includes('iciUso') && s.iciCasa && s.iciCasa.tempo === '1h', 'v2.5-E: duração da ereção perguntada na tela "Fórmula e dose"', JSON.stringify(s.iciCasa));
+    const chIci = [...r.win.document.querySelectorAll('#kitGrid .kit-card')].find(k => /^ICI/.test(k.querySelector('.kc-code').textContent.trim()));
+    ok(chIci && chIci.querySelector('.mx-cor') && /R5/.test(chIci.querySelector('.mx-cor').title), 'cartão da intracavernosa leva a cor da fórmula em uso (R5)');
     r.win.close();
   }
   // v2.5-E: a dose segue qualidade e duração (alvo ~1 h); o IIEF não decide; acima de 2 h nunca sobe
@@ -163,6 +165,33 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     api.monta();
     const ped = doc.getElementById('printExames').textContent;
     ok(/Pedido de exames/.test(ped) && /TSH/.test(ped) && !/Prolactina/.test(ped) && /jejum/.test(ped), 'pedido impresso traz só o que ficou marcado');
+    r.win.close();
+  }
+
+  // ---- 4. v2.5-E: cor de cada fórmula (fonte única COR_FORMULA) ----
+  console.log('\n--- cor das fórmulas: quadradinho no canto do cartão, uma cor por fórmula');
+  {
+    const fs = require('fs');
+    const HTML = fs.readFileSync(path.join(__dirname, '../apps/triagem.html'), 'utf8');
+    const bloco = ini => { const i = HTML.indexOf(ini); let d = 0, j = HTML.indexOf('{', i); const a = j;
+      for (; j < HTML.length; j++) { if (HTML[j] === '{') d++; else if (HTML[j] === '}' && --d === 0) break; } return HTML.slice(a, j + 1); };
+    const COR = Function('return ' + bloco('const COR_FORMULA'))();
+    const F = [...bloco('const F = {').matchAll(/^\s*'([A-Z0-9\-]+)'\s*:\s*\{role:/gm)].map(m => m[1]);
+    const semCor = ['ONDAS', 'TEFI', 'LABS', 'PRESERV', 'ICI', 'SP-DUO-1J'];
+    const faltam = F.filter(c => !semCor.includes(c) && !COR[c]).concat(['R1', 'R2', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'R11', 'R12'].filter(c => !COR[c]));
+    ok(!faltam.length, 'toda fórmula do catálogo e R1, R2, R4–R12 têm cor', faltam.join(', '));
+    const hex = Object.values(COR).map(h => h.toUpperCase());
+    ok(new Set(hex).size === hex.length && hex.every(h => /^#[0-9A-F]{6}$/.test(h)), 'cores distintas, em HEX');
+    const rgbHex = c => '#' + c.match(/\d+/g).slice(0, 3).map(n => (+n).toString(16).padStart(2, '0')).join('').toUpperCase();
+    const r = await roda({ id: 'V6', codigo: 'MXV006', respostas: Object.assign({ visita: 'primeira', queixa: 'ambos',
+      contato: CONTATO, freq: 'alta' }, iief(14), { p0: 3, p1: 2, p2: 2, p3: 3, p4: 2 }) }, true, { manter: true });
+    const doc = r.win.document;
+    const cards = [...doc.querySelectorAll('#kitGrid .kit-card')].map(k => ({ c: k.querySelector('.kc-code').textContent.trim().split(/\s/)[0], cor: k.querySelector('.mx-cor') }));
+    ok(cards.length && cards.every(k => k.cor && rgbHex(k.cor.style.background) === (COR[k.c] || '').toUpperCase()), 'cartões do kit: quadradinho com a cor da fórmula',
+      cards.map(k => k.c + ':' + (k.cor ? rgbHex(k.cor.style.background) : '—')).join(' '));
+    const linhas = [...doc.querySelectorAll('#mxCdKit > span')];
+    ok(linhas.length && linhas.every(l => !COR[l.querySelector('b').textContent.trim()] || l.querySelector('.mx-cor')), 'cabeçalho da conduta: cada fórmula com a sua cor');
+    ok([...doc.querySelectorAll('#printPaciente .med')].some(m => m.querySelector('.mx-cor')), 'via do paciente: a cor da embalagem ao lado da fórmula');
     r.win.close();
   }
 
