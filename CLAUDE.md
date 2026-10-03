@@ -69,7 +69,23 @@ paroxetina, dapoxetina, clomifeno, clomipramina) via `painelTxt()`, sem
 apresentação nem horário; o detalhe completo continua no clique da sigla.
 Protocolo de dose variável (DUO-3, DUO-4, DUO-1D, DUO-TOPICO) mostra a dose
 REAL do kit da consulta (`KIT_CTX`), nunca "5, 10 ou 20 mg (conforme o nível)".
-**Kit sem repetição (v2.5).** O kit mistura códigos e pares `[código, etiqueta]`;
+**Retorno (v2.5).** O que é do passado é perguntado só na primeira avaliação e
+copiado da ficha: início dos sintomas, medicação para ereção antes da clínica,
+restrição a tópico. "Algum destes mudou?" não os lista. Ereção fora da relação
+e ADAM usam como referência a ÚLTIMA consulta clínica com o campo: só volta o
+que falhava (masturbação / matinal) ou os sintomas de ADAM ainda presentes;
+ADAM zerado e ereção normal não são mais perguntados. Queixa: "Queixa mantida?"
+(fila e busca); as opções só em "Nova queixa", que se soma. Intracavernosa:
+uma tela "Fórmula e dose" (fórmula, dose prescrita, dose em uso — a que vale),
+adesão "Usou a dose como recomendado?", sem perguntar TEFI. "Ir para a
+conduta" só ativo com o obrigatório completo ("Faltam N — ver lista" ao lado).
+**Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
+consultório a consulta não chega à conduta sem os dois; a recepção continua
+aceitando um só, e o consultório completa). Telefone é
+formatado como `(21)99999-9999` e validado; iniciais em maiúsculas sem pontos.
+No retorno, os três campos vêm do banco e a recepção apenas confirma. Se a
+recepção e o cadastro não têm telefone E email válidos, o consultório pergunta
+na tela `contato` (módulo Identificação), já com o que existir preenchido. O kit mistura códigos e pares `[código, etiqueta]`;
 toda checagem "já está no kit?" usa `noKit()` (lê o código dos dois formatos).
 Registro antigo com código repetido é exibido com `unicos()`; nada é apagado.
 
@@ -177,11 +193,13 @@ protocolos, evolução de IIEF/PEDT) e, por visita, só dados — escores, condu
 com composição, exames, nota do médico. Antecedentes aparecem na primeira
 visita e depois só quando mudam. Implementado em `abreHistorico()`.
 
-**Identificação:** obrigatórios o código e telefone **ou** email. Telefone é
+**Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
+consultório a consulta não chega à conduta sem os dois; a recepção continua
+aceitando um só, e o consultório completa). Telefone é
 formatado como `(21)99999-9999` e validado; iniciais em maiúsculas sem pontos.
-No retorno, os três campos vêm do banco e a recepção apenas confirma. Se nem
-a recepção nem o cadastro têm telefone ou email, o consultório pergunta na tela
-`contato` (módulo Identificação). No retorno, o campo do código abre a lista
+No retorno, os três campos vêm do banco e a recepção apenas confirma. Se a
+recepção e o cadastro não têm telefone E email válidos, o consultório pergunta
+na tela `contato` (módulo Identificação), já com o que existir preenchido. No retorno, o campo do código abre a lista
 de todos os pacientes do banco (`/api/pacientes`), filtrável por código ou
 iniciais.
 

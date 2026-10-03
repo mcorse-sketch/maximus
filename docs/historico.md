@@ -33,6 +33,19 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
 - **NOITE-1 duas vezes no painel (v2.5)** — o painel escrevia a sigla e, na
   linha de baixo, a composição (que começa por "NOITE-1 …"). Uma linha por item.
 
+- **Retorno reperguntando o passado (v2.5)** — "Algum destes mudou?" listava
+  início dos sintomas, medicação antes da clínica, tópico e ADAM; a evolução da
+  ereção e o ADAM eram sempre comparados à PRIMEIRA consulta, então o que já
+  tinha melhorado voltava a cada retorno. Agora a referência é a última
+  consulta com o campo e só volta o que ainda falha.
+- **Intracavernosa com a dose pedida duas vezes (v2.5)** — "Intracavernosa em
+  uso" (fórmula + dose) e depois "Qual dose vem aplicando?". Uma tela só, com
+  dose prescrita e dose em uso; adesão como "Usou a dose como recomendado?" e
+  sem perguntar TEFI a quem já está em intracavernosa.
+- **Teste de integração travado (v2.5)** — o resumo final procurava uma
+  checagem pelo nome antigo e lançava erro dentro do async: o processo ficava
+  parado sem sair. Busca tolerante ao nome.
+
 ## Dados e persistência
 
 - **Fila sumindo às 21h** — o filtro de "hoje" usava UTC. Passou a gravar e

@@ -104,9 +104,11 @@ function banco() {
     'identificação do retorno: só "Confirmar e continuar" (sem "Corrigir protocolo ou escores anteriores")', optsTexto());
 
   ok(await ate('trocarQueixa'), 'chega à tela da queixa');
-  ok(/está em tratamento para disfunção erétil e ejaculação precoce \(queixas da primeira avaliação\)\. Alguma nova queixa\?/.test(qtexto()),
-    'queixa do retorno: "em tratamento para … (queixas da primeira avaliação). Alguma nova queixa?"', qtexto());
-  ok(!/Mudar a queixa|Confirmado, seguir/.test(optsTexto()) && JSON.stringify(opcoes().map(o => o.dataset.v)) === '["nao","sim"]', 'opções Não / Sim (sem "confirmar e seguir / mudar queixa")', optsTexto());
+  // v2.5 (item 6): "Queixa mantida?" com a queixa em tratamento; opções de queixa só em "Nova queixa"
+  ok(/^Queixa mantida\?/.test(qtexto()) && /Em tratamento: disfunção erétil e ejaculação precoce/.test(qtexto() + optsTexto()),
+    'queixa do retorno: "Queixa mantida?" mostrando a queixa em tratamento', qtexto());
+  ok(!/Mudar a queixa|Confirmado, seguir/.test(optsTexto()) && JSON.stringify(opcoes().map(o => o.dataset.v)) === '["nao","sim"]'
+     && /Mantida — disfunção erétil e ejaculação precoce/.test(optsTexto()) && /Nova queixa/.test(optsTexto()), 'opções "Mantida — …" / "Nova queixa"', optsTexto());
   clica('sim'); await seg();
   ok(tela() === 'novaQueixa' && opcoes().every(o => o.dataset.v !== 'de' && o.dataset.v !== 'ep'), '"Sim" pergunta a nova queixa, sem repetir as que já estão em tratamento', tela() + ' ' + opcoes().map(o => o.dataset.v));
   doc.getElementById('backBtn').click(); await espera(25);
@@ -116,8 +118,11 @@ function banco() {
   ok(await ate('confirmaEstavel'), 'chega à ficha estável');
   const est = vistos.confirmaEstavel;
   ok(qtexto() === 'Algum destes mudou?' && !/Algo mudou desde a última consulta|confirmo tudo acima/.test(optsTexto()), 'ficha estável: "Algum destes mudou?" (sem o antigo "Algo mudou… / Nada mudou, confirmo tudo acima")', qtexto());
-  ok(['nao', 'contra', 'alergia', 'comorb', 'meds', 'tempo', 'parceira', 'previa', 'freq', 'biotens', 'topico', 'depre', 'fert'].every(v => est.opts.indexOf(v) >= 0),
-    'cada item estável é uma linha (alergia, antecedentes, medicação, início, parceria, prévia, EP, fertilidade)', JSON.stringify(est.opts));
+  ok(['nao', 'contra', 'alergia', 'comorb', 'meds', 'parceira', 'freq', 'biotens', 'depre', 'fert'].every(v => est.opts.indexOf(v) >= 0),
+    'cada item estável é uma linha (alergia, antecedentes, medicação, parceria, EP, fertilidade)', JSON.stringify(est.opts));
+  // v2.5 (itens 1 e 7): o que é do passado não entra em "Algum destes mudou?"
+  ok(['tempo', 'previa', 'topico', 'adam'].every(v => est.opts.indexOf(v) < 0),
+    'sem início dos sintomas, medicação antes da clínica, restrição a tópico nem ADAM em "Algum destes mudou?"', JSON.stringify(est.opts));
   ok(/Alergias\?\s*antes: nenhuma conhecida/.test(est.conteudo) && /Parceria fixa\?\s*antes: sim, parceria fixa/.test(est.conteudo) && /Além do que a clínica prescreveu, alguma medicação mudou ou iniciou outra\?\s*antes:/.test(est.conteudo),
     'pergunta curta com a resposta anterior ao lado; medicação: "Além do que a clínica prescreveu…"', est.conteudo.slice(0, 300));
   ok(est.opts.indexOf('adam') < 0, 'ADAM com sintomas na primeira avaliação não vira linha (tem tela de evolução própria)');
@@ -134,8 +139,10 @@ function banco() {
   await seg();
 
   ok(await ate('caracteriza'), 'chega à ereção fora da relação');
-  ok(/A ereção na masturbação continua satisfatória\? \(primeira avaliação: satisfatória\)/.test(optsTexto()) && /Mais ereções matinais\? \(primeira avaliação: não \/ raramente\)/.test(optsTexto()),
-    'caracterização vira evolução referida à primeira avaliação', optsTexto().slice(0, 300));
+  // v2.5 (item 3): só pergunta o que falhava (matinal); masturbação satisfatória segue como está
+  ok(!/masturbação/.test(optsTexto()) && /Agora acorda com ereção matinal\? \(\d{2}\/\d{2}\/\d{4}: não \/ raramente\)/.test(optsTexto())
+     && JSON.stringify([...doc.querySelectorAll('.gopts[data-campo]')].map(g => g.dataset.campo)) === '["matinal"]',
+    'evolução da ereção: só o que falhava na última consulta (matinal), sem a masturbação já satisfatória', optsTexto().slice(0, 300));
 
   ok(await ate('adamEvol'), 'ADAM: tela de evolução (não reaplica o questionário)');
   const camposAdam = [...doc.querySelectorAll('.gopts[data-campo]')].map(g => g.dataset.campo);

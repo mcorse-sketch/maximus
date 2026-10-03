@@ -35,6 +35,9 @@ const P = (id, descricao, respostas, extra) =>
 
 const de = (total, mais) => Object.assign({ queixa: 'de' }, iief(total), mais || {});
 const ep = (total, mais) => Object.assign({ queixa: 'ep' }, pedt(total), mais || {});
+// v2.5: no retorno com queixa registrada, a tela é "Queixa mantida?" (trocarQueixa),
+// não a lista de queixas — o paciente de retorno responde "mantida"
+const retorno = r => { const o = Object.assign({}, r); delete o.queixa; o.trocarQueixa = 'nao'; return o; };
 const duo = (ti, tp, mais) => Object.assign({ queixa: 'ambos' }, iief(ti), pedt(tp), mais || {});
 
 module.exports = [
@@ -77,11 +80,11 @@ module.exports = [
   P('LIM-023', 'Libido baixa, testosterona normal, mas ansiedade/ISRS — sem ioimbina',
     de(14, { adam: ['a1'], testo: 'normal', contraIoim: 'sim' }), { espera: { protocolo: 'DE-2' } }),
   P('LIM-024', 'Reavaliação, libido baixa, testosterona 335 no banco — abaixo do corte',
-    Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'] })),
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'] }))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12, labs: { tTotal: '335' } }],
       espera: { protocolo: 'DE-2' } }),
   P('LIM-025', 'Reavaliação, libido baixa, testosterona 340 no banco — no corte, conta como normal',
-    Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'], contraIoim: 'nao' })),
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'], contraIoim: 'nao' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12, labs: { tTotal: '340' } }],
       espera: { protocolo: 'DE-2L' } }),
 
@@ -142,12 +145,12 @@ module.exports = [
   // ---- reavaliações ------------------------------------------------------------
   ...[['R-01', 'IIEF subiu 4 — manter', 16], ['R-02', 'IIEF subiu 1 — subir BASE', 13], ['R-03', 'IIEF sem ganho — trocar mecanismo', 12]]
     .map(([id, d, hoje]) => P(id, 'Reavaliação DE: ' + d,
-      Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(hoje)),
+      retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(hoje))),
       { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12 }] })),
   P('R-04', 'Reavaliação DE com baixa adesão — não escalonar',
-    Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'baixa', motivo: 'esq', ea: 'nao' }, de(12)),
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'baixa', motivo: 'esq', ea: 'nao' }, de(12))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12 }] }),
   P('R-05', 'Reavaliação EP: PEDT caiu 4 — manter',
-    Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, ep(10, { freq: 'baixa' })),
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, ep(10, { freq: 'baixa' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'EP', protocolo: 'EP-1', kitCodes: ['SP-DUO', 'NOITE-1'], pedt: 14 }] }),
 ];

@@ -60,6 +60,9 @@ node teste_retorno.js "$CLIN" || falhas=$((falhas+1))
 linha "7h. tela da conduta (v2.4) — situação de ondas/TEFI, racional curto e sem repetição"
 node teste_conduta.js || falhas=$((falhas+1))
 
+linha "7i. correções v2.5 — retorno sem perguntas do passado, painel enxuto, intracavernosa, contato, envio"
+node teste_v25.js || falhas=$((falhas+1))
+
 linha "8. tela de senha dos três apps"
 node teste_sessao.js || falhas=$((falhas+1))
 

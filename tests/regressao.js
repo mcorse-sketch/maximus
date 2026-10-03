@@ -28,7 +28,7 @@ const PREFERIDOS = ['nao', 'nenhuma', 'nenhum', 'ok', 'fixa', 'medio', 'total', 
 // telas de marcação múltipla sem opção "nenhum" recebem aqui um padrão neutro
 const PADRAO_MULTI = {};
 // telas que pedem um valor válido mesmo sem declaração no paciente
-const PADRAO_TELA = { contato: { telefone: '21999990000' } };
+const PADRAO_TELA = { contato: { telefone: '21999990000', email: 'teste@exemplo.invalid' } };
 const espera = ms => new Promise(r => setTimeout(r, ms));
 const visivel = el => el && el.style.display !== 'none' && !el.hidden;
 

@@ -199,7 +199,8 @@ pac('MX9132', 'preenchimento', 'FAG', 31, 72, 173, [
 ], null, 'avaliação para preenchimento, sem procedimento');
 
 // ---- TEFI (3) — "TAF" não existe no app; TEFI é o teste em consultório mais próximo
-const TEFI = x => Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'tefi', tefiMed: 'R5 (trimix clássico) — padrão da clínica',
+// v2.5: retorno com queixa registrada pergunta "Queixa mantida?" — o TEFI entra como "Nova queixa"
+const TEFI = x => Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'tefi', trocarQueixa: 'sim', novaQueixa: 'tefi', tefiMed: 'R5 (trimix clássico) — padrão da clínica',
   tefiDose: '0,1 mL — padrão da clínica', tefiFinal: { dorGrau: 0, dorQuando: 'na', curvGrau: 'nao' } }, x || {});
 pac('MX9133', 'TEFI', 'UMB', 63, 89, 174, [
   { d: 270, h: '08:30', r: primeira('de', DE(8, { comorb: ['dm', 'has'], comorbCtrl: 'sim', comorbMed: 'sim', previa: 'falhou', adequado: 'sim', caracteriza: { mast: 'nao', matinal: 'nao' }, tempo: 'longo' })) },

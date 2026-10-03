@@ -210,6 +210,12 @@ async function atendimento(p, viaAtalho) {
     ok(tela() === t0 && !visivel(doc.getElementById('resultsCard')), '⌘↵ com pergunta obrigatória em aberto não gera conduta e fica nela');
     ok(/Falta responder/.test(doc.getElementById('mxToast').textContent), '… e avisa o que falta');
     ok(/^Ir para a conduta/.test(doc.getElementById('mxRevisar').textContent.trim()), 'o botão diz "Ir para a conduta ⌘↵"');
+    // v2.5 (item 2): com obrigatória em aberto o botão fica travado e, ao lado, "Faltam N — ver lista"
+    {
+      const lk = doc.getElementById('mxFaltamLink');
+      ok(doc.getElementById('mxRevisar').disabled && lk && visivel(lk) && /^Falta(m)? \d+ — ver lista$/.test(lk.textContent.trim()),
+        '"Ir para a conduta" travado enquanto falta obrigatória, com "Faltam N — ver lista" ao lado', lk ? lk.textContent : 'sem link');
+    }
     {
       const box = doc.getElementById('mxFaltam');
       const itens = box ? [...box.querySelectorAll('li button[data-i]')] : [];
