@@ -329,6 +329,75 @@ impressão; se o navegador bloquear a aba, imprime pela própria página.
 **Descartar** o atendimento interrompido confirma na própria faixa, nunca com
 `confirm()` nativo (pode estar bloqueado).
 
+**Nenhum `prompt()`/`confirm()`/`alert()` nativo (v2.5-K).** Os três apps usam
+o diálogo do próprio app: `mxDialogo({titulo, texto, ok, cancelar, perigo, campo, valor})`
+devolve uma Promise (true/false; com `campo`, o texto ou null). Esc cancela,
+Enter confirma, Tab fica preso no diálogo e o teclado do app é ignorado enquanto
+ele está aberto. Testes jsdom respondem clicando em `.mx-dlg-ov [data-v="1"]`
+(ver `teste_retorno.js` e `teste_kiosk.js`).
+
+**Recepção (v2.5-K):** iPad retrato (768/1024), paisagem e desktop. Idade, peso e
+altura em três roletas lado a lado (≥700 px). Lista de marcar com opção
+"nenhuma" (sintomas, comorbidades, remédios): sem nada marcado, o botão vira
+"Nenhuma delas — continuar" e grava `['nenhuma']` — o paciente sem sintomas não
+precisa procurar a última opção. Contador único: "Antes de entregar o tablet"
+nas telas da equipe e "Pergunta k de N" nas do paciente (o total só aparece
+depois da queixa). Triagem e financeiro são só desktop.
+
+**Retorno oral DE/DUO: o nível parte do ANTERIOR (v2.5-L, opção B do Dr. Marco).**
+Com IIEF-5 anterior e cápsula BASE-T anterior (kit; na falta, o número de DE-n/DUO-n):
+ganho ≥ 4 → mantém o nível que funcionou, mesmo se a faixa de hoje pedisse menos
+ou nenhuma cápsula (a via oral nunca é reduzida automaticamente; reduzir é decisão
+do médico na receita); ganho de 1 a 3 → sobe um nível a partir do anterior
+(BASE-T5 → T10 → T20); ganho de 1 a 3 que já chegou a 22+ → objetivo atingido,
+mantém sem subir; sem ganho → "Trocar mecanismo", sem reduzir (exceto já em 22+, v2.5-M: mantém); já em BASE-T20 com
+ganho < 4 → teto de escalonamento + TEFI (inclusive quando o nome do protocolo
+anterior não traz o nível, ex.: DUO-1D com BASE-T20). Adesão insuficiente ou
+efeito limitante (travado) → a cápsula fica exatamente no nível anterior, como o
+rótulo "(mantido)" diz. Não se aplica a intracavernosa (nunca regride), troca de
+queixa, nem sem IIEF-5 anterior (aí vale a faixa de hoje e o rótulo "Nível da
+cápsula recalculado pela faixa de hoje" da v2.5-K). Se a linha oral muda de código
+sem mudança de dose (ex.: DUO-3 → DUO-4), o rótulo é "Protocolo ajustado: X → Y",
+nunca "mantido". Teto de tadalafila 30 mg/dia: com BASE-T20, máximo 1 jato do
+SP-DE ou do SP-DUO (DE e DUO); com SP-DE e SP-DUO no mesmo kit, um alerta dá o
+total de jatos/dia somando os dois. Testes: `tests/teste_retorno_oral.js` (etapa
+7j) e R-14 a R-19 da regressão.
+
+**v2.5-M (aprovado pelo Dr. Marco em 06/10/2026).** (1) IIEF-5 ≥ 22 sem ganho
+(ganho < 4, inclusive queda) → objetivo atingido: mantém o protocolo, sem
+"Trocar mecanismo" e sem disparar o teto de escalonamento (R-20, R-21). Abaixo
+de 22, sem ganho continua "Trocar mecanismo". (2) Teto de tadalafila em todo
+lugar: com BASE-T20, SP-DE/SP-DUO saem como "MÁXIMO 1 JATO por dia" no cartão
+do kit, na receita e no relatório, e "Nunca mais de 1 jato por dia" na via do
+paciente (que continua sem dose em mg); com os dois sprays, o máximo vale
+somando os dois (`itemKit`, `jatosMaxDia`). (3) "Nível oral mantido",
+"Cápsula sobe de…", "Protocolo ajustado de…" e "objetivo atingido" são alertas
+visíveis (`RE_ALERTA`), e o cabeçalho da conduta explica o nível quando ele vem
+do ciclo anterior ("a faixa de hoje sozinha daria …"). Pílulas de mudança
+coloridas pelo tipo (`tipoMudanca`). Expansão curta das siglas nos alertas; o
+"Protocolo anterior" é expandido com o kit ANTERIOR (antes usava o de hoje).
+
+**Confiabilidade (v2.5-M).** Banco ilegível falha fechado (503, cópia
+`.corrompido-…`, nada gravado por cima; nos apps, faixa vermelha e retorno que
+não vira primeira avaliação). `/api/health` traz `banco`, `app`, `backupLocal`,
+`backupIcloud` e `alertas`, que viram a faixa no topo dos três apps. Reenvio
+com o mesmo `opId` não duplica. Fila do navegador: depois de 7 dias exige
+baixar a cópia antes de descartar; exportado há mais de 30 dias sai sozinho;
+nada não exportado é apagado. `scripts/instalar_launchd.sh` (auto-início e
+auto-reinício no Mac) e `scripts/conferir_restauracao.py` (backup restaura?).
+`testar.sh` roda `npm ci` em `tests/` se faltar o jsdom.
+
+**Toque duplo na recepção (v2.5-N).** Tocar numa opção avança sozinho 160 ms
+depois; cada tela avança uma vez só (`agendaAvanco`): o segundo toque só troca a
+resposta e o avanço não acontece se a tela já mudou (Continuar ou Voltar). No
+"novo ou retorno", enquanto confere o banco, um segundo toque é ignorado. Antes
+um toque duplo pulava a pergunta seguinte, inclusive o contato. Teste:
+`tests/teste_toque.js` (etapa 10 do `testar.sh`). Triagem e financeiro não têm avanço sozinho.
+O `teste_kiosk.js` tocava de novo 40 ms depois de cada toque e só passava da
+tela de várias escolhas quando o avanço em dobro a pulava (daí a falha
+intermitente "não chegou ao fim em 120 passos"); agora espera a tela trocar,
+marca e continua na tela de várias escolhas, e roda junto com as outras etapas.
+
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
 
