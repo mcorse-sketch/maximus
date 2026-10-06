@@ -152,6 +152,15 @@ module.exports = [
   P('R-04', 'Reavaliação DE com baixa adesão — não escalonar',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'baixa', motivo: 'esq', ea: 'nao' }, de(12))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12 }] }),
+  // ---- v2.5-K (auditoria): a cápsula oral segue a faixa do IIEF-5 de hoje. Ao mudar de faixa, o
+  // rótulo diz o que o kit faz ("dose reduzida pela faixa de hoje"), não "protocolo mantido" /
+  // "dose aumentada". O kit documenta a conduta atual — a escolha de manter a dose anterior
+  // aguarda decisão do Dr. Marco (ver PR v2.5-K) ----
+  ...[['R-14', 'IIEF 15 → 19 (+4) muda de faixa — rótulo "dose reduzida pela faixa de hoje", não "mantido"', 19],
+      ['R-15', 'IIEF 15 → 17 (+2) muda de faixa — rótulo não diz "dose aumentada" com a cápsula descendo', 17]]
+    .map(([id, d, hoje]) => P(id, 'Reavaliação DE: ' + d,
+      retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(hoje))),
+      { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 15 }] })),
   P('R-05', 'Reavaliação EP: PEDT caiu 4 — manter',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, ep(10, { freq: 'baixa' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'EP', protocolo: 'EP-1', kitCodes: ['SP-DUO', 'NOITE-1'], pedt: 14 }] }),

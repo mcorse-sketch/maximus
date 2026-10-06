@@ -997,5 +997,34 @@
    "pedt": null
   },
   "texto": "MAXIMUS MEDICINA MASCULINA · RGR13 · <data>\nDE severa · INTRACAVERNOSA (mantido)\nprotocolo mantido · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 7 (0)\nAdesão: Sempre como recomendado\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 3 · duração cerca de 1 hora · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 7/25 — DE severa\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL — intracavernosa, 0,1 mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
+ },
+ "R-14": {
+  "descricao": "Reavaliação DE: IIEF 15 → 19 (+4) muda de faixa — rótulo \"dose reduzida pela faixa de hoje\", não \"mantido\"",
+  "conduta": {
+   "protocolo": "DE-1",
+   "kit": [
+    "BASE-T5",
+    "NOITE-1",
+    "SP-DE"
+   ],
+   "iief": 19,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR14 · <data>\nDE leve · DE-1\ndose reduzida pela faixa de hoje · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 19 (+4)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nível da cápsula recalculado pela faixa de hoje: BASE-T10 → BASE-T5\nIIEF-5 total: 19/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T5 — Tadalafila 5 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes"
+ },
+ "R-15": {
+  "descricao": "Reavaliação DE: IIEF 15 → 17 (+2) muda de faixa — rótulo não diz \"dose aumentada\" com a cápsula descendo",
+  "conduta": {
+   "protocolo": "DE-1",
+   "kit": [
+    "BASE-T5",
+    "NOITE-1",
+    "SP-DE",
+    "ONDAS"
+   ],
+   "iief": 17,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR15 · <data>\nDE leve · DE-1\ndose reduzida pela faixa de hoje · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 17 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nível da cápsula recalculado pela faixa de hoje: BASE-T10 → BASE-T5\nIIEF-5 total: 17/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T5 — Tadalafila 5 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
  }
 }
