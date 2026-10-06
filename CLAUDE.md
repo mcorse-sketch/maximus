@@ -398,6 +398,17 @@ tela de várias escolhas quando o avanço em dobro a pulava (daí a falha
 intermitente "não chegou ao fim em 120 passos"); agora espera a tela trocar,
 marca e continua na tela de várias escolhas, e roda junto com as outras etapas.
 
+**`testar.sh` no bash 3.2 (v2.5-O).** O Mac da clínica só tem o `/bin/bash` 3.2.
+Nele, o `)` de um padrão de `case` dentro de `$( )` fecha a substituição antes da
+hora (a 2.5.14 quebrou assim: "syntax error near unexpected token `newline'"), e
+o `bash -n` não pega, porque o 3.2 só lê o `$( )` na hora de rodar. Regra: nada
+de `case` dentro de `$( )` (use uma função), nada de bash 4+ (`wait -n`,
+`declare -A`, `${x,,}`, `mapfile`, `&>>`, `|&`). A etapa 11
+(`tests/teste_bash32.sh`) procura bash 4+ e roda o `testar.sh` inteiro a seco
+(`MAXIMUS_SECO=1`) no bash 3.2: `/bin/bash` no Mac, `bash3.2` no box
+(`/usr/local/bin/bash3.2`, compilado do GNU bash 3.2.57) ou `MAXIMUS_BASH32`.
+Sem bash 3.2, só a parte estática, com aviso.
+
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
 
