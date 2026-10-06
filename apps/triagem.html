@@ -288,45 +288,6 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-cdstatus span b{font-weight:600;color:var(--mx-text)}
   .mx-cdstatus span.sim{border-color:var(--mx-ok);background:var(--mx-okbg);color:var(--mx-ok)}
   .mx-cdstatus span.opc{border-color:var(--mx-warnln);background:var(--mx-warnbg);color:var(--mx-warn)}
-  /* v2.5-I: bloco "Classificação IIEF-5" — valor de hoje, anterior, variação, faixa e régua (○ antes · ● hoje) */
-  .mx-cdhead.com-esc{flex-wrap:wrap}
-  .mx-cdhead.com-esc > div:first-child{flex:1 1 0}
-  .mx-escores{flex:1 0 100%;margin-top:4px;padding-top:18px;border-top:1px solid var(--mx-line)}
-  .mx-escores > .mx-eyebrow{margin-bottom:10px}
-  .mx-esc-grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .mx-esc-grade.n1,.mx-esc-grade.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .mx-esc-grade.n2.com-adam{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr)}
-  .mx-esc-grade.n3.com-adam{grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr) minmax(0,1fr)}
-  .mx-esct{border:1px solid var(--mx-line);border-radius:14px;background:var(--mx-surf);padding:12px 14px 10px;min-width:0}
-  .mx-esct-cab{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .mx-esct-cab .mx-qn{font-size:12px}
-  .mx-esct-fx{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mx-text2);white-space:nowrap}
-  .mx-esct-fx i{width:8px;height:8px;border-radius:50%;flex:none}
-  .mx-esct-val{display:flex;align-items:baseline;gap:4px;margin:6px 0 2px}
-  .mx-esct-val .mx-qv{font:400 34px/1.05 var(--mx-disp)!important;letter-spacing:-.03em;background:transparent!important;padding:0!important;color:var(--mx-text)!important}
-  .mx-esct-val .de{font-size:14px;color:var(--mx-text3)}
-  .mx-esct-d{margin-left:8px;align-self:center;font:600 12.5px var(--mx-font);padding:2px 8px;border-radius:999px;background:var(--mx-surf2);color:var(--mx-text2)}
-  .mx-esct-d.melhor{background:color-mix(in srgb,var(--mx-ok) 14%,transparent);color:var(--mx-ok)}
-  .mx-esct-d.pior{background:color-mix(in srgb,var(--mx-stop) 12%,transparent);color:var(--mx-stop)}
-  .mx-esct-ant{font-size:12.5px;line-height:1.45;color:var(--mx-text2);min-height:18px}
-  .mx-esct-ant b{font-weight:600;color:var(--mx-text)}
-  .mx-esct-regua{position:relative;height:6px;margin:12px 4px 0;border-radius:999px;background:var(--mx-surf2)}
-  .mx-esct-regua i{position:absolute;top:0;bottom:0;opacity:.28}
-  .mx-esct-regua i:first-child{border-radius:999px 0 0 999px} .mx-esct-regua i:last-of-type{border-radius:0 999px 999px 0}
-  .mx-esct-regua i.on{opacity:1}
-  .mx-esct-regua b{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;box-sizing:border-box}
-  .mx-esct-regua b.hoje{background:var(--mx-text);box-shadow:0 0 0 2px var(--mx-surf)}
-  .mx-esct-regua b.ant{background:var(--mx-surf);border:2px solid var(--mx-text3)}
-  .mx-esct-lim{display:flex;justify-content:space-between;margin:4px 2px 0;font-size:10.5px;color:var(--mx-text3)}
-  .mx-esct-evo{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid var(--mx-line);font-size:12px;color:var(--mx-text2)}
-  .mx-esct-evo svg{flex:none;overflow:visible}
-  .mx-esct-evo polyline{fill:none;stroke:var(--mx-text3);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
-  .mx-esct-evo circle{fill:var(--mx-surf);stroke:var(--mx-text3);stroke-width:1.5}
-  .mx-esct-evo circle.hoje{fill:var(--mx-text);stroke:var(--mx-text)}
-  .mx-esct-adv{font:400 26px/1.15 var(--mx-disp);letter-spacing:-.02em;color:var(--mx-text)}
-  .mx-esct-adv.pos{color:var(--mx-stop)}
-  /* na tela, o bloco antigo (pílula + IIEF-5 10/25) dá lugar ao novo; na impressão continua o antigo */
-  @media screen{ #resultsCard.mx-esc-on #printArea > .result-top{display:none!important} }
   .mx-alertas{display:inline-flex;margin-top:12px;font-size:12.5px;color:var(--mx-warn);border:1px solid var(--mx-warnln);background:var(--mx-warnbg);
     border-radius:999px;padding:3px 10px;cursor:pointer}
   #resultsCard.mx-cd-on .result-top .gauge-wrap,#resultsCard.mx-cd-on #marcador{display:none!important}
@@ -344,6 +305,58 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   details.mx-det #custoBox > div{margin-top:10px!important}
   @media (max-width:720px){ .mx-cdhead{flex-direction:column;align-items:flex-start} .mx-cdproto{font-size:44px} }
 }
+/* v2.5-J (item 2): o bloco de classificação vale para tela E papel (antes ficava dentro do @media screen,
+   e a cópia impressa saía sem estilo) */
+/* v2.5-I: bloco "Classificação IIEF-5" — valor de hoje, anterior, variação, faixa e régua (○ antes · ● hoje) */
+.mx-cdhead.com-esc{flex-wrap:wrap}
+.mx-cdhead.com-esc > div:first-child{flex:1 1 0}
+.mx-escores{flex:1 0 100%;margin-top:4px;padding-top:18px;border-top:1px solid var(--mx-line)}
+.mx-escores > .mx-eyebrow{margin-bottom:10px}
+.mx-esc-grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mx-esc-grade.n1,.mx-esc-grade.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mx-esc-grade.n2.com-adam{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr)}
+.mx-esc-grade.n3.com-adam{grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr) minmax(0,1fr)}
+.mx-esct{border:1px solid var(--mx-line);border-radius:14px;background:var(--mx-surf);padding:12px 14px 10px;min-width:0}
+.mx-esct-cab{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mx-esct-cab .mx-qn{font-size:12px;flex:none}
+.mx-esct-fx{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mx-text2);white-space:nowrap}
+.mx-esct-fx i{width:8px;height:8px;border-radius:50%;flex:none}
+.mx-esct-val{display:flex;align-items:baseline;gap:4px;margin:6px 0 2px}
+.mx-esct-val .mx-qv{font:400 34px/1.05 var(--mx-disp)!important;letter-spacing:-.03em;background:transparent!important;padding:0!important;color:var(--mx-text)!important}
+.mx-esct-val .de{font-size:14px;color:var(--mx-text3)}
+.mx-esct-d{margin-left:8px;align-self:center;font:600 12.5px var(--mx-font);padding:2px 8px;border-radius:999px;background:var(--mx-surf2);color:var(--mx-text2)}
+.mx-esct-d.melhor{background:color-mix(in srgb,var(--mx-ok) 14%,transparent);color:var(--mx-ok)}
+.mx-esct-d.pior{background:color-mix(in srgb,var(--mx-stop) 12%,transparent);color:var(--mx-stop)}
+.mx-esct-ant{font-size:12.5px;line-height:1.45;color:var(--mx-text2);min-height:18px}
+.mx-esct-ant b{font-weight:600;color:var(--mx-text)}
+.mx-esct-regua{position:relative;height:6px;margin:12px 4px 0;border-radius:999px;background:var(--mx-surf2)}
+.mx-esct-regua i{position:absolute;top:0;bottom:0;opacity:.28}
+.mx-esct-regua i:first-child{border-radius:999px 0 0 999px} .mx-esct-regua i:last-of-type{border-radius:0 999px 999px 0}
+.mx-esct-regua i.on{opacity:1}
+.mx-esct-regua b{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;box-sizing:border-box}
+.mx-esct-regua b.hoje{background:var(--mx-text);box-shadow:0 0 0 2px var(--mx-surf)}
+.mx-esct-regua b.ant{background:var(--mx-surf);border:2px solid var(--mx-text3)}
+.mx-esct-lim{display:flex;justify-content:space-between;margin:4px 2px 0;font-size:10.5px;color:var(--mx-text3)}
+.mx-esct-evo{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid var(--mx-line);font-size:12px;color:var(--mx-text2)}
+.mx-esct-evo svg{flex:none;overflow:visible}
+.mx-esct-evo polyline{fill:none;stroke:var(--mx-text3);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.mx-esct-evo circle{fill:var(--mx-surf);stroke:var(--mx-text3);stroke-width:1.5}
+.mx-esct-evo circle.hoje{fill:var(--mx-text);stroke:var(--mx-text)}
+.mx-esct-adv{font:400 26px/1.15 var(--mx-disp);letter-spacing:-.02em;color:var(--mx-text)}
+.mx-esct-adv.pos{color:var(--mx-stop)}
+/* na tela, o bloco antigo (pílula + IIEF-5 10/25) dá lugar ao novo */
+@media screen{ #resultsCard.mx-esc-on #printArea > .result-top{display:none!important} }
+.mx-esct-her{font-size:11.5px;color:var(--mx-warn);background:var(--mx-warnbg);border:1px solid var(--mx-warnln);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.mx-esct-adam.herdado .mx-esct-adv{color:var(--mx-text2)}
+/* v2.5-J (item 2): no papel, a pílula da classificação fica e o bloco de escores entra no lugar de "IIEF-5 10/25".
+   A cópia (#mxEscoresImp) mora no #printArea e só aparece fora da tela do app (aba de impressão ou window.print). */
+#resultsCard #mxEscoresImp{display:none}
+@media print{ #resultsCard #mxEscoresImp{display:block!important} }
+.result-top.com-esc #classDesc{display:none!important}
+.mx-escores-imp{margin:4px 0 8px;padding-top:0;border-top:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.mx-escores-imp > .mx-eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#5F6B71;margin-bottom:8px}
+.mx-escores-imp .mx-esct{background:#fff;border-color:#c9ced6;border-radius:10px;break-inside:avoid}
+.mx-escores-imp .mx-esc-grade{gap:10px}
 </style></head><body><script>
 
 /* v2.3: tema claro/escuro. Padrão = o do aparelho; a escolha manual (tecla T
@@ -3531,8 +3544,11 @@ document.documentElement.setAttribute('data-tema',t)})();
     const b = B.find(x=>v>=x.min && v<=x.max); if (!b) return '';
     return b.label.replace(/^Sem disfunção erétil$/,'sem disfunção erétil').replace(/^DE /,'disfunção erétil ').replace(/^EP /,'ejaculação precoce ');
   }
-  function faixaIief(v){ v=+v; if(!(v>0)) return ''; if(v<=7) return 'disfun\u00e7\u00e3o grave'; if(v<=11) return 'moderada'; if(v<=16) return 'leve a moderada'; if(v<=21) return 'leve'; return 'sem disfun\u00e7\u00e3o'; }
-  function faixaPedt(v){ v=+v; if(!(v>=0)) return ''; if(v<=8) return 'precocidade improv\u00e1vel'; if(v<=10) return 'lim\u00edtrofe'; return 'precocidade prov\u00e1vel'; }
+  // v2.5-J (item 1): uma só nomenclatura de faixa — a das faixas que classificam (BANDS_DE/BANDS_EP),
+  // na forma curta do bloco de classificação. Painel, ficha, histórico e bloco dizem o mesmo nome.
+  function faixaCurtaDe(B, v){ const b = B.find(x=>v>=x.min && v<=x.max); return !b ? '' : b.label.replace(/^Sem disfunção erétil$/,'sem disfunção').replace(/^(DE|EP) /,''); }
+  function faixaIief(v){ v=+v; if(!(v>0)) return ''; return faixaCurtaDe(BANDS_DE, v); }
+  function faixaPedt(v){ v=+v; if(!(v>=0)) return ''; return faixaCurtaDe(BANDS_EP, v); }
   function variacao(ant, hoje, menorEhMelhor){
     if (ant==null || hoje==null || ant==='' || hoje==='') return '';
     const d = (+hoje) - (+ant);
@@ -4820,6 +4836,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       const telaAdam = () => s.push({id:'adam',kind:'opts',multi:true,step:D,eyebrow:'Questionário ADAM',
         text:'Marque todos os sintomas que o paciente apresenta:',
         options:ADAM.map(a=>({v:a.v,badge:a.chave?'★':'•',label:a.label})).concat([{v:'nenhum',badge:'—',label:'Nenhum destes sintomas'}])});
+      // v2.5-J (item 3): ADAM não reaplicado hoje → o valor vem da última consulta com ADAM (data guardada para o cartão)
+      S.adamHerdado = null;
       if (adamDaFila){ /* ADAM respondido na recepção hoje */ }
       else if (refAdam && refAdam.length){
         // v2.4: ADAM não é reaplicado no retorno — mostra o que ele marcou na primeira
@@ -4842,6 +4860,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         // v2.5 (item 7): sem sintoma de ADAM na última consulta (nunca teve ou já
         // melhorou e foi zerado): o ADAM não é mais perguntado no retorno
         S.adam = ['nenhum'];
+        S.adamHerdado = {data: (S.primeiraAval && S.primeiraAval.dataAdam) || ''};
       } else telaAdam();
       // a libido sai do ADAM respondido agora: sem recalcular aqui, a pergunta de
       // testosterona entrava no fluxo tarde demais e nunca era feita
@@ -7720,7 +7739,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   // ---- v2.5-I: bloco "Classificação IIEF-5" na tela da conduta ----
   // O Dr. Marco julga a evolução por aqui: valor de hoje, o anterior, a variação, a faixa e a régua das faixas
   // (○ anterior, ● hoje). Com 3+ consultas, a linha da evolução. Só exibição: nada aqui entra na conduta.
-  function mxFaixaCurta(b){ return !b ? '' : b.label.replace(/^Sem disfunção erétil$/,'sem disfunção').replace(/^(DE|EP) /,''); }
+  function mxFaixaCurta(b){ return !b ? '' : faixaCurtaDe([b], b.min); }
   function mxCartaoEscore(nome, hoje, ant, dataAnt, bands, ini, fim, menorMelhor, serie){
     const faixa = v => bands.find(b=>v>=b.min && v<=b.max) || null;
     const bh = faixa(hoje), ba = ant!=null ? faixa(ant) : null;
@@ -7756,7 +7775,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     return h + '</div>';
   }
-  function mxBlocoEscores(iief, pedt){
+  // v2.5-J (item 2): imp=true monta a cópia para o papel (#mxEscoresImp, dentro do #printArea), com o mesmo conteúdo
+  function mxBlocoEscores(iief, pedt, imp){
     if (iief==null && pedt==null) return '';
     const p = (S.visita==='reav' && prev) ? prev : null;
     const dataAnt = p ? dataDoCiclo(p) : '';
@@ -7767,24 +7787,39 @@ document.documentElement.setAttribute('data-tema',t)})();
     const cards = [];
     if (iief!=null) cards.push(mxCartaoEscore('IIEF-5', +iief, p && p.iief!=null ? +p.iief : null, dataAnt, BANDS_DE, 5, 25, false, serie('iief')));
     if (pedt!=null) cards.push(mxCartaoEscore('PEDT', +pedt, p && p.pedt!=null ? +p.pedt : null, dataAnt, BANDS_EP, 0, 20, true, serie('pedt')));
-    // ADAM (rastreio androgênico) quando foi respondido hoje — sem régua: positivo/negativo e nº de sintomas
+    // ADAM (rastreio androgênico) — sem régua: positivo/negativo e nº de sintomas.
+    // v2.5-J (item 3): no retorno em que o ADAM não foi reaplicado, o cartão diz que o valor é o da
+    // consulta anterior (com a data), e não o de hoje.
     const adamOn = !!(S.hasDE && Array.isArray(S.adam) && S.adam.length);
     if (adamOn){
       const a = S.adam.filter(v=>v!=='nenhum'), pa = p && Array.isArray(p.adam) ? p.adam.filter(v=>v!=='nenhum') : null;
-      const pos = adamPositivo(a);
-      cards.push('<div class="mx-esct mx-esct-adam"><div class="mx-esct-cab">'+qn('ADAM')+'</div>'
+      const pos = adamPositivo(a), her = S.visita==='reav' && S.adamHerdado ? S.adamHerdado : null;
+      cards.push('<div class="mx-esct mx-esct-adam'+(her?' herdado':'')+'"><div class="mx-esct-cab">'+qn('ADAM')
+        + (her ? '<span class="mx-esct-her">não reaplicado hoje</span>' : '')+'</div>'
         + '<div class="mx-esct-val"><span class="mx-esct-adv '+(pos?'pos':'')+'">'+(pos?'positivo':'negativo')+'</span></div>'
-        + '<div class="mx-esct-ant">'+a.length+' de 10 sintomas'+(pa ? '<br>antes '+(adamPositivo(pa)?'positivo':'negativo')+' · '+pa.length+' de 10' : '')+'</div></div>');
+        + '<div class="mx-esct-ant">'+(her
+            ? 'valor da consulta anterior'+(her.data?' ('+escH(her.data)+')':'')+' · '+a.length+' de 10 sintomas'
+            : a.length+' de 10 sintomas'+(pa ? '<br>antes '+(adamPositivo(pa)?'positivo':'negativo')+' · '+pa.length+' de 10' : ''))+'</div></div>');
     }
     const tit = iief!=null && pedt!=null ? 'Classificação IIEF-5 e PEDT' : (iief!=null ? 'Classificação IIEF-5' : 'Classificação PEDT');
-    return '<div class="mx-escores" id="mxEscores"><div class="mx-eyebrow">'+tit+(p?' · hoje × consulta anterior':'')+'</div>'
+    return '<div class="mx-escores'+(imp?' mx-escores-imp':'')+'" id="'+(imp?'mxEscoresImp':'mxEscores')+'"><div class="mx-eyebrow">'+(imp?'Escores':tit)+(p?' · hoje × consulta anterior':'')+'</div>'
       + '<div class="mx-esc-grade n'+cards.length+(adamOn?' com-adam':'')+'">'+cards.join('')+'</div></div>';
+  }
+
+  // v2.5-J (item 2): o papel leva o mesmo bloco da tela (hoje, anterior com data, variação, faixa, régua e
+  // evolução) logo abaixo da pílula da classificação — no lugar da linha "IIEF-5 10/25". O #mxCdHead fica de fora
+  // da impressão; por isso a cópia mora no #printArea, escondida na tela.
+  function mxEscoresImpressao(html){
+    const pa = el('printArea'); if (!pa) return;
+    const rt = pa.querySelector('.result-top'), velho = el('mxEscoresImp');
+    if (velho) velho.remove();
+    if (rt){ rt.classList.toggle('com-esc', !!html); if (html) rt.insertAdjacentHTML('afterend', html); }
   }
 
   // ---- conduta em 3 níveis ----
   function mxPintaConduta(){
     const head = el('mxCdHead'), rc = el('resultsCard'); if (!head || !rc) return;
-    if (!mxEmResultados()){ head.style.display='none'; rc.classList.remove('mx-cd-on'); return; }
+    if (!mxEmResultados()){ head.style.display='none'; rc.classList.remove('mx-cd-on'); mxEscoresImpressao(''); return; }
     const txt = id=>((el(id)||{}).textContent||'').replace(/\s+/g,' ').trim();
     const reg = window.__mxReg || null;
     const proto = reg && reg.protocolo ? String(reg.protocolo) : '';
@@ -7851,6 +7886,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     head.classList.add('sem-ativo');
     head.classList.toggle('com-esc', !!blocoEsc);
     rc.classList.toggle('mx-esc-on', !!blocoEsc);
+    mxEscoresImpressao(blocoEsc ? mxBlocoEscores(iief, pedt, true) : '');
     head.style.display = 'flex';
     rc.classList.add('mx-cd-on');
     const va = el('mxVerAlertas');

@@ -88,6 +88,15 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   usa para julgar a evolução. Voltou como cartões (hoje × anterior, variação, faixa,
   régua e evolução). A v2.5-H também escondia o bloco do resultado nos fluxos sem
   IIEF/PEDT (TEFI, preenchimento, hipogonadismo), onde ele trazia informação única.
+- **Nomes de faixa diferentes no painel e no bloco (v2.5-J)** — o painel e a ficha
+  usavam uma tabela própria ("disfunção grave"; PEDT "limítrofe"/"precocidade provável",
+  com corte diferente do que classifica). Agora todos usam `BANDS_DE`/`BANDS_EP`.
+- **Papel diferente da tela (v2.5-J)** — o bloco de classificação era só de tela; o
+  relatório impresso trazia só "IIEF-5 10/25". Agora o papel leva o mesmo bloco (anterior
+  com data, variação, faixa, régua). O CSS do bloco estava dentro do `@media screen`.
+- **ADAM do retorno parecia de hoje (v2.5-J)** — sem sintomas na última consulta o ADAM
+  não é reaplicado, mas o cartão mostrava "negativo" como resposta do dia. Agora diz
+  "não reaplicado hoje · valor da consulta anterior (data)".
 - **Primeira intracavernosa sem dose no "Protocolo prescrito" (v2.5-H)** — a linha
   saía "R5 · … — intracavernosa" sem dose (ex.: LIM-001). Agora traz a dose indicada
   ou a dose inicial padrão da clínica (R5 0,1 mL).

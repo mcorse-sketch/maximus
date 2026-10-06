@@ -163,6 +163,20 @@ e, com 3+ consultas, a linha da evolução (`S.serieEsc`, montada em
 (`.mx-esc-on`) e continua na impressão; nos fluxos sem IIEF/PEDT (hipogonadismo, TEFI,
 preenchimento…) o `.result-top` aparece na tela como antes (a v2.5-H o escondia).
 
+**Final (v2.5-J).** (1) Uma só nomenclatura de faixa: `faixaIief`/`faixaPedt`
+(painel, ficha/prontuário, histórico) derivam de `BANDS_DE`/`BANDS_EP` pela forma curta
+de `faixaCurtaDe()` — a mesma do bloco (`mxFaixaCurta`): severa · moderada · leve a
+moderada · leve · sem disfunção; EP improvável · provável · confirmada · intensa. Os nomes
+antigos ("disfunção grave", "limítrofe", "precocidade provável" com corte em 11) saíram.
+(2) Papel = tela: `mxEscoresImpressao()` põe no `#printArea`, logo abaixo da pílula, uma
+cópia do bloco (`#mxEscoresImp`, eyebrow "Escores"), escondida na tela do app; o
+`.result-top` ganha `.com-esc` e a linha "IIEF-5 10/25" (`#classDesc`) sai do papel. O
+CSS do bloco saiu do `@media screen` para valer também na impressão
+(`print-color-adjust:exact` mantém a régua). (3) ADAM não reaplicado no retorno
+(`refAdam` vazio): `S.adamHerdado = {data}` e o cartão diz "não reaplicado hoje · valor
+da consulta anterior (data)". O relatório e o prontuário continuam como antes. Só
+exibição; conduta e texto do prontuário inalterados.
+
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua
 aceitando um só, e o consultório completa). Telefone é
