@@ -773,7 +773,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.5.15" title="v2.5-P (15ª revisão da 2.5)">Vers&atilde;o 2.5.15 &middot; v2.5-P &middot; 06/10/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.5.16" title="v2.5-Q (16ª revisão da 2.5)">Vers&atilde;o 2.5.16 &middot; v2.5-Q &middot; 06/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <div class="dbtag" id="dbTag">Verificando banco de dados…</div>
@@ -2011,15 +2011,24 @@ document.documentElement.setAttribute('data-tema',t)})();
         if (!r.ok && r.status!==404) throw new Error('HTTP_'+r.status);
         try{ if(!r.ok) return null; const j=await r.json();
              if (j && j.ciclo && !this.ehClinico(j.ciclo)){
-               const h=await fetch(this.api+'/api/historico/'+encodeURIComponent(cod),{cache:'no-store'});
-               if (!h.ok) return null;
+               // v2.5-Q: última passagem é da recepção — a 2ª leitura (/api/historico) busca o ciclo clínico.
+               // Se ela falha, NÃO devolver null (isso virava "sem histórico" / 1ª avaliação em silêncio).
+               let h;
+               try{ h=await fetch(this.api+'/api/historico/'+encodeURIComponent(cod),{cache:'no-store'}); }
+               catch(e){ throw new Error('SERVIDOR_FORA'); }
+               if (h.status===503) throw new Error('BANCO_ILEGIVEL');
+               if (!h.ok) throw new Error('HTTP_'+h.status);
                const jh=await h.json();
                const arr=(jh.ciclos||[]).filter(c=>this.ehClinico(c));
                if (!arr.length) return null;
                const u=arr[arr.length-1];
                return {ciclo:u, total:arr.length, ultimaData:u.data};
              }
-             return (j&&j.ciclo)?{ciclo:j.ciclo,total:j.total,ultimaData:j.ultimaData||j.ciclo.data}:null; }catch(e){ return null; }
+             return (j&&j.ciclo)?{ciclo:j.ciclo,total:j.total,ultimaData:j.ultimaData||j.ciclo.data}:null;
+        }catch(e){
+          if (e && /^(SERVIDOR_FORA|BANCO_ILEGIVEL|HTTP_)/.test(String(e.message||''))) throw e;
+          throw new Error('SERVIDOR_FORA');
+        }
       }
       return null;
     },
@@ -2150,7 +2159,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         }catch(e){ return false; }
       }
       if (this.modo==='rede'){
-        try{ const r=await fetch(this.api+'/api/ciclo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reg)});
+        try{ const r=await fetchPrazo(this.api+'/api/ciclo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reg)});
              return r.ok; }catch(e){ return false; }
       }
       return false;
@@ -2162,6 +2171,20 @@ document.documentElement.setAttribute('data-tema',t)})();
       return 'Sem banco nesta máquina — escores anteriores podem ser digitados manualmente.';
     }
   };
+
+  // v2.5-Q: fetch com prazo — se o servidor não responde, o atendimento vai para a fila local
+  // (sem isso a promessa fica pendente e o médico nunca é avisado). 18 s: cabe no poll de 20 s dos testes.
+  // Fora do bloco Sessao (tests/teste_sessao.js compara até `const Store`).
+  const FETCH_PRAZO_MS = 18000;
+  async function fetchPrazo(url, opt, ms){
+    const ctrl = (typeof AbortController!=='undefined') ? new AbortController() : null;
+    const t = ctrl ? setTimeout(()=>{ try{ ctrl.abort(); }catch(e){} }, ms==null?FETCH_PRAZO_MS:ms) : null;
+    try{
+      const o = Object.assign({}, opt||{});
+      if (ctrl) o.signal = ctrl.signal;
+      return await fetch(url, o);
+    } finally { if (t) clearTimeout(t); }
+  }
 
   // v2.5-H (item 6): a composição da intracavernosa no cabeçalho abre e fecha com um toque (iPad não tem hover)
   window.mxAbreIci = function(sp, ev){ if (ev && ev.target && ev.target.closest && ev.target.closest('abbr.sig')) return;
@@ -2247,6 +2270,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     const usados = new Set(), reais = new Set();
     const junta = (c, ficticio) => { const k=norm(c); if (k){ usados.add(k); if (!ficticio) reais.add(k); } };
     (S.fila||[]).forEach(f=>f && junta(f.codigo, f.demo));
+    // v2.5-Q: códigos ainda na fila local de envio estão reservados — o próximo paciente
+    // não pode receber o mesmo (senão históricos se misturam quando o pendente grava)
+    try{ filaLe().forEach(x=>x && junta(x.codigo, false)); }catch(e){}
     if (!PREVIA && Store.modo!=='manual'){
       try{ ((await Store.listaPacientes())||[]).forEach(p=>p && junta(p.codigo, p.ficticio)); }catch(e){}
       if (!S.fila){ try{ ((await Store.triagensHoje())||[]).forEach(f=>f && junta(f.codigo, f.demo)); }catch(e){} }
@@ -2831,9 +2857,9 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     if (prev){
       h += '<h4>Protocolo em uso</h4><table>'
-        + linhaFicha('Protocolo', prev.protocolo||null)
+        + linhaFicha('Protocolo', prev.protocolo ? escH(explicaSiglas(String(prev.protocolo))) : null)
         + linhaFicha('Fórmulas', unicos(prev.kitCodes).filter(c=>!['TEFI','LABS'].includes(c))
-            .map(c=>{ const comp=siglaAuto(c)?'':compoTxt(c); return c+(comp?' <span class="vazio">('+comp+')</span>':''); }).join('<br>') || null)
+            .map(c=>{ const comp=siglaAuto(c)?'':compoTxt(c); return escH(c)+(comp?' <span class="vazio">('+escH(comp)+')</span>':''); }).join('<br>') || null)
         + linhaFicha('Adesão relatada', prev.adesao ? rotAdesao(prev.adesao, !!prev.iciCasa) : null)
         + '</table>';
     }
@@ -2869,9 +2895,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       h += '<table>';
       clin.slice().reverse().forEach(c=>{
         const d = c.dataBR || (c.data? new Date(c.data).toLocaleDateString('pt-BR') : '—');
-        const partes = [rotuloLinha(c.linha), c.protocolo||null,
+        const partes = [escH(rotuloLinha(c.linha)||''), c.protocolo?escH(explicaSiglas(String(c.protocolo))):null,
                         c.iief!=null?qEscore('IIEF-5',c.iief):null, c.pedt!=null?qEscore('PEDT',c.pedt):null].filter(Boolean);
-        h += '<tr><td>'+d+'</td><td>'+partes.join(' · ')+'</td></tr>';
+        h += '<tr><td>'+escH(d)+'</td><td>'+partes.join(' · ')+'</td></tr>';
       });
       h += '</table>';
     }
@@ -3250,20 +3276,31 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (PREVIA) return;
     filaPurga();
     const l = filaLe(); if (!l.length) return;
-    const restantes = [];
+    // v2.5-Q: só tira da fila o que ESTE ciclo conseguiu gravar. Relê a fila ao terminar —
+    // um atendimento enfileirado no meio do reenvio (outra aba / médico concluindo o próximo)
+    // não pode ser sobrescrito pela lista antiga.
+    const okIds = new Set();
     for (const reg of l){
-      // os campos de controle da fila não vão para o banco
       const limpo = Object.assign({}, reg); delete limpo._enfileiradoEm; delete limpo._exportadoEm;
-      try{ const r = await Store.salvar(limpo); if (r===false) restantes.push(reg); }
-      catch(e){ restantes.push(reg); }
+      try{ const r = await Store.salvar(limpo); if (r!==false) okIds.add(reg.opId); }
+      catch(e){ /* fica na fila */ }
     }
-    filaGrava(restantes);
-    if (!restantes.length){ marcaSalvo(true); } else atualizaPendentes();
+    filaGrava(filaLe().filter(x => !okIds.has(x.opId)));
+    if (!filaLe().length){ marcaSalvo(true); } else atualizaPendentes();
   }
   setInterval(processaFila, 20000);
   window.addEventListener('online', processaFila);
   // só para os testes automatizados (tests/teste_sessao.js abre com ?mxteste=1)
-  if (/[?&]mxteste=1\b/.test(location.search)) window.__mxTeste = { Store, processaFila, AvisoServidor };
+  if (/[?&]mxteste=1\b/.test(location.search)) window.__mxTeste = {
+    Store, processaFila, AvisoServidor, filaLe, filaEnfileira, fetchPrazo, FETCH_PRAZO_MS,
+    abreFicha, abreHistorico, carregarHistorico, pintaCopiloto, build, paint,
+    getS: ()=>S, getPrev: ()=>prev,
+    setRetorno(p){ prev=p; S.codigo=norm(p.codigo); S.visita='reav'; S.origem='novo'; S.hist={ciclo:p,total:1}; S.semHistorico=false; S.nReav=1; S.histErro=null; },
+    mostraConfirmHist(){ build(); const i=(screens||[]).findIndex(x=>x.id==='confirmHist'); if(i>=0){ si=i; paint(); return true; } return false; },
+    proximoLivreDeFila(){ const usados=new Set(), reais=new Set();
+      const junta=(c,f)=>{ const k=norm(c); if(k){ usados.add(k); if(!f) reais.add(k); } };
+      filaLe().forEach(x=>x&&junta(x.codigo,false)); return proximoLivre(null, usados, reais); }
+  };
 
   function ocultaQuiz(){
     const l=document.getElementById('linhaQuiz'); if(l) l.style.display='none';
@@ -4117,7 +4154,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (!cod && !f){ c.style.display='none'; return; }
     if (!conferido){
       c.style.display='block';
-      c.innerHTML='<div class="cab"><span class="cod">'+cod+'</span><span class="tag">c\u00f3digo alterado</span></div>';
+      c.innerHTML='<div class="cab"><span class="cod">'+escH(cod)+'</span><span class="tag">c\u00f3digo alterado</span></div>';
       return;
     }
 
@@ -4267,8 +4304,8 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     if (!B.length && !f && !prev){ c.style.display='none'; return; }
     c.style.display='block';
-    c.innerHTML='<div class="cab"><span class="cod">'+(cod||'\u2014')+'</span>'
-      + tags.map(t=>typeof t==='string'?('<span class="tag">'+t+'</span>'):(t.c?('<span class="tag '+t.c+'">'+t.t+'</span>'):('<span class="tag alerta">'+t.t+'</span>'))).join('')
+    c.innerHTML='<div class="cab"><span class="cod">'+escH(cod||'\u2014')+'</span>'
+      + tags.map(t=>typeof t==='string'?('<span class="tag">'+escH(t)+'</span>'):(t.c?('<span class="tag '+escH(t.c)+'">'+escH(t.t)+'</span>'):('<span class="tag alerta">'+escH(t.t)+'</span>'))).join('')
       + '</div><div class="cop2">' + B.join('') + '</div>';
   }
 
@@ -4277,9 +4314,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     const b=document.getElementById('barraAtual'); if(!b) return;
     if (S.visita!=='reav' || !prev){ b.style.display='none'; return; }
     const kc = prev.kitCodes || [];
-    const linhas = kc.map(c=>F[c] ? ('• <b style="display:inline;font-size:12.5px;letter-spacing:0;text-transform:none;opacity:1;">'+c+'</b> — '+F[c].pos) : ('• '+c));
+    const linhas = kc.map(c=>F[c] ? ('• <b style="display:inline;font-size:12.5px;letter-spacing:0;text-transform:none;opacity:1;">'+escH(c)+'</b> — '+escH(F[c].pos)) : ('• '+escH(c)));
     b.style.display='block';
-    b.innerHTML = '<b>Em uso agora — protocolo '+(prev.protocolo||'não registrado')+'</b>' +
+    b.innerHTML = '<b>Em uso agora — protocolo '+escH(prev.protocolo||'não registrado')+'</b>' +
       (linhas.length ? linhas.join('<br>') : 'Fórmulas não registradas no ciclo anterior.');
   }
 
@@ -4332,8 +4369,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     catch(e){
       // v2.5-M: histórico ilegível — segue como retorno, com o ciclo anterior informado à mão
       prev = null; S.hist = null; S.semHistorico = false; S.nReav = null;
-      S.histErro = e && e.message==='BANCO_ILEGIVEL' ? 'O banco da clínica está ilegível' : 'O servidor não respondeu';
-      S.resumoHist = S.histErro+' — o histórico deste paciente não pôde ser lido. O atendimento continua como retorno: confira no prontuário o protocolo e os escores do ciclo anterior e informe nas próximas telas.';
+      // v2.5-Q: mensagem clara — nunca "Sem histórico" / "1ª avaliação"
+      S.histErro = e && e.message==='BANCO_ILEGIVEL' ? 'O banco da clínica está ilegível' : 'Não consegui carregar o histórico';
+      S.resumoHist = S.histErro+' — o atendimento continua como retorno. Confira no prontuário o protocolo e os escores do ciclo anterior e informe nas próximas telas.';
       if (typeof AvisoServidor!=='undefined') AvisoServidor.confere();
       return;
     }
@@ -4388,8 +4426,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (dias > 90) S.resumoHist += ' Intervalo acima do previsto de 2 meses — o paciente pulou pelo menos um retorno.';
       if (dias < 40) S.resumoHist += ' Intervalo abaixo do previsto de 2 meses — retorno antecipado.';
     } else {
-      S.nReav = null; S.semHistorico = true; S.visita = 'primeira'; prev = null;
       const f = (S.fila||[]).find(x=>x.codigo===S.daFila);
+      S.nReav = null; S.semHistorico = true; S.visita = 'primeira'; prev = null;
       S.resumoHist = origem==='fila'
         ? ('Primeira passagem deste paciente pela clínica. O único registro que temos dele é o questionário que respondeu na recepção hoje'
            + (f && f.hora ? ', às '+f.hora : '') + '. O atendimento segue como avaliação inicial.')
@@ -6887,7 +6925,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     if (S.filaAplicada && (S.pendRec||[]).length) notas.push('<b>O paciente deixou '+S.pendRec.length+' pergunta'+(S.pendRec.length>1?'s':'')+' para responder com você</b> — ela'+(S.pendRec.length>1?'s':'')+' apareceu'+(S.pendRec.length>1?'ram':'')+' marcada'+(S.pendRec.length>1?'s':'')+' no questionário. Quem escolhe essa opção normalmente não entendeu a pergunta; vale reformular em vez de repetir.');
     if (S.filaAplicada) notas.push('Questionários preenchidos pelo paciente na recepção'+((S.fila||[]).find(x=>x.codigo===S.daFila)?.hora?(' às '+(S.fila||[]).find(x=>x.codigo===S.daFila).hora):'')+' e importados automaticamente. Confirme com ele se as respostas refletem o quadro atual.');
-    if (S.queixaMudouDoCiclo) notas.push('<b>A queixa mudou desde o último ciclo.</b> O protocolo anterior ('+(prev&&prev.protocolo||'—')+') tratava outra coisa — não é continuação, é um novo eixo de tratamento. Se o problema anterior foi resolvido, registrar; se apenas saiu de foco, ele volta depois.');
+    if (S.queixaMudouDoCiclo) notas.push('<b>A queixa mudou desde o último ciclo.</b> O protocolo anterior ('+escH((prev&&prev.protocolo)||'—')+') tratava outra coisa — não é continuação, é um novo eixo de tratamento. Se o problema anterior foi resolvido, registrar; se apenas saiu de foco, ele volta depois.');
     if (S.semPreenchAnterior) notas.push('<b>Marcado como retorno, mas não há preenchimento registrado</b> para este código. O sistema seguiu como avaliação inicial. Se o procedimento foi feito em outro lugar ou antes do sistema, registre as medidas de partida hoje.');
     const ceN = S.confirmaEstavel, mudN = Array.isArray(ceN) ? ceN.filter(v=>v!=='nao') : [];
     const NOME_EST = {contra:'contraindicação cardiovascular',alergia:'alergias',comorb:'comorbidades',meds:'medicações em uso',tempo:'início dos sintomas',

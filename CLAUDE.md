@@ -409,6 +409,12 @@ de `case` dentro de `$( )` (use uma função), nada de bash 4+ (`wait -n`,
 (`/usr/local/bin/bash3.2`, compilado do GNU bash 3.2.57) ou `MAXIMUS_BASH32`.
 Sem bash 3.2, só a parte estática, com aviso.
 
+**Segurança e fila local (v2.5-Q · 2.5.16).**
+- **XSS:** campos gravados (`protocolo`, fórmulas, iniciais/nome no painel, notas) passam por `escH` antes de `innerHTML` na ficha (tecla F), no histórico e no painel. Payload `<img onerror>` não executa.
+- **Retorno + histórico ilegível:** se a 2ª leitura (`/api/historico`, quando o último registro é da recepção) falha, `Store.ultimo` **lança** (antes devolvia `null` e o app tratava como paciente novo). Mensagem: "Não consegui carregar o histórico". Nunca "Sem histórico na clínica" / "1ª avaliação" nesse caso. Banco vazio de verdade (só questionário da recepção, sem ciclo clínico) continua como primeira passagem.
+- **Fila local:** `fetchPrazo` (18 s) no `POST /api/ciclo` — servidor pendurado enfileira. `processaFila` só remove o que *este* ciclo gravou (relê a fila; item enfileirado no meio do reenvio não some). Códigos ainda na fila local são reservados em `sugerirCodigo`.
+- Teste: `tests/teste_v25q.js` (etapa 7l).
+
 **Ajustes do Dr. Marco (v2.5-P · 2.5.15).**
 - **Via do paciente sem regra interna.** Nada de piso terapêutico, "conduta mais
   permissiva", pacote/venda, escore, sigla de protocolo, "sem ganho / efeito
