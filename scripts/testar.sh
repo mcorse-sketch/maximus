@@ -91,8 +91,14 @@ mostra_prontas(){   # imprime, na ordem original, as etapas já terminadas
     proximo=$((proximo+1))
   done
 }
+# o kiosk (etapa 3) depende do relógio: a tela avança 160 ms depois do toque e o teste
+# toca de novo nesse intervalo, então com a máquina carregada o caminho sorteado muda
+# e o teste pode falhar. Ele roda sozinho, antes das outras, como sempre rodou.
+SOZINHAS=" 2 "
+for i in $SOZINHAS; do roda_etapa "$i"; done
+ORDEM="$(for i in $ORDEM; do case "$SOZINHAS" in *" $i "*) ;; *) echo "$i";; esac; done)"
 lancadas=0
-rodando(){ echo $(( lancadas - $(ls "$TMPD" | grep -c '\.rc$') )); }   # sem "jobs": igual no bash 3.2
+rodando(){ echo $(( lancadas - $(ls "$TMPD" | grep -c '\.rc$') + $(echo $SOZINHAS | wc -w) )); }   # sem "jobs": igual no bash 3.2
 for i in $ORDEM; do
   while [ "$(rodando)" -ge "$JOBS" ]; do sleep 0.2; mostra_prontas; done
   roda_etapa "$i" &
