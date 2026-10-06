@@ -708,6 +708,40 @@
 </style>
 <footer class="brand-footer">Cl&iacute;nica Maximus Medicina Masculina</footer>
 <script>
+  // v2.5-K (auditoria): diálogo do próprio app no lugar de prompt()/confirm()/alert() nativos
+  // (mesma implementação da triagem). Confirmar → true/false; com campo → texto ou null.
+  function dlgEsc(t){ return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function mxDialogo(o){
+    return new Promise(res=>{
+      const ant = document.activeElement, id = 'mxDlgT'+Date.now();
+      const ov = document.createElement('div'); ov.className = 'mx-dlg-ov noprint';
+      ov.innerHTML = '<div class="mx-dlg" role="'+(o.perigo?'alertdialog':'dialog')+'" aria-modal="true" aria-labelledby="'+id+'">'
+        + (o.titulo ? '<h3 id="'+id+'">'+dlgEsc(o.titulo)+'</h3>' : '')
+        + '<p'+(o.titulo?'':' id="'+id+'"')+'>'+dlgEsc(o.texto||'')+'</p>'
+        + (o.campo ? '<input type="text" class="mx-dlg-in" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="'+dlgEsc(o.placeholder||'')+'">' : '')
+        + '<div class="mx-dlg-bts">'+(o.cancelar===false ? '' : '<button type="button" class="mx-dlg-b sec" data-v="0">'+dlgEsc(o.cancelar||'Cancelar')+'</button>')
+        + '<button type="button" class="mx-dlg-b pri'+(o.perigo?' perigo':'')+'" data-v="1">'+dlgEsc(o.ok||'OK')+'</button></div></div>';
+      document.body.appendChild(ov);
+      const inp = ov.querySelector('.mx-dlg-in'); if (inp) inp.value = o.valor||'';
+      const nao = o.campo ? null : false;
+      const fim = v=>{ window.removeEventListener('keydown', tec, true); ov.remove(); try{ if (ant && ant.focus) ant.focus(); }catch(e){} res(v); };
+      const sim = ()=>fim(o.campo ? inp.value : true);
+      const tec = e=>{
+        e.stopPropagation();
+        if (e.key==='Escape'){ e.preventDefault(); fim(nao); }
+        else if (e.key==='Enter' && !(e.target && e.target.tagName==='BUTTON')){ e.preventDefault(); sim(); }
+        else if (e.key==='Tab'){ const f=[...ov.querySelectorAll('input,button')]; const i=f.indexOf(document.activeElement);
+          e.preventDefault(); f[(i + (e.shiftKey ? f.length-1 : 1)) % f.length].focus(); }
+      };
+      ov.querySelector('[data-v="1"]').onclick = sim;
+      const c = ov.querySelector('[data-v="0"]'); if (c) c.onclick = ()=>fim(nao);
+      ov.addEventListener('mousedown', e=>{ if (e.target===ov) fim(nao); });
+      window.addEventListener('keydown', tec, true);
+      setTimeout(()=>{ const f = inp || ov.querySelector(o.perigo ? '[data-v="0"]' : '[data-v="1"]') || ov.querySelector('button'); if (f) f.focus(); if (inp) inp.select(); }, 0);
+    });
+  }
+</script>
+<script>
 (function(){
   const LS = { get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},
                set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}} };
@@ -877,9 +911,10 @@
     const t=document.getElementById('dbTag'); if(!t) return;
     t.innerHTML = (extra||Store.rotulo()) + ' &middot; <a href="#" id="cfgLink" style="text-decoration:underline;">configurar servidor</a>';
     const a=document.getElementById('cfgLink');
-    if (a) a.onclick=(e)=>{
+    if (a) a.onclick=async(e)=>{
       e.preventDefault();
-      const v = prompt('Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.', LS.get('maximus_api')||'');
+      const v = await mxDialogo({titulo:'Servidor da clínica', texto:'Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.',
+        campo:true, valor:LS.get('maximus_api')||'', placeholder:'http://192.168.0.10:8080', ok:'Salvar'});
       if (v===null) return;
       LS.set('maximus_api', (v||'').trim());
       Store.init().then(()=>pintaStatus());
@@ -920,7 +955,9 @@
 
   async function buscar(){
     const cod=norm(el('cod').value);
-    if(!cod){ return; }
+    // v2.5-K: "Copiar resumo" só existe com um paciente na tela (busca vazia ou sem registro esconde)
+    el('copiar').style.display='none'; window.__resumo='';
+    if(!cod){ el('res').style.display='none'; el('res').innerHTML=''; el('cod').focus(); return; }
     el('btn').disabled=true; el('btn').textContent='Buscando…';
     let ciclos=[];
     try{ ciclos = await Store.historico(cod); }catch(e){ ciclos=[]; }
@@ -1045,5 +1082,32 @@
   .fcopiar{border-color:#b9c0cb;color:#0b1f3b}
   .fcard{border-color:#d4d1c8}
   .brand-footer{color:#4a5464!important;opacity:1!important}
+/* v2.5-K (auditoria visual): subtítulo legível, coluna mais larga, cartão do paciente sem branco no escuro */
+@media screen{
+  header .t2{color:var(--mx-text2)!important}
+  .fwrap{max-width:880px!important;width:100%;box-sizing:border-box}
+  @media (prefers-color-scheme: dark){
+    .fdestaque{background:var(--mx-surf2)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important}
+  }
+}
+/* v2.5-K: diálogo do app */
+@media screen{
+  /* diálogo do app (no lugar de prompt/confirm nativos) */
+  .mx-dlg-ov{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:rgba(1,11,15,.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:mxDlgIn .16s ease-out}
+  .mx-dlg{width:min(440px,100%);background:var(--mx-surf);color:var(--mx-text);border:1px solid var(--mx-line);border-radius:20px;
+    box-shadow:0 24px 80px rgba(1,11,15,.28);padding:22px 22px 18px;font-family:var(--mx-font)}
+  .mx-dlg h3{margin:0 0 8px;font:600 17px var(--mx-font);letter-spacing:-.01em;color:var(--mx-text)}
+  .mx-dlg p{margin:0;font-size:14px;line-height:1.5;color:var(--mx-text2);white-space:pre-wrap;max-height:50vh;overflow:auto}
+  .mx-dlg-in{width:100%;margin-top:14px;height:42px;border-radius:12px;border:1px solid var(--mx-line2);background:var(--mx-surf2);
+    color:var(--mx-text);padding:0 12px;font:500 14px var(--mx-mono, ui-monospace, monospace);box-sizing:border-box}
+  .mx-dlg-in:focus{outline:none;border-color:var(--mx-focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 22%,transparent)}
+  .mx-dlg-bts{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+  .mx-dlg-b{height:38px;padding:0 16px;border-radius:999px;font:600 14px var(--mx-font);cursor:pointer;border:1px solid var(--mx-line2);background:transparent;color:var(--mx-text)}
+  .mx-dlg-b.pri{background:var(--mx-ink);color:var(--mx-inkt);border-color:var(--mx-ink)}
+  .mx-dlg-b.pri.perigo{background:var(--mx-stop);border-color:var(--mx-stop);color:#fff}
+  .mx-dlg-b:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 30%,transparent)}
+    @keyframes mxDlgIn{from{opacity:0}to{opacity:1}}
+}
 </style>
 </body></html>
