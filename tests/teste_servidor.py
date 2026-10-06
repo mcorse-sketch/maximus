@@ -4,7 +4,8 @@ o banco real nunca e tocado.
 
 Uso:  python3 tests/teste_servidor.py
 """
-import json, os, shutil, sys, tempfile, threading, unittest, urllib.request, urllib.error
+import json
+import time, os, shutil, sys, tempfile, threading, unittest, urllib.request, urllib.error
 from http.server import ThreadingHTTPServer
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -435,8 +436,11 @@ class Servidor(unittest.TestCase):
         # sem arquivo, arquivo de 0 bytes e "{}": sempre MX0001, sem erro 500
         # e sem gerar copia ".corrompido" (bug do app ao vivo, 30/09/2026)
         m = self.tok["medico"]
+        backups_real = srv.BACKUPS
         for conteudo in (None, "", "  \n", "{}", '{"pacientes": {}}'):
             banco_real = self._com_banco(conteudo)
+            # instalacao nova: sem backups (com backups cheios, vazio e perda — ver abaixo)
+            srv.BACKUPS = tempfile.mkdtemp(dir=self.tmp)
             try:
                 st, j = self.req("GET", "/api/proximo-codigo", token=m)
                 self.assertEqual((st, j), (200, {"codigo": "MX0001"}), repr(conteudo))
@@ -453,6 +457,8 @@ class Servidor(unittest.TestCase):
                 if os.path.exists(srv.BANCO):
                     os.remove(srv.BANCO)
                 srv.BANCO = banco_real
+                shutil.rmtree(srv.BACKUPS, ignore_errors=True)
+                srv.BACKUPS = backups_real
 
     def test_proximo_codigo_com_pacientes_e_recepcao(self):
         # o proximo livre passa do maior codigo, inclusive de quem so passou
@@ -473,20 +479,149 @@ class Servidor(unittest.TestCase):
             os.remove(srv.BANCO)
             srv.BANCO = banco_real
 
+    def _limpa_estado_banco(self):
+        with srv._lock_estado:
+            srv._estado["banco"] = None
+
     def test_banco_com_pacientes_invalido_nao_e_sobrescrito(self):
-        # "pacientes" que nao e objeto e banco estragado: copia de seguranca, nunca
-        # zera em silencio
-        banco_real = self._com_banco('{"pacientes": []}')
+        # v2.5-M: banco estragado FALHA FECHADO — uma copia de seguranca, 503 na API,
+        # /api/health avisa, e nada e gravado por cima ate o arquivo ser consertado
+        conteudo = '{"pacientes": []}'
+        banco_real = self._com_banco(conteudo)
+        m = self.tok["medico"]
         try:
-            self.assertEqual(srv.carregar(), {"pacientes": {}})
+            with self.assertRaises(srv.BancoIlegivel):
+                srv.carregar()
+            with self.assertRaises(srv.BancoIlegivel):   # 2a leitura: nao gera outra copia
+                srv.carregar()
             pasta = os.path.dirname(srv.BANCO)
             copias = [x for x in os.listdir(pasta) if x.startswith(os.path.basename(srv.BANCO) + ".corrompido")]
             self.assertEqual(len(copias), 1)
+            st, j = self.req("GET", "/api/pacientes", token=m)
+            self.assertEqual((st, j.get("banco")), (503, "ilegivel"), "nao serve lista vazia")
+            self.assertEqual(self.req("GET", "/api/proximo-codigo", token=m)[0], 503, "nao reinicia em MX0001")
+            st, _ = self.req("POST", "/api/ciclo", {"codigo": "MX0001", "tipo": "primeira", "linha": "DE"}, token=m)
+            self.assertEqual(st, 503)
+            with open(srv.BANCO, encoding="utf-8") as f:
+                self.assertEqual(f.read(), conteudo, "o arquivo estragado nao foi sobrescrito")
+            st, h = self.req("GET", "/api/health")
+            self.assertEqual((st, h["banco"]), (200, "ilegivel"))
+            self.assertTrue(any(a["nivel"] == "grave" for a in h["alertas"]))
+            self.assertNotIn(self.tmp, json.dumps(h), "health nao expoe caminhos")
+            # consertado o arquivo, volta sozinho
+            with open(srv.BANCO, "w", encoding="utf-8") as f:
+                f.write('{"pacientes": {}}')
+            os.utime(srv.BANCO, (time.time() + 5, time.time() + 5))
+            self.assertEqual(self.req("GET", "/api/pacientes", token=m), (200, {"pacientes": []}))
+            self.assertEqual(self.req("GET", "/api/health")[1]["banco"], "ok")
             for c in copias:
                 os.remove(os.path.join(pasta, c))
         finally:
+            self._limpa_estado_banco()
             os.remove(srv.BANCO)
             srv.BANCO = banco_real
+
+    def test_banco_vazio_com_backups_cheios_e_perda(self):
+        # arquivo de 0 bytes quando ja ha backup com pacientes: perda, nao comeco
+        banco_real = self._com_banco("")
+        os.makedirs(srv.BACKUPS, exist_ok=True)
+        bk = os.path.join(srv.BACKUPS, "banco_1999-01-01.json")
+        with open(bk, "w", encoding="utf-8") as f:
+            f.write(json.dumps({"pacientes": {"MX0001": [{"codigo": "MX0001"}]}}))
+        try:
+            self.assertEqual(self.req("GET", "/api/pacientes", token=self.tok["medico"])[0], 503)
+            self.assertEqual(os.path.getsize(srv.BANCO), 0)
+        finally:
+            self._limpa_estado_banco()
+            os.remove(bk)
+            pasta = os.path.dirname(srv.BANCO)
+            for x in os.listdir(pasta):
+                if ".corrompido" in x:
+                    os.remove(os.path.join(pasta, x))
+            os.remove(srv.BANCO)
+            srv.BANCO = banco_real
+
+    def test_health_traz_estado_e_versao(self):
+        st, h = self.req("GET", "/api/health")
+        self.assertEqual(st, 200)
+        for k in ("ok", "banco", "backupLocal", "backupIcloud", "alertas", "app"):
+            self.assertIn(k, h)
+        self.assertRegex(h["app"] or "", r"^\d+\.\d+\.\d+$")
+        self.assertIsInstance(h["alertas"], list)
+
+    def test_falha_do_icloud_vira_alerta_e_tenta_de_novo(self):
+        # v2.5-M: backup do iCloud que falha aparece em /api/health (vira o aviso dos apps)
+        # e e tentado de novo, no maximo 1x/hora, ate dar certo
+        banco_real, backups_real = self._com_banco('{"pacientes": {}}'), srv.BACKUPS
+        srv.BACKUPS = tempfile.mkdtemp(dir=self.tmp)
+        senha_real, avisa_real = srv.senha_backup, srv._avisa_mac
+        avisos = []
+        srv._avisa_mac = lambda t, m: avisos.append(t)
+        with srv._lock_estado:
+            guardado = dict(srv._estado)
+            srv._estado["backup_local"] = srv._estado["backup_icloud"] = None
+        try:
+            srv.senha_backup = lambda: None
+            srv.backup_do_dia()
+            h = self.req("GET", "/api/health")[1]
+            self.assertFalse(h["backupIcloud"]["ok"])
+            self.assertTrue(any(a["nivel"] == "grave" and "iCloud" in a["texto"] for a in h["alertas"]), h["alertas"])
+            self.assertEqual(len(avisos), 1)
+            srv.backup_do_dia()                     # menos de 1 h depois: nao tenta nem notifica de novo
+            self.assertEqual(len(avisos), 1)
+            srv.senha_backup = lambda: "senha-do-backup-teste"
+            with srv._lock_estado:                  # passou 1 h
+                srv._estado["backup_icloud"]["em"] = "2000-01-01T00:00:00"
+            srv.backup_do_dia()
+            h = self.req("GET", "/api/health")[1]
+            self.assertTrue(h["backupIcloud"]["ok"], h)
+            self.assertFalse([a for a in h["alertas"] if "iCloud" in a["texto"]], h["alertas"])
+            with open(os.path.join(srv.BACKUPS, "estado_backup.json"), encoding="utf-8") as f:
+                self.assertTrue(json.load(f)["backup_icloud"]["ok"], "estado sobrevive a reinicio")
+        finally:
+            srv.senha_backup, srv._avisa_mac = senha_real, avisa_real
+            with srv._lock_estado:
+                srv._estado.update(guardado)
+            shutil.rmtree(srv.BACKUPS, ignore_errors=True)
+            srv.BACKUPS = backups_real
+            os.remove(srv.BANCO)
+            srv.BANCO = banco_real
+
+    def test_conferir_restauracao(self):
+        # v2.5-M: scripts/conferir_restauracao.py decifra o backup do iCloud e confere o banco
+        import importlib.util, io, contextlib
+        spec = importlib.util.spec_from_file_location("conferir", os.path.join(RAIZ, "scripts", "conferir_restauracao.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        banco_real = self._com_banco(json.dumps({"pacientes": {"MX0001": [{"codigo": "MX0001"}], "MX0002": [{"codigo": "MX0002"}]}}))
+        try:
+            self.assertIsNone(srv.backup_fora(srv.BANCO, "2999-01-02"))  # data no futuro: a limpeza dos 60 dias nao a apaga
+            enc = os.path.join(srv.ICLOUD, "banco_2999-01-02.json.enc")
+            sys.argv = ["conferir", enc]
+            saida = io.StringIO()
+            with contextlib.redirect_stdout(saida):
+                self.assertEqual(mod.main(), 0, saida.getvalue())
+            self.assertIn("2 pacientes", saida.getvalue())
+            with open(enc, "r+b") as f:          # backup danificado: nao restaura
+                f.seek(40); f.write(b"\x00" * 64)
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(mod.main(), 1)
+            os.remove(enc)
+        finally:
+            sys.argv = ["teste"]
+            os.remove(srv.BANCO)
+            srv.BANCO = banco_real
+
+    def test_reenvio_com_mesmo_opid_nao_duplica(self):
+        m = self.tok["medico"]
+        reg = {"codigo": "MX0901", "tipo": "primeira", "linha": "DE", "opId": "MX0901-primeira-2026-10-06T10:00:00Z"}
+        st1, j1 = self.req("POST", "/api/ciclo", reg, token=m)
+        st2, j2 = self.req("POST", "/api/ciclo", reg, token=m)
+        self.assertEqual((st1, st2), (200, 200))
+        self.assertTrue(j2.get("repetido"))
+        self.assertEqual(j1["total"], j2["total"])
+        st, j = self.req("GET", "/api/paciente/MX0901", token=m)
+        self.assertEqual((st, j["total"]), (200, 1), "um atendimento so, apesar do reenvio")
 
     def test_codigo_invalido(self):
         self.assertEqual(self.req("GET", "/api/paciente/..%2Fetc", token=self.tok["medico"])[0], 400)

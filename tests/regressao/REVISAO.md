@@ -73,6 +73,8 @@ errada, o erro é do app — corrija o app, não esta folha.
 | R-14 | Reavaliação DE: IIEF 15 → 19 (+4) muda de faixa — mantém BASE-T10 / DE-2 (não reduz) | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 19 | — |
 | R-15 | Reavaliação DE: IIEF 15 → 17 (+2) — sobe de BASE-T10 para BASE-T20 / DE-3, a partir do anterior | DE-3 | BASE-T20, NOITE-1, SP-DE, ONDAS | 17 | — |
 | R-16 | Reavaliação DE: BASE-T5, IIEF 15 → 17 (+2) — sobe para BASE-T10 / DE-2 | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 17 | — |
+| R-20 | Reavaliação DE: BASE-T5, IIEF 22 → 22 (sem ganho, já sem disfunção) — mantém DE-1, sem "Trocar mecanismo" | DE-1 (mantido) | BASE-T5, NOITE-1, SP-DE | 22 | — |
+| R-21 | Reavaliação DE: já em BASE-T20, IIEF 24 → 22 (caiu, ainda sem disfunção) — mantém DE-3, sem teto/TEFI | DE-3 (mantido) | BASE-T20, NOITE-1, SP-DE | 22 | — |
 | R-17 | Reavaliação DE: já em BASE-T20, IIEF 15 → 17 (+2) — teto oral: fica em BASE-T20 e indica TEFI | DE-3 | BASE-T20, NOITE-1, SP-DE, ONDAS, TEFI | 17 | — |
 | R-18 | Reavaliação DUO: DUO-2, IIEF 14 → 16 (+2) — sobe para BASE-T20 / DUO-3, máximo 1 jato do SP-DUO | DUO-3 | BASE-T20, NOITE-1, SP-DUO, ONDAS | 16 | 12 |
 | R-19 | Reavaliação DE com baixa adesão, IIEF 15 → 19 — cápsula fica em BASE-T10 (nem sobe nem desce) | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 19 | — |

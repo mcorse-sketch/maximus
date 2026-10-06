@@ -182,30 +182,91 @@ def perfil_do_token(token):
         return s[0]
 
 
+class BancoIlegivel(Exception):
+    """v2.5-M: o banco existe mas nao abre. O servidor PARA de ler e gravar (falha fechada)
+    ate o arquivo ser restaurado — antes ele seguia com um banco vazio e a primeira consulta
+    gravada sobrescrevia o historico inteiro."""
+
+
+# estado mostrado em /api/health e no aviso dos tres apps
+_estado = {"banco": None, "backup_local": None, "backup_icloud": None}
+_lock_estado = threading.Lock()
+def _arq_estado():
+    # calculado na hora: segue BACKUPS (os testes apontam BACKUPS para uma pasta temporaria)
+    return os.path.join(BACKUPS, "estado_backup.json")
+
+
+ICLOUD_RETENTA = 3600   # segundos entre novas tentativas do iCloud no mesmo dia
+
+
+def _avisa_mac(titulo, texto):
+    """Notificacao do macOS (Central de Notificacoes); em outro sistema, nada."""
+    if sys.platform != "darwin":
+        return
+    try:
+        script = 'display notification "%s" with title "%s" sound name "Basso"' % (
+            texto.replace('"', "'"), titulo.replace('"', "'"))
+        subprocess.Popen(["osascript", "-e", script], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+
+
+def _ha_backup_com_conteudo():
+    try:
+        return any(f.startswith("banco_") and os.path.getsize(os.path.join(BACKUPS, f)) > 20
+                   for f in os.listdir(BACKUPS))
+    except OSError:
+        return False
+
+
 def carregar():
     if not os.path.exists(BANCO):
         return {"pacientes": {}}
     try:
+        mtime = os.path.getmtime(BANCO)
+    except OSError:
+        mtime = None
+    with _lock_estado:
+        ruim = _estado["banco"]
+    # mesmo arquivo que ja falhou: nem tenta de novo (e nao gera outra copia)
+    if ruim and ruim.get("mtime") == mtime:
+        raise BancoIlegivel(ruim["erro"])
+    try:
         with open(BANCO, "r", encoding="utf-8") as f:
             texto = f.read()
-        # arquivo criado vazio (0 bytes) ou "{}": banco novo, nao corrompido.
-        # Antes, "{}" derrubava /api/proximo-codigo, /api/pacientes e a gravacao
-        # (KeyError 'pacientes'); e o arquivo de 0 bytes gerava uma copia
-        # ".corrompido" a cada consulta.
+        # arquivo vazio (0 bytes): banco novo — a nao ser que ja exista backup com dados,
+        # caso em que o vazio e perda, nao comeco (v2.5-M)
         if not texto.strip():
-            return {"pacientes": {}}
-        dados = json.loads(texto)
+            if _ha_backup_com_conteudo():
+                raise ValueError("arquivo vazio, mas ha backups com dados")
+            dados = {"pacientes": {}}
+        else:
+            dados = json.loads(texto)
         if not isinstance(dados, dict):
             raise ValueError("banco nao e um objeto")
         dados.setdefault("pacientes", {})
         if not isinstance(dados["pacientes"], dict):
             raise ValueError("'pacientes' nao e um objeto")
+        if ruim:
+            with _lock_estado:
+                _estado["banco"] = None
+            print("  banco legivel de novo — leitura e gravacao liberadas")
         return dados
-    except Exception:
+    except Exception as e:
         quebrado = BANCO + ".corrompido-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        shutil.copy2(BANCO, quebrado)
-        print("!! banco ilegivel, copiado para", quebrado, "- comecando vazio")
-        return {"pacientes": {}}
+        try:
+            shutil.copy2(BANCO, quebrado)
+        except OSError:
+            quebrado = None
+        erro = "banco ilegivel (%s)" % (str(e)[:120] or type(e).__name__)
+        with _lock_estado:
+            _estado["banco"] = {"erro": erro, "copia": quebrado, "mtime": mtime,
+                                "em": datetime.datetime.now().isoformat(timespec="seconds")}
+        print("!! " + erro + (" — copia em " + quebrado if quebrado else ""))
+        print("!! LEITURA E GRAVACAO SUSPENSAS. Nada sera gravado ate restaurar o banco:")
+        print("!!   python3 scripts/conferir_restauracao.py   (confere o ultimo backup)")
+        _avisa_mac("Maximus — banco ilegível", "Gravação suspensa. Restaure o banco a partir do backup.")
+        raise BancoIlegivel(erro)
 
 
 def gravar(dados):
@@ -225,16 +286,124 @@ def backup_do_dia():
     hoje = datetime.date.today().isoformat()
     alvo = os.path.join(BACKUPS, "banco_" + hoje + ".json")
     if not os.path.exists(alvo):
-        shutil.copy2(BANCO, alvo)
-        motivo = backup_fora(alvo, hoje)
-        print("  backup do dia no iCloud: " + ("ok" if not motivo else "NAO FEITO — " + motivo))
-        # mantem os 60 backups mais recentes
-        arqs = sorted(os.listdir(BACKUPS))
+        try:
+            shutil.copy2(BANCO, alvo)
+            _registra_backup("backup_local", None)
+        except OSError as e:
+            _registra_backup("backup_local", "copia local falhou: %s" % e)
+            return
+        _tenta_icloud(alvo, hoje)
+        # mantem os 60 backups mais recentes (so os arquivos banco_*)
+        arqs = sorted(f for f in os.listdir(BACKUPS) if f.startswith("banco_"))
         for velho in arqs[:-60]:
             try:
                 os.remove(os.path.join(BACKUPS, velho))
             except OSError:
                 pass
+    else:
+        # v2.5-M: o iCloud falhou hoje (ou nunca rodou hoje)? tenta de novo, no maximo 1x/hora
+        with _lock_estado:
+            ic = _estado.get("backup_icloud") or {}
+        if not (ic.get("ok") and ic.get("dia") == hoje):
+            try:
+                ultima = datetime.datetime.fromisoformat(ic.get("em")).timestamp() if ic.get("em") else 0
+            except (TypeError, ValueError):
+                ultima = 0
+            if time.time() - ultima >= ICLOUD_RETENTA:
+                _tenta_icloud(alvo, hoje)
+
+
+def _tenta_icloud(alvo, hoje):
+    with _lock_estado:
+        antes = (_estado.get("backup_icloud") or {}).get("motivo")
+    motivo = backup_fora(alvo, hoje)
+    _registra_backup("backup_icloud", motivo)
+    print("  backup do dia no iCloud: " + ("ok" if not motivo else "NAO FEITO — " + motivo))
+    if motivo and motivo != antes:     # notifica a falha nova, nao a mesma a cada hora
+        _avisa_mac("Maximus — backup do iCloud NÃO feito", motivo)
+
+
+def _registra_backup(qual, motivo):
+    """Guarda o resultado do ultimo backup (local ou iCloud) em memoria e em disco,
+    para o aviso dos apps sobreviver a um reinicio do servidor."""
+    reg = {"ok": not motivo, "motivo": motivo, "em": datetime.datetime.now().isoformat(timespec="seconds"),
+           "dia": datetime.date.today().isoformat()}
+    with _lock_estado:
+        _estado[qual] = reg
+        tudo = {k: _estado[k] for k in ("backup_local", "backup_icloud")}
+    try:
+        os.makedirs(BACKUPS, exist_ok=True)
+        tmp = _arq_estado() + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(tudo, f, ensure_ascii=False, indent=1)
+        os.replace(tmp, _arq_estado())
+    except OSError:
+        pass
+
+
+def _le_estado_backup():
+    try:
+        with open(_arq_estado(), "r", encoding="utf-8") as f:
+            d = json.load(f)
+        with _lock_estado:
+            for k in ("backup_local", "backup_icloud"):
+                if isinstance(d.get(k), dict) and not _estado.get(k):
+                    _estado[k] = d[k]
+    except (OSError, ValueError):
+        pass
+
+
+def _ultimo_dia(pasta, padrao):
+    try:
+        dias = sorted(m.group(1) for m in (re.match(padrao, f) for f in os.listdir(pasta)) if m)
+        return dias[-1] if dias else None
+    except OSError:
+        return None
+
+
+def _versao_app():
+    """Versao do triagem.html servido (data-versao do cabecalho) — confere o build no Mac."""
+    try:
+        with open(APP, "r", encoding="utf-8") as f:
+            m = re.search(r'id="versaoApp" data-versao="([^"]+)"', f.read(200000))
+        return m.group(1) if m else None
+    except OSError:
+        return None
+
+
+def saude():
+    """v2.5-M: o que /api/health devolve — banco legivel? backups em dia? Sem caminhos nem dados
+    de paciente (a rota e aberta, como antes). 'alertas' vira o aviso no topo dos tres apps."""
+    alertas = []
+    with _lock_estado:
+        banco, bl, bi = _estado["banco"], _estado["backup_local"], _estado["backup_icloud"]
+    if banco:
+        alertas.append({"nivel": "grave", "texto": "Banco ilegível — leitura e gravação suspensas para não perder o histórico. "
+                        "Nada desta tela será gravado. Restaurar o banco a partir do backup (scripts/conferir_restauracao.py)."})
+    hoje = datetime.date.today().isoformat()
+    dia_banco = None
+    try:
+        dia_banco = datetime.date.fromtimestamp(os.path.getmtime(BANCO)).isoformat() if os.path.exists(BANCO) else None
+    except OSError:
+        pass
+    ult_local = _ultimo_dia(BACKUPS, r"^banco_(\d{4}-\d{2}-\d{2})\.json$")
+    if bl and not bl.get("ok"):
+        alertas.append({"nivel": "grave", "texto": "Backup local de " + bl.get("dia", "?") + " falhou: " + str(bl.get("motivo"))})
+    elif dia_banco and ult_local and dia_banco > ult_local:
+        alertas.append({"nivel": "aviso", "texto": "Backup local atrasado: o último é de " + ult_local + "."})
+    icloud_ok = os.path.isdir(os.path.dirname(ICLOUD))
+    if not icloud_ok:
+        alertas.append({"nivel": "aviso", "texto": "Backup do iCloud inativo: iCloud Drive não encontrado neste Mac."})
+    elif bi and not bi.get("ok"):
+        alertas.append({"nivel": "grave", "texto": "Backup do iCloud de " + bi.get("dia", "?") + " NÃO foi feito: " + str(bi.get("motivo"))})
+    else:
+        ult_ic = _ultimo_dia(ICLOUD, r"^banco_(\d{4}-\d{2}-\d{2})\.json\.enc$")
+        if dia_banco and (not ult_ic or dia_banco > ult_ic) and ult_local and ult_local >= (ult_ic or ""):
+            alertas.append({"nivel": "aviso", "texto": "Backup do iCloud atrasado: o último é de " + (ult_ic or "nunca") + "."})
+    return {"banco": "ilegivel" if banco else "ok", "app": _versao_app(),
+            "backupLocal": {"ultimo": ult_local, "ok": (bl or {}).get("ok", True)},
+            "backupIcloud": {"ativo": icloud_ok, "ok": (bi or {}).get("ok", True), "ultimo": (bi or {}).get("dia")},
+            "hoje": hoje, "alertas": alertas}
 
 
 def carregar_demo(origem):
@@ -512,6 +681,17 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(corpo)
 
+    def _protegido(self, fn):
+        """v2.5-M: banco ilegivel vira 503 com o motivo, em qualquer rota — nunca resposta vazia
+        que o app confunda com "paciente sem historico"."""
+        try:
+            fn()
+        except BancoIlegivel as e:
+            try:
+                self._json({"erro": str(e) + " — leitura e gravacao suspensas", "banco": "ilegivel"}, 503)
+            except Exception:
+                pass
+
     def do_OPTIONS(self):
         self.send_response(204)
         self._cors()
@@ -580,6 +760,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(corpo)
 
     def do_GET(self):
+        self._protegido(self._do_GET)
+
+    def _do_GET(self):
         caminho = self.path.split("?")[0]
 
         if caminho in ("/recepcao", "/recepcao.html"):
@@ -601,7 +784,8 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if caminho == "/api/health":
-            self._json({"ok": True, "versao": 2, "senha": True})
+            # v2.5-M: continua 200 mesmo com o banco ilegivel — os apps entram e mostram o aviso
+            self._json(dict({"ok": True, "versao": 2, "senha": True}, **saude()))
             return
 
         if caminho == "/api/sessao":
@@ -756,6 +940,9 @@ class Handler(BaseHTTPRequestHandler):
         self._json({"ok": True, "codigo": cod, "atendido": marca, "recepcao": alvo.get("data")})
 
     def do_PUT(self):
+        self._protegido(self._do_PUT)
+
+    def _do_PUT(self):
         """PUT /api/triagem/<codigo>/nota  — anexa ou substitui a nota medica
         do ciclo mais recente daquele paciente. Corpo: {"nota": "...",
         "autor": "opcional", "ciclo": "opcional — id do ciclo"}
@@ -785,8 +972,8 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         with _lock:
+            dados = carregar()       # v2.5-M: le (e falha fechado) antes de copiar
             backup_do_dia()
-            dados = carregar()
             ciclos = dados["pacientes"].get(cod)
             if not ciclos:
                 self._json({"erro": "paciente sem registros"}, 404)
@@ -821,6 +1008,9 @@ class Handler(BaseHTTPRequestHandler):
                     "ciclo": alvo.get("data")})
 
     def do_POST(self):
+        self._protegido(self._do_POST)
+
+    def _do_POST(self):
         caminho = self.path.split("?")[0]
         if caminho == "/api/login":
             return self._login()
@@ -851,12 +1041,19 @@ class Handler(BaseHTTPRequestHandler):
         reg.setdefault("data", datetime.datetime.now().isoformat())
 
         with _lock:
+            dados = carregar()       # v2.5-M: le (e falha fechado) antes de copiar
             backup_do_dia()
-            dados = carregar()
             # atender um paciente ficticio (da fila de teste) gera registro
             # ficticio: sai junto com --apagar-ficticios e nao vira paciente real
             if so_ficticio(dados["pacientes"].get(cod)):
                 reg["demo"] = True
+            # v2.5-M: reenvio da fila do navegador (a resposta se perdeu, mas o servidor ja
+            # tinha gravado) nao duplica o atendimento
+            op = reg.get("opId")
+            if op and any(c.get("opId") == op for c in dados["pacientes"].get(cod, [])):
+                total = len(dados["pacientes"][cod])
+                self._json({"ok": True, "total": total, "repetido": True})
+                return
             dados["pacientes"].setdefault(cod, []).append(reg)
             gravar(dados)
             total = len(dados["pacientes"][cod])
@@ -971,6 +1168,15 @@ def main():
     if not os.path.exists(APP):
         print("ATENCAO: 'apps/triagem.html' nao encontrado.")
         print("         O banco funciona, mas o app nao sera servido.\n")
+    _le_estado_backup()
+    try:
+        carregar()
+    except BancoIlegivel as e:
+        print("!" * 62)
+        print(" ATENCAO: %s." % e)
+        print(" O servidor sobe para os apps mostrarem o aviso, mas NAO le nem grava")
+        print(" nada ate o banco ser restaurado (scripts/conferir_restauracao.py).")
+        print("!" * 62)
     ip = ip_da_rede()
     print("=" * 62)
     print(" Triagem Maximus — servidor em execucao")
@@ -989,8 +1195,12 @@ def main():
     else:
         print(" iCloud:  %s (criptografado, diario, %d dias)" % (ICLOUD, BACKUP_DIAS))
     print()
-    print(" Deixe esta janela aberta. Fechar derruba o servico.")
-    print(" Para parar: Ctrl+C")
+    if os.environ.get("XPC_SERVICE_NAME", "").startswith("br.com.maximus"):
+        print(" Rodando pelo launchd: sobe sozinho no login e volta se cair.")
+        print(" Para parar: launchctl bootout gui/$(id -u)/br.com.maximus.servidor")
+    else:
+        print(" Deixe esta janela aberta. Fechar derruba o servico.")
+        print(" Para parar: Ctrl+C  (ou instale o launchd: scripts/instalar_launchd.sh)")
     print("=" * 62)
     try:
         ThreadingHTTPServer(("0.0.0.0", PORTA), Handler).serve_forever()

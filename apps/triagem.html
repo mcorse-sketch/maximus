@@ -1,4 +1,14 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+  /* v2.5-M: aviso do servidor (banco ilegível / backup) */
+  #mxAvisoSrv{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483000;max-width:min(760px,calc(100vw - 24px));
+    padding:10px 16px;border-radius:12px;font:500 13.5px/1.45 -apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;
+    box-shadow:0 8px 28px rgba(0,0,0,.18);text-align:left}
+  #mxAvisoSrv div+div{margin-top:6px}
+  #mxAvisoSrv b{margin-right:6px;letter-spacing:.02em}
+  #mxAvisoSrv.grave{background:#B00D26;color:#fff}
+  #mxAvisoSrv.aviso{background:#FFF4DE;color:#6B3E00;border:1px solid #F0D6A8}
+  #mxAvisoSrv button{margin-left:8px;font:600 12px/1 inherit;padding:5px 10px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+</style><style>
 .linha{display:block}
 .col-dir{min-width:0}
 #painelCard{padding:16px 16px 18px}
@@ -215,6 +225,13 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-chips{display:flex;flex-wrap:wrap;gap:6px}
   .mx-chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--mx-surf2);border:1px solid var(--mx-line);color:var(--mx-text2);white-space:nowrap}
   .mx-chip.forte{background:transparent;border-color:var(--mx-line2);color:var(--mx-text)}
+  /* v2.5-M: tipo de mudança do ciclo */
+  .mx-chip.mud-mantido{background:var(--mx-okbg);border-color:transparent;color:var(--mx-ok);font-weight:600}
+  .mx-chip.mud-sobe{background:var(--mx-warnbg);border-color:var(--mx-warnln);color:var(--mx-warn);font-weight:600}
+  .mx-chip.mud-ajuste{background:var(--mx-permbg);border-color:transparent;color:var(--mx-perm);font-weight:600}
+  .mx-chip.mud-sai{background:var(--mx-stopbg);border-color:var(--mx-stopln);color:var(--mx-stop);font-weight:600}
+  .mx-chip.mud-trava{background:transparent;border:1px dashed var(--mx-warn);color:var(--mx-warn);font-weight:600}
+  .mx-cdhint{font-size:13px;color:var(--mx-text3);margin-top:4px;max-width:560px}
   .mx-nav small{font-family:var(--mx-mono);font-size:10.5px}
   .mx-nav .mx-navcd{margin-top:4px;border-top:1px solid var(--mx-line);border-radius:0 0 10px 10px;padding-top:10px}
   .mx-nav .mx-navcd .kbd{font-size:10px}
@@ -756,7 +773,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.5.0">Vers&atilde;o 2.5.0 &middot; 03/10/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.5.13" title="v2.5-M (13ª revisão da 2.5)">Vers&atilde;o 2.5.13 &middot; v2.5-M &middot; 06/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <div class="dbtag" id="dbTag">Verificando banco de dados…</div>
@@ -1382,6 +1399,9 @@ document.documentElement.setAttribute('data-tema',t)})();
   .mx-dbpop-d{margin:6px 0 12px;font-size:12.5px;line-height:1.45;color:var(--mx-text2)}
   .mx-dbpop-b{width:100%;height:38px!important;font-size:13.5px!important}
   .dbtag,.salvo-tag{color:var(--mx-text3)!important;background:transparent!important;padding-left:clamp(18px,4vw,32px)!important;padding-right:clamp(18px,4vw,32px)!important}
+  .salvo-tag.falhou{color:#b3261e!important;font-weight:500}
+  .salvo-tag button{font:inherit;font-size:12px;margin:4px 6px 0 0;padding:3px 10px;border-radius:999px;border:1px solid #b3261e;background:#fff;color:#b3261e;cursor:pointer}
+  .salvo-tag button:hover{background:#fdecea}
   .vigia{background:var(--mx-stopbg)!important;color:var(--mx-stop)!important;border:1px solid var(--mx-stopln)!important}
   .retomar{background:var(--mx-warnbg)!important;color:var(--mx-text)!important;border:1px solid var(--mx-warnln)!important}
   .retomar button{color:var(--mx-text)!important}
@@ -1733,6 +1753,30 @@ document.documentElement.setAttribute('data-tema',t)})();
   const ICON = {'Cápsula matinal':'💊','Módulo matinal':'➕','Composto noturno':'🌙','Spray sublingual':'💦','Creme retardante':'🧴','Suplemento':'🌿','Sob demanda':'⚡','Preservativo retardante':'🛡️','Intracavernosa':'💉','Ondas de choque':'📡','Teste em consultório':'🔬','Exames':'🧪'};
   const PROTOS = ['DE-1','DE-2','DE-3','DE-1L','DE-2L','DE-3L','EP-1','EP-1D','EP-2','EP-2D','EP-3','EP-4','DUO-1','DUO-2','DUO-3','DUO-4','DUO-1D','FERT','INTRACAVERNOSA','Nenhum / só comportamental'];
 
+  // v2.5-M: teto de 30 mg/dia de tadalafila também no que o paciente lê. A posologia fixa dos sprays
+  // ("1 a 2 jatos") só vale sem a cápsula de 20 mg. Com BASE-T20 (ou -I): máximo 1 jato. Com dois sprays
+  // de tadalafila no mesmo kit, o limite vale somando os dois. Usado no kit da tela, no relatório/receita
+  // ("Protocolo prescrito") e na folha do paciente — nunca F[c] direto para spray.
+  const SPRAYS_TADA = ['SP-DE','SP-DUO','SP-DUO-1J'];
+  function mgTadaCapsula(cods){ const c=(cods||[]).find(x=>/^BASE-T(5|10|20)(?:-I)?$/.test(x)); return c ? Number(/T(5|10|20)/.exec(c)[1]) : 0; }
+  function jatosMaxDia(cods){ return Math.max(1, Math.floor((30 - mgTadaCapsula(cods))/10)); }
+  function itemKit(c, kitCods){
+    const it = F[c]; if (!it || SPRAYS_TADA.indexOf(c)<0) return it;
+    const cods = (kitCods||[]).map(e=>Array.isArray(e)?e[0]:e);
+    const mg = mgTadaCapsula(cods), sprays = SPRAYS_TADA.filter(x=>cods.indexOf(x)>=0), dois = sprays.length>1;
+    const n = jatosMaxDia(cods);
+    if (c==='SP-DUO-1J' && !dois) return it;            // já é de 1 jato
+    if (mg<20 && !dois) return it;                        // 1 a 2 jatos cabem no teto
+    const quando = c==='SP-DE' ? '30 min antes' : '2 h antes';
+    const somando = dois ? ' somando os dois sprays' : '';
+    // via do paciente sem dose de componente (regra da v2.5): o motivo vai sem os mg
+    const porque = mg ? 'a cápsula da manhã já tem tadalafila, o mesmo remédio do spray' : 'cada jato já é uma dose completa';
+    return Object.assign({}, it, {
+      pos: 'MÁXIMO '+n+' JATO'+(n>1?'S':'')+' por dia'+somando+', '+quando+' (teto de 30 mg/dia de tadalafila)',
+      pac: 'Aplique '+(n>1?'1 ou 2 jatos':'1 jato')+' embaixo da língua, '+(c==='SP-DE'?'30 minutos':'cerca de 2 horas')+' antes da relação. Segure 60 a 90 segundos sem engolir. '
+        + '<b>Nunca mais de '+n+' jato'+(n>1?'s':'')+' por dia'+(dois?' somando os dois sprays':'')+'</b>: '+porque+'.'
+    });
+  }
   const NOTA_DEMANDA = '<b>Duas opções sob demanda, equivalentes em indicação — escolher UMA.</b> O SP-DUO trata ereção e ejaculação no mesmo jato e é titulável em 1 ou 2 jatos; a dapoxetina é oral, com meia-vida curta e perfil de superdose mais benigno. NUNCA usar as duas no mesmo dia.';
 
   const EA = [
@@ -1790,6 +1834,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           };
           let r = await envia();
           if (r.status===401){ eu.guarda(null); await eu.pede(); r = await envia(); }
+          if (r.status===503 && typeof AvisoServidor!=='undefined') AvisoServidor.confere();   // v2.5-M: banco ilegível — aviso na hora
           return r;
         };
       }
@@ -1843,6 +1888,24 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
   };
 
+  // v2.5-M: aviso do servidor no topo — banco ilegível (gravação suspensa) e backup do iCloud/local
+  // que falhou ou atrasou. Vem de /api/health (aberta, sem dado de paciente) e é conferido a cada 2 min.
+  const AvisoServidor = {
+    api:null, soGrave:false, fechados:{}, _t:null,
+    inicia(api, j, soGrave){ this.api=api; this.soGrave=!!soGrave; this.pinta(j); clearInterval(this._t); this._t=setInterval(()=>this.confere(), 120000); },
+    async confere(){ if (!this.api) return; try{ const r=await fetch(this.api+'/api/health',{cache:'no-store'}); if (r.ok) this.pinta(await r.json()); }catch(e){} },
+    pinta(j){
+      const esc = t=>String(t==null?'':t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      let el = document.getElementById('mxAvisoSrv');
+      const lista = ((j && j.alertas) || []).filter(a=>a && a.texto && (a.nivel==='grave' || (!this.soGrave && !this.fechados[a.texto])));
+      if (!lista.length){ if (el) el.remove(); return; }
+      if (!el){ el=document.createElement('div'); el.id='mxAvisoSrv'; el.setAttribute('role','alert'); document.body.appendChild(el); }
+      el.className = lista.some(a=>a.nivel==='grave') ? 'grave' : 'aviso';
+      el.innerHTML = lista.map(a=>'<div><b>'+(a.nivel==='grave'?'Atenção':'Aviso')+'</b> '+esc(a.texto)
+        +(a.nivel!=='grave' ? ' <button type="button" data-t="'+esc(a.texto)+'">Entendi</button>' : '')+'</div>').join('');
+      el.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ this.fechados[b.dataset.t]=1; this.pinta(j); }; });
+    }
+  };
   const Store = {
     modo:'carregando', db:null, api:null,
     async init(){
@@ -1854,7 +1917,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (base){
         try{
           const r = await fetch(base.replace(/\/+$/,'') + '/api/health', {cache:'no-store'});
-          if (r.ok){ this.api = base.replace(/\/+$/,''); this.modo='rede'; await Sessao.instala(this.api, 'medico'); return; }
+          if (r.ok){ this.api = base.replace(/\/+$/,''); this.modo='rede'; AvisoServidor.inicia(this.api, await (async()=>{ try{ return await r.json(); }catch(e){ return null; } })(), false); await Sessao.instala(this.api, 'medico'); return; }
         }catch(e){}
       }
       this.modo='manual';
@@ -1885,8 +1948,15 @@ document.documentElement.setAttribute('data-tema',t)})();
              return {ciclo:arr[0], total:arr.length, ultimaData:arr[0].data}; }catch(e){ return null; }
       }
       if (this.modo==='rede'){
-        try{ const r=await fetch(this.api+'/api/paciente/'+encodeURIComponent(cod),{cache:'no-store'});
-             if(!r.ok) return null; const j=await r.json();
+        // v2.5-M: "não achei" (404) é diferente de "não consegui ler" (banco ilegível, servidor
+        // fora): só o 404 vira paciente sem histórico; o resto lança, e o retorno NÃO vira
+        // primeira avaliação em silêncio
+        let r;
+        try{ r=await fetch(this.api+'/api/paciente/'+encodeURIComponent(cod),{cache:'no-store'}); }
+        catch(e){ throw new Error('SERVIDOR_FORA'); }
+        if (r.status===503) throw new Error('BANCO_ILEGIVEL');
+        if (!r.ok && r.status!==404) throw new Error('HTTP_'+r.status);
+        try{ if(!r.ok) return null; const j=await r.json();
              if (j && j.ciclo && !this.ehClinico(j.ciclo)){
                const h=await fetch(this.api+'/api/historico/'+encodeURIComponent(cod),{cache:'no-store'});
                if (!h.ok) return null;
@@ -3042,24 +3112,61 @@ document.documentElement.setAttribute('data-tema',t)})();
   const FILA_ENVIO = 'mx-fila-envio-v2';
   function filaLe(){ try{ return JSON.parse(localStorage.getItem(FILA_ENVIO)||'[]'); }catch(e){ return []; } }
   function filaGrava(l){ if (PREVIA) return; try{ localStorage.setItem(FILA_ENVIO, JSON.stringify(l)); }catch(e){} }
+  // v2.5-M: validade da fila deste navegador. O registro que não chegou ao banco nunca é apagado em
+  // silêncio (seria perder o atendimento): continua sendo reenviado, mas depois de 7 dias o aviso exige
+  // ação — baixar uma cópia e descartar daqui. Cópia baixada e com mais de 30 dias sai sozinha
+  // (dado clínico não fica para sempre no navegador).
+  const FILA_VALIDADE = 7*86400000, FILA_PURGA = 30*86400000;
+  const filaIdade = x => Date.now() - (x._enfileiradoEm || Date.parse(x.data||'') || Date.now());
   function filaEnfileira(reg){
     const l = filaLe();
-    if (!l.some(x=>x.opId===reg.opId)){ l.push(reg); filaGrava(l); }
+    if (!l.some(x=>x.opId===reg.opId)){ l.push(Object.assign({}, reg, {_enfileiradoEm: Date.now()})); filaGrava(l); }
+    atualizaPendentes();
+  }
+  function filaPurga(){
+    const l = filaLe(), fica = l.filter(x=>!(x._exportadoEm && filaIdade(x) > FILA_PURGA));
+    if (fica.length !== l.length) filaGrava(fica);
+  }
+  function filaBaixa(){
+    const l = filaLe(); if (!l.length) return;
+    const blob = new Blob([JSON.stringify(l.map(x=>{ const c=Object.assign({}, x); delete c._enfileiradoEm; delete c._exportadoEm; return c; }), null, 1)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'maximus-atendimentos-nao-gravados-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    filaGrava(l.map(x=>Object.assign({}, x, {_exportadoEm: x._exportadoEm || Date.now()})));
+    atualizaPendentes();
+  }
+  async function filaDescartaVencidos(){
+    const venc = filaLe().filter(x=>filaIdade(x) > FILA_VALIDADE);
+    if (!venc.length) return;
+    if (venc.some(x=>!x._exportadoEm)){ await mxDialogo({titulo:'Baixe a cópia primeiro', texto:'Estes atendimentos não estão no banco. Baixe a cópia antes de descartar.', ok:'Entendi', cancelar:false}); return; }
+    if (!(await mxConfirma(venc.length+' atendimento'+(venc.length>1?'s':'')+' com mais de 7 dias sairá'+(venc.length>1?'ão':'')+' deste computador. A cópia baixada é a única que fica — leve-a ao banco.', {titulo:'Descartar deste computador?', ok:'Descartar', perigo:true}))) return;
+    filaGrava(filaLe().filter(x=>filaIdade(x) <= FILA_VALIDADE));
     atualizaPendentes();
   }
   function atualizaPendentes(){
     if (PREVIA) return;
-    const n = filaLe().length, t = document.getElementById('salvoTag');
+    const l = filaLe(), n = l.length, t = document.getElementById('salvoTag');
     if (!t) return;
-    if (n){ t.style.display='block'; t.classList.add('falhou');
-      t.textContent = n+' atendimento'+(n>1?'s':'')+' aguardando gravação. Mantenha esta tela aberta — tentamos de novo sozinhos.'; }
+    if (!n) return;
+    const venc = l.filter(x=>filaIdade(x) > FILA_VALIDADE).length;
+    t.style.display='block'; t.classList.add('falhou');
+    if (!venc){ t.textContent = n+' atendimento'+(n>1?'s':'')+' aguardando gravação. Mantenha esta tela aberta — tentamos de novo sozinhos.'; return; }
+    t.innerHTML = '<b>'+venc+' atendimento'+(venc>1?'s':'')+' há mais de 7 dias sem chegar ao banco</b>'+(n>venc?' (e '+(n-venc)+' recente'+(n-venc>1?'s':'')+')':'')
+      + ' — continuamos tentando, mas não deixe dado clínico parado neste navegador. '
+      + '<button type="button" id="filaBaixar">Baixar cópia</button> <button type="button" id="filaDescartar">Descartar daqui</button>';
+    document.getElementById('filaBaixar').onclick = filaBaixa;
+    document.getElementById('filaDescartar').onclick = filaDescartaVencidos;
   }
   async function processaFila(){
     if (PREVIA) return;
+    filaPurga();
     const l = filaLe(); if (!l.length) return;
     const restantes = [];
     for (const reg of l){
-      try{ const r = await Store.salvar(reg); if (r===false) restantes.push(reg); }
+      // os campos de controle da fila não vão para o banco
+      const limpo = Object.assign({}, reg); delete limpo._enfileiradoEm; delete limpo._exportadoEm;
+      try{ const r = await Store.salvar(limpo); if (r===false) restantes.push(reg); }
       catch(e){ restantes.push(reg); }
     }
     filaGrava(restantes);
@@ -3067,6 +3174,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   setInterval(processaFila, 20000);
   window.addEventListener('online', processaFila);
+  // só para os testes automatizados (tests/teste_sessao.js abre com ?mxteste=1)
+  if (/[?&]mxteste=1\b/.test(location.search)) window.__mxTeste = { Store, processaFila, AvisoServidor };
 
   function ocultaQuiz(){
     const l=document.getElementById('linhaQuiz'); if(l) l.style.display='none';
@@ -3491,7 +3600,18 @@ document.documentElement.setAttribute('data-tema',t)})();
       .filter(Boolean).map(x=>/^[A-ZÀ-Ý][a-zà-ÿ]+(?=\s|$|\.)/.test(x) ? x.charAt(0).toLowerCase()+x.slice(1) : x).join(', ');
   }
   // kit da consulta em tela (v2.5): dá a dose real aos protocolos de dose variável
-  let KIT_CTX = null;
+  let KIT_CTX = null, PROT_CTX = null, PREV_CTX = null;
+  // v2.5-M: forma curta (a do painel) quando ela já traz todas as substâncias-chave da sigla —
+  // usada nos alertas, nas observações e na impressão, onde a composição longa se repetia
+  function ativoCurto(cod){
+    const curto = PAINEL_TXT[cod];
+    if (curto && /^R\d/.test(cod)===false){
+      const a = semAcento(ativoTxt(cod)).split(/, sem | — /)[0];
+      const k = SUBST.filter(x=>a.indexOf(x)>=0);
+      if (k.length && k.every(x=>semAcento(curto).indexOf(x)>=0)) return curto;
+    }
+    return ativoTxt(cod);
+  }
   function ativoTxt(cod){
     if (!cod) return '';
     const mR = /^R(\d{1,2})$/.exec(cod);
@@ -3500,9 +3620,13 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (PROTO_COMPO[cod]){
       // v2.5 (item 5): DUO-3/DUO-4/DUO-1D/DUO-TOPICO têm dose que depende do nível
       // ("tadalafila 5, 10 ou 20 mg"). Com o kit da consulta conhecido, mostra a dose real.
-      if (KIT_CTX && /conforme o nível| ou \d/.test(PROTO_COMPO[cod])){
-        const pr = unicos(KIT_CTX).filter(c=>F[c] && !SIGLA_FORA[c] && c!==cod).map(c=>ativoTxt(c))
-          .filter(t=>/tadalafila|paroxetina|dapoxetina|clomifeno|clomipramina|lidoca/i.test(t||''));
+      // v2.5-M: o kit de HOJE só explica o protocolo de hoje; o protocolo anterior usa o kit anterior
+      // (antes, "Protocolo anterior: DUO-1D" saía com as fórmulas do kit de hoje). Forma curta do
+      // painel ("tadalafila 10 mg/jato"), sem repetir a mesma substância/dose.
+      const ctx = (KIT_CTX && cod===PROT_CTX) ? KIT_CTX : (PREV_CTX && cod===PREV_CTX.prot ? PREV_CTX.kit : null);
+      if (ctx && /conforme o nível| ou \d/.test(PROTO_COMPO[cod])){
+        const pr = [...new Set(unicos(ctx).filter(c=>F[c] && !SIGLA_FORA[c] && c!==cod).map(c=>ativoCurto(c))
+          .filter(t=>/tadalafila|paroxetina|dapoxetina|clomifeno|clomipramina|lidoca/i.test(t||'')))];
         if (pr.length) return pr.join(' + ');
       }
       return PROTO_COMPO[cod];
@@ -3573,7 +3697,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     });
     return saida;
   }
-  function garanteSiglas(txt, soFormulas){
+  function garanteSiglas(txt, soFormulas, curto){
     if (!txt || typeof txt !== 'string') return txt;
     if (!soFormulas) txt = explicaForaDeFormula(txt);
     const re = reSiglas(), re2 = reSiglas();
@@ -3581,12 +3705,13 @@ document.documentElement.setAttribute('data-tema',t)})();
     while ((m = re.exec(txt)) !== null){
       const cod = m[1], fim = m.index + cod.length;
       out += txt.slice(pos, fim);
-      if (!siglaAuto(cod) && !jaTemAtivo(cod, janelaDepois(txt, fim, re2))) out += ' · ' + ativoTxt(cod);
+      if (!siglaAuto(cod) && !jaTemAtivo(cod, janelaDepois(txt, fim, re2))) out += ' · ' + (curto ? ativoCurto(cod) : ativoTxt(cod));
       pos = fim;
     }
     return out + txt.slice(pos);
   }
   function explicaSiglas(txt){ return garanteSiglas(txt); }
+  function explicaSiglasCurto(txt){ return garanteSiglas(txt, false, true); }   // v2.5-M: alertas e observações
   // para tests/teste_siglas.js: a mesma lista e as mesmas chaves que o app usa
   window.__maximusSiglas = { codigos:()=>siglasComAtivo().slice(), chaves:chavesDaSigla, ativo:ativoTxt };
 
@@ -4105,8 +4230,18 @@ document.documentElement.setAttribute('data-tema',t)})();
     S.hist = null; S.serieEsc = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null; S.queixasRegistro = null; S.primeiraAval = null;
     S.codigoBuscado = norm(S.codigo);
     if (S.visita !== 'reav'){ prev = null; return; }
+    S.histErro = null;
+    let r = null;
+    try{ r = await carregarPaciente(S.codigo); }
+    catch(e){
+      // v2.5-M: histórico ilegível — segue como retorno, com o ciclo anterior informado à mão
+      prev = null; S.hist = null; S.semHistorico = false; S.nReav = null;
+      S.histErro = e && e.message==='BANCO_ILEGIVEL' ? 'O banco da clínica está ilegível' : 'O servidor não respondeu';
+      S.resumoHist = S.histErro+' — o histórico deste paciente não pôde ser lido. O atendimento continua como retorno: confira no prontuário o protocolo e os escores do ciclo anterior e informe nas próximas telas.';
+      if (typeof AvisoServidor!=='undefined') AvisoServidor.confere();
+      return;
+    }
     S.tefiBanco = await buscarPorTipo(S.codigo,'tefi');
-    const r = await carregarPaciente(S.codigo);
     prev = r ? r.ciclo : null; S.hist = r;
     let todos = [];
     // contato do cadastro: o mais recente de cada campo, em qualquer registro
@@ -4288,7 +4423,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       after: async () => { await carregarHistorico('manual'); }});
 
     if (S.resumoHist) s.push({id:'confirmHist',kind:'opts',step:'Abertura',
-      eyebrow: S.semHistorico ? 'Sem histórico na clínica' : 'Histórico',
+      eyebrow: S.histErro ? 'Histórico indisponível' : (S.semHistorico ? 'Sem histórico na clínica' : 'Histórico'),
       text: S.resumoHist,
       hint: (prev && prev.protocolo) ? ('No banco: '+prev.protocolo
         + ((prev.kitCodes||[]).length ? ' · '+unicos(prev.kitCodes).filter(x=>!['TEFI','LABS'].includes(x)).join(', ') : '')
@@ -4296,7 +4431,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       hintHtml: (prev && prev.protocolo) ? (escH(explicaSiglas('No banco: '+prev.protocolo
         + ((prev.kitCodes||[]).length ? ' · '+unicos(prev.kitCodes).filter(x=>!['TEFI','LABS'].includes(x)).join(', ') : '')))
         + (prev.iief!=null?' · '+qEscore('IIEF-5',prev.iief):'') + (prev.pedt!=null?' · '+qEscore('PEDT',prev.pedt):'')) : '',
-      options: S.semHistorico
+      options: S.histErro ? [{v:'ok',badge:'!',label:'Entendi, informar o ciclo anterior à mão'}]
+        : S.semHistorico
         ? [{v:'ok',badge:'✓',label:'Entendi, seguir como primeira avaliação'}]
         : [{v:'ok',badge:'✓',label:'Confirmar e continuar'}]});
     // v2.4: consultas anteriores são registro fechado — sem "corrigir protocolo
@@ -5058,7 +5194,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const k=el('kitGrid'); k.innerHTML='';
     const iciDose = ctx && ctx.iciDose;
     codes.forEach(entry=>{
-      const code=Array.isArray(entry)?entry[0]:entry, tag=Array.isArray(entry)?entry[1]:null, it=F[code];
+      const code=Array.isArray(entry)?entry[0]:entry, tag=Array.isArray(entry)?entry[1]:null, it=itemKit(code, codes);
       if(!it) return;
       const d=document.createElement('div'); d.className='kit-card';
       const ehIci = code==='ICI', rc = ehIci ? iciCodConsulta() : '';
@@ -5273,7 +5409,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </ol>`;
 
 
-  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração|teto de 30 mg\/dia/i;
+  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração|teto de 30 mg\/dia|Nível oral mantido|Cápsula sobe de|Protocolo ajustado de|objetivo atingido/i;
   // v2.5-F: alertas com hierarquia — título, uma linha de resumo e o detalhe recolhível.
   // Cada alerta guarda o texto original num <p class="al-orig"> oculto: é dele que o texto do
   // prontuário, a prévia e a contagem do cabeçalho leem (mesmo conteúdo de antes).
@@ -5357,12 +5493,12 @@ document.documentElement.setAttribute('data-tema',t)})();
     const alertas = notas.filter(ehAlerta);
     const demais  = notas.filter(n=>!ehAlerta(n));
     const alt = el('altNote');
-    if (alertas.length){ alt.style.display='block'; alt.innerHTML = alertasHtml(alertas.map(n=>explicaSiglas(n))); }
+    if (alertas.length){ alt.style.display='block'; alt.innerHTML = alertasHtml(alertas.map(n=>explicaSiglasCurto(n))); }
     else alt.style.display='none';
     const mais = el('notasMais');
     mais.innerHTML = demais.length
       ? '<details'+(abrirPadrao?' open':'')+'><summary>Observações clínicas — '+demais.length+(demais.length>1?' itens':' item')+'</summary>'
-        + demais.map(n=>'<p>'+explicaSiglas(n)+'</p>').join('') + '</details>'
+        + demais.map(n=>'<p>'+explicaSiglasCurto(n)+'</p>').join('') + '</details>'
       : '';
   }
 
@@ -5416,7 +5552,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     box.dataset.linha = linha; box.dataset.receita = receita ? 'sim' : 'nao';
   }
   async function calculaResultados(){
-    window.__mxDiag = null; window.__mxKit = null; KIT_CTX = null;
+    window.__mxDiag = null; window.__mxKit = null; window.__mxNivelHint = ''; KIT_CTX = null; PROT_CTX = null;
+    PREV_CTX = (prev && prev.protocolo && prev.kitCodes) ? {prot: nomeProtocolo(prev.protocolo), kit: prev.kitCodes} : null;
     const hoje=new Date().toLocaleDateString('pt-BR');
     // o aviso de ISRS só aparece quando a prescrição associa paroxetina e
     // clomipramina; em qualquer outro caminho ele fica escondido
@@ -6079,6 +6216,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       S.queixaMudouDoCiclo = (antes!=='outra' && agora!=='outra' && antes!==agora);
     }
     const dIIEF = reav && S.iiefAnt ? sIIEF-Number(S.iiefAnt) : null;
+    // v2.5-M: IIEF-5 de hoje já na faixa sem disfunção (22+) com ganho < 4 = objetivo atingido: mantém o
+    // protocolo — não sobe dose, não troca mecanismo, não dispara teto nem oferta de ondas por "pouco ganho"
+    const iiefMeta = dIIEF!==null && dIIEF<4 && sIIEF>=22;
     const dPEDT = reav && S.pedtAnt ? sPEDT-Number(S.pedtAnt) : null;
     // v2.5 (item 19): quem já está em intracavernosa não regride para a via oral.
     // Em intracavernosa = no ciclo anterior o kit tinha ICI, o TEFI definiu ICI, o
@@ -6108,7 +6248,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (!travado){
         if (dIIEF!==null && !emICIant){
           if (dIIEF>=4) notas.push('<b>IIEF-5 subiu '+dIIEF+' pontos</b> — ganho acima da diferença clinicamente relevante. Manter o protocolo.');
-          else if (dIIEF>=1 && sIIEF>=22) notas.push('<b>IIEF-5 subiu '+dIIEF+' ponto(s) e está em '+sIIEF+'</b>, já na faixa sem disfunção — objetivo atingido. Manter o protocolo, sem subir dose.');   // v2.5-L
+          else if (iiefMeta) notas.push('<b>IIEF-5 '+(dIIEF>0?'subiu '+dIIEF+' ponto(s)':dIIEF===0?'estável':'caiu '+Math.abs(dIIEF)+' ponto(s)')+' e está em '+sIIEF+'</b>, na faixa sem disfunção — objetivo atingido. Manter o protocolo, sem subir dose nem trocar mecanismo.');   // v2.5-L/M
           else if (dIIEF>=1){ notas.push('<b>IIEF-5 subiu apenas '+dIIEF+' ponto(s)</b> — resposta parcial. Subir um nível de BASE.'); mudanca='Subir um nível de BASE'; }
           else { notas.push('<b>IIEF-5 sem ganho ('+dIIEF+')</b> com boa adesão e sem efeito limitante — trocar mecanismo, não aumentar dose.'); mudanca='Trocar mecanismo'; }
         }
@@ -6118,7 +6258,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           else { notas.push('<b>PEDT sem ganho</b> — trocar classe.'); mudanca=mudanca||'Trocar classe do agente de EP'; }
         }
         const antTeto = ((S.protAnt==='Outro / combinação não listada'?(S.formulasAnt||[]).join(' '):S.protAnt)||'').match(/T20|DE-3|DUO-3|EP-4|DUO-4/);
-        if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4&&!(dIIEF>=1&&sIIEF>=22))||(dPEDT!==null&&dPEDT>-4))){
+        if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4&&!iiefMeta)||(dPEDT!==null&&dPEDT>-4))){
           // v2.5-F: o TEFI foi feito nesta consulta — não se pede o teste de novo; a via segue o resultado
           if (reav && S.tefiFeito==='sim')
             notas.push('<b>Teto de escalonamento.</b> O paciente já estava no degrau oral mais alto e não atingiu ganho relevante. Não subir mais dose: o teste de ereção foi feito nesta consulta e a via seguinte é a definida pelo resultado.');
@@ -6248,7 +6388,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     if (reav && S.hasDE && !emICIant && !travado && !S.queixaMudouDoCiclo && dIIEF!==null && nivelOralAnt>=1 && lvlDE<4){
       const faixaHoje = lvlDE;
-      if (dIIEF>=4 || (dIIEF>=1 && sIIEF>=22)){   // ganho grande, ou ganho pequeno que já chegou à faixa sem disfunção
+      if (dIIEF>=4 || iiefMeta){   // ganho grande, ou ganho < 4 que já está na faixa sem disfunção (v2.5-M: inclui sem ganho)
         lvlDE = Math.max(lvlDE, nivelOralAnt);
         regraOral = {tipo:'manter', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
         if (faixaHoje < nivelOralAnt)
@@ -6370,7 +6510,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     // --- ondas de choque e TEFI
     const falhaOral = S.previa==='falhou';
     const dosePlena = S.previa==='falhou' && S.adequado==='sim';
-    const respParcial = reav && !travado && ((dIIEF!==null && dIIEF>0 && dIIEF<4)) && /T20/.test(S.protAnt||'');
+    const respParcial = reav && !travado && !iiefMeta && ((dIIEF!==null && dIIEF>0 && dIIEF<4)) && /T20/.test(S.protAnt||'');
     let ondas = false, tefi = false, ondasComp = false, motivoOndas = [], motivoTefi = [], motivoOndasOpc = [];
     if (!psico){
       const arterialDM = comorb.indexOf('vasc')>=0 || comorb.indexOf('dm')>=0;
@@ -6392,7 +6532,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     // v2.5-F: TEFI realizado nesta consulta — não volta ao kit nem aos lembretes ("Agendar TEFI")
     if (reav && S.tefiFeito==='sim'){ tefi = false; motivoTefi.length = 0; }
     if (iciMud) mudanca = iciMud + (mudanca ? ' · ' + mudanca : '');
-    const semProgresso = reav && !travado && ((dIIEF!==null && dIIEF<4) || (dPEDT!==null && dPEDT>-4));
+    const semProgresso = reav && !travado && ((dIIEF!==null && dIIEF<4 && !iiefMeta) || (dPEDT!==null && dPEDT>-4));
     const insatisfeito  = reav && S.satisf!=null && S.satisf<=6;
     let ondasOpc = false;
     if (reav && !ondas && S.hasDE && lvlDE>=1 && (semProgresso || insatisfeito)) ondasOpc = true;
@@ -6459,7 +6599,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         prot='DUO-'+n; kit=[BT[n-1],'NOITE-1','SP-DUO'].concat(S.preserv==='sim'?ret:[]);
         reco='Linha DUO — sob demanda, duas opções';
         recoText='Cápsula matinal contínua para a ereção e uma das duas opções sob demanda para a ejaculação.';
-        notas.push(NOTA_DEMANDA);
+        notas.push(n===3 ? NOTA_DEMANDA.replace('é titulável em 1 ou 2 jatos','fica em no máximo 1 jato com a cápsula de 20 mg') : NOTA_DEMANDA);
       }
       // v2.5-L: teto de tadalafila (30 mg/dia) também na linha DUO — com a cápsula de 20 mg, o spray
       // que leva tadalafila (SP-DE ou SP-DUO) fica em no máximo 1 jato (SP-DUO-1J já é de 1 jato)
@@ -6601,6 +6741,15 @@ document.documentElement.setAttribute('data-tema',t)})();
       notas.push('<b>O TEFI indicou intracavernosa</b>, mas a conduta de hoje mantém só a via oral, por decisão médica. Reabordar no próximo retorno.');
     }
     KIT_CTX = unicos(kit);   // v2.5: dose real de DUO-3/DUO-4 etc. nos textos desta consulta
+    PROT_CTX = nomeProtocolo(prot).replace(/\s*\+\s*INTRACAVERNOSA$/,'');
+    // v2.5-M: "DE leve · DE-3" confundia — o nível vem do ciclo anterior, não da faixa de hoje. Dica no cabeçalho.
+    if (regraOral && regraOral.novo>=1 && regraOral.novo<=3 && cods().some(c=>c.indexOf(NB_ORAL[regraOral.novo])===0)){
+      const fx = regraOral.faixa>=1 && regraOral.faixa<=3 ? NB_ORAL[regraOral.faixa] : (regraOral.faixa===0 ? 'nenhuma cápsula' : 'intracavernosa');
+      if (regraOral.tipo==='subir')
+        window.__mxNivelHint = 'Nível a partir do ciclo anterior: '+NB_ORAL[regraOral.ant]+' → '+NB_ORAL[regraOral.novo]+(regraOral.faixa!==regraOral.novo ? ' (a faixa de hoje sozinha daria '+fx+')' : '');
+      else if (regraOral.novo!==regraOral.faixa)
+        window.__mxNivelHint = 'Nível do ciclo anterior mantido ('+NB_ORAL[regraOral.novo]+') — a faixa de hoje sozinha daria '+fx;
+    }
     window.__mxKit = kit.slice();   // v2.5: cabeçalho da conduta, um item por linha (com a etiqueta)
     const lembretes=[];
     if (!reav) lembretes.push('Entregar o guia <b>Protocolo de Performance</b> (2ª edição) '+(temMedicacaoNoKit(kit)?'junto da receita ':'')+'e pedir que traga o registro de 12 semanas na próxima consulta.');
@@ -6744,7 +6893,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (semTada) rc_porque.push('Contraindicação cardiovascular à tadalafila: <b>sem linha oral e sublingual</b>.');
 
     kit.forEach(e=>{ const c=Array.isArray(e)?e[0]:e;
-      if (RAZAO[c] && !rc_comp.some(x=>x.startsWith('<b>'+c))) rc_comp.push('<b>'+c+'</b> — '+RAZAO[c]); });
+      // v2.5-M: com BASE-T20 o SP-DUO não é "1 ou 2 jatos" — teto de 30 mg/dia de tadalafila
+      const raz = (c==='SP-DUO' && mgTadaCapsula(cods())>=20) ? RAZAO[c].replace('(1 ou 2 jatos)','(máximo 1 jato com a cápsula de 20 mg)') : RAZAO[c];
+      if (RAZAO[c] && !rc_comp.some(x=>x.startsWith('<b>'+c))) rc_comp.push('<b>'+c+'</b> — '+raz); });
     if (/-I$/.test((kit[0]&&(Array.isArray(kit[0])?kit[0][0]:kit[0]))||''))
       rc_comp.push('<b>Ioimbina na base</b> — libido reduzida com testosterona normal e sem contraindicação.');
 
@@ -6837,7 +6988,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
     screens.filter(s=>LBL[s.id]).forEach(s=>{const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
     add('Custo estimado do ciclo', CUS.idx+'/10'+(CUS.temOpc?'  ·  com opcional: '+CUS.idxComOpc+'/10':'')+'  ('+String(CUS.total).replace('.',',')+' pontos · maior peso: '+(CUS.itens.slice(0,3).map(i=>i.cod).join(', ')||'—')+')');
-    const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=F[c];if(!i) return '';
+    const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=itemKit(c, kit);if(!i) return '';
       // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
       // v2.5-H (item 1): sem dose indicada (1ª consulta), a dose inicial padrão da clínica para a R5 (a mesma do TEFI)
       if (c==='ICI'){ const rc=iciCodConsulta();
@@ -6859,7 +7010,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const retorno = dUtil.toLocaleDateString('pt-BR') + ', ' + ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'][dUtil.getDay()];
     const temICI = kit.some(e=>(Array.isArray(e)?e[0]:e)==='ICI');
     const medsPac = kit.map(e=>{
-      const c=Array.isArray(e)?e[0]:e, tag=Array.isArray(e)?e[1]:'', it=F[c];
+      const c=Array.isArray(e)?e[0]:e, tag=Array.isArray(e)?e[1]:'', it=itemKit(c, kit);
       if(!it||!it.pac) return null;
       const opc = /Opcional/.test(tag||'') ? ' <i>(opcional — converse conosco)</i>' : '';
       const alt = /opção B/.test(tag||'') ? ' <i>(alternativa à opção anterior — use apenas uma)</i>' : '';
@@ -8059,6 +8210,18 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (rt){ rt.classList.toggle('com-esc', !!html); if (html) rt.insertAdjacentHTML('afterend', html); }
   }
 
+  // v2.5-M: pílula da mudança do ciclo com cor pelo tipo — mantido (verde), dose aumentada (âmbar),
+  // dose reduzida / ajuste / troca (violeta), saída da via oral / intracavernosa (vermelho),
+  // travado por adesão ou efeito adverso (âmbar com contorno)
+  function tipoMudanca(c){
+    const t = String(c||'').toLowerCase();
+    if (/^protocolo mantido$/.test(t)) return ['mantido','Mudança do ciclo: protocolo mantido'];
+    if (/^dose aumentada/.test(t)) return ['sobe','Mudança do ciclo: dose aumentada'];
+    if (/^dose (reduzida|recalculada)|^mecanismo trocado|^protocolo ajustado/.test(t)) return ['ajuste','Mudança do ciclo: '+c];
+    if (/^saída da via oral|^intracavernosa pelo tefi/.test(t)) return ['sai','Mudança do ciclo: '+c];
+    if (/^mantido por adesão|^ajustado por efeito adverso/.test(t)) return ['trava','Mudança do ciclo: '+c];
+    return null;
+  }
   // ---- conduta em 3 níveis ----
   function mxPintaConduta(){
     const head = el('mxCdHead'), rc = el('resultsCard'); if (!head || !rc) return;
@@ -8133,8 +8296,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       + '<div class="mx-eyebrow">'+escH(['Conduta sugerida', vis, queixa].filter(Boolean).join(' · '))+'</div>'
       + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+(tituloCaixaAlta?' frase':'')+'">'+tituloHtml+(etiqueta?' <span class="mx-cdtag">'+escH(etiqueta)+'</span>':'')+'</div>'
       + (sub && sub!==titulo ? '<div class="mx-cdtit">'+(ativo ? '<span class="sig-ativo">'+escH(sub)+'</span>' : escH(kitTag ? sub : explicaSiglas(sub)))+'</div>' : '')
+      + (kitTag && window.__mxNivelHint ? '<div class="mx-cdhint" id="mxNivelHint">'+escH(window.__mxNivelHint)+'</div>' : '')
       + (itensKit.length ? '<div class="mx-cdkit" id="mxCdKit">'+itensKit.map(([c,t,g,ici])=>'<span'+(ici?' class="ici" role="button" tabindex="0" aria-expanded="false" aria-label="'+escH(c)+': ver a composição completa" onclick="mxAbreIci(this,event)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();mxAbreIci(this,event)}"':'')+'>'+chipCor(c, iciDaConsulta() || (reg && reg.tefi && reg.tefi.formula) || '')+'<b>'+escH(c)+'</b>'+(t?'<em>'+escH(t)+'</em>':'')+(ici?'<s class="mx-exp" aria-hidden="true"></s>':'')+(g?'<i>'+escH(g)+'</i>':'')+'</span>').join('')+'</div>' : '')
-      + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(garanteSiglas(c, true))+'</span>').join('')+'</div>' : '')
+      + (chips.length ? '<div class="mx-chips">'+chips.map(c=>{ const t=tipoMudanca(c); return '<span class="mx-chip'+(t?' mud-'+t[0]:'')+'"'+(t?' title="'+escH(t[1])+'"':'')+'>'+escH(garanteSiglas(c, true))+'</span>'; }).join('')+'</div>' : '')
       + (st.length ? '<div class="mx-cdstatus" id="mxCdStatus">'+st.map(([c,n,v])=>'<span class="'+c+'"><b>'+escH(n)+'</b>'+escH(v)+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
       + '</div>'

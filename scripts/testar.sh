@@ -8,6 +8,11 @@ CLIN="$RAIZ/apps/triagem.html"
 RECEP="$RAIZ/apps/recepcao.html"
 FIN="$RAIZ/apps/financeiro.html"
 cd "$RAIZ/tests" || exit 2
+# v2.5-M: dependências dos testes (jsdom) ficam fora do git — sem elas, instala pelo package-lock
+if [ ! -d node_modules/jsdom ]; then
+  echo "dependências dos testes ausentes — npm ci"
+  npm ci --no-audit --no-fund >/dev/null 2>&1 || { echo "FALHA: npm ci (precisa de internet na primeira vez)"; exit 2; }
+fi
 falhas=0
 linha(){ printf '\n──────────── %s ────────────\n' "$1"; }
 
