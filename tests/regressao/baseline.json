@@ -317,9 +317,9 @@
  "LIM-024": {
   "descricao": "Reavaliação, libido baixa, testosterona 335 no banco — abaixo do corte",
   "conduta": {
-   "protocolo": "DE-2",
+   "protocolo": "DE-3",
    "kit": [
-    "BASE-T10",
+    "BASE-T20",
     "NOITE-1",
     "SP-DE",
     "ONDAS",
@@ -328,14 +328,14 @@
    "iief": 14,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGLIM024 · <data>\nDE leve a moderada · DE-2\ndose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 12 → 14 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: POSITIVO — 1/10 · Diminuição do desejo sexual (libido)\nPENDÊNCIA: Solicitar perfil hormonal\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n- LABS — Perfil hormonal: T total, T livre, LH, FSH, estradiol, prolactina, SHBG · Coleta matinal, em jejum, entre 7h e 10h\n\nPENDÊNCIAS E ALERTAS\n- ANTES DE ENCERRAR A CONSULTA\n  • Solicitar SEGUNDA coleta de testosterona — total e livre, SHBG, LH, FSH, estradiol e prolactina, matinal e em jejum. O protocolo de hipogonadismo só começa com o valor confirmado."
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGLIM024 · <data>\nDE leve a moderada · DE-3\ndose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 12 → 14 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: POSITIVO — 1/10 · Diminuição do desejo sexual (libido)\nPENDÊNCIA: Solicitar perfil hormonal\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T20 — Tadalafila 20 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n- LABS — Perfil hormonal: T total, T livre, LH, FSH, estradiol, prolactina, SHBG · Coleta matinal, em jejum, entre 7h e 10h\n\nPENDÊNCIAS E ALERTAS\n- No nível 3 a cápsula traz tadalafila 20 mg: máximo 1 jato do SP-DE · tadalafila 50 mg/mL, 1 jato = 10 mg\n- ANTES DE ENCERRAR A CONSULTA\n  • Solicitar SEGUNDA coleta de testosterona — total e livre, SHBG, LH, FSH, estradiol e prolactina, matinal e em jejum. O protocolo de hipogonadismo só começa com o valor confirmado."
  },
  "LIM-025": {
   "descricao": "Reavaliação, libido baixa, testosterona 340 no banco — no corte, conta como normal",
   "conduta": {
-   "protocolo": "DE-2L",
+   "protocolo": "DE-3L",
    "kit": [
-    "BASE-T10-I",
+    "BASE-T20-I",
     "NOITE-2",
     "SP-DE",
     "ONDAS"
@@ -343,7 +343,7 @@
    "iief": 14,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGLIM025 · <data>\nDE leve a moderada · DE-2L\ndose aumentada · ramo libido com ioimbina · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 12 → 14 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: POSITIVO — 1/10 · Diminuição do desejo sexual (libido)\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nContraindicação a ioimbina: NÃO a todos\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE, ramo libido — ioimbina manhã e noite\n\nPROTOCOLO PRESCRITO\n- BASE-T10-I — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg + Ioimbina HCl 5,4 mg · 2 cáps 000 pela manhã\n- NOITE-2 — Ioimbina HCl 5,4 mg + Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGLIM025 · <data>\nDE leve a moderada · DE-3L\ndose aumentada · ramo libido com ioimbina · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 12 → 14 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: POSITIVO — 1/10 · Diminuição do desejo sexual (libido)\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 14/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nContraindicação a ioimbina: NÃO a todos\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE, ramo libido — ioimbina manhã e noite\n\nPROTOCOLO PRESCRITO\n- BASE-T20-I — Tadalafila 20 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg + Ioimbina HCl 5,4 mg · 2 cáps 000 pela manhã\n- NOITE-2 — Ioimbina HCl 5,4 mg + Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n\nPENDÊNCIAS E ALERTAS\n- No nível 3 a cápsula traz tadalafila 20 mg: máximo 1 jato do SP-DE · tadalafila 50 mg/mL, 1 jato = 10 mg"
  },
  "TEST-001": {
   "descricao": "DE com diabetes — ondas no protocolo",
@@ -609,7 +609,7 @@
    "iief": 14,
    "pedt": 12
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGTEST019 · <data>\nDE leve a moderada · EP confirmada · DUO-3\nperfil orgânico\n\nTipo de visita: Primeira avaliação\nIIEF-5 total: 14/25 — DE leve a moderada\nPEDT total: 12/20 — EP confirmada\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nRelações por semana: Duas ou mais\nBiotensiômetro: —\nVias tópicas viáveis: Restrição a ambos\nJá usa paroxetina 20 mg: Não\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: Linha DUO com ISRS contínuo — frequência alta\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- MOD-PAROX-10 — Paroxetina 10 mg · 1 cáp pela manhã, uso contínuo\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- SP-DUO — Tadalafila 50 mg/mL + Clomipramina 75 mg/mL — 1 jato = 10 + 15 mg · 1 a 2 jatos sublinguais, 2 h antes\n\nPENDÊNCIAS E ALERTAS\n- Conflito entre indicação e restrição\n- Piso terapêutico aplicado\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta."
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGTEST019 · <data>\nDE leve a moderada · EP confirmada · DUO-3\nperfil orgânico\n\nTipo de visita: Primeira avaliação\nIIEF-5 total: 14/25 — DE leve a moderada\nPEDT total: 12/20 — EP confirmada\nTempo de sintomas: Entre 3 e 6 meses\nParceria: Sim, parceria fixa\nAlergia medicamentosa: —\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nRelações por semana: Duas ou mais\nBiotensiômetro: —\nVias tópicas viáveis: Restrição a ambos\nJá usa paroxetina 20 mg: Não\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: Linha DUO com ISRS contínuo — frequência alta\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- MOD-PAROX-10 — Paroxetina 10 mg · 1 cáp pela manhã, uso contínuo\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- SP-DUO — Tadalafila 50 mg/mL + Clomipramina 75 mg/mL — 1 jato = 10 + 15 mg · 1 a 2 jatos sublinguais, 2 h antes\n\nPENDÊNCIAS E ALERTAS\n- Conflito entre indicação e restrição\n- Piso terapêutico aplicado\n- Sprays com tadalafila: no máximo 2 jatos por dia somando SP-DE · tadalafila 50 mg/mL, 1 jato = 10 mg e SP-DUO · tadalafila 50 mg/mL + clomipramina 75 mg/mL, 1 jato = 10 + 15 mg\n- ANTES DE ENCERRAR A CONSULTA\n  • Entregar o guia Protocolo de Performance (2ª edição) junto da receita e pedir que traga o registro de 12 semanas na próxima consulta."
  },
  "TEST-020": {
   "descricao": "DUO refratária à paroxetina — DUO-4",
@@ -739,9 +739,9 @@
  "R-02": {
   "descricao": "Reavaliação DE: IIEF subiu 1 — subir BASE",
   "conduta": {
-   "protocolo": "DE-2",
+   "protocolo": "DE-3",
    "kit": [
-    "BASE-T10",
+    "BASE-T20",
     "NOITE-1",
     "SP-DE",
     "ONDAS"
@@ -749,7 +749,7 @@
    "iief": 13,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR02 · <data>\nDE leve a moderada · DE-2\ndose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 12 → 13 (+1)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 13/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR02 · <data>\nDE leve a moderada · DE-3\ndose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 12 → 13 (+1)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 13/25 — DE leve a moderada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T20 — Tadalafila 20 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n\nPENDÊNCIAS E ALERTAS\n- No nível 3 a cápsula traz tadalafila 20 mg: máximo 1 jato do SP-DE · tadalafila 50 mg/mL, 1 jato = 10 mg"
  },
  "R-03": {
   "descricao": "Reavaliação DE: IIEF sem ganho — trocar mecanismo",
@@ -999,25 +999,25 @@
   "texto": "MAXIMUS MEDICINA MASCULINA · RGR13 · <data>\nDE severa · INTRACAVERNOSA (mantido)\nprotocolo mantido · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: INTRACAVERNOSA\nIIEF-5 anterior → atual: 7 → 7 (0)\nAdesão: Sempre como recomendado\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nIntracavernosa em casa: grau 3 · duração cerca de 1 hora · 1a2 · dose 0,1 mL\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 7/25 — DE severa\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Intracavernosa em curso — sem retorno à via oral\n\nPROTOCOLO PRESCRITO\n- R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL — intracavernosa, 0,1 mL · Dose-teste SEMPRE em consultório\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
  },
  "R-14": {
-  "descricao": "Reavaliação DE: IIEF 15 → 19 (+4) muda de faixa — rótulo \"dose reduzida pela faixa de hoje\", não \"mantido\"",
+  "descricao": "Reavaliação DE: IIEF 15 → 19 (+4) muda de faixa — mantém BASE-T10 / DE-2 (não reduz)",
   "conduta": {
-   "protocolo": "DE-1",
+   "protocolo": "DE-2 (mantido)",
    "kit": [
-    "BASE-T5",
+    "BASE-T10",
     "NOITE-1",
     "SP-DE"
    ],
    "iief": 19,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR14 · <data>\nDE leve · DE-1\ndose reduzida pela faixa de hoje · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 19 (+4)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nível da cápsula recalculado pela faixa de hoje: BASE-T10 → BASE-T5\nIIEF-5 total: 19/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T5 — Tadalafila 5 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR14 · <data>\nDE leve · DE-2 (mantido)\nprotocolo mantido · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 19 (+4)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — protocolo mantido\nIIEF-5 total: 19/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes"
  },
  "R-15": {
-  "descricao": "Reavaliação DE: IIEF 15 → 17 (+2) muda de faixa — rótulo não diz \"dose aumentada\" com a cápsula descendo",
+  "descricao": "Reavaliação DE: IIEF 15 → 17 (+2) — sobe de BASE-T10 para BASE-T20 / DE-3, a partir do anterior",
   "conduta": {
-   "protocolo": "DE-1",
+   "protocolo": "DE-3",
    "kit": [
-    "BASE-T5",
+    "BASE-T20",
     "NOITE-1",
     "SP-DE",
     "ONDAS"
@@ -1025,6 +1025,66 @@
    "iief": 17,
    "pedt": null
   },
-  "texto": "MAXIMUS MEDICINA MASCULINA · RGR15 · <data>\nDE leve · DE-1\ndose reduzida pela faixa de hoje · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 17 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nível da cápsula recalculado pela faixa de hoje: BASE-T10 → BASE-T5\nIIEF-5 total: 17/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T5 — Tadalafila 5 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR15 · <data>\nDE leve · DE-3\ndose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 17 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 17/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T20 — Tadalafila 20 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n\nPENDÊNCIAS E ALERTAS\n- No nível 3 a cápsula traz tadalafila 20 mg: máximo 1 jato do SP-DE · tadalafila 50 mg/mL, 1 jato = 10 mg"
+ },
+ "R-16": {
+  "descricao": "Reavaliação DE: BASE-T5, IIEF 15 → 17 (+2) — sobe para BASE-T10 / DE-2",
+  "conduta": {
+   "protocolo": "DE-2",
+   "kit": [
+    "BASE-T10",
+    "NOITE-1",
+    "SP-DE",
+    "ONDAS"
+   ],
+   "iief": 17,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR16 · <data>\nDE leve · DE-2\ndose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-1 · cápsula matinal com tadalafila 5 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 17 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 17/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler"
+ },
+ "R-17": {
+  "descricao": "Reavaliação DE: já em BASE-T20, IIEF 15 → 17 (+2) — teto oral: fica em BASE-T20 e indica TEFI",
+  "conduta": {
+   "protocolo": "DE-3",
+   "kit": [
+    "BASE-T20",
+    "NOITE-1",
+    "SP-DE",
+    "ONDAS",
+    "TEFI"
+   ],
+   "iief": 17,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR17 · <data>\nDE leve · DE-3\nsaída da via oral · perfil orgânico · ondas de choque oferecidas · TEFI a agendar\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-3 · cápsula matinal com tadalafila 20 mg + spray sublingual de tadalafila 50 mg/mL, máximo 1 jato\nIIEF-5 anterior → atual: 15 → 17 (+2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nPENDÊNCIA: Agendar TEFI com Doppler\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Escalonar de mecanismo (intracavernosa / terapia)\nIIEF-5 total: 17/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T20 — Tadalafila 20 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n- TEFI — Teste de ereção fármaco-induzida com Doppler peniano — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL, 0,1 mL · Agendar em consultório — define a via seguinte\n\nPENDÊNCIAS E ALERTAS\n- Teto de escalonamento\n- No nível 3 a cápsula traz tadalafila 20 mg: máximo 1 jato do SP-DE · tadalafila 50 mg/mL, 1 jato = 10 mg\n- ANTES DE ENCERRAR A CONSULTA\n  • Agendar TEFI (teste de ereção fármaco-induzida com Doppler peniano) — R5 · alprostadil (PGE1) 10 mcg/mL + fentolamina 1 mg/mL + papaverina 30 mg/mL, 0,1 mL. Na próxima consulta o sistema vai perguntar pelo resultado e pela conduta definida."
+ },
+ "R-18": {
+  "descricao": "Reavaliação DUO: DUO-2, IIEF 14 → 16 (+2) — sobe para BASE-T20 / DUO-3, máximo 1 jato do SP-DUO",
+  "conduta": {
+   "protocolo": "DUO-3",
+   "kit": [
+    "BASE-T20",
+    "NOITE-1",
+    "SP-DUO",
+    "ONDAS"
+   ],
+   "iief": 16,
+   "pedt": 12
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR18 · <data>\nDE leve a moderada · EP confirmada · DUO-3\ndose aumentada · perfil orgânico · ondas de choque oferecidas\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DUO-2 · cápsula matinal com tadalafila 10 mg + spray sob demanda com tadalafila 50 mg/mL e clomipramina 75 mg/mL\nIIEF-5 anterior → atual: 14 → 16 (+2)\nPEDT anterior → atual: 14 → 12 (-2)\nAdesão: Todos os dias\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Subir um nível de BASE\nIIEF-5 total: 16/25 — DE leve a moderada\nPEDT total: 12/20 — EP confirmada\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nRelações por semana: Menos de duas / esporádico\nBiotensiômetro: —\nVias tópicas viáveis: Restrição a ambos\nHistória psiquiátrica: Não\nDeseja fertilidade: Não\n\nCONDUTA: Linha DUO — sob demanda, duas opções\n\nPROTOCOLO PRESCRITO\n- BASE-T20 — Tadalafila 20 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DUO — Tadalafila 50 mg/mL + Clomipramina 75 mg/mL — 1 jato = 10 + 15 mg · 1 a 2 jatos sublinguais, 2 h antes\n- ONDAS — Li-ESWT — ondas de choque de baixa intensidade, na clínica · Protocolo em sessões · idealmente após Doppler\n\nPENDÊNCIAS E ALERTAS\n- Conflito entre indicação e restrição\n- No nível 3 a cápsula traz tadalafila 20 mg: máximo 1 jato do SP-DUO · tadalafila 50 mg/mL + clomipramina 75 mg/mL, 1 jato = 10 + 15 mg (teto de 30 mg/dia de tadalafila)"
+ },
+ "R-19": {
+  "descricao": "Reavaliação DE com baixa adesão, IIEF 15 → 19 — cápsula fica em BASE-T10 (nem sobe nem desce)",
+  "conduta": {
+   "protocolo": "DE-2 (mantido)",
+   "kit": [
+    "BASE-T10",
+    "NOITE-1",
+    "SP-DE"
+   ],
+   "iief": 19,
+   "pedt": null
+  },
+  "texto": "MAXIMUS MEDICINA MASCULINA · RGR19 · <data>\nDE leve · DE-2 (mantido)\nmantido por adesão insuficiente · perfil orgânico\n\nTipo de visita: 1ª reavaliação\nIntervalo desde a última: 60 dias\nProtocolo anterior: DE-2 · cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda\nIIEF-5 anterior → atual: 15 → 19 (+4)\nAdesão: Falhou muitos dias\nMotivo: Esquecimento\nEfeitos adversos: Nenhum\nADAM: negativo — nenhum sintoma\nSatisfação (0-10): 8\nRecomendaria a clínica (0-10): 8\nMudança deste ciclo: Nenhuma — manter e resolver a causa\nIIEF-5 total: 19/25 — DE leve\nContraindicação a tadalafila: NÃO a todos\nMedicação prévia: Nunca usou\nDeseja fertilidade: Não\n\nCONDUTA: Linha DE — oral contínuo + spray sob demanda\n\nPROTOCOLO PRESCRITO\n- BASE-T10 — Tadalafila 10 mg + L-arginina 1.000 mg + Picnogenol 120 mg + Panax ginseng 1.000 mg · 2 cáps 000 pela manhã\n- NOITE-1 — Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI · 2 cáps 000 à noite\n- SP-DE — Tadalafila 50 mg/mL — 1 jato = 10 mg · 1 a 2 jatos, 30 min antes\n\nPENDÊNCIAS E ALERTAS\n- Adesão insuficiente — não escalonar"
  }
 }

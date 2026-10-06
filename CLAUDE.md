@@ -344,13 +344,24 @@ precisa procurar a última opção. Contador único: "Antes de entregar o tablet
 nas telas da equipe e "Pergunta k de N" nas do paciente (o total só aparece
 depois da queixa). Triagem e financeiro são só desktop.
 
-**"Protocolo mantido" no retorno oral (v2.5-K, rótulo):** o nível da cápsula
-(BASE-T) no retorno DE/DUO sai da faixa do IIEF-5 de HOJE, não do nível
-anterior. Quando a faixa sobe e o nível cai (ex.: DE-2/BASE-T10 → DE-1/BASE-T5),
-o app diz "Nível da cápsula recalculado pela faixa de hoje" e "dose reduzida",
-nunca "mantido". A conduta em si não mudou — a decisão (manter o nível que
-funcionou, ou subir um nível na resposta parcial) é do Dr. Marco; ver o PR da
-v2.5-K e os pacientes R-14/R-15 da regressão.
+**Retorno oral DE/DUO: o nível parte do ANTERIOR (v2.5-L, opção B do Dr. Marco).**
+Com IIEF-5 anterior e cápsula BASE-T anterior (kit; na falta, o número de DE-n/DUO-n):
+ganho ≥ 4 → mantém o nível que funcionou, mesmo se a faixa de hoje pedisse menos
+ou nenhuma cápsula (a via oral nunca é reduzida automaticamente; reduzir é decisão
+do médico na receita); ganho de 1 a 3 → sobe um nível a partir do anterior
+(BASE-T5 → T10 → T20); ganho de 1 a 3 que já chegou a 22+ → objetivo atingido,
+mantém sem subir; sem ganho → "Trocar mecanismo", sem reduzir; já em BASE-T20 com
+ganho < 4 → teto de escalonamento + TEFI (inclusive quando o nome do protocolo
+anterior não traz o nível, ex.: DUO-1D com BASE-T20). Adesão insuficiente ou
+efeito limitante (travado) → a cápsula fica exatamente no nível anterior, como o
+rótulo "(mantido)" diz. Não se aplica a intracavernosa (nunca regride), troca de
+queixa, nem sem IIEF-5 anterior (aí vale a faixa de hoje e o rótulo "Nível da
+cápsula recalculado pela faixa de hoje" da v2.5-K). Se a linha oral muda de código
+sem mudança de dose (ex.: DUO-3 → DUO-4), o rótulo é "Protocolo ajustado: X → Y",
+nunca "mantido". Teto de tadalafila 30 mg/dia: com BASE-T20, máximo 1 jato do
+SP-DE ou do SP-DUO (DE e DUO); com SP-DE e SP-DUO no mesmo kit, um alerta dá o
+total de jatos/dia somando os dois. Testes: `tests/teste_retorno_oral.js` (etapa
+7j) e R-14 a R-19 da regressão.
 
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.

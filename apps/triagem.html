@@ -5273,7 +5273,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </ol>`;
 
 
-  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração/i;
+  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração|teto de 30 mg\/dia/i;
   // v2.5-F: alertas com hierarquia — título, uma linha de resumo e o detalhe recolhível.
   // Cada alerta guarda o texto original num <p class="al-orig"> oculto: é dele que o texto do
   // prontuário, a prévia e a contagem do cabeçalho leem (mesmo conteúdo de antes).
@@ -6108,6 +6108,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (!travado){
         if (dIIEF!==null && !emICIant){
           if (dIIEF>=4) notas.push('<b>IIEF-5 subiu '+dIIEF+' pontos</b> — ganho acima da diferença clinicamente relevante. Manter o protocolo.');
+          else if (dIIEF>=1 && sIIEF>=22) notas.push('<b>IIEF-5 subiu '+dIIEF+' ponto(s) e está em '+sIIEF+'</b>, já na faixa sem disfunção — objetivo atingido. Manter o protocolo, sem subir dose.');   // v2.5-L
           else if (dIIEF>=1){ notas.push('<b>IIEF-5 subiu apenas '+dIIEF+' ponto(s)</b> — resposta parcial. Subir um nível de BASE.'); mudanca='Subir um nível de BASE'; }
           else { notas.push('<b>IIEF-5 sem ganho ('+dIIEF+')</b> com boa adesão e sem efeito limitante — trocar mecanismo, não aumentar dose.'); mudanca='Trocar mecanismo'; }
         }
@@ -6117,7 +6118,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           else { notas.push('<b>PEDT sem ganho</b> — trocar classe.'); mudanca=mudanca||'Trocar classe do agente de EP'; }
         }
         const antTeto = ((S.protAnt==='Outro / combinação não listada'?(S.formulasAnt||[]).join(' '):S.protAnt)||'').match(/T20|DE-3|DUO-3|EP-4|DUO-4/);
-        if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4)||(dPEDT!==null&&dPEDT>-4))){
+        if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4&&!(dIIEF>=1&&sIIEF>=22))||(dPEDT!==null&&dPEDT>-4))){
           // v2.5-F: o TEFI foi feito nesta consulta — não se pede o teste de novo; a via segue o resultado
           if (reav && S.tefiFeito==='sim')
             notas.push('<b>Teto de escalonamento.</b> O paciente já estava no degrau oral mais alto e não atingiu ganho relevante. Não subir mais dose: o teste de ereção foi feito nesta consulta e a via seguinte é a definida pelo resultado.');
@@ -6228,6 +6229,54 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.previa==='falhou'&&S.adequado==='sim'&&lvlDE>0&&lvlDE<4&&!travado){
       lvlDE=Math.min(lvlDE+1,3);
       notas.push('<b>Falha real a PDE5i em dose plena:</b> nível elevado automaticamente.'+((reav && S.tefiFeito==='sim') ? '' : ' Considerar teste de ereção fármaco-induzida em consultório.'));
+    }
+    // v2.5-L (decisão do Dr. Marco, opção B): no retorno oral DE/DUO o nível da cápsula parte do
+    // nível ANTERIOR, não só da faixa de hoje. Ganho ≥ 4 → mantém o nível que funcionou (nunca reduz);
+    // ganho de 1 a 3 → sobe um nível a partir do anterior (teto BASE-T20); sem ganho → a lógica de troca
+    // de mecanismo segue, sem reduzir o nível. Não vale para intracavernosa (não regride), adesão baixa ou
+    // efeito limitante (travado), troca de queixa, nem sem o IIEF-5 anterior.
+    const NB_ORAL=['','BASE-T5','BASE-T10','BASE-T20'];
+    const nivelOralAnt = (()=>{ if (!reav || !prev) return 0;
+      for (const c of unicos(prev.kitCodes||[])){ const m=/^BASE-T(5|10|20)(?:-I)?$/.exec(c); if (m) return {'5':1,'10':2,'20':3}[m[1]]; }
+      return Number((String(S.protAnt||prev.protocolo||'').match(/^(?:DE|DUO)-([123])/)||[])[1])||0; })();
+    let regraOral = null;
+    // travado (adesão insuficiente ou efeito limitante): o rótulo já é "<protocolo anterior> (mantido)" e
+    // "não escalonar". A cápsula fica no nível anterior — nem sobe pela faixa pior, nem desce pela melhor.
+    if (reav && S.hasDE && !emICIant && travado && !S.queixaMudouDoCiclo && nivelOralAnt>=1){
+      if (lvlDE!==nivelOralAnt) regraOral = {tipo:'travado', ant:nivelOralAnt, novo:nivelOralAnt, faixa:lvlDE};
+      lvlDE = nivelOralAnt;
+    }
+    if (reav && S.hasDE && !emICIant && !travado && !S.queixaMudouDoCiclo && dIIEF!==null && nivelOralAnt>=1 && lvlDE<4){
+      const faixaHoje = lvlDE;
+      if (dIIEF>=4 || (dIIEF>=1 && sIIEF>=22)){   // ganho grande, ou ganho pequeno que já chegou à faixa sem disfunção
+        lvlDE = Math.max(lvlDE, nivelOralAnt);
+        regraOral = {tipo:'manter', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+        if (faixaHoje < nivelOralAnt)
+          notas.push('<b>Nível oral mantido em '+NB_ORAL[nivelOralAnt]+'.</b> A faixa de hoje sozinha indicaria '+(faixaHoje>=1?NB_ORAL[faixaHoje]:'suspender a cápsula')
+            +', mas a melhora veio com este nível: a regra da clínica é não reduzir a via oral automaticamente. Reduzir só por decisão do médico, na receita.');
+      } else if (dIIEF>=1){
+        if (nivelOralAnt>=3){
+          lvlDE = Math.max(lvlDE, 3);
+          regraOral = {tipo:'teto', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+          // teto: o mesmo encaminhamento do "teto de escalonamento" (que só olha o nome do protocolo anterior)
+          if (!/Escalonar de mecanismo|Teto oral/.test(mudanca||'')){
+            if (S.tefiFeito==='sim')
+              notas.push('<b>Teto de escalonamento.</b> O paciente já estava em '+NB_ORAL[3]+', o degrau oral mais alto, e o ganho foi parcial. Não subir mais dose: o teste de ereção foi feito nesta consulta e a via seguinte é a definida pelo resultado.');
+            else
+              notas.push('<b>Teto de escalonamento.</b> O paciente já estava em '+NB_ORAL[3]+', o degrau oral mais alto, e o ganho foi parcial. Não subir mais dose: indicar <b>teste de ereção fármaco-induzida</b> e via intracavernosa, ou terapia sexual de casal se o eixo for comportamental.');
+            mudanca = S.tefiFeito==='sim' ? 'Teto oral atingido · via definida pelo TEFI de hoje' : 'Escalonar de mecanismo (intracavernosa / terapia)';
+          }
+        } else {
+          const alvo = nivelOralAnt+1;
+          lvlDE = Math.max(lvlDE, alvo);
+          regraOral = {tipo:'subir', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+          notas.push('<b>Cápsula sobe de '+NB_ORAL[nivelOralAnt]+' para '+NB_ORAL[lvlDE]+'</b> — um nível acima do que ele usava, não pela faixa de hoje'
+            +(faixaHoje<lvlDE?' (que indicaria '+(faixaHoje>=1?NB_ORAL[faixaHoje]:'suspender a cápsula')+')':'')+'.');
+        }
+      } else {
+        lvlDE = Math.max(lvlDE, nivelOralAnt);
+        regraOral = {tipo:'semGanho', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+      }
     }
     if (S.previa==='falhou'&&S.adequado==='nao') notas.push('<b>Não é falha real:</b> a tentativa anterior foi inadequada. Manter o nível do escore e orientar uso correto.');
     const comorb = (S.comorb||[]).filter(v=>v!=='nenhuma');
@@ -6412,6 +6461,10 @@ document.documentElement.setAttribute('data-tema',t)})();
         recoText='Cápsula matinal contínua para a ereção e uma das duas opções sob demanda para a ejaculação.';
         notas.push(NOTA_DEMANDA);
       }
+      // v2.5-L: teto de tadalafila (30 mg/dia) também na linha DUO — com a cápsula de 20 mg, o spray
+      // que leva tadalafila (SP-DE ou SP-DUO) fica em no máximo 1 jato (SP-DUO-1J já é de 1 jato)
+      const spTada = kit.find(c=>c==='SP-DE'||c==='SP-DUO');
+      if (n===3 && spTada) notas.push('No nível 3 a cápsula traz tadalafila 20 mg: <b>máximo 1 jato</b> do '+spTada+' (teto de 30 mg/dia de tadalafila).');
     } else if (trataDE){
       const n=lvlDE, base=ramoL?BTI[n-1]:BT[n-1];
       prot='DE-'+n+(ramoL?'L':''); kit=[base,ramoL?'NOITE-2':'NOITE-1','SP-DE'];
@@ -6462,6 +6515,13 @@ document.documentElement.setAttribute('data-tema',t)})();
       else
         notas.push('<b>Sem recurso possível para a ejaculação precoce neste paciente.</b> A via serotoninérgica está bloqueada'+(usaISRS?' (ISRS em uso)':'')+' e há restrição às duas vias tópicas. Reabordar a restrição ao creme ou ao preservativo'+(usaISRS?' e conversar com o psiquiatra sobre o antidepressivo':'')+'; até lá, abordagem comportamental.');
     }
+    // v2.5-L: teto de 30 mg/dia de tadalafila quando o piso soma o SP-DUO a um kit que já tem SP-DE —
+    // os dois sprays levam tadalafila 10 mg/jato e a nota do nível só fala de um deles
+    if (cods().indexOf('SP-DE')>=0 && cods().indexOf('SP-DUO')>=0){
+      const mgCap = ({'BASE-T5':5,'BASE-T10':10,'BASE-T20':20})[(cods().find(c=>/^BASE-T(5|10|20)(?:-I)?$/.test(c))||'').replace(/-I$/,'')]||0;
+      const jatos = Math.floor((30-mgCap)/10);
+      notas.push('<b>Sprays com tadalafila: no máximo '+jatos+' jato'+(jatos>1?'s':'')+' por dia somando SP-DE e SP-DUO</b> — cada jato tem 10 mg'+(mgCap?' e a cápsula já traz '+mgCap+' mg':'')+' (teto de 30 mg/dia de tadalafila).');
+    }
     if (S.hasDE && !semTada && !cods().some(c=>/^SP-DE|^SP-DUO|^ICI/.test(c))){
       kit = kit.concat(['SP-DE']);
       notas.push('<b>Piso terapêutico aplicado:</b> paciente que procurou a clínica por queixa de ereção sai no mínimo com o spray de tadalafila sob demanda.');
@@ -6497,6 +6557,19 @@ document.documentElement.setAttribute('data-tema',t)})();
       mudanca = 'Nível da cápsula recalculado pela faixa de hoje: '+NB[recalcNivel.de]+' → '+NB[recalcNivel.para];
       notas.push('<b>Nível da cápsula recalculado pela faixa de hoje.</b> O IIEF-5 está agora na faixa '+escH(fx.replace(/^DE\s*/,''))+' e a cápsula passou de '+NB[recalcNivel.de]+' para '+NB[recalcNivel.para]+
         (recalcNivel.para<recalcNivel.de ? ' — redução de dose, não manutenção.' : '.')+' Se a decisão for manter '+NB[recalcNivel.de]+', ajustar a receita manualmente.');
+    }
+    // v2.5-L: com a regra do nível anterior (opção B) a cápsula não desce mais sozinha, mas a linha
+    // oral ainda pode mudar de código sem mudança de dose (ex.: DUO-3 → DUO-4 pela resposta da EP).
+    // "Protocolo mantido" seria falso: o rótulo diz que o protocolo foi ajustado.
+    let protAjustado = null;
+    if (reav && !travado && !mudanca && prev && !S.queixaMudouDoCiclo){
+      const semMant = x => String(x||'').replace(/\s*\(mantido\)\s*$/,'').trim();
+      const pa = semMant(S.protAnt && S.protAnt!=='Outro / combinação não listada' ? S.protAnt : prev.protocolo), pn = semMant(prot);
+      if (/^(?:DE|DUO)-/.test(pa) && /^(?:DE|DUO)-/.test(pn) && pa!==pn) protAjustado = {de:pa, para:pn};
+    }
+    if (protAjustado){
+      mudanca = 'Protocolo ajustado: '+protAjustado.de+' → '+protAjustado.para;
+      notas.push('<b>Protocolo ajustado de '+escH(protAjustado.de)+' para '+escH(protAjustado.para)+'</b> pela resposta de hoje. Não é manutenção: conferir a receita item a item.');
     }
     if (reav && !travado && !mudanca) mudanca = 'Nenhuma — protocolo mantido';
     if (reav && !travado && (!mudanca || /mantido/.test(mudanca)) && prot.indexOf('mantido')<0) prot = prot + ' (mantido)';
@@ -6602,6 +6675,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       else if (mudanca && /Subir/.test(mudanca)) marc.push('dose aumentada');
       else if (mudanca && /Trocar/.test(mudanca)) marc.push('mecanismo trocado');
       else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) marc.push('saída da via oral');
+      else if (protAjustado) marc.push('protocolo ajustado');
       else marc.push('protocolo mantido');
     }
     if (semTada) marc.push('bloqueio por contraindicação cardiovascular');
@@ -6702,6 +6776,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       else if (mudanca && /Subir/.test(mudanca)) rc_mud.push('<b>Subimos um degrau</b> — houve ganho, mas abaixo do clinicamente relevante.');
       else if (mudanca && /Trocar/.test(mudanca)) rc_mud.push('<b>Trocamos o mecanismo</b> — sem ganho, com boa adesão e sem efeito limitante.');
       else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) rc_mud.push('<b>Saímos da via oral</b> — já no degrau mais alto, sem ganho relevante.');
+      else if (protAjustado) rc_mud.push('<b>Protocolo ajustado</b> — '+escH(protAjustado.de)+' → '+escH(protAjustado.para)+' pela resposta de hoje; conferir item a item.');
       else rc_mud.push('<b>Protocolo mantido</b> — ganho consistente.');
     }
 

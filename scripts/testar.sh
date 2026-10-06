@@ -63,6 +63,9 @@ node teste_conduta.js || falhas=$((falhas+1))
 linha "7i. correções v2.5 — retorno sem perguntas do passado, painel enxuto, intracavernosa, contato, envio"
 node teste_v25.js || falhas=$((falhas+1))
 
+linha "7j. retorno oral DE/DUO (v2.5-L) — nível parte do anterior: mantém, sobe, teto, DUO, trava, intracavernosa"
+node teste_retorno_oral.js || falhas=$((falhas+1))
+
 linha "8. tela de senha dos três apps"
 node teste_sessao.js || falhas=$((falhas+1))
 
