@@ -300,7 +300,8 @@ async function atendimento(p, viaAtalho) {
   console.log('\n--- concluir atendimento: marca atendido, tira da fila, chama o próximo');
   {
     const hoje = new Date();
-    const mk = (cod, ini, min) => { const d = new Date(hoje.getTime() - min * 60000);
+    // v2.5-K: nunca antes da meia-noite de hoje (entre 0h e 1h o registro caía no dia anterior)
+    const mk = (cod, ini, min) => { const d = new Date(Math.max(hoje.getTime() - min * 60000, new Date(hoje).setHours(0, 0, 0, 0) + (100 - min) * 1000));
       return { codigo: cod, iniciais: ini, tipo: 'recepcao', linha: 'recepcao', hora: d.toTimeString().slice(0, 5), data: d.toISOString(),
         dataLocal: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
         queixaRecepcao: 'de', idade: 50, respostas: { i0: 3, i1: 3, i2: 3, i3: 3, i4: 3 } }; };

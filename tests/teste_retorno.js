@@ -46,6 +46,13 @@ async function abre(mem, ctl) {
         getItem: k => (k in g ? g[k] : null), setItem: (k, v) => { g[k] = String(v); }, removeItem: k => { delete g[k]; } } });
     }
   });
+  // v2.5-K: o app usa o próprio diálogo (não mais o confirm nativo) — o teste responde nele como o médico
+  const obs = new dom.window.MutationObserver(() => {
+    const ov = dom.window.document.querySelector('.mx-dlg-ov:not([data-visto])'); if (!ov) return;
+    ov.dataset.visto = '1'; ctl.confirmou.push(ov.textContent);
+    setTimeout(() => { const b = ov.querySelector(ctl.resposta ? '[data-v="1"]' : '[data-v="0"]'); if (b) b.click(); }, 0);
+  });
+  obs.observe(dom.window.document.documentElement, { childList: true, subtree: true });
   await espera(40);
   return { win: dom.window, doc: dom.window.document, erros };
 }
@@ -54,7 +61,7 @@ const hojeISO = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2
 // paciente DUO em retorno: primeira avaliação gravada pelo app atual (ficha estável,
 // caracterização e ADAM) + questionário da recepção de hoje, item a item
 function banco() {
-  const d0 = new Date(Date.now() - 66 * 86400000), agora = new Date(Date.now() - 20 * 60000);
+  const d0 = new Date(Date.now() - 66 * 86400000), agora = new Date(Math.max(Date.now() - 20 * 60000, new Date().setHours(0, 0, 0, 0) + 60000));   // v2.5-K: nunca no dia anterior
   const primeira = { codigo: 'MXR001', tipo: 'primeira', data: d0.toISOString(), dataLocal: hojeISO(d0), protocolo: 'DUO-3', kitCodes: ['BASE-T5', 'MOD-PAROX-10', 'SP-DE'],
     iief: 14, pedt: 15, tempo: 'medio', parceria: 'fixa', contraCV: 'nao', fertilidade: 'nao', previaTrat: 'nunca', previaAdequado: null, alergias: [],
     medsRisco: [], comorbidades: [], topicoPref: 'ambos', psiquiatrico: 'nao', frequencia: 'alta', biotens: 22, mast: 'sim', matinal: 'nao', adam: ['a1', 'a7'],
