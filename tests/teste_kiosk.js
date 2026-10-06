@@ -78,8 +78,20 @@ async function roda(i, mem, novo) {
     const pergunta = (doc.getElementById('pergunta') || {}).textContent || '';
     const contatoBox = doc.querySelector('.kcontato');
     if (contatoBox) {
-      const inps = [...contatoBox.querySelectorAll('input')];
+      // v2.5-P: campos pelo nome (na primeira visita vêm antes nome completo e nascimento)
+      const porCampo = c => contatoBox.querySelector('input[data-campo="' + c + '"]');
+      const inps = [porCampo('iniciais'), porCampo('telefone'), porCampo('email')];
       const dispara = el => el.dispatchEvent(new win.Event('input', { bubbles: true }));
+      const nomeI = porCampo('nome'), nascI = porCampo('nascimento');
+      if (nomeI && nascI) {
+        nascI.value = '0102198'; dispara(nascI); nascI.value += '8'; dispara(nascI);
+        if (nascI.value !== '01/02/1988') rel.falha = rel.falha || 'nascimento sem mascara: ' + nascI.value;
+        nascI.value = '31/02/1988'; dispara(nascI);
+        if (!nascI.classList.contains('kfld-falta')) rel.falha = rel.falha || 'nascimento invalido nao marcado';
+        nascI.value = '01/02/1988'; dispara(nascI);
+        nomeI.value = 'Paciente Teste ' + i; dispara(nomeI);
+        rel.identOk = true;
+      }
       const jaVeioDoBanco = !!(inps[1].value || inps[2].value);
       const avisoFalta = /N.o achamos telefone nem email/i.test(contatoBox.textContent);
       if (avisoFalta) rel.avisouFalta = true;
@@ -250,6 +262,7 @@ async function filaDeHoje() {
   console.log('telas por questionario: media', (passos.reduce((a, b) => a + b, 0) / passos.length).toFixed(1), '| max', Math.max(...passos));
   console.log('registros salvos:', salvos.length, '| com telefone ou email:', comContato, '| com peso e altura pela roleta:', comMedidas);
   console.log('tela de contato travou sem contato:', rels.filter(r => r.contatoBloqueou).length);
+  console.log('primeira visita com nome e nascimento (mascara e data invalida conferidas):', rels.filter(r => r.identOk).length);
   console.log('retornos que vieram preenchidos do cadastro:', rels.filter(r => r.prefill).length,
     '| retornos sem contato no cadastro, com aviso:', rels.filter(r => r.avisouFalta).length);
   console.log('iniciais normalizadas:', rels.filter(r => r.iniciaisOk).length, '| telefone formatado:', rels.filter(r => r.telFormatado).length);

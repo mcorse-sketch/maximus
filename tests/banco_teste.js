@@ -240,6 +240,24 @@ pac('MX9140', 'segurança · testosterona limítrofe', 'MCD', 56, 98, 175, [
 ], null, 'DE com libido baixa e testosterona na zona cinzenta (290 ng/dL, livre 55 pg/mL)');
 
 // ---------- registros --------------------------------------------------------------
+// v2.5-P: nome completo e nascimento (inventados, batendo com as iniciais e a idade) —
+// gravados como a recepção grava na primeira visita; saem só no pedido de exames
+const NOMES = { ARF: 'Antônio Ribeiro Fonseca', CMS: 'Carlos Mendes Souza', JPL: 'João Pedro Lacerda', RTB: 'Rafael Teixeira Barros',
+  LGV: 'Leonardo Gomes Vieira', TAN: 'Thiago Almeida Nunes', EMC: 'Eduardo Moreira Campos', OBF: 'Otávio Bastos Freitas',
+  HSD: 'Henrique Santos Duarte', GIP: 'Gustavo Ivo Pires', NCR: 'Nelson Cardoso Rocha', VSO: 'Vítor Silveira Oliveira',
+  PAL: 'Paulo Andrade Lima', BRM: 'Bruno Rezende Machado', FDS: 'Felipe Dias Siqueira', ICT: 'Igor Costa Tavares',
+  MAV: 'Marcelo Araújo Viana', SLB: 'Samuel Lopes Batista', DCG: 'Diego Carvalho Guimarães', RPN: 'Renato Pereira Neves',
+  AJT: 'André Jordão Torres', LMO: 'Lucas Martins Oliveira', CEF: 'César Esteves Figueiredo', GTR: 'Gabriel Torres Ramos',
+  PHS: 'Pedro Henrique Sales', NBA: 'Nicolas Brandão Azevedo', OVC: 'Osvaldo Vasconcelos Cruz', TSM: 'Tiago Sampaio Moura',
+  KWE: 'Kléber Wagner Estrela', DRZ: 'Daniel Rocha Zanetti', ELU: 'Emanuel Leite Ugarte', FAG: 'Fábio Antunes Gouveia',
+  UMB: 'Ulisses Mattos Brito', WCA: 'Wagner Coelho Amaral', YRP: 'Yuri Rangel Prado', IGH: 'Ivan Gusmão Holanda',
+  BPE: 'Bernardo Prates Esteves', JTF: 'Júlio Tavares Fontes', LKN: 'Luiz Kenji Nakamura', MCD: 'Mauro Cunha Damasceno' };
+// nascimento: dia e mês fixos pelo código; o ano faz a idade de hoje bater com a idade cadastrada
+function nascimento(p, hoje) {
+  const n = Number(p.cod.slice(2)), m = (n * 5) % 12 + 1, d = (n * 7) % 27 + 1;
+  const jaFez = (hoje.getMonth() + 1 > m) || (hoje.getMonth() + 1 === m && hoje.getDate() >= d);
+  return (hoje.getFullYear() - p.idade - (jaFez ? 0 : 1)) + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+}
 const contato = p => ({ iniciais: p.ini, telefone: '(21)90000-' + p.cod.slice(2), email: 'teste' + p.cod.slice(2) + '@exemplo.invalid' });
 const medidas = p => ({ idade: p.idade, peso: p.peso, altura: p.altura, cintura: null, imc: +(p.peso / Math.pow(p.altura / 100, 2)).toFixed(1) });
 const QREC = { de: 'de', ep: 'ep', ambos: 'ambos', preench: 'preench', tefi: 'de', hipo: 'libido' };
@@ -254,7 +272,7 @@ function recepcao(p, d, o) {
   if (o.iief != null) Object.assign(resp, iief(o.iief));
   if (o.pedt != null) Object.assign(resp, pedt(o.pedt));
   const reg = { hora: hhmm(d), codigo: p.cod, tipo: 'recepcao', linha: 'recepcao',
-    iniciais: c.iniciais, telefone: c.telefone, email: c.email,
+    iniciais: c.iniciais, nome: NOMES[p.ini] || null, nascimento: nascimento(p, new Date()), telefone: c.telefone, email: c.email,
     queixaRecepcao: o.q, iief: soma(resp, KI), pedt: soma(resp, KP), adam: o.adam || [],
     dificuldade: o.revisar ? 'sim' : 'nao', revisar: !!o.revisar, medidas: medidas(p),
     leuTermo: !!o.leuTermo,

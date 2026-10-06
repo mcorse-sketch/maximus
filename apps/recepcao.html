@@ -25,6 +25,7 @@
 .kcontato .klab{margin-top:14px}
 .kcontato .kaviso{font-size:15px;color:#8a5a0b;margin-top:10px;line-height:1.5}
 .kfld-falta{border-color:#8a5a0b!important}
+.kfld.kfld-nome{text-align:left;letter-spacing:0}
 
 .kjornada{counter-reset:j;list-style:none;margin:20px 0 0;padding:0}
 .kjornada li{counter-increment:j;position:relative;padding:14px 0 14px 46px;font-size:16.5px;
@@ -1385,14 +1386,19 @@
       w.appendChild(g);
     } else if (sc.kind==='contato'){
       const box=document.createElement('div'); box.className='kcontato';
-      const campos=[{id:'iniciais',label:'Iniciais do paciente',ph:'ex.: RAM',modo:'text'},
+      // v2.5-P: na primeira visita, nome completo e nascimento — só para o pedido de exames
+      // (o resto do app continua usando o código e as iniciais). Opcionais: não travam o tablet.
+      const ident = S.tipoVisita==='novo' ? [{id:'nome',label:'Nome completo (sai só no pedido de exames)',ph:'Nome e sobrenome',modo:'nome'},
+                    {id:'nascimento',label:'Data de nascimento',ph:'DD/MM/AAAA',modo:'nasc'}] : [];
+      const campos=ident.concat([{id:'iniciais',label:'Iniciais do paciente',ph:'ex.: RAM',modo:'text'},
                     {id:'telefone',label:'Telefone com DDD',ph:'(21)99999-9999',modo:'tel'},
-                    {id:'email',label:'Email',ph:'nome@email.com',modo:'email'}];
+                    {id:'email',label:'Email',ph:'nome@email.com',modo:'email'}]);
       const aviso=document.createElement('div'); aviso.className='kaviso';
       function pinta_aviso(){
         const t=[];
         if (ok(S.telefone) && !telOK(S.telefone)) t.push('Telefone incompleto: precisa de DDD e 8 ou 9 números.');
         if (ok(S.email) && !emailOK(S.email)) t.push('Email em formato inválido.');
+        if (ok(S.nascTxt) && !nascISO(S.nascTxt)) t.push('Data de nascimento inválida: use DD/MM/AAAA.');
         if (!ok(S.telefone) && !ok(S.email)) t.push('Preencha pelo menos telefone ou email para entregar o tablet.');
         else if (!ok(S.email)) t.push('Sem email: orientações e receita só poderão ir por WhatsApp.');
         aviso.innerHTML = t.join('<br>');
@@ -1410,10 +1416,22 @@
         const l=document.createElement('div'); l.className='klab'; l.textContent=c.label; box.appendChild(l);
         const inp=document.createElement('input'); inp.className='kfld'; inp.type='text';
         if (c.modo==='tel') inp.inputMode='tel'; if (c.modo==='email') inp.inputMode='email';
+        if (c.modo==='nasc') inp.inputMode='numeric';
+        if (c.modo==='nome'){ inp.autocapitalize='words'; inp.classList.add('kfld-nome'); }
+        inp.autocomplete='off';
         inp.placeholder=c.ph||'';
-        inp.value = c.id==='telefone' ? fmtTel(S.telefone) : (S[c.id]||'');
+        inp.value = c.id==='telefone' ? fmtTel(S.telefone) : (c.id==='nascimento' ? (S.nascTxt||nascBR(S.nascimento)) : (S[c.id]||''));
         inp.oninput=()=>{
-          if (c.id==='iniciais'){ S.iniciais=fmtIniciais(inp.value); inp.value=S.iniciais; }
+          if (c.id==='nome'){ S.nome=inp.value.replace(/\s+/g,' ').replace(/^\s/,'');
+            // iniciais saem do nome quando a recepção ainda não digitou
+            if (!S.iniciaisMexidas){ S.iniciais=fmtIniciais(S.nome.trim().split(' ').filter(p=>p && !/^(de|da|do|das|dos|e)$/i.test(p)).map(p=>p[0]).join('')); const ii=box.querySelector('[data-campo="iniciais"]'); if (ii) ii.value=S.iniciais; }
+            pinta_aviso(); sync(); return; }
+          if (c.id==='nascimento'){ inp.value=mascaraNasc(inp.value); S.nascTxt=inp.value;
+            const iso=nascISO(inp.value); S.nascimento=iso;
+            if (iso) S.idade=String(idadeDe(iso));        // a roleta de idade já abre na idade certa
+            inp.classList.toggle('kfld-falta', inp.value.length===10 && !iso);
+            pinta_aviso(); sync(); return; }
+          if (c.id==='iniciais'){ S.iniciaisMexidas=true; S.iniciais=fmtIniciais(inp.value); inp.value=S.iniciais; }
           else if (c.id==='telefone'){ S.telefone=fmtTel(inp.value); inp.value=S.telefone; }
           else S.email=inp.value.trim();
           const erro = (c.id==='telefone' && ok(S.telefone) && !telOK(S.telefone))
@@ -1422,6 +1440,7 @@
           inp.classList.toggle('kfld-falta', !!erro);
           pinta_aviso(); sync();
         };
+        inp.dataset.campo=c.id;
         box.appendChild(inp);
       });
       pinta_aviso();
@@ -1504,6 +1523,15 @@
     sync();
   }
 
+  // v2.5-P: data de nascimento DD/MM/AAAA ↔ AAAA-MM-DD
+  function mascaraNasc(v){ const d=String(v||'').replace(/\D/g,'').slice(0,8); return d.length>4 ? d.slice(0,2)+'/'+d.slice(2,4)+'/'+d.slice(4) : (d.length>2 ? d.slice(0,2)+'/'+d.slice(2) : d); }
+  function idadeDe(iso){ const x=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||'')); if (!x) return null;
+    const h=new Date(); let i=h.getFullYear()-(+x[1]); if (h.getMonth()+1<+x[2] || (h.getMonth()+1===+x[2] && h.getDate()<+x[3])) i--; return i; }
+  function nascISO(v){ const x=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(v||'').trim()); if (!x) return null;
+    const d=+x[1], m=+x[2], a=+x[3], dt=new Date(a,m-1,d);
+    if (dt.getFullYear()!==a || dt.getMonth()!==m-1 || dt.getDate()!==d) return null;
+    const iso=a+'-'+x[2]+'-'+x[1], id=idadeDe(iso); return (id>=18 && id<=99) ? iso : null; }   // mesma faixa da roleta
+  function nascBR(iso){ const x=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||'')); return x ? x[3]+'/'+x[2]+'/'+x[1] : ''; }
   function fmtIniciais(v){
     return String(v||'').toUpperCase().replace(/[^A-ZÀ-Ý ]/g,'').replace(/\s+/g,' ').slice(0,6);
   }
@@ -1691,6 +1719,7 @@
     const reg={data:agora.toISOString(), hora, dataBR:agora.toLocaleDateString('pt-BR'), dataLocal:diaLocal,
       codigo:norm(S.codigo), tipo:'recepcao', linha:'recepcao',
       iniciais:(S.iniciais||'').trim()||null,
+      nome:(S.nome||'').trim()||null, nascimento:S.nascimento||null,
       telefone:(S.telefone? fmtTel(S.telefone):'')||null,
       email:(S.email||'').trim()||null,
       queixaRecepcao:S.queixa, iief, pedt, adam,

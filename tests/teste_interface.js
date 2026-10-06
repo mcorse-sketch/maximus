@@ -366,7 +366,7 @@ async function atendimento(p, viaAtalho) {
     win.close();
   }
 
-  // ---------- impressão: racional e custo saem abertos ----------
+  // ---------- impressão: racional sai aberto (v2.5-P: sem custo) ----------
   console.log('\n--- impressão');
   {
     let escrito = '';
@@ -374,9 +374,11 @@ async function atendimento(p, viaAtalho) {
     const a = await abre({ recepcao: [], codigos: [] }, { antes: w => { w.open = () => falsa; } });
     const { doc } = a;
     ok(doc.getElementById('mxDetRac') && doc.getElementById('mxDetRac').tagName === 'DETAILS' && !doc.getElementById('mxDetRac').open, 'na tela o racional começa recolhido');
-    doc.getElementById('racBox').innerHTML = '<p>teste</p>'; doc.getElementById('custoBox').innerHTML = '<div>5 de 10</div>';
+    // v2.5-P: o custo saiu da triagem (fica só no financeiro)
+    ok(!doc.getElementById('custoBox') && !doc.getElementById('mxDetCusto'), 'a triagem não tem mais o bloco de custo');
+    doc.getElementById('racBox').innerHTML = '<p>teste</p>';
     doc.getElementById('printBtn').click(); await espera(5);
-    ok(/<details open class="mx-det" id="mxDetRac"/.test(escrito) && /<details open class="mx-det" id="mxDetCusto"/.test(escrito), 'no relatório impresso racional e custo saem abertos');
+    ok(/<details open class="mx-det" id="mxDetRac"/.test(escrito) && !/mxDetCusto|Custo estimado/.test(escrito), 'no relatório impresso o racional sai aberto, sem custo');
     ok(!/mxCdHead/.test(escrito), 'o cabeçalho de tela da conduta não vai para a impressão');
     a.win.close();
   }

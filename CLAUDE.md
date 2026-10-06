@@ -409,6 +409,40 @@ de `case` dentro de `$( )` (use uma função), nada de bash 4+ (`wait -n`,
 (`/usr/local/bin/bash3.2`, compilado do GNU bash 3.2.57) ou `MAXIMUS_BASH32`.
 Sem bash 3.2, só a parte estática, com aviso.
 
+**Ajustes do Dr. Marco (v2.5-P · 2.5.15).**
+- **Via do paciente sem regra interna.** Nada de piso terapêutico, "conduta mais
+  permissiva", pacote/venda, escore, sigla de protocolo, "sem ganho / efeito
+  limitante". Cada item tem um porquê em linguagem simples (`pacq` do `F`, sem
+  dose, ligado à queixa dele). "Por que este plano" (`porquePac`) diz em palavras
+  simples o que mudou desde a última consulta e segue o KIT que ele leva (não a
+  sugestão da regra: "Subir" sem mudança de kit = "mantivemos por enquanto").
+  Ondas de choque indicadas hoje (kit ou TEFI → ondas) ou indicadas no ciclo
+  anterior ganham a seção "Ondas de choque — por que no seu caso" (o que é, o
+  motivo no caso dele, "protocolo de N sessões"). N = `ondasSessoes` do registro
+  ou `ONDAS_SESSOES` (10). A sessão atual não é registrada em lugar nenhum, então
+  nunca aparece "sessão X de 10". Teste: `tests/teste_v25p.js` (etapa 7k).
+- **Regras internas são do motor, não do texto.** O piso (EP sai com recurso sob
+  demanda; DE com o spray) continua no motor, sem nota. O aviso longo
+  "Nunca associar paroxetina diária e dapoxetina…" saiu de tudo (o teste falha
+  se voltar); paroxetina + dapoxetina é bloqueio duro (a dapoxetina sai do kit).
+  Um único alerta, só com paroxetina + spray com clomipramina (`paroxComClomi`):
+  "Paroxetina + clomipramina: o spray não deve passar de 1 jato por dia." — e a
+  posologia do paciente diz 1 jato (antes o SP-DUO dizia "1 a 2 jatos").
+- **Custo só no financeiro.** A triagem não mostra custo em tela nem papel; o
+  registro continua levando `custoIndice`/`custoPontos`.
+- **Pedido de exames:** identificação (nome completo, nascimento com idade,
+  código) e "Indicação clínica" (padrão "Acompanhamento clínico de tratamento",
+  mais específica quando o app sabe; editável). Sem o dado, linha em branco.
+  Nome e nascimento (`nome`, `nascimento` AAAA-MM-DD) vêm da recepção (tela de
+  contato, só na primeira visita; o nascimento acerta a roleta de idade) ou o
+  médico preenche no modal do pedido / atalho "Sem nome · preencher" no painel do
+  paciente (`PUT /api/triagem/<cod>/identificacao`, só médico). LGPD: o perfil
+  financeiro nunca recebe `nome`/`nascimento` (`sem_identidade`).
+- **Rodapé do retorno** em quadro para a secretária: Data · Horário · Unidade ·
+  Agendado por, linha de escrita de 10 mm (`camposAgenda()`).
+- **Retorno "Algum destes mudou?"**: "Nada mudou" em destaque (cartão cheio,
+  largura total, separado das outras opções), claro e escuro.
+
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
 

@@ -289,8 +289,10 @@ function fakeDb(m) {
     });
     await espera(120);
     const w3 = dom3.window;
-    const aviso = dom3.window.document.querySelector('.warn');
-    checa.push(['aviso fixo explica EP-4 e DUO-4', !!aviso && /EP-4 \(paroxetina/.test(aviso.textContent) && /DUO-4 \(/.test(aviso.textContent)]);
+    // v2.5-P: o aviso fixo "Nunca associar paroxetina diária e dapoxetina…" saiu; o alerta agora
+    // é um só e só aparece com paroxetina + spray com clomipramina (tests/teste_v25p.js)
+    checa.push(['sem o aviso fixo antigo de paroxetina/dapoxetina (v2.5-P)', !dom3.window.document.getElementById('avisoISRS')
+      && !/Nunca associar paroxetina/.test(dom3.window.document.body.textContent)]);
     dom3.window.close();
   }
 
