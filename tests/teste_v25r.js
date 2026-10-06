@@ -40,6 +40,10 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
     r.win.__mxExames.monta();
     const pe = limpo(d.getElementById('printExames'));
     ok(/Nelson Cardoso Rocha/i.test(pe) && /04\/04\/1958/.test(pe), 'impressão do pedido traz nome e nascimento', pe.slice(0, 350));
+    const corpo = limpo(d.getElementById('exaCorpo'));
+    ok(/US abdome total/i.test(corpo), 'pedido lista US abdome total', corpo.slice(0, 400));
+    ok(/US de próstata via abdominal/i.test(corpo) && /resíduo urinário/i.test(corpo),
+      'pedido lista US de próstata via abdominal (com resíduo)', corpo.slice(0, 500));
     r.win.close();
   }
 
@@ -66,6 +70,8 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
     const tudo = txt + ' ' + alt;
     ok(!/Provável responsável: tadalafila/i.test(tudo) && !/Reduzir um nível de BASE/i.test(tudo),
       'não culpa tadalafila / BASE em ICI puro', tudo.match(/Provável responsável[^.]+|Reduzir um nível[^.]+\./gi));
+    ok(!/Não atribuir a tadalafila|paciente está em intracavernosa/i.test(tudo),
+      'frase interna sobre tadalafila não aparece na conduta', tudo.match(/Não atribuir[^.]+\.|paciente está em intracavernosa/gi));
     ok(/PGE1|alprostadil|Dor local/i.test(tudo), 'alerta de dor/PGE1 presente', tudo.slice(0, 500));
     ok(/R7/i.test(tudo) && /sem PGE1/i.test(tudo) && /Troca escolhida|→\s*R7/i.test(tudo),
       'conduta registra a escolha do médico (R7), sem auto-pick', tudo.slice(0, 700));
@@ -143,6 +149,9 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
     ok(/protocoloComDose/.test(html) && /kitTemCulpado/.test(html) && /iciFormulasMenorPge1/.test(html),
       'helpers v2.5-R presentes');
     ok(/iciDor/.test(html) && /iciDorImpede/.test(html) && /iciPge1Troca/.test(html), 'perguntas de dor local ICI + oferta PGE1');
+    ok(/'NOITE-1':''/.test(html) || /"NOITE-1":""/.test(html) || /'NOITE-1':\s*''/.test(html),
+      'PAINEL_TXT NOITE-1 sem "composto noturno"');
+    ok(/US abdome total/.test(html) && /US de próstata via abdominal/.test(html), 'EXA_OPC traz US abdome e US próstata');
     ok(/data-versao="2\.5\.17"/.test(html), 'versão 2.5.17');
   }
 

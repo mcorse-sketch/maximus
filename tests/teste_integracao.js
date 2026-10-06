@@ -120,7 +120,7 @@ function fakeDb(m) {
   checa.push(['resumo traz o SP-DUO com a dose dos remedios-chave', /SP-DUO · tadalafila 10 mg \+ clomipramina 15 mg\/jato/i.test(txt)]);
   checa.push(['le o esquema anterior mesmo com passagem pela recepcao hoje', /DUO-3/.test(txt) && /SP-DUO/.test(txt)]);
   checa.push(['nao repergunta o protocolo anterior', !telasVistas.some(t => /protocolo o paciente estava usando/i.test(t))]);
-  checa.push(['resumo traz o NOITE-1 uma vez so, sem fitoterapicos nem dose', /NOITE-1 · composto noturno/.test(txt) && (txt.match(/NOITE-1/g) || []).length === 1 && !/Maca/i.test(txt)]);
+  checa.push(['resumo traz o NOITE-1 uma vez so, sem "composto noturno" nem fitoterapicos', /NOITE-1(?! · composto)/.test(txt) && !/composto noturno/i.test(txt) && (txt.match(/NOITE-1/g) || []).length === 1 && !/Maca/i.test(txt)]);
   checa.push(['resumo compara IIEF com variacao', /IIEF-5 14 . 19/.test(txt) && /melhorou 5 pontos/.test(txt)]);
   checa.push(['palco alarga quando o painel aparece', !!doc.querySelector('.stage.largo')]);
   checa.push(['panorama tem acao principal no topo', true]);
