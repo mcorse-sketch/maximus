@@ -294,7 +294,7 @@ def backup_do_dia():
             return
         _tenta_icloud(alvo, hoje)
         # mantem os 60 backups mais recentes (so os arquivos banco_*)
-        arqs = sorted(f for f in os.listdir(BACKUPS) if f.startswith("banco_"))
+        arqs = sorted(f for f in os.listdir(BACKUPS) if re.match(r"^banco_\d{4}-\d{2}-\d{2}\.json$", f))
         for velho in arqs[:-60]:
             try:
                 os.remove(os.path.join(BACKUPS, velho))
@@ -402,7 +402,8 @@ def saude():
             alertas.append({"nivel": "aviso", "texto": "Backup do iCloud atrasado: o último é de " + (ult_ic or "nunca") + "."})
     return {"banco": "ilegivel" if banco else "ok", "app": _versao_app(),
             "backupLocal": {"ultimo": ult_local, "ok": (bl or {}).get("ok", True)},
-            "backupIcloud": {"ativo": icloud_ok, "ok": (bi or {}).get("ok", True), "ultimo": (bi or {}).get("dia")},
+            "backupIcloud": {"ativo": icloud_ok, "ok": (bi or {}).get("ok", True),
+                             "ultimo": _ultimo_dia(ICLOUD, r"^banco_(\d{4}-\d{2}-\d{2})\.json\.enc$") if icloud_ok else None},
             "hoje": hoje, "alertas": alertas}
 
 
