@@ -329,6 +329,29 @@ impressão; se o navegador bloquear a aba, imprime pela própria página.
 **Descartar** o atendimento interrompido confirma na própria faixa, nunca com
 `confirm()` nativo (pode estar bloqueado).
 
+**Nenhum `prompt()`/`confirm()`/`alert()` nativo (v2.5-K).** Os três apps usam
+o diálogo do próprio app: `mxDialogo({titulo, texto, ok, cancelar, perigo, campo, valor})`
+devolve uma Promise (true/false; com `campo`, o texto ou null). Esc cancela,
+Enter confirma, Tab fica preso no diálogo e o teclado do app é ignorado enquanto
+ele está aberto. Testes jsdom respondem clicando em `.mx-dlg-ov [data-v="1"]`
+(ver `teste_retorno.js` e `teste_kiosk.js`).
+
+**Recepção (v2.5-K):** iPad retrato (768/1024), paisagem e desktop. Idade, peso e
+altura em três roletas lado a lado (≥700 px). Lista de marcar com opção
+"nenhuma" (sintomas, comorbidades, remédios): sem nada marcado, o botão vira
+"Nenhuma delas — continuar" e grava `['nenhuma']` — o paciente sem sintomas não
+precisa procurar a última opção. Contador único: "Antes de entregar o tablet"
+nas telas da equipe e "Pergunta k de N" nas do paciente (o total só aparece
+depois da queixa). Triagem e financeiro são só desktop.
+
+**"Protocolo mantido" no retorno oral (v2.5-K, rótulo):** o nível da cápsula
+(BASE-T) no retorno DE/DUO sai da faixa do IIEF-5 de HOJE, não do nível
+anterior. Quando a faixa sobe e o nível cai (ex.: DE-2/BASE-T10 → DE-1/BASE-T5),
+o app diz "Nível da cápsula recalculado pela faixa de hoje" e "dose reduzida",
+nunca "mantido". A conduta em si não mudou — a decisão (manter o nível que
+funcionou, ou subir um nível na resposta parcial) é do Dr. Marco; ver o PR da
+v2.5-K e os pacientes R-14/R-15 da regressão.
+
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
 
