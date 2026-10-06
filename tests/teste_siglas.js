@@ -19,6 +19,13 @@ function textoDe(win, raiz) {
   while (tw.nextNode()) {
     const n = tw.currentNode, pai = n.parentNode;
     if (pai && pai.closest && pai.closest('script,style,option,select,textarea')) continue;
+    // v2.5-F (pedido do Dr. Marco, 03/10/2026): a pílula da classificação é curta — faixa + código do
+    // protocolo; a composição do protocolo aparece logo abaixo, no protocolo prescrito
+    if (pai && pai.closest && pai.closest('#classPill')) continue;
+    // v2.5-H (aprovado pelo Dr. Marco, 03/10/2026): onde só o código cabe — a fórmula na via do paciente
+    // (R10, sem dose nem concentração) e a sequência de protocolos do histórico (DE-2 → DE-3). O código
+    // continua tocável (abre a composição) na tela; a composição completa está no relatório da clínica.
+    if (pai && pai.closest && pai.closest('.so-codigo')) continue;
     partes.push(n.nodeValue);
   }
   return partes.join(' ');
@@ -50,11 +57,14 @@ function soltas(win, txt) {
     if (!win.__maximusSiglas) { console.log('  FALHA  app sem window.__maximusSiglas'); process.exit(1); }
     // o próprio conferidor precisa acusar uma sigla solta e aceitar a sigla com ativo
     if (p === PACIENTES[0]) {
+      // v2.5: BASE-T20 (e BASE-T5/T10, MOD-PAROX-10/20, MOD-DAPO, MOD-CLOMI) já diz
+      // substância e dose — não é sigla solta; SP-DE e EP-2 continuam sendo
       const a = soltas(win, 'Kit: BASE-T20 e SP-DE, depois EP-2.').length;
+      const a2 = soltas(win, 'Kit: BASE-T5 e MOD-PAROX-10.').length;
       const b = soltas(win, 'Kit: BASE-T20 · tadalafila 20 mg e R7 · ' + win.__maximusSiglas.ativo('R7')).length;
       // intracavernosa: nome da substância sem a concentração não vale
       const c = soltas(win, 'Trocar para R8 (papaverina com fentolamina)').length;
-      if (a !== 3 || b !== 0 || c !== 1) { console.log('  FALHA  conferidor de siglas quebrado (' + a + ', ' + b + ', ' + c + ')'); process.exit(1); }
+      if (a !== 2 || a2 !== 0 || b !== 0 || c !== 1) { console.log('  FALHA  conferidor de siglas quebrado (' + a + ', ' + a2 + ', ' + b + ', ' + c + ')'); process.exit(1); }
       console.log('  ok     conferidor acusa sigla solta e aceita sigla com ativo');
     }
     const alvos = [];
@@ -62,7 +72,9 @@ function soltas(win, txt) {
     if (res && res.style.display === 'block') {
       alvos.push(['conduta na tela e impressão', textoDe(win, doc.getElementById('printArea'))]);
       alvos.push(['folha do paciente', textoDe(win, doc.getElementById('printPaciente'))]);
-      alvos.push(['texto do prontuário', win.__textoCopia || '']);
+      // v2.5-G (ponto 3, aprovado pelo Dr. Marco): a 2ª linha do texto — classificação + código do protocolo —
+      // é curta, como a pílula; a composição vem no protocolo prescrito logo abaixo
+      alvos.push(['texto do prontuário', (win.__textoCopia || '').split('\n').filter((l, i) => i !== 1).join('\n')]);
     }
     const fb = doc.getElementById('mxFicha');
     if (fb) { fb.click(); await espera(40); alvos.push(['prontuário (gaveta)', textoDe(win, doc.getElementById('fichaCorpo'))]); }

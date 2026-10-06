@@ -79,8 +79,8 @@ const pac = (cod, cat, ini, idade, peso, altura, v, fila, nota) => C.push({ cod,
 // ---- DE (14)
 pac('MX9101', 'DE', 'ARF', 66, 88, 172, [
   { d: 248, h: '09:10', r: primeira('de', DE(7, { comorb: ['dm', 'has'], comorbCtrl: 'sim', comorbMed: 'sim', previa: 'falhou', adequado: 'sim', tempo: 'longo', caracteriza: { mast: 'nao', matinal: 'nao' } })) },
-  { d: 170, h: '10:30', r: reav('de', DE(14, { satisfNps: { satisf: 7, nps: 8 } })) }
-], null, 'DE grave, diabético, falha prévia a PDE5i → intracavernosa; melhora no retorno');
+  { d: 170, h: '10:30', r: reav('de', DE(14, { iciUso: { iciTempo: '1h' }, iciQual: { iciQualidade: '4', iciFreq: '1a2' }, satisfNps: { satisf: 7, nps: 8 } })) }
+], null, 'DE grave, diabético, falha prévia a PDE5i → intracavernosa; no retorno ereção suficiente de cerca de 1 hora');
 pac('MX9102', 'DE', 'CMS', 52, 91, 178, [
   { d: 310, h: '14:00', r: primeira('de', DE(10, { comorb: ['tabag'], comorbCtrl: 'parcial', comorbMed: 'nao' })) },
   { d: 236, h: '14:30', r: reav('de', DE(15, { satisfNps: { satisf: 7, nps: 8 } })) },
@@ -199,7 +199,8 @@ pac('MX9132', 'preenchimento', 'FAG', 31, 72, 173, [
 ], null, 'avaliação para preenchimento, sem procedimento');
 
 // ---- TEFI (3) — "TAF" não existe no app; TEFI é o teste em consultório mais próximo
-const TEFI = x => Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'tefi', tefiMed: 'R5 (trimix clássico) — padrão da clínica',
+// v2.5: retorno com queixa registrada pergunta "Queixa mantida?" — o TEFI entra como "Nova queixa"
+const TEFI = x => Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'tefi', trocarQueixa: 'sim', novaQueixa: 'tefi', tefiMed: 'R5 (trimix clássico) — padrão da clínica',
   tefiDose: '0,1 mL — padrão da clínica', tefiFinal: { dorGrau: 0, dorQuando: 'na', curvGrau: 'nao' } }, x || {});
 pac('MX9133', 'TEFI', 'UMB', 63, 89, 174, [
   { d: 270, h: '08:30', r: primeira('de', DE(8, { comorb: ['dm', 'has'], comorbCtrl: 'sim', comorbMed: 'sim', previa: 'falhou', adequado: 'sim', caracteriza: { mast: 'nao', matinal: 'nao' }, tempo: 'longo' })) },

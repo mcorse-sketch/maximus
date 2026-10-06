@@ -19,6 +19,7 @@ const ARQ = args.find(a => !a.startsWith('--')) || path.join(__dirname, '../apps
 const RAPIDO = args.includes('--rapido');
 const HTML = fs.readFileSync(ARQ, 'utf8');
 const espera = ms => new Promise(r => setTimeout(r, ms));
+const { assenta, ate } = require('./assenta');   // v2.5-M: espera por condição, não por tempo
 const visivel = el => !!el && el.style.display !== 'none' && !el.hidden;
 
 let falhas = 0;
@@ -72,7 +73,9 @@ async function abre(mem, opc) {
       if (opc.antes) opc.antes(w);
     }
   });
-  await espera(40);
+  const d0 = dom.window.document;
+  await ate(dom.window, () => !!d0.getElementById('quizCard') && !!d0.getElementById('quizCard').getAttribute('data-tela'), 3000);
+  await assenta(dom.window, { quieto: 10 });
   return { win: dom.window, doc: dom.window.document, erros };
 }
 const tecla = (win, key, extra) => {
@@ -90,7 +93,7 @@ async function atendimento(p, viaAtalho) {
   for (let passo = 0; passo < 140 && !falha; passo++) {
     if (visivel(results)) break;
     const pan = doc.getElementById('panoramaCard');
-    if (visivel(pan)) { doc.getElementById('panSeguir').click(); await espera(5); continue; }
+    if (visivel(pan)) { doc.getElementById('panSeguir').click(); await assenta(win); continue; }
     const tela = quiz.getAttribute('data-tela');
     if (tela === ultima) { if (++rep > 3) { falha = 'travou em ' + tela; break; } } else rep = 0;
     ultima = tela;
@@ -98,22 +101,22 @@ async function atendimento(p, viaAtalho) {
     if (viaAtalho && !usouAtalho && /conduta/i.test(next.textContent)) {
       // tudo respondido: volta ao primeiro módulo clínico e pede a conduta com ⌘↵
       usouAtalho = true;
-      tecla(win, 'p'); await espera(20);
+      tecla(win, 'p'); await assenta(win);
       const mods = [...doc.querySelectorAll('#panoramaCard .pan-mod')];
       if (!visivel(doc.getElementById('panoramaCard')) || !mods.length) { falha = 'P não abriu o panorama'; break; }
-      (mods[1] || mods[0]).click(); await espera(10);
+      (mods[1] || mods[0]).click(); await assenta(win);
       const telaVolta = quiz.getAttribute('data-tela');
       if (telaVolta === tela) { falha = 'não voltou para o início pelo panorama'; break; }
       tecla(win, 'Enter', { ctrlKey: true });
-      for (let k = 0; k < 200 && !visivel(results); k++) await espera(10);
+      await ate(win, () => visivel(results), 3000);
       break;
     }
     if (next.disabled) { falha = tela + ': avançar desabilitado'; break; }
     // caminho normal: metade das vezes pela seta ↓, que tem de fazer o mesmo que o botão
     if (passo % 2) tecla(win, 'ArrowDown'); else next.click();
-    await espera(15);
+    await assenta(win);
   }
-  await espera(60);
+  await assenta(win, { quieto: 10 });
   if (!falha && !visivel(results)) falha = 'não chegou à conduta';
   if (viaAtalho && !usouAtalho && !falha) falha = 'não passou pela última tela antes da conduta';
   const ciclos = mem['pacientes/' + p.codigo + '/ciclos'] || [];
@@ -157,14 +160,18 @@ async function atendimento(p, viaAtalho) {
     ok(c.doc.documentElement.getAttribute('data-tema') === 'claro', 'escolha manual vale mais que o aparelho');
     c.win.close();
     ok(/@media screen\{\s*html\[data-tema="escuro"\]/.test(HTML), 'cores escuras só na tela (impressão continua clara)');
-    ok(/\.mx-acts \.btn,\.mx-acts \.hist-btn\{[^}]*height:36px[^}]*white-space:nowrap/.test(HTML), 'Prontuário / Histórico / Panorama: mesma altura, rótulo e tecla numa linha só');
+    // v2.5: caixas iguais (flex 1 1 0), mesma altura, rótulo sem quebra e tecla embaixo; o
+    // display do Histórico não leva !important (senão o "esconder" não funciona)
+    ok(/\.mx-acts \.btn,\.mx-acts \.hist-btn\{[^}]*flex:1 1 0[^}]*height:46px[^}]*white-space:nowrap/.test(HTML)
+       && !/\.mx-acts \.btn,\.mx-acts \.hist-btn\{[^}]*display:inline-flex!important/.test(HTML), 'Prontuário / Histórico / Panorama: caixas iguais, mesma altura, rótulo sem quebra');
   }
 
   // ---------- atalhos, busca, pendência ----------
   console.log('\n--- atalhos e busca');
   {
+    // v2.5-J: dia LOCAL (como o app); com toISOString a fila sumia entre 21h e 24h em Brasília (já é amanhã em UTC)
     const hoje = new Date();
-    const fila = [{ codigo: 'MXF001', iniciais: 'A.B.', hora: '14:20', data: hoje.toISOString(), dataLocal: hoje.toISOString().slice(0, 10),
+    const fila = [{ codigo: 'MXF001', iniciais: 'A.B.', hora: '14:20', data: hoje.toISOString(), dataLocal: hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0'),
       queixaRecepcao: 'de', idade: 50, respostas: { i0: 3, i1: 3, i2: 3, i3: 3, i4: 3 } }];
     const mem = { recepcao: fila, codigos: [{ codigo: 'MXH001' }], pacientes: [],
       'pacientes/MXH001/ciclos': [{ codigo: 'MXH001', tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', iief: 14,
@@ -207,6 +214,12 @@ async function atendimento(p, viaAtalho) {
     ok(tela() === t0 && !visivel(doc.getElementById('resultsCard')), '⌘↵ com pergunta obrigatória em aberto não gera conduta e fica nela');
     ok(/Falta responder/.test(doc.getElementById('mxToast').textContent), '… e avisa o que falta');
     ok(/^Ir para a conduta/.test(doc.getElementById('mxRevisar').textContent.trim()), 'o botão diz "Ir para a conduta ⌘↵"');
+    // v2.5 (item 2): com obrigatória em aberto o botão fica travado e, ao lado, "Faltam N — ver lista"
+    {
+      const lk = doc.getElementById('mxFaltamLink');
+      ok(doc.getElementById('mxRevisar').disabled && lk && visivel(lk) && /^Falta(m)? \d+ — ver lista$/.test(lk.textContent.trim()),
+        '"Ir para a conduta" travado enquanto falta obrigatória, com "Faltam N — ver lista" ao lado', lk ? lk.textContent : 'sem link');
+    }
     {
       const box = doc.getElementById('mxFaltam');
       const itens = box ? [...box.querySelectorAll('li button[data-i]')] : [];
@@ -290,7 +303,8 @@ async function atendimento(p, viaAtalho) {
   console.log('\n--- concluir atendimento: marca atendido, tira da fila, chama o próximo');
   {
     const hoje = new Date();
-    const mk = (cod, ini, min) => { const d = new Date(hoje.getTime() - min * 60000);
+    // v2.5-K: nunca antes da meia-noite de hoje (entre 0h e 1h o registro caía no dia anterior)
+    const mk = (cod, ini, min) => { const d = new Date(Math.max(hoje.getTime() - min * 60000, new Date(hoje).setHours(0, 0, 0, 0) + (100 - min) * 1000));
       return { codigo: cod, iniciais: ini, tipo: 'recepcao', linha: 'recepcao', hora: d.toTimeString().slice(0, 5), data: d.toISOString(),
         dataLocal: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
         queixaRecepcao: 'de', idade: 50, respostas: { i0: 3, i1: 3, i2: 3, i3: 3, i4: 3 } }; };

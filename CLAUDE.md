@@ -60,6 +60,132 @@ listas de escolha; em registro antigo aparece como "fórmula retirada".
 `ICI_COMPO` é só exibição — as regras do TEFI (`SEM_PAPA`/`SEM_PGE1`) não a
 leem. Mudou a tabela? Atualize `ICI_COMPO`, a cópia `ATIVO` do financeiro e a
 tabela conferida em `tests/teste_siglas.js`.
+**Exceções e resumo (v2.5, pedido de 03/10/2026).** Sigla que já diz substância
+e dose não é expandida: BASE-T5/T10/T20 e MOD-PAROX-10/20 (e, pela mesma lógica,
+MOD-DAPO-30/60 e MOD-CLOMI-25/50) — `SIGLA_AUTO`/`siglaAuto()`. O painel do
+paciente e o cabeçalho da conduta são resumo (`.sem-ativo`): sem composição
+automática ao lado, uma linha por item, dose só dos remédios-chave (tadalafila,
+paroxetina, dapoxetina, clomifeno, clomipramina) via `painelTxt()`, sem
+apresentação nem horário; o detalhe completo continua no clique da sigla.
+Protocolo de dose variável (DUO-3, DUO-4, DUO-1D, DUO-TOPICO) mostra a dose
+REAL do kit da consulta (`KIT_CTX`), nunca "5, 10 ou 20 mg (conforme o nível)".
+**Retorno (v2.5).** O que é do passado é perguntado só na primeira avaliação e
+copiado da ficha: início dos sintomas, medicação para ereção antes da clínica,
+restrição a tópico. "Algum destes mudou?" não os lista. Ereção fora da relação
+e ADAM usam como referência a ÚLTIMA consulta clínica com o campo: só volta o
+que falhava (masturbação / matinal) ou os sintomas de ADAM ainda presentes;
+ADAM zerado e ereção normal não são mais perguntados. Queixa: "Queixa mantida?"
+(fila e busca); as opções só em "Nova queixa", que se soma. Intracavernosa:
+uma tela "Fórmula e dose" (fórmula, dose prescrita, dose em uso — a que vale),
+adesão "Usou a dose como recomendado?", sem perguntar TEFI. "Ir para a
+conduta" só ativo com o obrigatório completo ("Faltam N — ver lista" ao lado).
+**Intracavernosa nunca regride para a via oral (v2.5, item 19; dose revista na v2.5-E).**
+Em intracavernosa = no ciclo anterior o kit tinha ICI, o TEFI definiu ICI, o
+protocolo era INTRACAVERNOSA ou o médico marcou ICI no esquema anterior
+(`emICIant`). No retorno com queixa de ereção o protocolo é sempre
+INTRACAVERNOSA (depois do bloqueio por contraindicação, antes de FERT). A dose
+segue a **qualidade** (suficiente para penetração) e a **duração** da ereção
+(alvo de cerca de 1 hora, perguntada na tela "Fórmula e dose", `ICI_TEMPO`):
+acima de 2 horas → "Reduzir a dose", nunca subir; insuficiente para penetração
+ou menos de 30 min → "Subir dose ou esquema da intracavernosa" (próximo degrau
+da dose em uso; no topo, trocar a formulação); suficiente e 1 a 2 horas →
+reduzir um degrau; suficiente e 30 a 60 min ou cerca de 1 hora → manter
+fórmula e dose. O ganho no IIEF-5 conta só para a satisfação. Adesão baixa ou
+efeito limitante → "INTRACAVERNOSA (mantido)". Sem TEFI no kit e sem a lógica
+oral. A dose decidida vai para `iciDoseIndicada` e preenche a próxima consulta.
+**TEFI que indica intracavernosa (v2.5-E).** Paciente só com via oral cujo TEFI
+indica intracavernosa (conduta "iniciar intracavernosa", escape venoso ou achado
+misto): a tela `tefiAddIci` avisa que ele está só no oral e pergunta se a
+intracavernosa entra na conduta; se sim, fórmula (R1, R2, R4–R12, Fluka) e dose.
+A ICI entra no kit junto do oral (protocolo "X + INTRACAVERNOSA"), o registro
+guarda `iciPorTefi` e o relatório/texto trazem "Conduta seguiu indicação do TEFI".
+**Cor das fórmulas (v2.5-E).** `COR_FORMULA` é a fonte única da cor de cada
+fórmula — a mesma da embalagem. Quadradinho no canto superior direito do cartão
+do kit, das linhas do cabeçalho, das opções de fórmula e na via do paciente
+(`chipCor()`); a ICI leva a cor da fórmula R em uso. Concentrações da mesma
+fórmula são tons de uma família. Serviços e itens sem embalagem própria não têm
+cor. Tabela para a gráfica: `node scripts/cores_formulas.js [pasta]` (CSV, HTML e
+PNG com HEX e CMYK aproximado). Mudou uma cor? Só no mapa, e regere a tabela.
+
+**TEFI feito na consulta (v2.5-F).** Com `tefiFeito==='sim'` no retorno, o teste não
+volta ao kit nem aos lembretes ("Agendar TEFI"), o "teto de escalonamento" não manda
+indicar o teste (a via segue o resultado) e o painel/cabeçalho mostram "TEFI
+realizado hoje · resposta · Doppler".
+
+**Polimento visual (v2.5-F).** Alertas da conduta em lista (`alertasHtml()`): título,
+uma linha de resumo e o detalhe recolhível; o texto original de cada alerta fica num
+`<p class="al-orig">` oculto, que é o que o texto do prontuário, a prévia e a contagem
+do cabeçalho leem — mudar o visual não muda o texto. Campos em grupo: poucas opções
+curtas viram controle segmentado (`.gopts.seg`), fórmulas viram lista (`.gopts.lista`)
+e a dica do campo (`field.hint`) fica junto do rótulo. Pílula da classificação é
+curta (faixa + código, `.sem-ativo`; `teste_siglas` a dispensa). Painel: ICI como
+"R5 · trimix · dose" (`iciApelido()`), escore de hoje só quando respondido.
+
+**Autocrítica (v2.5-G).** Prontuário: ADAM numa linha só, TEFI em texto legível
+(resposta · Doppler · conduta), a linha da classificação (`iCl`) não ganha a
+composição das siglas (`teste_siglas` dispensa a linha 1), "Dados estáveis
+confirmados" é observação (não alerta, sai de PENDÊNCIAS), "Agende também: ondas"
+só com ondas prescritas. Intracavernosa pelo código da fórmula (`iciCodConsulta()`:
+consulta → TEFI → anterior → R5): cartão do kit, cabeçalho e "Protocolo prescrito"
+dizem R10 quando é R10 (antes o prescrito saía sempre "R5" — `F['ICI'].txt`). A via
+do paciente passou a mostrar o código (v2.5-H), sem dose. Painel: dose do registro mais recente que a
+tenha (`S.iciDoseHist`) ou "dose não registrada". "Próxima" apagado mostra o que
+falta (`faltaTxt()`, `#mxFalta`, atualizado por MutationObserver no `disabled`).
+Progresso numa barra contínua (`.dots.barra`). Banco = ponto discreto (`.db-dot`; no cabeçalho desde a v2.5-H).
+Fim da conduta: Concluir é o único botão principal; copiar/imprimir agrupados
+(`#mxAcoes`), WhatsApp/email maiores. Celular (< 600 px): ajustes
+inofensivos (o `display:contents` do trilho saiu na v2.5-H — fora do alvo).
+
+**Refino (v2.5-H).** Primeira intracavernosa: o "Protocolo prescrito" traz a dose
+(`iciDoseIndicada`; R5 sem dose = "dose inicial 0,1 mL (padrão da clínica)", o padrão
+marcado no TEFI; outra fórmula = "dose inicial a definir em consultório"). Via do
+paciente: código da fórmula (R10) no lugar de "ICI", ainda sem dose nem concentração
+(`.so-codigo`, dispensado no `teste_siglas`). Adesão com as palavras da pergunta
+(`rotAdesao(v, ici)`) no histórico, prontuário, painel e relatório. Histórico:
+"Sequência de protocolos" só com códigos (`protCurto`). ADAM "negativo — nenhum
+sintoma"; a 3ª linha da cópia não repete tipo de visita/intervalo. Composição da
+intracavernosa no cabeçalho abre com clique (`mxAbreIci`); banco no cabeçalho
+(`#dbTag` em `#mxTopo`, clique abre `#mxDbPop` com "Configurar servidor"); grade de
+impressão em 6 colunas (3 · 2×2 · 3+2, via `:has`).
+
+**Só desktop (v2.5-I).** A triagem (consultório) é usada só no desktop (1280–1920); o
+iPad usa a recepção. Não investir em layout de iPad/celular aqui: o layout de iPad em
+retrato e o bloco `(hover:none)` da v2.5-H saíram; abaixo de 900 px fica só a faixa
+simples da v2.5-G, e abaixo de 600 px só ajustes inofensivos.
+
+**Classificação na tela (v2.5-I).** O Dr. Marco julga a evolução pelo bloco de
+classificação: `mxBlocoEscores()` desenha no fim do cabeçalho da conduta
+(`#mxEscores`) um cartão por escore — IIEF-5 (de 25), PEDT (de 20, menor é melhor) e
+ADAM quando respondido — com o valor de hoje, o anterior e a data, a variação
+(`variacao()`), a faixa (`BANDS_DE`/`BANDS_EP`), a régua das faixas (○ anterior, ● hoje)
+e, com 3+ consultas, a linha da evolução (`S.serieEsc`, montada em
+`carregarHistorico`). Só exibição. Com o bloco novo, `.result-top` some só da tela
+(`.mx-esc-on`) e continua na impressão; nos fluxos sem IIEF/PEDT (hipogonadismo, TEFI,
+preenchimento…) o `.result-top` aparece na tela como antes (a v2.5-H o escondia).
+
+**Final (v2.5-J).** (1) Uma só nomenclatura de faixa: `faixaIief`/`faixaPedt`
+(painel, ficha/prontuário, histórico) derivam de `BANDS_DE`/`BANDS_EP` pela forma curta
+de `faixaCurtaDe()` — a mesma do bloco (`mxFaixaCurta`): severa · moderada · leve a
+moderada · leve · sem disfunção; EP improvável · provável · confirmada · intensa. Os nomes
+antigos ("disfunção grave", "limítrofe", "precocidade provável" com corte em 11) saíram.
+(2) Papel = tela: `mxEscoresImpressao()` põe no `#printArea`, logo abaixo da pílula, uma
+cópia do bloco (`#mxEscoresImp`, eyebrow "Escores"), escondida na tela do app; o
+`.result-top` ganha `.com-esc` e a linha "IIEF-5 10/25" (`#classDesc`) sai do papel. O
+CSS do bloco saiu do `@media screen` para valer também na impressão
+(`print-color-adjust:exact` mantém a régua). (3) ADAM não reaplicado no retorno
+(`refAdam` vazio): `S.adamHerdado = {data}` e o cartão diz "não reaplicado hoje · valor
+da consulta anterior (data)". O relatório e o prontuário continuam como antes. Só
+exibição; conduta e texto do prontuário inalterados.
+
+**Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
+consultório a consulta não chega à conduta sem os dois; a recepção continua
+aceitando um só, e o consultório completa). Telefone é
+formatado como `(21)99999-9999` e validado; iniciais em maiúsculas sem pontos.
+No retorno, os três campos vêm do banco e a recepção apenas confirma. Se a
+recepção e o cadastro não têm telefone E email válidos, o consultório pergunta
+na tela `contato` (módulo Identificação), já com o que existir preenchido. O kit mistura códigos e pares `[código, etiqueta]`;
+toda checagem "já está no kit?" usa `noKit()` (lê o código dos dois formatos).
+Registro antigo com código repetido é exibido com `unicos()`; nada é apagado.
 
 **Código do paciente novo (v2.2.1).** O próximo código LIVRE vem sempre
 preenchido no campo (nunca só no placeholder), nos dois apps e nos três modos,
@@ -107,6 +233,19 @@ exclui as demais.
 oferece receita em preenchimento, consulta urológica, emagrecimento, TEFI,
 hipogonadismo sem via prescrita, nem quando o kit só tem exames, ondas de
 choque, TEFI ou preservativo de farmácia (`ajustaEnvio()`).
+
+**Cópia do paciente sem dose (v2.5, pedido de 03/10/2026).** Exceção à regra da
+sigla: na via do paciente cada item sai como `SIGLA · substâncias` (sem mg,
+mcg/mL, cápsulas), seguido da posologia e do motivo; o texto "Por que este
+plano" passa por `tiraDoses()`. Dose fica no relatório da consulta
+e no prontuário. `substanciasPaciente()` lê só `F`/`PROTO_COMPO`/`ICI_COMPO`.
+O apêndice do relatório no envio foi retirado. **Pedido de exames:** botão
+"Imprimir pedido de exames" abre um editor: marcados por padrão testosterona
+total e livre, SHBG, LH, FSH, estradiol e prolactina (`EXA_BASE`); opcionais
+desmarcados hemograma, PSA, perfil hepático, perfil lipídico, glicemia e
+espermograma (`EXA_OPC`; na linha de hipogonadismo hemograma e PSA já vêm
+marcados); campo livre para acrescentar. Imprime em aba própria com orientação
+de coleta matinal em jejum. A seleção não é gravada no registro.
 
 **Banco de teste fictício:** `MX9101`–`MX9140`, todo registro com `demo: true`.
 Paciente só com registros `demo` não conta para a numeração do próximo código
@@ -165,11 +304,13 @@ protocolos, evolução de IIEF/PEDT) e, por visita, só dados — escores, condu
 com composição, exames, nota do médico. Antecedentes aparecem na primeira
 visita e depois só quando mudam. Implementado em `abreHistorico()`.
 
-**Identificação:** obrigatórios o código e telefone **ou** email. Telefone é
+**Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
+consultório a consulta não chega à conduta sem os dois; a recepção continua
+aceitando um só, e o consultório completa). Telefone é
 formatado como `(21)99999-9999` e validado; iniciais em maiúsculas sem pontos.
-No retorno, os três campos vêm do banco e a recepção apenas confirma. Se nem
-a recepção nem o cadastro têm telefone ou email, o consultório pergunta na tela
-`contato` (módulo Identificação). No retorno, o campo do código abre a lista
+No retorno, os três campos vêm do banco e a recepção apenas confirma. Se a
+recepção e o cadastro não têm telefone E email válidos, o consultório pergunta
+na tela `contato` (módulo Identificação), já com o que existir preenchido. No retorno, o campo do código abre a lista
 de todos os pacientes do banco (`/api/pacientes`), filtrável por código ou
 iniciais.
 
@@ -187,6 +328,75 @@ impressão; se o navegador bloquear a aba, imprime pela própria página.
 
 **Descartar** o atendimento interrompido confirma na própria faixa, nunca com
 `confirm()` nativo (pode estar bloqueado).
+
+**Nenhum `prompt()`/`confirm()`/`alert()` nativo (v2.5-K).** Os três apps usam
+o diálogo do próprio app: `mxDialogo({titulo, texto, ok, cancelar, perigo, campo, valor})`
+devolve uma Promise (true/false; com `campo`, o texto ou null). Esc cancela,
+Enter confirma, Tab fica preso no diálogo e o teclado do app é ignorado enquanto
+ele está aberto. Testes jsdom respondem clicando em `.mx-dlg-ov [data-v="1"]`
+(ver `teste_retorno.js` e `teste_kiosk.js`).
+
+**Recepção (v2.5-K):** iPad retrato (768/1024), paisagem e desktop. Idade, peso e
+altura em três roletas lado a lado (≥700 px). Lista de marcar com opção
+"nenhuma" (sintomas, comorbidades, remédios): sem nada marcado, o botão vira
+"Nenhuma delas — continuar" e grava `['nenhuma']` — o paciente sem sintomas não
+precisa procurar a última opção. Contador único: "Antes de entregar o tablet"
+nas telas da equipe e "Pergunta k de N" nas do paciente (o total só aparece
+depois da queixa). Triagem e financeiro são só desktop.
+
+**Retorno oral DE/DUO: o nível parte do ANTERIOR (v2.5-L, opção B do Dr. Marco).**
+Com IIEF-5 anterior e cápsula BASE-T anterior (kit; na falta, o número de DE-n/DUO-n):
+ganho ≥ 4 → mantém o nível que funcionou, mesmo se a faixa de hoje pedisse menos
+ou nenhuma cápsula (a via oral nunca é reduzida automaticamente; reduzir é decisão
+do médico na receita); ganho de 1 a 3 → sobe um nível a partir do anterior
+(BASE-T5 → T10 → T20); ganho de 1 a 3 que já chegou a 22+ → objetivo atingido,
+mantém sem subir; sem ganho → "Trocar mecanismo", sem reduzir (exceto já em 22+, v2.5-M: mantém); já em BASE-T20 com
+ganho < 4 → teto de escalonamento + TEFI (inclusive quando o nome do protocolo
+anterior não traz o nível, ex.: DUO-1D com BASE-T20). Adesão insuficiente ou
+efeito limitante (travado) → a cápsula fica exatamente no nível anterior, como o
+rótulo "(mantido)" diz. Não se aplica a intracavernosa (nunca regride), troca de
+queixa, nem sem IIEF-5 anterior (aí vale a faixa de hoje e o rótulo "Nível da
+cápsula recalculado pela faixa de hoje" da v2.5-K). Se a linha oral muda de código
+sem mudança de dose (ex.: DUO-3 → DUO-4), o rótulo é "Protocolo ajustado: X → Y",
+nunca "mantido". Teto de tadalafila 30 mg/dia: com BASE-T20, máximo 1 jato do
+SP-DE ou do SP-DUO (DE e DUO); com SP-DE e SP-DUO no mesmo kit, um alerta dá o
+total de jatos/dia somando os dois. Testes: `tests/teste_retorno_oral.js` (etapa
+7j) e R-14 a R-19 da regressão.
+
+**v2.5-M (aprovado pelo Dr. Marco em 06/10/2026).** (1) IIEF-5 ≥ 22 sem ganho
+(ganho < 4, inclusive queda) → objetivo atingido: mantém o protocolo, sem
+"Trocar mecanismo" e sem disparar o teto de escalonamento (R-20, R-21). Abaixo
+de 22, sem ganho continua "Trocar mecanismo". (2) Teto de tadalafila em todo
+lugar: com BASE-T20, SP-DE/SP-DUO saem como "MÁXIMO 1 JATO por dia" no cartão
+do kit, na receita e no relatório, e "Nunca mais de 1 jato por dia" na via do
+paciente (que continua sem dose em mg); com os dois sprays, o máximo vale
+somando os dois (`itemKit`, `jatosMaxDia`). (3) "Nível oral mantido",
+"Cápsula sobe de…", "Protocolo ajustado de…" e "objetivo atingido" são alertas
+visíveis (`RE_ALERTA`), e o cabeçalho da conduta explica o nível quando ele vem
+do ciclo anterior ("a faixa de hoje sozinha daria …"). Pílulas de mudança
+coloridas pelo tipo (`tipoMudanca`). Expansão curta das siglas nos alertas; o
+"Protocolo anterior" é expandido com o kit ANTERIOR (antes usava o de hoje).
+
+**Confiabilidade (v2.5-M).** Banco ilegível falha fechado (503, cópia
+`.corrompido-…`, nada gravado por cima; nos apps, faixa vermelha e retorno que
+não vira primeira avaliação). `/api/health` traz `banco`, `app`, `backupLocal`,
+`backupIcloud` e `alertas`, que viram a faixa no topo dos três apps. Reenvio
+com o mesmo `opId` não duplica. Fila do navegador: depois de 7 dias exige
+baixar a cópia antes de descartar; exportado há mais de 30 dias sai sozinho;
+nada não exportado é apagado. `scripts/instalar_launchd.sh` (auto-início e
+auto-reinício no Mac) e `scripts/conferir_restauracao.py` (backup restaura?).
+`testar.sh` roda `npm ci` em `tests/` se faltar o jsdom.
+
+**Toque duplo na recepção (v2.5-N).** Tocar numa opção avança sozinho 160 ms
+depois; cada tela avança uma vez só (`agendaAvanco`): o segundo toque só troca a
+resposta e o avanço não acontece se a tela já mudou (Continuar ou Voltar). No
+"novo ou retorno", enquanto confere o banco, um segundo toque é ignorado. Antes
+um toque duplo pulava a pergunta seguinte, inclusive o contato. Teste:
+`tests/teste_toque.js` (etapa 10 do `testar.sh`). Triagem e financeiro não têm avanço sozinho.
+O `teste_kiosk.js` tocava de novo 40 ms depois de cada toque e só passava da
+tela de várias escolhas quando o avanço em dobro a pulava (daí a falha
+intermitente "não chegou ao fim em 120 passos"); agora espera a tela trocar,
+marca e continua na tela de várias escolhas, e roda junto com as outras etapas.
 
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
