@@ -47,6 +47,7 @@ etapa "7i. correções v2.5 — retorno sem perguntas do passado, painel enxuto,
 etapa "7j. retorno oral DE/DUO (v2.5-L) — nível parte do anterior: mantém, sobe, teto, DUO, trava, intracavernosa" "node teste_retorno_oral.js"
 etapa "8. tela de senha dos três apps" "node teste_sessao.js"
 etapa "9. servidor — acesso por perfil e rotas" "servidor"
+etapa "10. recepção — toque duplo avança uma tela só (v2.5-N)" "node teste_toque.js '$RECEP'"
 
 sintaxe(){
   local f t ok=0
@@ -91,10 +92,10 @@ mostra_prontas(){   # imprime, na ordem original, as etapas já terminadas
     proximo=$((proximo+1))
   done
 }
-# o kiosk (etapa 3) depende do relógio: a tela avança 160 ms depois do toque e o teste
-# toca de novo nesse intervalo, então com a máquina carregada o caminho sorteado muda
-# e o teste pode falhar. Ele roda sozinho, antes das outras, como sempre rodou.
-SOZINHAS=" 2 "
+# etapas que precisam rodar sozinhas, antes das outras (índice a partir de 0, entre espaços).
+# Até a v2.5-M o kiosk (" 2 ") rodava sozinho: o teste tocava de novo antes do avanço de
+# 160 ms e dependia do relógio. Na v2.5-N ele espera a tela trocar e roda junto.
+SOZINHAS=""
 for i in $SOZINHAS; do roda_etapa "$i"; done
 ORDEM="$(for i in $ORDEM; do case "$SOZINHAS" in *" $i "*) ;; *) echo "$i";; esac; done)"
 lancadas=0
