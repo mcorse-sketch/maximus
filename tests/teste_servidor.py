@@ -29,6 +29,7 @@ class Servidor(unittest.TestCase):
         srv.ICLOUD = os.path.join(cls.tmp, "nuvem", "Maximus backups")
         os.environ["MAXIMUS_SENHA_BACKUP"] = "senha-do-backup-teste"
         srv.print = lambda *a, **k: None              # silencia o servidor
+        srv._avisa_mac = lambda *a, **k: None         # nada de notificacao de verdade no Mac durante o teste
         srv.Handler.log_message = lambda *a, **k: None
         for p, s in SENHAS.items():
             srv.definir_senha(p, s)
