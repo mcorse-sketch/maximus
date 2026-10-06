@@ -1865,7 +1865,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     'ioimbina':'Retirar a ioimbina — voltar para BASE sem -I e NOITE-1.',
     'creme retardante':'Reduzir para 0,5 g e no máximo 20 min de contato; se persistir, retirar o creme.',
     'composto noturno':'Tomar com alimento; se persistir, fracionar em 1 cápsula ao jantar e 1 ao deitar.',
-    'alprostadil (PGE1)':'Dor importante ou que impede o uso: reduzir o volume da dose ou trocar para uma fórmula sem prostaglandina / com menos PGE1. Não atribuir a tadalafila oral quando o paciente está só em intracavernosa.',
+    'alprostadil (PGE1)':'Dor importante ou que impede o uso: reduzir o volume ou escolher (na pergunta) uma fórmula com menos PGE1 / sem PGE1. O app lista as opções; a escolha é do médico. Não atribuir a tadalafila oral quando o paciente está só em intracavernosa.',
   };
 
   const S = {};
@@ -3824,17 +3824,22 @@ document.documentElement.setAttribute('data-tema',t)})();
     });
   }
   // v2.5-R: dor local importante/impeditiva → fórmula com menos PGE1 (R7/R8 sem PGE1, ou menor concentração)
-  function iciFormulaMenorPge1(atual){
+  // v2.5-R (ajuste Marco): NÃO escolhe sozinho — devolve as fórmulas Fluka elegíveis
+  // (PGE1 estritamente menor que a atual, ou sem PGE1: R7/R8) para o médico escolher.
+  function iciFormulasMenorPge1(atual){
     const n = numDaFormulaIci(atual);
     const cur = n!=null ? ICI_COMPO['R'+n] : null;
-    if (!cur || cur.pge1==null) return null;
-    const cand = Object.keys(ICI_COMPO).map(k=>({cod:k, ...ICI_COMPO[k]}))
-      .filter(x=>x.pge1==null || x.pge1 < cur.pge1)
-      .sort((a,b)=>(a.pge1==null?0:a.pge1)-(b.pge1==null?0:b.pge1));
-    // preferir sem PGE1 na mesma faixa; senão a de menor PGE1 abaixo
-    const mesma = cand.filter(x=>x.faixa===cur.faixa);
-    const pick = (mesma.find(x=>x.pge1==null) || mesma[0] || cand.find(x=>x.pge1==null) || cand[0]);
-    return pick ? pick.cod : null;
+    if (!cur || cur.pge1==null) return [];   // já sem PGE1: nada a oferecer por PGE1
+    const ordem = ['R1','R2','R4','R5','R6','R7','R8','R9','R10','R11','R12'];
+    return ordem.filter(cod=>{
+      if (cod==='R'+n) return false;
+      const c = ICI_COMPO[cod]; if (!c) return false;
+      return c.pge1==null || c.pge1 < cur.pge1;
+    }).map(cod=>({cod, pge1:ICI_COMPO[cod].pge1, faixa:ICI_COMPO[cod].faixa}));
+  }
+  function iciPge1Rotulo(cod){
+    const c = ICI_COMPO[cod]; if (!c) return cod;
+    return c.pge1==null ? (cod+' · sem PGE1 · faixa '+c.faixa) : (cod+' · PGE1 '+numBR(c.pge1)+' mcg/mL · faixa '+c.faixa);
   }
 
     const SIGLA_FORA = {'INTRACAVERNOSA':1,'COMPORTAMENTAL':1,'BLOQUEIO':1,'ICI':1,'ONDAS':1,'LABS':1,'TEFI':1};
@@ -4010,7 +4015,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     {n:'Queixa e protocolo', ids:['queixa','confirma','confirmaEstavel','tempo','parceira','caracteriza','mast','matinal','previa','adequado','protAnt','formulasAnt','iciUso','iciAnt','iciAntDose','iciQual','iciQualidade','iciTempo','iciFreq','iciDoseAtual','refazer']},
     {n:'Antecedentes', ids:['comorb','comorbCtrl','comorbMed','contra','contraIoim','depre','adam','adamEvol','reversiveis','duasDosagens','sintomas','convive','contexto']},
     {n:'Medica\u00e7\u00f5es e alergias', ids:['medsRisco','alergia','parox','topico','freq','fert','querFilho','trtPrevio','contraind','pref','experiencia']},
-    {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','iciDor','iciDorImpede','satisf','nps','satisfNps',
+    {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','iciDor','iciDorImpede','iciPge1Troca','satisf','nps','satisfNps',
       'i0','i1','i2','i3','i4','p0','p1','p2','p3','p4','p5','refazer','usarTotaisRec']},
     {n:'Exames', ids:['labs','tTotal','tLivre','shbg','lh','fsh','prolactina','estradiol','ht','psa','testo','biotens','idade','examesFeitos','tefiFeito','tefiResp','tefiDoppler','tefiConduta','tefiAddIci','tefiMed','tefiDose','t10grau','t20grau','doseComp','doseCompML','t30grau','tefiFinal','dorGrau','dorQuando','curvGrau','dopplerFeito','doppler','psv','edv','ir','iciFormula','iciDose']},
     {n:'Procedimento', ids:['tipoPenis','medPre','compFlac','diamFlac','prepucio','retracao','plano','previsaoML','planoBotox','concordou','termo','medPos','compPos','diamPos','mlUsado','botox','marcaAH','notaMedico','medRet','compRet','diamRet','retracaoRet','nodulos','notaMedicoRet','satisfPac','conduta','botoxUI','mlRetoque','marcaRetoque','aplicacao','mlHialuro']},
@@ -5016,6 +5021,35 @@ document.documentElement.setAttribute('data-tema',t)})();
           s.push({id:'iciDorImpede',kind:'opts',step:'Reavaliação',eyebrow:'Tolerabilidade · intracavernosa',
             text:'A dor impediu de usar a medicação?',
             options:[{v:'nao',badge:'✓',label:'Não — conseguiu usar'},{v:'sim',badge:'!',label:'Sim — impediu o uso'}]});
+        // dor importante ou impeditiva: o médico ESCOLHE a fórmula com menos PGE1 (não há auto-pick)
+        const dorOferta = (S.iciDor==='importante') || (S.iciDorImpede==='sim');
+        if (dorOferta){
+          const formAtual = String(S.iciAnt || (prev && prev.iciAnterior) || 'R5').replace(' (trimix clássico)','');
+          const nAt = numDaFormulaIci(formAtual);
+          const curC = nAt!=null ? ICI_COMPO['R'+nAt] : null;
+          const eleg = iciFormulasMenorPge1(formAtual);
+          const doseUsoScr = S.iciDoseAtual || S.iciAntDose || '';
+          const DEG_SCR = ['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'];
+          const iUscr = DEG_SCR.indexOf(doseUsoScr);
+          const doseMenorScr = iUscr>0 ? DEG_SCR[iUscr-1] : null;
+          const optsP = [];
+          if (doseMenorScr)
+            optsP.push({v:'vol',badge:'↓',label:'Reduzir volume · '+doseUsoScr+' → '+doseMenorScr+' (manter fórmula atual)'});
+          eleg.forEach(e=>{
+            // badge 'R' como nas outras telas de fórmula (evita expandir R* dentro do badge)
+            optsP.push({v:e.cod, badge:'R', label: e.pge1==null
+              ? (e.cod+' · sem PGE1 · faixa '+e.faixa)
+              : (e.cod+' · PGE1 '+numBR(e.pge1)+' mcg/mL · faixa '+e.faixa)});
+          });
+          const atualTxt = nAt && curC
+            ? ('R'+nAt+' · '+(curC.pge1==null?'sem PGE1':'PGE1 '+numBR(curC.pge1)+' mcg/mL')+' · faixa '+curC.faixa+' (atual)')
+            : (formAtual+' (atual)');
+          if (optsP.length)
+            s.push({id:'iciPge1Troca',kind:'opts',mostraDica:true,step:'Reavaliação',eyebrow:'Dor local · reduzir PGE1',
+              text:'Escolha a conduta para a dor local (PGE1)',
+              hint:'Fórmula em uso: '+atualTxt+'. Só entram fórmulas com PGE1 menor que a atual, ou sem PGE1 (R7/R8). A escolha é sua — o app não escolhe sozinho.',
+              options:optsP});
+        }
       }
       if (usaICI){
         s.push({id:'iciQual',kind:'grupo',step:'Reavaliação',eyebrow:'Intracavernosa em casa',
@@ -6534,21 +6568,35 @@ document.documentElement.setAttribute('data-tema',t)})();
       const formula = String(S.iciAnt || 'fórmula em uso').replace(' (trimix clássico)','');
       iciDoseIndicada = doseUso || null;
       notas.push('<b>Paciente em intracavernosa — não volta para a via oral.</b> O IIEF-5 de hoje mede a ereção com a aplicação: a melhora reflete o efeito do remédio e conta só para a satisfação. A dose segue a qualidade e a duração da ereção.');
-      // v2.5-R: dor local importante ou que impede o uso → reduzir PGE1 (volume ou fórmula)
+      // v2.5-R (ajuste Marco): dor importante/impeditiva → o médico ESCOLHE (volume ou fórmula com menos PGE1). Sem auto-pick.
       const dorPge1 = (S.iciDor==='importante') || (S.iciDorImpede==='sim') || ((S.eaQuais||[]).indexOf('dorLocal')>=0 && S.ea==='atrap');
       if (dorPge1){
         travado = true;
-        const menor = iciFormulaMenorPge1(formula);
         const doseMenor = iU>0 ? DEGI[iU-1] : null;
+        const eleg = iciFormulasMenorPge1(formula);
+        const escolha = S.iciPge1Troca || null;
         iciMud = 'Reduzir PGE1 por dor local';
-        if (doseMenor) iciDoseIndicada = doseMenor;
         let acao = '';
-        if (doseMenor) acao = 'Reduzir o volume de '+doseUso+' para <b>'+doseMenor+'</b>';
-        else acao = 'Dose já baixa';
-        if (menor) acao += (acao?'; considerar trocar ':'Trocar ')+formula+' → <b>'+menor+'</b> ('+(ICI_COMPO[menor].pge1==null?'sem PGE1':'PGE1 '+numBR(ICI_COMPO[menor].pge1)+' mcg/mL')+')';
-        else acao += (acao?'; ':'')+'reavaliar formulação em consultório';
-        notas.push('<b>Dor local '+(S.iciDor==='importante'?'importante':(S.iciDorImpede==='sim'?'impeditiva do uso':'na aplicação'))+' — reduzir PGE1.</b> Provável responsável: alprostadil (PGE1). '+acao+'. Não atribuir a tadalafila oral: o paciente está em intracavernosa.');
-        mudanca = 'Ajuste por dor local (PGE1)';
+        if (escolha==='vol'){
+          if (doseMenor){ iciDoseIndicada = doseMenor; acao = 'Volume reduzido de '+doseUso+' para <b>'+doseMenor+'</b> (fórmula '+formula+' mantida).'; }
+          else acao = 'Volume já na menor dose — manter '+formula+' e reavaliar em consultório.';
+        } else if (escolha && ICI_COMPO[escolha]){
+          const c = ICI_COMPO[escolha];
+          acao = 'Troca escolhida: '+formula+' → <b>'+escolha+'</b> ('+(c.pge1==null?'sem PGE1':'PGE1 '+numBR(c.pge1)+' mcg/mL')+', faixa '+c.faixa+').';
+          // a fórmula nova vira a referência da conduta; dose de teste em consultório
+          S.iciAnt = escolha;
+          if (!iciDoseIndicada) iciDoseIndicada = doseUso || '0,1 mL';
+        } else {
+          // ainda sem escolha (prévia): lista o que está à disposição, sem escolher
+          const lista = eleg.map(e=>e.cod+' ('+(e.pge1==null?'sem PGE1':numBR(e.pge1)+' mcg/mL')+')').join(', ');
+          acao = (doseMenor ? 'Opções: reduzir volume para '+doseMenor : 'Opções')
+            +(lista ? (doseMenor?'; ou trocar para ':' ')+lista : '')
+            +'. Aguarde a escolha na pergunta "Dor local · reduzir PGE1".';
+        }
+        notas.push('<b>Dor local '+(S.iciDor==='importante'?'importante':(S.iciDorImpede==='sim'?'impeditiva do uso':'na aplicação'))+' — reduzir PGE1.</b> Provável responsável: alprostadil (PGE1). '+acao+' Não atribuir a tadalafila oral: o paciente está em intracavernosa.');
+        mudanca = escolha && escolha!=='vol' && ICI_COMPO[escolha]
+          ? ('Ajuste por dor local (PGE1) → '+escolha)
+          : (escolha==='vol' ? 'Ajuste por dor local (PGE1) — volume' : 'Ajuste por dor local (PGE1)');
       }
       if (!travado){
         const reduz = (alvo, pq) => {
@@ -7416,7 +7464,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
       iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),ondasSessoes:((kit.some(e=>(Array.isArray(e)?e[0]:e)==='ONDAS') || S.tefiConduta==='ondas') ? ((prev && Number(prev.ondasSessoes)) || ONDAS_SESSOES) : null),biotens:(bio===null?null:bio),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
-      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),iciDor:S.iciDor||null,iciDorImpede:S.iciDorImpede||null,ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
+      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),iciDor:S.iciDor||null,iciDorImpede:S.iciDorImpede||null,iciPge1Troca:S.iciPge1Troca||null,ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);
     pintaStatus(ok?'Ciclo salvo.':'Não foi possível salvar — guarde o relatório impresso.');

@@ -44,7 +44,7 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
   }
 
   // 2+3. ICI + EA cefaleia NÃO culpa tadalafila; dor local → PGE1
-  console.log('--- ICI: EA não inventa tadalafila; dor local reduz PGE1');
+  console.log('--- ICI: EA não inventa tadalafila; dor local → oferta PGE1 (médico escolhe)');
   {
     const ciclos = BANCO.MX9111;
     const r = await roda({
@@ -54,6 +54,7 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
         iciUso: { iciAnt: 'R6', iciAntDose: '0,2 mL', iciDoseAtual: '0,2 mL', iciTempo: '1h' },
         adesao: 'total', ea: 'atrap', eaQuais: ['dorLocal'],
         iciDor: 'importante', iciDorImpede: 'sim',
+        iciPge1Troca: 'R7',   // médico escolhe R7 (sem PGE1) — sem auto-pick
         iciQual: { iciQualidade: '3', iciFreq: '1a2' },
         confirmaEstavel: 'nao', caracteriza: { mast: 'nao', matinal: 'nao' },
         satisfNps: { satisf: 5, nps: 6 }
@@ -66,8 +67,17 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
     ok(!/Provável responsável: tadalafila/i.test(tudo) && !/Reduzir um nível de BASE/i.test(tudo),
       'não culpa tadalafila / BASE em ICI puro', tudo.match(/Provável responsável[^.]+|Reduzir um nível[^.]+\./gi));
     ok(/PGE1|alprostadil|Dor local/i.test(tudo), 'alerta de dor/PGE1 presente', tudo.slice(0, 500));
-    ok(/0,15 mL|R7|sem PGE1|menos PGE1|reduzir/i.test(tudo), 'sugere reduzir volume ou fórmula PGE1', tudo.slice(0, 600));
+    ok(/R7/i.test(tudo) && /sem PGE1/i.test(tudo) && /Troca escolhida|→\s*R7/i.test(tudo),
+      'conduta registra a escolha do médico (R7), sem auto-pick', tudo.slice(0, 700));
+    ok(r.salvo && r.salvo.iciPge1Troca === 'R7', 'registro guarda iciPge1Troca=R7', r.salvo && r.salvo.iciPge1Troca);
     r.win.close();
+  }
+  // oferta: só fórmulas com PGE1 < atual (R6=20) ou sem PGE1
+  {
+    const html = fs.readFileSync(path.join(RAIZ, 'apps', 'triagem.html'), 'utf8');
+    ok(/iciFormulasMenorPge1/.test(html) && !/function iciFormulaMenorPge1/.test(html),
+      'lista iciFormulasMenorPge1 (sem heurística de auto-pick)');
+    ok(/iciPge1Troca/.test(html), 'tela iciPge1Troca presente');
   }
 
   // 5. Protocolo DUO-3 no prontuário com doses concretas
@@ -130,9 +140,9 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
   {
     const html = fs.readFileSync(path.join(RAIZ, 'apps', 'triagem.html'), 'utf8');
     ok(/pv-card/.test(html) && /pv-note/.test(html), 'classes pv-card / pv-note no app');
-    ok(/protocoloComDose/.test(html) && /kitTemCulpado/.test(html) && /iciFormulaMenorPge1/.test(html),
+    ok(/protocoloComDose/.test(html) && /kitTemCulpado/.test(html) && /iciFormulasMenorPge1/.test(html),
       'helpers v2.5-R presentes');
-    ok(/iciDor/.test(html) && /iciDorImpede/.test(html), 'perguntas de dor local ICI');
+    ok(/iciDor/.test(html) && /iciDorImpede/.test(html) && /iciPge1Troca/.test(html), 'perguntas de dor local ICI + oferta PGE1');
     ok(/data-versao="2\.5\.17"/.test(html), 'versão 2.5.17');
   }
 
