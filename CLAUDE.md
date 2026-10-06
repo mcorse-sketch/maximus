@@ -350,7 +350,7 @@ ganho ≥ 4 → mantém o nível que funcionou, mesmo se a faixa de hoje pedisse
 ou nenhuma cápsula (a via oral nunca é reduzida automaticamente; reduzir é decisão
 do médico na receita); ganho de 1 a 3 → sobe um nível a partir do anterior
 (BASE-T5 → T10 → T20); ganho de 1 a 3 que já chegou a 22+ → objetivo atingido,
-mantém sem subir; sem ganho → "Trocar mecanismo", sem reduzir; já em BASE-T20 com
+mantém sem subir; sem ganho → "Trocar mecanismo", sem reduzir (exceto já em 22+, v2.5-M: mantém); já em BASE-T20 com
 ganho < 4 → teto de escalonamento + TEFI (inclusive quando o nome do protocolo
 anterior não traz o nível, ex.: DUO-1D com BASE-T20). Adesão insuficiente ou
 efeito limitante (travado) → a cápsula fica exatamente no nível anterior, como o
@@ -362,6 +362,41 @@ nunca "mantido". Teto de tadalafila 30 mg/dia: com BASE-T20, máximo 1 jato do
 SP-DE ou do SP-DUO (DE e DUO); com SP-DE e SP-DUO no mesmo kit, um alerta dá o
 total de jatos/dia somando os dois. Testes: `tests/teste_retorno_oral.js` (etapa
 7j) e R-14 a R-19 da regressão.
+
+**v2.5-M (aprovado pelo Dr. Marco em 06/10/2026).** (1) IIEF-5 ≥ 22 sem ganho
+(ganho < 4, inclusive queda) → objetivo atingido: mantém o protocolo, sem
+"Trocar mecanismo" e sem disparar o teto de escalonamento (R-20, R-21). Abaixo
+de 22, sem ganho continua "Trocar mecanismo". (2) Teto de tadalafila em todo
+lugar: com BASE-T20, SP-DE/SP-DUO saem como "MÁXIMO 1 JATO por dia" no cartão
+do kit, na receita e no relatório, e "Nunca mais de 1 jato por dia" na via do
+paciente (que continua sem dose em mg); com os dois sprays, o máximo vale
+somando os dois (`itemKit`, `jatosMaxDia`). (3) "Nível oral mantido",
+"Cápsula sobe de…", "Protocolo ajustado de…" e "objetivo atingido" são alertas
+visíveis (`RE_ALERTA`), e o cabeçalho da conduta explica o nível quando ele vem
+do ciclo anterior ("a faixa de hoje sozinha daria …"). Pílulas de mudança
+coloridas pelo tipo (`tipoMudanca`). Expansão curta das siglas nos alertas; o
+"Protocolo anterior" é expandido com o kit ANTERIOR (antes usava o de hoje).
+
+**Confiabilidade (v2.5-M).** Banco ilegível falha fechado (503, cópia
+`.corrompido-…`, nada gravado por cima; nos apps, faixa vermelha e retorno que
+não vira primeira avaliação). `/api/health` traz `banco`, `app`, `backupLocal`,
+`backupIcloud` e `alertas`, que viram a faixa no topo dos três apps. Reenvio
+com o mesmo `opId` não duplica. Fila do navegador: depois de 7 dias exige
+baixar a cópia antes de descartar; exportado há mais de 30 dias sai sozinho;
+nada não exportado é apagado. `scripts/instalar_launchd.sh` (auto-início e
+auto-reinício no Mac) e `scripts/conferir_restauracao.py` (backup restaura?).
+`testar.sh` roda `npm ci` em `tests/` se faltar o jsdom.
+
+**Toque duplo na recepção (v2.5-N).** Tocar numa opção avança sozinho 160 ms
+depois; cada tela avança uma vez só (`agendaAvanco`): o segundo toque só troca a
+resposta e o avanço não acontece se a tela já mudou (Continuar ou Voltar). No
+"novo ou retorno", enquanto confere o banco, um segundo toque é ignorado. Antes
+um toque duplo pulava a pergunta seguinte, inclusive o contato. Teste:
+`tests/teste_toque.js` (etapa 10 do `testar.sh`). Triagem e financeiro não têm avanço sozinho.
+O `teste_kiosk.js` tocava de novo 40 ms depois de cada toque e só passava da
+tela de várias escolhas quando o avanço em dobro a pulava (daí a falha
+intermitente "não chegou ao fim em 120 passos"); agora espera a tela trocar,
+marca e continua na tela de várias escolhas, e roda junto com as outras etapas.
 
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.

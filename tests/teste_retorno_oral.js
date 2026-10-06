@@ -3,6 +3,7 @@
 //   ganho de 1 a 3     → sobe um nível a partir do anterior (o kit muda de verdade)
 //   ... e já em 22+    → objetivo atingido: mantém, sem subir
 //   sem ganho          → troca de mecanismo, sem reduzir o nível
+//   ... e já em 22+    → v2.5-M: objetivo atingido — mantém o protocolo, sem trocar mecanismo nem teto
 //   teto (BASE-T20)    → não sobe mais; teto de escalonamento + TEFI
 //   travado (adesão)   → cápsula fica no nível anterior, nem sobe nem desce
 //   intracavernosa     → regra não se aplica (nunca regride)
@@ -23,14 +24,21 @@ const DE = (prot, base, ant) => ({ tipo: 'primeira', linha: 'DE', protocolo: pro
 const DUO = (prot, base, ant, pAnt) => ({ tipo: 'primeira', linha: 'DUO', protocolo: prot, kitCodes: [base, 'NOITE-1', 'SP-DUO'], iief: ant, pedt: pAnt });
 const BASE = kit => (kit || []).find(c => /^BASE-T/.test(c)) || null;
 
-async function caso(id, hoje, prev, mais, pedtHoje) {
+async function caso(id, hoje, prev, mais, pedtHoje, opts) {
   const resp = Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao', trocarQueixa: 'nao' },
     iief(hoje), pedtHoje != null ? pedt(pedtHoje) : {}, mais || {});
-  const r = await roda({ id, codigo: 'RO' + id, respostas: resp, ciclos: [prev] }, true);
+  const r = await roda({ id, codigo: 'RO' + id, respostas: resp, ciclos: [prev] }, true, opts);
   const s = r.salvo || {};
   const linhas = r.texto.split('\n');
-  return { falha: r.falha, prot: s.protocolo || '', kit: s.kitCodes || [], base: BASE(s.kitCodes), mud: s.mudanca || '',
+  const out = { falha: r.falha, prot: s.protocolo || '', kit: s.kitCodes || [], base: BASE(s.kitCodes), mud: s.mudanca || '',
     pilula: linhas[2] || '', texto: r.texto };
+  if (r.win) {     // v2.5-M: tela (cartões do kit, via do paciente, cabeçalho, pílulas, alertas)
+    const d = r.win.document, tx = sel => [...d.querySelectorAll(sel)].map(e => e.textContent.replace(/\s+/g, ' ')).join(' || ');
+    Object.assign(out, { kitCards: tx('#kitGrid .kit-card'), pac: tx('#printPaciente'), hint: tx('#mxNivelHint'),
+      chips: [...d.querySelectorAll('.mx-chip')].map(e => e.className), alertas: tx('.al-item .al-tit'), alertasTudo: tx('.al-item') });
+    r.win.close();
+  }
+  return out;
 }
 
 (async () => {
@@ -84,6 +92,32 @@ async function caso(id, hoje, prev, mais, pedtHoje) {
   ok(/^INTRACAVERNOSA/.test(c.prot) && c.kit.indexOf('ICI') >= 0 && !c.base, 'I1 intracavernosa, IIEF 7 → 16: continua intracavernosa, sem cápsula oral', c.prot + ' ' + c.kit.join(','));
   c = await caso('I2', 6, DE('DE-2', 'BASE-T10', 9));
   ok(c.kit.indexOf('ICI') >= 0, 'I2 oral que piora para a faixa grave (IIEF 9 → 6): a regra não segura no oral, vai à intracavernosa', c.prot + ' ' + c.kit.join(','));
+
+  console.log('\n— v2.5-M: IIEF ≥ 22 sem ganho mantém o protocolo (sem "Trocar mecanismo", sem teto)');
+  const M = { manter: true };
+  c = await caso('M1', 22, DE('DE-1', 'BASE-T5', 22), null, null, M);
+  ok(!c.falha && c.base === 'BASE-T5' && c.prot === 'DE-1 (mantido)' && !/Trocar mecanismo/.test(c.mud + c.texto), 'M1 IIEF 22 → 22: DE-1 / BASE-T5 mantidos, sem "Trocar mecanismo"', c.prot + ' ' + c.base + ' | ' + c.mud);
+  ok(/IIEF-5 estável e está em 22/.test(c.alertas) && /objetivo atingido/.test(c.alertasTudo) && /Nenhuma — protocolo mantido/.test(c.mud), 'M1 alerta visível "IIEF-5 estável e está em 22 … objetivo atingido" e mudança "protocolo mantido"', c.alertas + ' | ' + c.mud);
+  ok(c.chips.some(k => /mud-mantido/.test(k)), 'M1 pílula verde de "mantido"', c.chips.join(' '));
+  c = await caso('M2', 22, DE('DE-3', 'BASE-T20', 24));
+  ok(c.base === 'BASE-T20' && /^DE-3/.test(c.prot) && c.kit.indexOf('TEFI') < 0 && !/Teto de escalonamento|Escalonar de mecanismo/.test(c.mud + c.texto),
+    'M2 IIEF 24 → 22 em BASE-T20: mantém DE-3, sem teto de escalonamento nem TEFI', c.prot + ' ' + c.kit.join(',') + ' | ' + c.mud);
+  c = await caso('M3', 21, DE('DE-2', 'BASE-T10', 21));
+  ok(c.mud === 'Trocar mecanismo', 'M3 IIEF 21 → 21 (ainda com disfunção): continua "Trocar mecanismo"', c.mud);
+
+  console.log('\n— v2.5-M: BASE-T20 + spray de tadalafila = máximo 1 jato em todo lugar');
+  c = await caso('J1', 17, DE('DE-2', 'BASE-T10', 15), null, null, M);
+  ok(c.base === 'BASE-T20', 'J1 sobe para BASE-T20 com SP-DE', c.kit.join(','));
+  ok(/MÁXIMO 1 JATO por dia/.test(c.kitCards), 'J1 cartão do kit (receita na tela): MÁXIMO 1 JATO por dia', c.kitCards.slice(0, 300));
+  ok(/MÁXIMO 1 JATO por dia/.test(c.texto) && !/1 (a|ou) 2 jatos/.test(c.texto), 'J1 relatório: máximo 1 jato, nenhum "1 a/ou 2 jatos"');
+  ok(/Nunca mais de 1 jato por dia/.test(c.pac) && !/1 (a|ou) 2 jatos/.test(c.pac) && !/\d\s*mg\b/.test(c.pac), 'J1 via do paciente: "Nunca mais de 1 jato por dia", sem dose em mg', c.pac.slice(0, 300));
+  ok(/a faixa de hoje sozinha daria/.test(c.hint), 'J1 cabeçalho explica o nível (ciclo anterior × faixa de hoje)', c.hint);
+  ok(c.chips.some(k => /mud-sobe/.test(k)), 'J1 pílula âmbar de "dose aumentada"', c.chips.join(' '));
+  ok(/Cápsula sobe de/.test(c.alertas), 'J1 "Cápsula sobe de…" é alerta visível (não observação)', c.alertas);
+  c = await caso('J2', 19, DE('DE-2', 'BASE-T10', 15), null, null, M);
+  ok(/1 a 2 jatos/.test(c.kitCards) && !/MÁXIMO 1 JATO/.test(c.kitCards), 'J2 BASE-T10 com um spray só: continua 1 a 2 jatos (cabe no teto)', c.kitCards.slice(0, 300));
+  ok(/Nível oral mantido/.test(c.alertas), 'J2 "Nível oral mantido" é alerta visível', c.alertas);
+  ok(/Nível do ciclo anterior mantido/.test(c.hint), 'J2 cabeçalho: nível do ciclo anterior mantido', c.hint);
 
   console.log('\n' + (falhas ? falhas + ' falha(s)' : 'retorno oral: tudo ok'));
   process.exit(falhas ? 1 : 0);
