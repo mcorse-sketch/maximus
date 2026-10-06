@@ -30,8 +30,8 @@ errada, o erro é do app — corrija o app, não esta folha.
 | LIM-021 | Libido baixa, testosterona baixa — sem ioimbina | DE-2 | BASE-T10, NOITE-1, SP-DE, LABS | 14 | — |
 | LIM-022 | Libido baixa, testosterona não dosada — sem ioimbina por omissão | DE-2 | BASE-T10, NOITE-1, SP-DE, LABS | 14 | — |
 | LIM-023 | Libido baixa, testosterona normal, mas ansiedade/ISRS — sem ioimbina | DE-2 | BASE-T10, NOITE-1, SP-DE, LABS | 14 | — |
-| LIM-024 | Reavaliação, libido baixa, testosterona 335 no banco — abaixo do corte | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS, LABS | 14 | — |
-| LIM-025 | Reavaliação, libido baixa, testosterona 340 no banco — no corte, conta como normal | DE-2L | BASE-T10-I, NOITE-2, SP-DE, ONDAS | 14 | — |
+| LIM-024 | Reavaliação, libido baixa, testosterona 335 no banco — abaixo do corte | DE-3 | BASE-T20, NOITE-1, SP-DE, ONDAS, LABS | 14 | — |
+| LIM-025 | Reavaliação, libido baixa, testosterona 340 no banco — no corte, conta como normal | DE-3L | BASE-T20-I, NOITE-2, SP-DE, ONDAS | 14 | — |
 | LIM-026 | ADAM sem nenhum sintoma | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
 | LIM-027 | ADAM com 2 sintomas não-chave — negativo | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
 | LIM-028 | ADAM com 3 sintomas não-chave — positivo | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
@@ -67,11 +67,17 @@ errada, o erro é do app — corrija o app, não esta folha.
 | TEST-028 | Emagrecimento — encaminhamento | Encaminhado ao especialista em emagrecimento | — | — | — |
 | TEST-029 | Consulta urológica — só registro | Consulta urológica — prontuário da clínica | — | — | — |
 | R-01 | Reavaliação DE: IIEF subiu 4 — manter | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 16 | — |
-| R-02 | Reavaliação DE: IIEF subiu 1 — subir BASE | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 13 | — |
+| R-02 | Reavaliação DE: IIEF subiu 1 — subir BASE | DE-3 | BASE-T20, NOITE-1, SP-DE, ONDAS | 13 | — |
 | R-03 | Reavaliação DE: IIEF sem ganho — trocar mecanismo | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 12 | — |
 | R-04 | Reavaliação DE com baixa adesão — não escalonar | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 12 | — |
-| R-14 | Reavaliação DE: IIEF 15 → 19 (+4) muda de faixa — rótulo "dose reduzida pela faixa de hoje", não "mantido" | DE-1 | BASE-T5, NOITE-1, SP-DE | 19 | — |
-| R-15 | Reavaliação DE: IIEF 15 → 17 (+2) muda de faixa — rótulo não diz "dose aumentada" com a cápsula descendo | DE-1 | BASE-T5, NOITE-1, SP-DE, ONDAS | 17 | — |
+| R-14 | Reavaliação DE: IIEF 15 → 19 (+4) muda de faixa — mantém BASE-T10 / DE-2 (não reduz) | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 19 | — |
+| R-15 | Reavaliação DE: IIEF 15 → 17 (+2) — sobe de BASE-T10 para BASE-T20 / DE-3, a partir do anterior | DE-3 | BASE-T20, NOITE-1, SP-DE, ONDAS | 17 | — |
+| R-16 | Reavaliação DE: BASE-T5, IIEF 15 → 17 (+2) — sobe para BASE-T10 / DE-2 | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 17 | — |
+| R-20 | Reavaliação DE: BASE-T5, IIEF 22 → 22 (sem ganho, já sem disfunção) — mantém DE-1, sem "Trocar mecanismo" | DE-1 (mantido) | BASE-T5, NOITE-1, SP-DE | 22 | — |
+| R-21 | Reavaliação DE: já em BASE-T20, IIEF 24 → 22 (caiu, ainda sem disfunção) — mantém DE-3, sem teto/TEFI | DE-3 (mantido) | BASE-T20, NOITE-1, SP-DE | 22 | — |
+| R-17 | Reavaliação DE: já em BASE-T20, IIEF 15 → 17 (+2) — teto oral: fica em BASE-T20 e indica TEFI | DE-3 | BASE-T20, NOITE-1, SP-DE, ONDAS, TEFI | 17 | — |
+| R-18 | Reavaliação DUO: DUO-2, IIEF 14 → 16 (+2) — sobe para BASE-T20 / DUO-3, máximo 1 jato do SP-DUO | DUO-3 | BASE-T20, NOITE-1, SP-DUO, ONDAS | 16 | 12 |
+| R-19 | Reavaliação DE com baixa adesão, IIEF 15 → 19 — cápsula fica em BASE-T10 (nem sobe nem desce) | DE-2 (mantido) | BASE-T10, NOITE-1, SP-DE | 19 | — |
 | R-05 | Reavaliação EP: PEDT caiu 4 — manter | EP-1 (mantido) | SP-DUO, NOITE-1 | — | 10 |
 | R-06 | Reavaliação ICI: rigidez máxima, cerca de 1 hora — manter a intracavernosa | INTRACAVERNOSA (mantido) | ICI, NOITE-1 | 14 | — |
 | R-07 | Reavaliação ICI: ereção parcial — subir a intracavernosa, não voltar ao oral | INTRACAVERNOSA | ICI, NOITE-1, ONDAS | 7 | — |

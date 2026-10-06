@@ -11,6 +11,7 @@ const { preenche } = require('./regressao');
 const ARQ = process.argv.slice(2).find(a => !a.startsWith('--')) || path.join(__dirname, '../apps/triagem.html');
 const HTML = fs.readFileSync(ARQ, 'utf8');
 const espera = ms => new Promise(r => setTimeout(r, ms));
+const A = require('./assenta');   // v2.5-M: espera por condição, não por tempo
 const visivel = el => !!el && el.style.display !== 'none' && !el.hidden;
 let falhas = 0;
 const ok = (cond, nome, extra) => {
@@ -53,7 +54,9 @@ async function abre(mem, ctl) {
     setTimeout(() => { const b = ov.querySelector(ctl.resposta ? '[data-v="1"]' : '[data-v="0"]'); if (b) b.click(); }, 0);
   });
   obs.observe(dom.window.document.documentElement, { childList: true, subtree: true });
-  await espera(40);
+  const d0 = dom.window.document;
+  await A.ate(dom.window, () => !!d0.getElementById('quizCard') && !!d0.getElementById('quizCard').getAttribute('data-tela'), 3000);
+  await A.assenta(dom.window, { quieto: 10 });
   return { win: dom.window, doc: dom.window.document, erros };
 }
 const hojeISO = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -91,7 +94,7 @@ function banco() {
   // anda até a tela pedida, respondendo o resto como o paciente/médico padrão
   async function ate(alvo, max) {
     for (let k = 0; k < (max || 60); k++) {
-      await espera(12);
+      await A.assenta(win);
       if (visivel(doc.getElementById('resultsCard'))) return false;
       const pan = doc.getElementById('panoramaCard');
       if (visivel(pan)) { doc.getElementById('panSeguir').click(); continue; }
@@ -104,7 +107,7 @@ function banco() {
     }
     return false;
   }
-  const seg = async () => { next.click(); await espera(25); };
+  const seg = async () => { next.click(); await A.assenta(win); };
 
   ok(await ate('confirmHist'), 'chega à identificação do retorno');
   ok(JSON.stringify(opcoes().map(o => o.dataset.v)) === '["ok"]' && /Confirmar e continuar/.test(optsTexto()) && !/Corrigir protocolo/.test(optsTexto()),
@@ -118,7 +121,7 @@ function banco() {
      && /Mantida — disfunção erétil e ejaculação precoce/.test(optsTexto()) && /Nova queixa/.test(optsTexto()), 'opções "Mantida — …" / "Nova queixa"', optsTexto());
   clica('sim'); await seg();
   ok(tela() === 'novaQueixa' && opcoes().every(o => o.dataset.v !== 'de' && o.dataset.v !== 'ep'), '"Sim" pergunta a nova queixa, sem repetir as que já estão em tratamento', tela() + ' ' + opcoes().map(o => o.dataset.v));
-  doc.getElementById('backBtn').click(); await espera(25);
+  doc.getElementById('backBtn').click(); await A.assenta(win);
   ok(tela() === 'trocarQueixa', 'voltar da nova queixa devolve à pergunta');
   clica('nao'); await seg();
 
@@ -133,15 +136,15 @@ function banco() {
   ok(/Alergias\?\s*antes: nenhuma conhecida/.test(est.conteudo) && /Parceria fixa\?\s*antes: sim, parceria fixa/.test(est.conteudo) && /Além do que a clínica prescreveu, alguma medicação mudou ou iniciou outra\?\s*antes:/.test(est.conteudo),
     'pergunta curta com a resposta anterior ao lado; medicação: "Além do que a clínica prescreveu…"', est.conteudo.slice(0, 300));
   ok(est.opts.indexOf('adam') < 0, 'ADAM com sintomas na primeira avaliação não vira linha (tem tela de evolução própria)');
-  clica('meds'); await espera(10);
-  clica('alergia'); await espera(10);
+  clica('meds'); await A.assenta(win);
+  clica('alergia'); await A.assenta(win);
   ok(!opcoes().find(o => o.dataset.v === 'nao').classList.contains('selected'), 'marcar um item tira o "Nada mudou"');
-  opcoes().find(o => o.dataset.v === 'alergia').click(); await espera(10);
+  opcoes().find(o => o.dataset.v === 'alergia').click(); await A.assenta(win);
   await seg();
   ok(tela() === 'medsRisco' && opcoes().filter(o => o.classList.contains('selected')).map(o => o.dataset.v).join() === 'nenhuma',
     'só o item marcado volta, com a resposta anterior já marcada para editar', tela() + ' ' + opcoes().filter(o => o.classList.contains('selected')).map(o => o.dataset.v));
   ok(/além do que a clínica prescreveu/.test(qtexto()), 'a tela de medicação do retorno diz "além do que a clínica prescreveu"', qtexto());
-  clica('beta'); await espera(10);
+  clica('beta'); await A.assenta(win);
   ok(opcoes().filter(o => o.classList.contains('selected')).map(o => o.dataset.v).join() === 'beta', 'marcar betabloqueador tira o "nenhuma"');
   await seg();
 
@@ -173,21 +176,21 @@ function banco() {
   ok(tela() === 'i4', 'percorre só as cinco perguntas do IIEF-5', tela());
   // volta à confirmação pela lista da seção: mostra o revisado e oferece desfazer
   const irConf = () => { const b = [...doc.querySelectorAll('button[data-ir]')].find(x => /respondeu na recep/.test(x.textContent)); if (b) b.click(); return !!b; };
-  ok(irConf(), 'a confirmação continua na lista da seção (não sumiu)'); await espera(25);
+  ok(irConf(), 'a confirmação continua na lista da seção (não sumiu)'); await A.assenta(win);
   ok(tela() === 'refazer' && /Revisado com o paciente: IIEF-5\s*17 → 15/.test(optsTexto()), 'a confirmação mostra "Revisado com o paciente: IIEF-5 17 → 15"', tela() + ' ' + optsTexto().slice(0, 200));
   ok(opcoes().some(o => o.dataset.v === 'restaurar'), 'oferece "Voltar às respostas da recepção"');
   ctl.resposta = false; clica('restaurar'); await seg();
   ok(ctl.confirmou.length === 1 && /Desfazer a revisão/.test(ctl.confirmou[0]), 'desfazer a revisão pede confirmação', JSON.stringify(ctl.confirmou));
   ok(tela() === 'i0' && opcoes().some(o => o.classList.contains('selected') && o.dataset.v === '2'), 'recusada a confirmação, nada muda (resposta revisada mantida)', tela());
-  irConf(); await espera(25);
+  irConf(); await A.assenta(win);
   ctl.resposta = true; clica('restaurar'); await seg();
   // restaurado, o módulo "Escores e resposta" fica completo e o app volta ao panorama
   // (fluxo normal de fim de módulo); reabre o módulo e vai à confirmação pela lista
   const pan = doc.getElementById('panoramaCard');
   ok(visivel(pan) && /Módulo concluído: Escores e resposta/.test(pan.textContent), 'confirmado o desfazer, segue o fluxo normal (panorama: módulo concluído)');
   const modEsc = [...doc.querySelectorAll('#panoramaCard .pan-mod')].find(b => /Escores e resposta/.test(b.textContent));
-  if (modEsc) modEsc.click(); await espera(25);
-  irConf(); await espera(25);
+  if (modEsc) modEsc.click(); await A.assenta(win);
+  irConf(); await A.assenta(win);
   ok(tela() === 'refazer' && !/→/.test(optsTexto()) && !opcoes().some(o => o.dataset.v === 'restaurar'), 'confirmado, volta às respostas da recepção', tela() + ' ' + optsTexto().slice(0, 200));
   clica('nao'); await seg();
   const chegou = !(await ate('__nenhuma__', 80)) && visivel(doc.getElementById('resultsCard'));
@@ -215,7 +218,7 @@ function banco() {
     const R2 = { origem: 'fila', daFila: 'MXR001', usarTotaisRec: 'nao' };
     let viu = null, seguinte = null;
     for (let k = 0; k < 60; k++) {
-      await espera(12);
+      await A.assenta(a.win);
       if (visivel(a.doc.getElementById('resultsCard'))) break;
       const pan = a.doc.getElementById('panoramaCard');
       if (visivel(pan)) { a.doc.getElementById('panSeguir').click(); continue; }

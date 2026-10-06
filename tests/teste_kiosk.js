@@ -154,8 +154,28 @@ async function roda(i, mem, novo) {
       continue;
     }
     const escala = [...doc.querySelectorAll('.knum')];
-    if (opts.length) { pick(opts).click(); await espera(40); rel.passos++; continue; }
-    if (escala.length) { pick(escala).click(); await espera(40); rel.passos++; continue; }
+    // v2.5-N: o toque avança sozinho 160 ms depois, uma vez por tela. Antes o teste tocava
+    // de novo 40 ms depois e cada toque somava um avanço (pulava perguntas — o bug do toque
+    // duplo). Agora espera a tela trocar (até 600 ms; tela de várias escolhas não troca).
+    const esperaTrocar = async () => {
+      for (let t = 0; t < 60; t++) {
+        await espera(10);
+        if (visivel(doc.getElementById('fim')) || ((doc.getElementById('pergunta') || {}).textContent || '') !== pergunta) return;
+      }
+    };
+    // tela de várias escolhas ("Marque tudo…"): o Continuar fica à vista; marca uma ou duas
+    // e continua. Antes o teste só passava dela quando o avanço em dobro do toque duplo a
+    // pulava — quando caía nela, "não chegou ao fim em 120 passos" (a falha intermitente).
+    if (opts.length && visivel(cont)) {
+      const n = intBetween(1, 2);
+      for (let k = 0; k < n; k++) { const ag = [...doc.querySelectorAll('.kopt')]; pick(ag).click(); await espera(15); }
+      for (let k = 0; k < 4 && cont.disabled; k++) { pick([...doc.querySelectorAll('.kopt')]).click(); await espera(15); }
+      rel.multi = true;
+      if (cont.disabled) { rel.falha = rel.falha || 'várias escolhas não liberou o Continuar: ' + pergunta; break; }
+      cont.click(); await espera(45); rel.passos++; continue;
+    }
+    if (opts.length) { pick(opts).click(); await esperaTrocar(); rel.passos++; continue; }
+    if (escala.length) { pick(escala).click(); await esperaTrocar(); rel.passos++; continue; }
 
     if (cont.disabled) {
       const outros = [...doc.querySelectorAll('#quiz input.kfld')];
@@ -238,6 +258,7 @@ async function filaDeHoje() {
   const foraDoPadrao = tels.filter(t => !/^\(\d{2}\)\d{4,5}-\d{4}$/.test(t));
   console.log('telefones salvos:', tels.length, '| fora do padrao:', foraDoPadrao.length, foraDoPadrao.slice(0,3).join(' '));
   console.log('usaram a roleta:', rels.filter(r => r.roleta).length);
+  console.log('passaram pela tela de várias escolhas:', rels.filter(r => r.multi).length);
   console.log('erros de JS:', erros.length);
   erros.slice(0, 6).forEach(e => console.log('   -', e));
   console.log('falhas de fluxo:', falhas.length);

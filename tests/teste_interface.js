@@ -19,6 +19,7 @@ const ARQ = args.find(a => !a.startsWith('--')) || path.join(__dirname, '../apps
 const RAPIDO = args.includes('--rapido');
 const HTML = fs.readFileSync(ARQ, 'utf8');
 const espera = ms => new Promise(r => setTimeout(r, ms));
+const { assenta, ate } = require('./assenta');   // v2.5-M: espera por condição, não por tempo
 const visivel = el => !!el && el.style.display !== 'none' && !el.hidden;
 
 let falhas = 0;
@@ -72,7 +73,9 @@ async function abre(mem, opc) {
       if (opc.antes) opc.antes(w);
     }
   });
-  await espera(40);
+  const d0 = dom.window.document;
+  await ate(dom.window, () => !!d0.getElementById('quizCard') && !!d0.getElementById('quizCard').getAttribute('data-tela'), 3000);
+  await assenta(dom.window, { quieto: 10 });
   return { win: dom.window, doc: dom.window.document, erros };
 }
 const tecla = (win, key, extra) => {
@@ -90,7 +93,7 @@ async function atendimento(p, viaAtalho) {
   for (let passo = 0; passo < 140 && !falha; passo++) {
     if (visivel(results)) break;
     const pan = doc.getElementById('panoramaCard');
-    if (visivel(pan)) { doc.getElementById('panSeguir').click(); await espera(5); continue; }
+    if (visivel(pan)) { doc.getElementById('panSeguir').click(); await assenta(win); continue; }
     const tela = quiz.getAttribute('data-tela');
     if (tela === ultima) { if (++rep > 3) { falha = 'travou em ' + tela; break; } } else rep = 0;
     ultima = tela;
@@ -98,22 +101,22 @@ async function atendimento(p, viaAtalho) {
     if (viaAtalho && !usouAtalho && /conduta/i.test(next.textContent)) {
       // tudo respondido: volta ao primeiro módulo clínico e pede a conduta com ⌘↵
       usouAtalho = true;
-      tecla(win, 'p'); await espera(20);
+      tecla(win, 'p'); await assenta(win);
       const mods = [...doc.querySelectorAll('#panoramaCard .pan-mod')];
       if (!visivel(doc.getElementById('panoramaCard')) || !mods.length) { falha = 'P não abriu o panorama'; break; }
-      (mods[1] || mods[0]).click(); await espera(10);
+      (mods[1] || mods[0]).click(); await assenta(win);
       const telaVolta = quiz.getAttribute('data-tela');
       if (telaVolta === tela) { falha = 'não voltou para o início pelo panorama'; break; }
       tecla(win, 'Enter', { ctrlKey: true });
-      for (let k = 0; k < 200 && !visivel(results); k++) await espera(10);
+      await ate(win, () => visivel(results), 3000);
       break;
     }
     if (next.disabled) { falha = tela + ': avançar desabilitado'; break; }
     // caminho normal: metade das vezes pela seta ↓, que tem de fazer o mesmo que o botão
     if (passo % 2) tecla(win, 'ArrowDown'); else next.click();
-    await espera(15);
+    await assenta(win);
   }
-  await espera(60);
+  await assenta(win, { quieto: 10 });
   if (!falha && !visivel(results)) falha = 'não chegou à conduta';
   if (viaAtalho && !usouAtalho && !falha) falha = 'não passou pela última tela antes da conduta';
   const ciclos = mem['pacientes/' + p.codigo + '/ciclos'] || [];

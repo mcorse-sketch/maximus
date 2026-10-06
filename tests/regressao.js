@@ -30,6 +30,7 @@ const PADRAO_MULTI = {};
 // telas que pedem um valor válido mesmo sem declaração no paciente
 const PADRAO_TELA = { contato: { telefone: '21999990000', email: 'teste@exemplo.invalid' } };
 const espera = ms => new Promise(r => setTimeout(r, ms));
+const { assenta, ate } = require('./assenta');   // v2.5-M: espera por condição, não por tempo
 const visivel = el => el && el.style.display !== 'none' && !el.hidden;
 
 function fakeDb(mem) {
@@ -171,7 +172,8 @@ async function roda(p, tolerante, opcoes) {
     }
   });
   const win = dom.window, doc = win.document;
-  await espera(40);
+  await ate(win, () => !!doc.getElementById('quizCard') && !!doc.getElementById('quizCard').getAttribute('data-tela'), 3000);
+  await assenta(win, { quieto: 10 });
 
   const respostas = Object.assign({ origem: 'novo', codigo: p.codigo }, p.respostas);
   const quiz = doc.getElementById('quizCard');
@@ -183,7 +185,7 @@ async function roda(p, tolerante, opcoes) {
   for (let passo = 0; passo < 120 && !falha; passo++) {
     if (visivel(results)) break;
     const pan = doc.getElementById('panoramaCard');
-    if (visivel(pan)) { doc.getElementById('panSeguir').click(); await espera(5); continue; }
+    if (visivel(pan)) { doc.getElementById('panSeguir').click(); await assenta(win); continue; }
     const tela = quiz.getAttribute('data-tela');
     if (!tela) { falha = 'tela sem data-tela'; break; }
     if (tela === ultima) { if (++repetidas > 3) { falha = 'travou na tela ' + tela; break; } } else repetidas = 0;
@@ -193,9 +195,9 @@ async function roda(p, tolerante, opcoes) {
     catch (e) { falha = 'tela ' + tela + ': ' + e.message; break; }
     if (next.disabled) { falha = 'tela ' + tela + ': botão avançar desabilitado depois de responder'; break; }
     next.click();
-    await espera(15);
+    await assenta(win);
   }
-  await espera(40);
+  await assenta(win, { quieto: 10 });
   if (!falha && !visivel(results)) falha = 'não chegou à conduta';
 
   const ciclos = (mem['pacientes/' + p.codigo + '/ciclos'] || []);
