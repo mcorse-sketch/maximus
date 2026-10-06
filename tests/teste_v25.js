@@ -338,8 +338,8 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
       ok(c && c.querySelector('.mx-esct-regua b.ant') && c.querySelector('.mx-esct-regua b.hoje') && c.querySelector('.mx-esct-regua i.on'), 'régua das faixas com anterior (○) e hoje (●)');
       ok(!!cartao(d, 'ADAM') && /negativo/.test(cartao(d, 'ADAM').textContent), 'ADAM ao lado, quando respondido');
       ok(!d.querySelector('#mxCdHead .mx-scores'), 'sem a coluna de números repetida no alto do cabeçalho');
-      const print = d.getElementById('printArea').querySelector('.result-top');
-      ok(print && /IIEF-5/.test(print.textContent) && !d.getElementById('printArea').contains(d.getElementById('mxEscores')), 'impressão continua com o bloco antigo; o novo é só de tela');
+      // v2.5-J (item 2): o papel leva uma cópia do bloco (#mxEscoresImp); o cabeçalho de tela continua fora do #printArea
+      ok(!d.getElementById('printArea').contains(d.getElementById('mxEscores')) && !!d.querySelector('#printArea #mxEscoresImp'), 'bloco de tela fora do #printArea; cópia para o papel dentro');
       r.win.close(); }
     // primeira avaliação: sem anterior
     const r2 = await roda(P.find(p => p.id === 'LIM-001'), false, { manter: true });
@@ -375,6 +375,59 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
       r6.win.close(); }
     const src = require('fs').readFileSync(path.join(__dirname, '..', 'apps', 'triagem.html'), 'utf8');
     ok(!/@media \(hover:none\) and \(pointer:coarse\)/.test(src) && !/v2\.5-H: iPad em retrato/.test(src), 'triagem só desktop: sem o layout de iPad/toque da v2.5-H');
+  }
+
+  // ---- 8. v2.5-J: faixas iguais no painel e no bloco, papel = tela, ADAM herdado identificado ----
+  console.log('\n--- v2.5-J: faixas alinhadas, impressão com o bloco, ADAM da consulta anterior');
+  {
+    const P = require('./regressao/pacientes');
+    const cartao = (d, nome, sel) => [...d.querySelectorAll((sel || '#mxEscores') + ' .mx-esct')].find(c => (c.querySelector('.mx-qn') || {}).textContent === nome);
+    const linhaPainel = (d, nome) => [...d.querySelectorAll('#copiloto .bloco .lin')].map(n => n.textContent.replace(/\s+/g, ' ').trim()).find(t => t.startsWith(nome)) || '';
+    const fx = c => c ? c.querySelector('.mx-esct-fx').textContent.trim() : '?';
+    // retorno MXV005 (IIEF-5 9 → 10, ADAM zerado na consulta anterior → não reaplicado hoje)
+    const cOral = () => [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const r = await roda({ id: 'J1', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao',
+      confirmaEstavel: 'nao', caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso', tefiConduta: 'ici', tefiAddIci: 'sim',
+      iciFormula: 'R10', iciDose: '0,1 mL', satisfNps: { satisf: 5, nps: 7 } }, iief(10)) }, false, { manter: true });
+    { const d = r.win.document, c = cartao(d, 'IIEF-5'), lp = linhaPainel(d, 'IIEF-5');
+      ok(!r.falha && c && lp.endsWith('· ' + fx(c)), 'item 1: painel e bloco com o mesmo nome de faixa (IIEF-5)', 'painel: ' + lp + ' | bloco: ' + fx(c));
+      // item 2: impressão
+      let escrito = '';
+      r.win.open = () => ({ document: { open() {}, write(h) { escrito += h; }, close() {} }, focus() {}, print() {} });
+      d.getElementById('printBtn').click(); await new Promise(z => setTimeout(z, 5));
+      const imp = d.getElementById('mxEscoresImp'), grade = s0 => (d.querySelector(s0 + ' .mx-esc-grade') || {}).textContent;
+      ok(imp && imp.previousElementSibling === d.querySelector('#printArea > .result-top') && d.querySelector('#printArea > .result-top').classList.contains('com-esc'),
+        'item 2: cópia do bloco logo abaixo da pílula da classificação, no lugar de "IIEF-5 10/25"');
+      ok(imp && grade('#mxEscoresImp') === grade('#mxEscores'), 'item 2: papel com o mesmo conteúdo da tela (hoje, anterior, variação, faixa, ADAM)');
+      ok(/id="mxEscoresImp"/.test(escrito) && /antes <b>9<\/b> · \d{2}\/\d{2}\/\d{4} — melhorou 1 ponto/.test(escrito) && /\+1<\/span>/.test(escrito) && !/mxCdHead/.test(escrito),
+        'item 2: relatório impresso traz anterior com data, variação (+1) e faixa — sem o cabeçalho de tela');
+      ok(/\.result-top\.com-esc #classDesc\{display:none!important\}/.test(escrito) && /print-color-adjust:exact/.test(escrito), 'item 2: no papel a linha "IIEF-5 10/25" sai e a régua mantém as cores');
+      // item 3: ADAM não reaplicado
+      const a = cartao(d, 'ADAM'), ai = cartao(d, 'ADAM', '#mxEscoresImp');
+      ok(a && a.classList.contains('herdado') && /não reaplicado hoje/.test(a.textContent) && /valor da consulta anterior \(\d{2}\/\d{2}\/\d{4}\)/.test(a.textContent),
+        'item 3: ADAM não reaplicado → "valor da consulta anterior (data)" e etiqueta "não reaplicado hoje"', a && a.textContent);
+      ok(a && a.textContent.includes(br(70)), 'item 3: a data é a da consulta em que o ADAM foi respondido', a && a.textContent);
+      ok(ai && ai.classList.contains('herdado'), 'item 3: o papel também diz que o ADAM é da consulta anterior');
+      r.win.close(); }
+    // 1ª avaliação: ADAM respondido hoje (sem etiqueta); faixa "severa" no painel e no bloco
+    const r2 = await roda(P.find(p => p.id === 'LIM-001'), false, { manter: true });
+    { const d = r2.win.document, c = cartao(d, 'IIEF-5'), a = cartao(d, 'ADAM'), lp = linhaPainel(d, 'IIEF-5');
+      ok(c && fx(c) === 'severa' && lp.endsWith('· severa') && !/disfunção grave/.test(d.getElementById('copiloto').textContent), 'item 1: IIEF-5 7 é "severa" no painel e no bloco (antes: "disfunção grave")', lp);
+      ok(a && !a.classList.contains('herdado') && !/não reaplicado/.test(a.textContent), 'item 3: ADAM respondido hoje não leva a etiqueta');
+      r2.win.close(); }
+    // DE + EP: PEDT com as faixas que classificam (antes "precocidade provável"/"limítrofe")
+    const r4 = await roda(P.find(p => p.id === 'TEST-018'), false, { manter: true });
+    { const d = r4.win.document, c = cartao(d, 'PEDT'), lp = linhaPainel(d, 'PEDT');
+      ok(c && lp.endsWith('· ' + fx(c)) && !/precocidade|limítrofe/.test(d.getElementById('copiloto').textContent), 'item 1: PEDT com o mesmo nome de faixa no painel e no bloco', 'painel: ' + lp + ' | bloco: ' + fx(c));
+      r4.win.close(); }
+    // hipogonadismo: sem bloco, sem cópia no papel; a linha antiga volta
+    const r6 = await roda(P.find(p => p.id === 'TEST-022'), false, { manter: true });
+    { const d = r6.win.document;
+      ok(!d.getElementById('mxEscoresImp') && !d.querySelector('#printArea > .result-top.com-esc'), 'item 2: fora de IIEF-5/PEDT, o papel continua como antes');
+      r6.win.close(); }
+    const src = require('fs').readFileSync(path.join(__dirname, '..', 'apps', 'triagem.html'), 'utf8');
+    ok(!/disfun\\u00e7\\u00e3o grave|precocidade improv|lim\\u00edtrofe'/.test(src), 'item 1: os nomes antigos de faixa saíram do código');
   }
 
   console.log('\n=== v2.5 ===');

@@ -82,11 +82,11 @@ module.exports = [
   P('LIM-024', 'Reavaliação, libido baixa, testosterona 335 no banco — abaixo do corte',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'] }))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12, labs: { tTotal: '335' } }],
-      espera: { protocolo: 'DE-2' } }),
+      espera: { protocolo: 'DE-3' } }),   // v2.5-L: IIEF 12 → 14 (+2) sobe um nível a partir do BASE-T10 anterior
   P('LIM-025', 'Reavaliação, libido baixa, testosterona 340 no banco — no corte, conta como normal',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'], contraIoim: 'nao' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12, labs: { tTotal: '340' } }],
-      espera: { protocolo: 'DE-2L' } }),
+      espera: { protocolo: 'DE-3L' } }),  // v2.5-L: idem, ramo libido
 
   // ---- ADAM (Morley): chave 1 ou 7, ou 3+ das outras -------------------------
   P('LIM-026', 'ADAM sem nenhum sintoma', de(14, { adam: ['nenhum'] })),
@@ -152,6 +152,41 @@ module.exports = [
   P('R-04', 'Reavaliação DE com baixa adesão — não escalonar',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'baixa', motivo: 'esq', ea: 'nao' }, de(12))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12 }] }),
+  // ---- v2.5-L (opção B do Dr. Marco): no retorno oral DE/DUO o nível parte do ANTERIOR. Ganho ≥ 4
+  // mantém o nível que funcionou (nunca reduz); ganho de 1 a 3 sobe um nível a partir do anterior;
+  // em BASE-T20 não sobe mais (teto + TEFI); adesão baixa trava no nível anterior. Kit, "Mudança
+  // deste ciclo" e pílula dizem a mesma coisa. Mais casos em tests/teste_retorno_oral.js ----
+  ...[['R-14', 'IIEF 15 → 19 (+4) muda de faixa — mantém BASE-T10 / DE-2 (não reduz)', 19, 'DE-2 (mantido)'],
+      ['R-15', 'IIEF 15 → 17 (+2) — sobe de BASE-T10 para BASE-T20 / DE-3, a partir do anterior', 17, 'DE-3']]
+    .map(([id, d, hoje, prot]) => P(id, 'Reavaliação DE: ' + d,
+      retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(hoje))),
+      { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 15 }],
+        espera: { protocolo: prot } })),
+  P('R-16', 'Reavaliação DE: BASE-T5, IIEF 15 → 17 (+2) — sobe para BASE-T10 / DE-2',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(17))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-1', kitCodes: ['BASE-T5', 'NOITE-1', 'SP-DE'], iief: 15 }],
+      espera: { protocolo: 'DE-2' } }),
+  // v2.5-M: sem ganho, mas já sem disfunção (IIEF ≥ 22) — objetivo atingido: mantém, sem trocar mecanismo nem teto
+  P('R-20', 'Reavaliação DE: BASE-T5, IIEF 22 → 22 (sem ganho, já sem disfunção) — mantém DE-1, sem "Trocar mecanismo"',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(22))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-1', kitCodes: ['BASE-T5', 'NOITE-1', 'SP-DE'], iief: 22 }],
+      espera: { protocolo: 'DE-1 (mantido)' } }),
+  P('R-21', 'Reavaliação DE: já em BASE-T20, IIEF 24 → 22 (caiu, ainda sem disfunção) — mantém DE-3, sem teto/TEFI',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(22))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE'], iief: 24 }],
+      espera: { protocolo: 'DE-3 (mantido)' } }),
+  P('R-17', 'Reavaliação DE: já em BASE-T20, IIEF 15 → 17 (+2) — teto oral: fica em BASE-T20 e indica TEFI',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(17))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE'], iief: 15 }],
+      espera: { protocolo: 'DE-3' } }),
+  P('R-18', 'Reavaliação DUO: DUO-2, IIEF 14 → 16 (+2) — sobe para BASE-T20 / DUO-3, máximo 1 jato do SP-DUO',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, duo(16, 12, { freq: 'baixa' }))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DUO', protocolo: 'DUO-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DUO'], iief: 14, pedt: 14 }],
+      espera: { protocolo: 'DUO-3' } }),
+  P('R-19', 'Reavaliação DE com baixa adesão, IIEF 15 → 19 — cápsula fica em BASE-T10 (nem sobe nem desce)',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'baixa', motivo: 'esq', ea: 'nao' }, de(19))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 15 }],
+      espera: { protocolo: 'DE-2 (mantido)', kit: ['BASE-T10', 'NOITE-1', 'SP-DE'] } }),
   P('R-05', 'Reavaliação EP: PEDT caiu 4 — manter',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, ep(10, { freq: 'baixa' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'EP', protocolo: 'EP-1', kitCodes: ['SP-DUO', 'NOITE-1'], pedt: 14 }] }),
