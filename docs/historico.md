@@ -83,6 +83,30 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   `mostraDica`.
 - **"Agende também: ondas de choque" com ondas só opcionais (v2.5-G)**, **"há 0
   dias"** no histórico (agora "hoje") e **ADAM em duas linhas** no prontuário.
+- **Bloco de classificação escondido na tela (v2.5-H → corrigido na v2.5-I)** — a
+  v2.5-H tirou da tela o "Classificação IIEF-5" por repetir a manchete; o Dr. Marco o
+  usa para julgar a evolução. Voltou como cartões (hoje × anterior, variação, faixa,
+  régua e evolução). A v2.5-H também escondia o bloco do resultado nos fluxos sem
+  IIEF/PEDT (TEFI, preenchimento, hipogonadismo), onde ele trazia informação única.
+- **Nomes de faixa diferentes no painel e no bloco (v2.5-J)** — o painel e a ficha
+  usavam uma tabela própria ("disfunção grave"; PEDT "limítrofe"/"precocidade provável",
+  com corte diferente do que classifica). Agora todos usam `BANDS_DE`/`BANDS_EP`.
+- **Papel diferente da tela (v2.5-J)** — o bloco de classificação era só de tela; o
+  relatório impresso trazia só "IIEF-5 10/25". Agora o papel leva o mesmo bloco (anterior
+  com data, variação, faixa, régua). O CSS do bloco estava dentro do `@media screen`.
+- **ADAM do retorno parecia de hoje (v2.5-J)** — sem sintomas na última consulta o ADAM
+  não é reaplicado, mas o cartão mostrava "negativo" como resposta do dia. Agora diz
+  "não reaplicado hoje · valor da consulta anterior (data)".
+- **Primeira intracavernosa sem dose no "Protocolo prescrito" (v2.5-H)** — a linha
+  saía "R5 · … — intracavernosa" sem dose (ex.: LIM-001). Agora traz a dose indicada
+  ou a dose inicial padrão da clínica (R5 0,1 mL).
+- **"Adesão: regular" × "Todos os dias" (v2.5-H)** — histórico, painel e relatório
+  usavam palavras diferentes das da pergunta; agora `rotAdesao()` é a fonte única,
+  com o texto da intracavernosa quando a pergunta foi da intracavernosa.
+- **Histórico com a sequência de protocolos repetida (v2.5-H)** — "DE-2 → DE-2
+  (mantido)" e composições longas; agora só códigos e sem repetição.
+- **Hover sem alternativa no iPad (v2.5-H)** — composição da intracavernosa no
+  cabeçalho e o estado do banco dependiam de `title`; agora abrem com um toque.
 - **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
   mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
   substâncias; a dose fica no relatório. Apêndice do envio retirado.
