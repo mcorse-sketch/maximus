@@ -387,6 +387,17 @@ nada não exportado é apagado. `scripts/instalar_launchd.sh` (auto-início e
 auto-reinício no Mac) e `scripts/conferir_restauracao.py` (backup restaura?).
 `testar.sh` roda `npm ci` em `tests/` se faltar o jsdom.
 
+**Toque duplo na recepção (v2.5-N).** Tocar numa opção avança sozinho 160 ms
+depois; cada tela avança uma vez só (`agendaAvanco`): o segundo toque só troca a
+resposta e o avanço não acontece se a tela já mudou (Continuar ou Voltar). No
+"novo ou retorno", enquanto confere o banco, um segundo toque é ignorado. Antes
+um toque duplo pulava a pergunta seguinte, inclusive o contato. Teste:
+`tests/teste_toque.js` (etapa 10 do `testar.sh`). Triagem e financeiro não têm avanço sozinho.
+O `teste_kiosk.js` tocava de novo 40 ms depois de cada toque e só passava da
+tela de várias escolhas quando o avanço em dobro a pulava (daí a falha
+intermitente "não chegou ao fim em 120 passos"); agora espera a tela trocar,
+marca e continua na tela de várias escolhas, e roda junto com as outras etapas.
+
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
 

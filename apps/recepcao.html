@@ -1017,6 +1017,20 @@
     <p>Autorizo a realização e divulgação de fotos pré, trans e pós-operatórias, para fins científicos e profissionais, desde que meu nome não seja revelado.</p>`;
 
   const S={}; let telas=[], i=0, salvo=false;
+  // v2.5-N: toque numa opção avança sozinho 160 ms depois. Cada toque agendava o próprio
+  // avanço, então um toque duplo rápido pulava a pergunta seguinte. Agora cada tela avança
+  // uma vez só: o segundo toque só troca a resposta, e o avanço não acontece se a tela já
+  // mudou (Continuar ou Voltar tocados nesse intervalo).
+  let avancoDaTela = -1;
+  function agendaAvanco(){
+    if (avancoDaTela === i) return;
+    const daTela = i; avancoDaTela = i;
+    setTimeout(()=>{
+      if (avancoDaTela === daTela) avancoDaTela = -1;
+      if (i !== daTela) return;
+      if (i < telas.length-1){ i++; pinta(); } else enviar();
+    }, 160);
+  }
 
   // ---- rascunho da sessão: sobrevive a refresh ou tablet reiniciado
   const RASC='maximus_rascunho';
@@ -1365,8 +1379,7 @@
       for(let n=0;n<=10;n++){
         const b=document.createElement('button'); b.type='button'; b.textContent=n;
         b.className='knum'+(n<=6?' nr':(n<=8?' ny':' ng'))+(S[sc.id]===n?' sel':'');
-        b.onclick=()=>{ S[sc.id]=n; monta();
-          setTimeout(()=>{ if(i<telas.length-1){ i++; pinta(); } else enviar(); },160); };
+        b.onclick=()=>{ S[sc.id]=n; monta(); agendaAvanco(); };
         g.appendChild(b);
       }
       w.appendChild(g);
@@ -1460,11 +1473,15 @@
         b.className='kopt'+(sel?' sel':'')+(o.v==='nenhuma'?' knenhuma':''); b.textContent=o.label;
         b.onclick=()=>{
           if (sc.id==='tipoVisita'){
+            // v2.5-N: mesmo cuidado do agendaAvanco — enquanto confere o banco, um segundo
+            // toque não dispara outra busca (antes cada toque somava um avanço e pulava o contato)
+            if (avancoDaTela === i) return;
+            const daTela = i; avancoDaTela = i;
             S[sc.id]=o.v; pinta();
             (async()=>{
               const b=el('avancar'); b.style.display='block'; b.disabled=true; b.textContent='Verificando…';
-              await buscarPaciente();
-              monta(); i=Math.min(i+1, telas.length-1); pinta();
+              try { await buscarPaciente(); } finally { if (avancoDaTela === daTela) avancoDaTela = -1; }
+              monta(); if (i === daTela) i=Math.min(i+1, telas.length-1); pinta();
             })();
             return;
           }
@@ -1474,8 +1491,7 @@
             else { a=a.filter(x=>x!=='nenhuma'); a=a.includes(o.v)?a.filter(x=>x!==o.v):a.concat([o.v]); }
             S[sc.id]=a; pinta();
           } else {
-            S[sc.id]=o.v; monta();
-            setTimeout(()=>{ if(i<telas.length-1){ i++; pinta(); } else enviar(); },160);
+            S[sc.id]=o.v; monta(); agendaAvanco();
           }
         };
         w.appendChild(b);
