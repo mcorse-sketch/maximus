@@ -1,4 +1,14 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+  /* v2.5-M: aviso do servidor (banco ilegível / backup) */
+  #mxAvisoSrv{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483000;max-width:min(760px,calc(100vw - 24px));
+    padding:10px 16px;border-radius:12px;font:500 13.5px/1.45 -apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;
+    box-shadow:0 8px 28px rgba(0,0,0,.18);text-align:left}
+  #mxAvisoSrv div+div{margin-top:6px}
+  #mxAvisoSrv b{margin-right:6px;letter-spacing:.02em}
+  #mxAvisoSrv.grave{background:#B00D26;color:#fff}
+  #mxAvisoSrv.aviso{background:#FFF4DE;color:#6B3E00;border:1px solid #F0D6A8}
+  #mxAvisoSrv button{margin-left:8px;font:600 12px/1 inherit;padding:5px 10px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+</style><style>
 .linha{display:block}
 .col-dir{min-width:0}
 #painelCard{padding:16px 16px 18px}
@@ -215,6 +225,13 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-chips{display:flex;flex-wrap:wrap;gap:6px}
   .mx-chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--mx-surf2);border:1px solid var(--mx-line);color:var(--mx-text2);white-space:nowrap}
   .mx-chip.forte{background:transparent;border-color:var(--mx-line2);color:var(--mx-text)}
+  /* v2.5-M: tipo de mudança do ciclo */
+  .mx-chip.mud-mantido{background:var(--mx-okbg);border-color:transparent;color:var(--mx-ok);font-weight:600}
+  .mx-chip.mud-sobe{background:var(--mx-warnbg);border-color:var(--mx-warnln);color:var(--mx-warn);font-weight:600}
+  .mx-chip.mud-ajuste{background:var(--mx-permbg);border-color:transparent;color:var(--mx-perm);font-weight:600}
+  .mx-chip.mud-sai{background:var(--mx-stopbg);border-color:var(--mx-stopln);color:var(--mx-stop);font-weight:600}
+  .mx-chip.mud-trava{background:transparent;border:1px dashed var(--mx-warn);color:var(--mx-warn);font-weight:600}
+  .mx-cdhint{font-size:13px;color:var(--mx-text3);margin-top:4px;max-width:560px}
   .mx-nav small{font-family:var(--mx-mono);font-size:10.5px}
   .mx-nav .mx-navcd{margin-top:4px;border-top:1px solid var(--mx-line);border-radius:0 0 10px 10px;padding-top:10px}
   .mx-nav .mx-navcd .kbd{font-size:10px}
@@ -288,17 +305,9 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   .mx-cdstatus span b{font-weight:600;color:var(--mx-text)}
   .mx-cdstatus span.sim{border-color:var(--mx-ok);background:var(--mx-okbg);color:var(--mx-ok)}
   .mx-cdstatus span.opc{border-color:var(--mx-warnln);background:var(--mx-warnbg);color:var(--mx-warn)}
-  .mx-scores{display:flex;gap:18px;flex:none;align-items:flex-start}
-  .mx-scores .mx-esc{display:grid;grid-template-columns:auto auto;align-items:center;gap:4px 6px;text-align:right}
-  .mx-scores .mx-qn{font-size:12px;justify-self:end}
-  .mx-scores .mx-qv{font:400 22px/1.25 var(--mx-disp);padding:1px 12px;letter-spacing:-.01em}
-  .mx-scores small{grid-column:1 / -1;font-size:12px;color:var(--mx-text3)}
   .mx-alertas{display:inline-flex;margin-top:12px;font-size:12.5px;color:var(--mx-warn);border:1px solid var(--mx-warnln);background:var(--mx-warnbg);
     border-radius:999px;padding:3px 10px;cursor:pointer}
   #resultsCard.mx-cd-on .result-top .gauge-wrap,#resultsCard.mx-cd-on #marcador{display:none!important}
-  /* v2.5-H (item 5): na tela o cabeçalho da conduta já diz classificação, escore e contexto; o bloco
-     "Classificação IIEF-5" só repetia. Continua no relatório impresso. */
-  @media screen{ #resultsCard.mx-cd-on #printArea > .result-top{display:none!important} }
   #resultsCard.mx-cd-on #printArea{display:flex;flex-direction:column}
   #resultsCard.mx-cd-on #printArea > *{order:3}
   #resultsCard.mx-cd-on #printArea > .result-top{order:0}
@@ -311,8 +320,68 @@ details.mx-det > summary::-webkit-details-marker{display:none}
   details.mx-det > summary small{font-weight:400;color:var(--mx-text3);margin-left:auto}
   details.mx-det #racTitulo{display:none!important}
   details.mx-det #custoBox > div{margin-top:10px!important}
-  @media (max-width:720px){ .mx-cdhead{flex-direction:column;align-items:flex-start} .mx-cdproto{font-size:44px} .mx-scores div{text-align:left} }
+  @media (max-width:720px){ .mx-cdhead{flex-direction:column;align-items:flex-start} .mx-cdproto{font-size:44px} }
 }
+/* v2.5-J (item 2): o bloco de classificação vale para tela E papel (antes ficava dentro do @media screen,
+   e a cópia impressa saía sem estilo) */
+/* v2.5-I: bloco "Classificação IIEF-5" — valor de hoje, anterior, variação, faixa e régua (○ antes · ● hoje) */
+.mx-cdhead.com-esc{flex-wrap:wrap}
+.mx-cdhead.com-esc > div:first-child{flex:1 1 0}
+.mx-escores{flex:1 0 100%;margin-top:4px;padding-top:18px;border-top:1px solid var(--mx-line)}
+.mx-escores > .mx-eyebrow{margin-bottom:10px}
+.mx-esc-grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mx-esc-grade.n1,.mx-esc-grade.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mx-esc-grade.n2.com-adam{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr)}
+.mx-esc-grade.n3.com-adam{grid-template-columns:minmax(0,1.5fr) minmax(0,1.5fr) minmax(0,1fr)}
+.mx-esct{border:1px solid var(--mx-line);border-radius:14px;background:var(--mx-surf);padding:12px 14px 10px;min-width:0}
+.mx-esct-cab{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mx-esct-cab .mx-qn{font-size:12px;flex:none}
+.mx-esct-fx{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mx-text2);white-space:nowrap}
+.mx-esct-fx i{width:8px;height:8px;border-radius:50%;flex:none}
+.mx-esct-val{display:flex;align-items:baseline;gap:4px;margin:6px 0 2px}
+.mx-esct-val .mx-qv{font:400 34px/1.05 var(--mx-disp)!important;letter-spacing:-.03em;background:transparent!important;padding:0!important;color:var(--mx-text)!important}
+.mx-esct-val .de{font-size:14px;color:var(--mx-text3)}
+.mx-esct-d{margin-left:8px;align-self:center;font:600 12.5px var(--mx-font);padding:2px 8px;border-radius:999px;background:var(--mx-surf2);color:var(--mx-text2)}
+.mx-esct-d.melhor{background:color-mix(in srgb,var(--mx-ok) 14%,transparent);color:var(--mx-ok)}
+.mx-esct-d.pior{background:color-mix(in srgb,var(--mx-stop) 12%,transparent);color:var(--mx-stop)}
+.mx-esct-ant{font-size:12.5px;line-height:1.45;color:var(--mx-text2);min-height:18px}
+.mx-esct-ant b{font-weight:600;color:var(--mx-text)}
+.mx-esct-regua{position:relative;height:6px;margin:12px 4px 0;border-radius:999px;background:var(--mx-surf2)}
+.mx-esct-regua i{position:absolute;top:0;bottom:0;opacity:.28}
+.mx-esct-regua i:first-child{border-radius:999px 0 0 999px} .mx-esct-regua i:last-of-type{border-radius:0 999px 999px 0}
+.mx-esct-regua i.on{opacity:1}
+.mx-esct-regua b{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;box-sizing:border-box}
+.mx-esct-regua b.hoje{background:var(--mx-text);box-shadow:0 0 0 2px var(--mx-surf)}
+.mx-esct-regua b.ant{background:var(--mx-surf);border:2px solid var(--mx-text3)}
+.mx-esct-lim{display:flex;justify-content:space-between;margin:4px 2px 0;font-size:10.5px;color:var(--mx-text3)}
+.mx-esct-evo{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid var(--mx-line);font-size:12px;color:var(--mx-text2)}
+.mx-esct-evo svg{flex:none;overflow:visible}
+.mx-esct-evo polyline{fill:none;stroke:var(--mx-text3);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.mx-esct-evo circle{fill:var(--mx-surf);stroke:var(--mx-text3);stroke-width:1.5}
+.mx-esct-evo circle.hoje{fill:var(--mx-text);stroke:var(--mx-text)}
+.mx-esct-adv{font:400 26px/1.15 var(--mx-disp);letter-spacing:-.02em;color:var(--mx-text)}
+.mx-esct-adv.pos{color:var(--mx-stop)}
+/* na tela, o bloco antigo (pílula + IIEF-5 10/25) dá lugar ao novo */
+@media screen{ #resultsCard.mx-esc-on #printArea > .result-top{display:none!important} }
+@media screen{
+  #resultsCard.mx-rt-dup #printArea > .result-top #scoreEyebrow,#resultsCard.mx-rt-dup #printArea > .result-top #classPill{display:none!important}
+  #resultsCard.mx-reco-dup #recoLine{display:none!important}
+  #resultsCard.mx-rt-vazio #printArea > .result-top{display:none!important}
+  .mx-cdproto.frase{text-transform:lowercase}
+  .mx-cdproto.frase::first-letter{text-transform:uppercase}
+  .mx-cdproto.frase .ac{text-transform:none}
+}
+.mx-esct-her{font-size:11.5px;color:var(--mx-warn);background:var(--mx-warnbg);border:1px solid var(--mx-warnln);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.mx-esct-adam.herdado .mx-esct-adv{color:var(--mx-text2)}
+/* v2.5-J (item 2): no papel, a pílula da classificação fica e o bloco de escores entra no lugar de "IIEF-5 10/25".
+   A cópia (#mxEscoresImp) mora no #printArea e só aparece fora da tela do app (aba de impressão ou window.print). */
+#resultsCard #mxEscoresImp{display:none}
+@media print{ #resultsCard #mxEscoresImp{display:block!important} }
+.result-top.com-esc #classDesc{display:none!important}
+.mx-escores-imp{margin:4px 0 8px;padding-top:0;border-top:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.mx-escores-imp > .mx-eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:#5F6B71;margin-bottom:8px}
+.mx-escores-imp .mx-esct{background:#fff;border-color:#c9ced6;border-radius:10px;break-inside:avoid}
+.mx-escores-imp .mx-esc-grade{gap:10px}
 </style></head><body><script>
 
 /* v2.3: tema claro/escuro. Padrão = o do aparelho; a escolha manual (tecla T
@@ -704,7 +773,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.5.0">Vers&atilde;o 2.5.0 &middot; 03/10/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.5.14" title="v2.5-N (14ª revisão da 2.5)">Vers&atilde;o 2.5.14 &middot; v2.5-N &middot; 06/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <div class="dbtag" id="dbTag">Verificando banco de dados…</div>
@@ -954,8 +1023,8 @@ document.documentElement.setAttribute('data-tema',t)})();
         <div class="ficha-top">
           <span>Pedido de exames · próxima consulta</span>
           <span class="ficha-acoes">
-            <button type="button" class="btn btn-ghost" id="exaImprimir">Imprimir</button>
-            <button type="button" class="btn btn-primary" id="exaFechar">Fechar</button>
+            <button type="button" class="btn btn-ghost" id="exaFechar">Fechar</button>
+            <button type="button" class="btn btn-primary" id="exaImprimir">Imprimir</button>
           </span>
         </div>
         <div class="ficha-corpo" id="exaCorpo"></div>
@@ -1330,6 +1399,9 @@ document.documentElement.setAttribute('data-tema',t)})();
   .mx-dbpop-d{margin:6px 0 12px;font-size:12.5px;line-height:1.45;color:var(--mx-text2)}
   .mx-dbpop-b{width:100%;height:38px!important;font-size:13.5px!important}
   .dbtag,.salvo-tag{color:var(--mx-text3)!important;background:transparent!important;padding-left:clamp(18px,4vw,32px)!important;padding-right:clamp(18px,4vw,32px)!important}
+  .salvo-tag.falhou{color:#b3261e!important;font-weight:500}
+  .salvo-tag button{font:inherit;font-size:12px;margin:4px 6px 0 0;padding:3px 10px;border-radius:999px;border:1px solid #b3261e;background:#fff;color:#b3261e;cursor:pointer}
+  .salvo-tag button:hover{background:#fdecea}
   .vigia{background:var(--mx-stopbg)!important;color:var(--mx-stop)!important;border:1px solid var(--mx-stopln)!important}
   .retomar{background:var(--mx-warnbg)!important;color:var(--mx-text)!important;border:1px solid var(--mx-warnln)!important}
   .retomar button{color:var(--mx-text)!important}
@@ -1376,6 +1448,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   .kit-card .kc-role{color:var(--mx-text3)!important}
   .kit-card .kc-code{font-family:var(--mx-disp)!important;color:var(--mx-text)!important;letter-spacing:-.02em}
   .kit-card .kc-formula{color:var(--mx-text2)!important}
+.kit-card .kc-code .sig-sep{display:none}
   .kit-card .kc-code .sig-ativo{display:block;font:500 13px var(--mx-font);color:var(--mx-text2);letter-spacing:0;margin-top:3px}
   .alt-note{background:var(--mx-warnbg)!important;border:1px solid var(--mx-warnln)!important;color:var(--mx-text)!important;border-radius:16px!important}
   .alt-note b{color:var(--mx-warn)!important}
@@ -1502,61 +1575,17 @@ document.documentElement.setAttribute('data-tema',t)})();
   .hist-visita h5{color:var(--mx-text)!important}
   .hist-btn{background:var(--mx-surf)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important}
 
-  /* Mac estreito / iPad: trilho vira faixa no topo, prévia desce para baixo da pergunta */
+  /* janela estreita: trilho vira faixa no topo, prévia desce para baixo da pergunta.
+     v2.5-I: o consultório (triagem) é só desktop — não investir em iPad/celular aqui; o iPad usa a recepção */
   @media (max-width:1180px){
     .mx-shell.com-rail.com-previa{grid-template-columns:var(--mx-rail) minmax(0,1fr)}
     .mx-shell.com-previa .mx-prev{grid-column:2;position:static;height:auto;border-left:0;border-top:1px solid var(--mx-line);background:transparent;padding:20px clamp(20px,4vw,56px)}
   }
-  /* v2.5-H: iPad em retrato (768–834 px) — o paciente vira um cabeçalho compacto acima da pergunta:
-     código + ações numa linha, contexto + "Resumo do paciente" na segunda, módulos em pílulas que quebram
-     linha (nada escondido, nada rolando de lado). O resumo completo abre num toque, em 3 colunas. */
   @media (max-width:900px){
-    .mx-shell.com-rail,.mx-shell.com-rail.com-previa{grid-template-columns:minmax(0,1fr);align-content:start}
-    .mx-shell.com-rail .mx-rail{position:static;height:auto;overflow:visible;border-right:0;border-bottom:1px solid var(--mx-line);
-      display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;row-gap:10px;align-items:center;align-content:start;padding:16px 28px 14px}
+    .mx-shell.com-rail,.mx-shell.com-rail.com-previa{grid-template-columns:minmax(0,1fr)}
+    .mx-rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--mx-line);padding:14px 20px}
+    .mx-nav{grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto}
     .mx-shell.com-previa .mx-prev{grid-column:1}
-    .mx-rail > *{grid-column:1 / -1;min-width:0}
-    #mxPac{grid-column:1;grid-row:1;display:flex;align-items:baseline;gap:12px;margin:0}
-    #mxPac .mx-eyebrow{display:none}
-    #mxPac .mx-cod{font-size:24px}
-    .mx-busca-btn > span[aria-hidden]{font-size:17px;line-height:1}
-    .mx-rail > .mx-acts{grid-column:2;grid-row:1;gap:6px}
-    .mx-acts .btn,.mx-acts .hist-btn{flex:none;height:36px!important;padding:0 14px!important;flex-direction:row!important;gap:6px!important;
-      font-size:13px!important;border-radius:999px!important}
-    .mx-acts .kbd{display:none!important}
-    #mxChips{grid-column:1;grid-row:2;margin:0!important}
-    #painelCard:not([style*="none"]){display:contents!important}
-    #painelCard .painel-tit{display:none}
-    #painelCard .copiloto:not([style*="none"]){display:contents!important}
-    #painelCard .copiloto .cab{grid-column:1;grid-row:1;margin:0;align-items:baseline;gap:12px}
-    #painelCard .copiloto .cod{font:500 24px var(--mx-disp);letter-spacing:-.03em;color:var(--mx-text)}
-    #painelCard .painel-mais{display:inline-flex!important;grid-column:2;grid-row:2;justify-self:end;align-items:center;gap:7px;width:auto;margin:0;
-      height:30px;padding:0 12px;border:1px solid var(--mx-line2);border-radius:999px;background:var(--mx-surf);color:var(--mx-text);
-      font:500 12.5px var(--mx-font);cursor:pointer;-webkit-tap-highlight-color:transparent}
-    #painelCard .painel-mais::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
-      transform:translateY(-2px) rotate(45deg);transition:transform .2s ease}
-    #painelCard.aberto .painel-mais::after{transform:translateY(1px) rotate(225deg)}
-    #painelCard .cop2{display:none;grid-column:1 / -1;grid-row:3}
-    #painelCard.aberto .cop2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 22px;padding:12px 16px;margin:2px 0 4px;
-      border:1px solid var(--mx-line);border-radius:14px;background:var(--mx-surf)}
-    #painelCard.aberto .cop2 .bloco{border-top:0!important;padding:6px 0}
-    .mx-rail > .mx-nav{grid-row:4;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-    .mx-nav > .mx-eyebrow{display:none}
-    .mx-nav > .mx-sub{flex-basis:100%;margin:2px 2px 0!important}
-    .mx-nav button{width:auto;flex:none;white-space:nowrap;padding:7px 13px;border-radius:999px;border:1px solid var(--mx-line);gap:7px;font-size:13.5px}
-    .mx-nav button.on{border-color:var(--mx-text);box-shadow:none}
-    .mx-nav .n{flex:none}
-    .mx-nav .mx-navcd{margin:0;border-top:1px solid var(--mx-line);border-radius:999px;padding-top:7px}
-    .mx-rail > #mxDisp{grid-row:5}
-    #mxDisp:empty{display:none}
-    details.mx-disp{padding:0 2px}
-  }
-  /* v2.5-H (item 8): tela de toque (iPad) — sem teclado, os atalhos e o botão "?" não servem para nada */
-  @media (hover:none) and (pointer:coarse){
-    #mxAjudaBtn{display:none!important}
-    header .kbd,.mx-rail .kbd,.mx-cta .kbd,.nav-row .kbd{display:none!important}
-    .mx-acts .btn,.mx-acts .hist-btn{flex-direction:row!important}
-    .mx-busca-btn{padding:0 12px!important}
   }
   /* v2.5-G/H: telas estreitas (< 600 px) — não é alvo (app de desktop e iPad); só ajustes inofensivos para não quebrar */
   @media (max-width:600px){
@@ -1601,6 +1630,87 @@ document.documentElement.setAttribute('data-tema',t)})();
     .ficha-doc{width:100%!important}
   }
 }
+/* ---- v2.5-K (auditoria visual) ---- */
+@media screen{
+  /* v2.5-K: pedido de exames e envio — caixas de marcação do app, WhatsApp com contraste de botão */
+  #envioBox label input[type=checkbox],.exa-lista input[type=checkbox]{-webkit-appearance:none;appearance:none;position:relative;flex:0 0 auto;
+    width:20px;height:20px;margin:0;border-radius:6px;border:1.5px solid var(--mx-line2);background:var(--mx-surf);cursor:pointer;transition:background .12s,border-color .12s}
+  #envioBox label input[type=checkbox]:checked,.exa-lista input[type=checkbox]:checked{background:var(--mx-ink);border-color:var(--mx-ink)}
+  #envioBox label input[type=checkbox]:checked::after,.exa-lista input[type=checkbox]:checked::after{content:'';position:absolute;left:6px;top:2.5px;width:5px;height:10px;
+    border:solid var(--mx-inkt);border-width:0 2px 2px 0;transform:rotate(45deg)}
+  #envioBox label input[type=checkbox]:focus-visible,.exa-lista input[type=checkbox]:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 30%,transparent)}
+  #envioBox label{gap:10px!important;font-size:14px!important}
+  .exa-lista{display:grid!important;grid-template-columns:1fr 1fr;gap:4px 16px!important}
+  .exa-add{align-items:stretch!important} .exa-add .fld{height:44px;margin:0!important;box-sizing:border-box} .exa-add .btn{height:44px;margin:0!important}
+  .exa-lista label{padding:7px 8px;border-radius:10px;gap:10px!important} .exa-lista label:hover{background:var(--mx-surf2)}
+  #envioBox .canal button.mx-env.wpp{background:#1d7a52!important;color:#fff!important;border-color:#1d7a52!important}
+  html[data-tema="escuro"] #envioBox .canal button.mx-env.wpp{background:#3fbf86!important;color:#04170e!important;border-color:#3fbf86!important}
+  @media (prefers-color-scheme: dark){ html:not([data-tema="claro"]) #envioBox .canal button.mx-env.wpp{background:#3fbf86!important;color:#04170e!important;border-color:#3fbf86!important} }
+  /* versão no cabeçalho na fonte da interface; NPS 0–10 numa linha só; ADAM sem quebra no contador; listas longas em 2 colunas */
+  #versaoApp{font-family:var(--mx-font)!important;letter-spacing:0!important}
+  #optsWrap .scale.esc{grid-template-columns:repeat(11,minmax(0,1fr))!important}
+  #optsWrap .scale.esc button{min-width:0!important;padding-left:0!important;padding-right:0!important}
+  .mx-esct-ant .nw{white-space:nowrap}
+  #optsWrap.mx-grade2{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}
+  #optsWrap.mx-grade2 > :not(.opt){grid-column:1/-1}
+  #optsWrap.mx-grade2 .opt{margin:0!important;height:100%}
+  #optsWrap.mx-grade2 .opt[data-v="nenhum"],#optsWrap.mx-grade2 .opt[data-v="nenhuma"]{grid-column:1/-1}
+  /* diálogo do app (no lugar de prompt/confirm nativos) */
+  .mx-dlg-ov{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:rgba(1,11,15,.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:mxDlgIn .16s ease-out}
+  .mx-dlg{width:min(440px,100%);background:var(--mx-surf);color:var(--mx-text);border:1px solid var(--mx-line);border-radius:20px;
+    box-shadow:0 24px 80px rgba(1,11,15,.28);padding:22px 22px 18px;font-family:var(--mx-font)}
+  .mx-dlg h3{margin:0 0 8px;font:600 17px var(--mx-font);letter-spacing:-.01em;color:var(--mx-text)}
+  .mx-dlg p{margin:0;font-size:14px;line-height:1.5;color:var(--mx-text2);white-space:pre-wrap;max-height:50vh;overflow:auto}
+  .mx-dlg-in{width:100%;margin-top:14px;height:42px;border-radius:12px;border:1px solid var(--mx-line2);background:var(--mx-surf2);
+    color:var(--mx-text);padding:0 12px;font:500 14px var(--mx-mono, ui-monospace, monospace);box-sizing:border-box}
+  .mx-dlg-in:focus{outline:none;border-color:var(--mx-focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 22%,transparent)}
+  .mx-dlg-bts{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+  .mx-dlg-b{height:38px;padding:0 16px;border-radius:999px;font:600 14px var(--mx-font);cursor:pointer;border:1px solid var(--mx-line2);background:transparent;color:var(--mx-text)}
+  .mx-dlg-b.pri{background:var(--mx-ink);color:var(--mx-inkt);border-color:var(--mx-ink)}
+  .mx-dlg-b.pri.perigo{background:var(--mx-stop);border-color:var(--mx-stop);color:#fff}
+  .mx-dlg-b:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 30%,transparent)}
+  @keyframes mxDlgIn{from{opacity:0}to{opacity:1}}
+  /* Voltar/Próxima nunca ficam sob a barra flutuante de progresso: a linha de navegação do cartão
+     gruda logo acima dela quando o cartão é mais alto que a janela */
+  #quizCard{overflow:clip}
+  #quizCard .nav-row{position:sticky;bottom:0;z-index:11;background:var(--mx-surf);padding-top:14px!important;
+    border-radius:0 0 22px 22px;box-shadow:inset 3px 0 0 var(--mx-focus),0 -1px 0 var(--mx-line)}
+  body.mx-cta-on #quizCard .nav-row{bottom:86px}
+  .mx-cta .mx-prog span,#mxRevisar,.mx-faltam-link{white-space:nowrap}
+  .mx-cta{flex-wrap:nowrap}
+  /* cartão vazio do kit: uma linha discreta na largura toda, não um cartão solitário */
+  #kitGrid .kit-card.empty{grid-column:1/-1;min-height:0!important;padding:14px 18px!important;display:flex;align-items:center;
+    background:transparent!important;border:1px dashed var(--mx-line2)!important;box-shadow:none!important;border-radius:14px!important}
+  #kitGrid .kit-card.empty .kc-code{font:500 14px var(--mx-font)!important;color:var(--mx-text2)!important;letter-spacing:0!important}
+  #kitGrid .kit-card.empty::before{content:none!important}
+  /* respostas em pílula: quebram em duas linhas em vez de cortar a composição */
+  #grupoCard .mx-q .pil,#mxSeguintes .mx-q .pil{white-space:normal;max-width:380px;text-align:left;line-height:1.35;border-radius:12px}
+  html[data-tema="escuro"] #grupoCard .mx-q .pil,html[data-tema="escuro"] #mxSeguintes .mx-q .pil{background:var(--mx-surf3);color:var(--mx-text);box-shadow:inset 0 0 0 1px var(--mx-line2)}
+  /* "Falta responder": número alinhado à primeira linha, sem sublinhado em tudo */
+  .mx-faltam ol{list-style:none;padding-left:0;counter-reset:mxf}
+  .mx-faltam li{counter-increment:mxf;display:grid;grid-template-columns:26px minmax(0,1fr);align-items:baseline}
+  .mx-faltam li::before{content:counter(mxf) ".";color:var(--mx-text3);font-variant-numeric:tabular-nums;text-align:right;padding-right:8px}
+  .mx-faltam li button{display:block;width:100%;text-decoration:none}
+  .mx-faltam li button:hover{text-decoration:underline;text-decoration-color:var(--mx-warn)}
+}
+@media screen and (max-width:1360px){ .mx-cta .mx-bar{width:72px} .mx-cta .kbd{display:none!important} }
+@media print{
+  /* alertas no papel: título e detalhe, sem o resumo da linha (repetia a 1ª frase) nem o contador colado */
+  #altNote .al-cab{display:block;font:700 8.5pt Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin:0 0 4px}
+  #altNote .al-cab small,#altNote .al-todos,#altNote .al-res,#altNote .al-chev,#altNote .al-ic,#altNote .al-orig{display:none!important}
+  #altNote details.al-item > summary{display:block;list-style:none}
+  #altNote details.al-item > summary::-webkit-details-marker{display:none}
+  #altNote details.al-item > summary::marker{content:''}
+  #altNote b.al-tit{display:block;font-weight:700;margin-top:5px}
+  #altNote .al-det{margin:1px 0 2px}
+  #altNote .al-det ul{margin:2px 0 0;padding-left:16px}
+  /* cartões do kit: composição em letra de texto, abaixo do código */
+  .kit-card .kc-code .sig-sep{display:none}
+  .kit-card .kc-code .sig-ativo{display:block;font:500 9.5px Montserrat,sans-serif;line-height:1.35;margin-top:2px}
+  /* assinatura não fica sozinha numa página */
+  #report .assinatura{break-inside:avoid;page-break-inside:avoid;break-before:avoid;page-break-before:avoid}
+}
 @media (prefers-reduced-motion:reduce){ .ficha-doc{animation:none} }
 @media print{ .mx-rail,.mx-prev,#grupoCard{display:none!important} .mx-shell{display:block!important} .sig-ativo{color:inherit} }
 </style>
@@ -1643,6 +1753,30 @@ document.documentElement.setAttribute('data-tema',t)})();
   const ICON = {'Cápsula matinal':'💊','Módulo matinal':'➕','Composto noturno':'🌙','Spray sublingual':'💦','Creme retardante':'🧴','Suplemento':'🌿','Sob demanda':'⚡','Preservativo retardante':'🛡️','Intracavernosa':'💉','Ondas de choque':'📡','Teste em consultório':'🔬','Exames':'🧪'};
   const PROTOS = ['DE-1','DE-2','DE-3','DE-1L','DE-2L','DE-3L','EP-1','EP-1D','EP-2','EP-2D','EP-3','EP-4','DUO-1','DUO-2','DUO-3','DUO-4','DUO-1D','FERT','INTRACAVERNOSA','Nenhum / só comportamental'];
 
+  // v2.5-M: teto de 30 mg/dia de tadalafila também no que o paciente lê. A posologia fixa dos sprays
+  // ("1 a 2 jatos") só vale sem a cápsula de 20 mg. Com BASE-T20 (ou -I): máximo 1 jato. Com dois sprays
+  // de tadalafila no mesmo kit, o limite vale somando os dois. Usado no kit da tela, no relatório/receita
+  // ("Protocolo prescrito") e na folha do paciente — nunca F[c] direto para spray.
+  const SPRAYS_TADA = ['SP-DE','SP-DUO','SP-DUO-1J'];
+  function mgTadaCapsula(cods){ const c=(cods||[]).find(x=>/^BASE-T(5|10|20)(?:-I)?$/.test(x)); return c ? Number(/T(5|10|20)/.exec(c)[1]) : 0; }
+  function jatosMaxDia(cods){ return Math.max(1, Math.floor((30 - mgTadaCapsula(cods))/10)); }
+  function itemKit(c, kitCods){
+    const it = F[c]; if (!it || SPRAYS_TADA.indexOf(c)<0) return it;
+    const cods = (kitCods||[]).map(e=>Array.isArray(e)?e[0]:e);
+    const mg = mgTadaCapsula(cods), sprays = SPRAYS_TADA.filter(x=>cods.indexOf(x)>=0), dois = sprays.length>1;
+    const n = jatosMaxDia(cods);
+    if (c==='SP-DUO-1J' && !dois) return it;            // já é de 1 jato
+    if (mg<20 && !dois) return it;                        // 1 a 2 jatos cabem no teto
+    const quando = c==='SP-DE' ? '30 min antes' : '2 h antes';
+    const somando = dois ? ' somando os dois sprays' : '';
+    // via do paciente sem dose de componente (regra da v2.5): o motivo vai sem os mg
+    const porque = mg ? 'a cápsula da manhã já tem tadalafila, o mesmo remédio do spray' : 'cada jato já é uma dose completa';
+    return Object.assign({}, it, {
+      pos: 'MÁXIMO '+n+' JATO'+(n>1?'S':'')+' por dia'+somando+', '+quando+' (teto de 30 mg/dia de tadalafila)',
+      pac: 'Aplique '+(n>1?'1 ou 2 jatos':'1 jato')+' embaixo da língua, '+(c==='SP-DE'?'30 minutos':'cerca de 2 horas')+' antes da relação. Segure 60 a 90 segundos sem engolir. '
+        + '<b>Nunca mais de '+n+' jato'+(n>1?'s':'')+' por dia'+(dois?' somando os dois sprays':'')+'</b>: '+porque+'.'
+    });
+  }
   const NOTA_DEMANDA = '<b>Duas opções sob demanda, equivalentes em indicação — escolher UMA.</b> O SP-DUO trata ereção e ejaculação no mesmo jato e é titulável em 1 ou 2 jatos; a dapoxetina é oral, com meia-vida curta e perfil de superdose mais benigno. NUNCA usar as duas no mesmo dia.';
 
   const EA = [
@@ -1700,6 +1834,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           };
           let r = await envia();
           if (r.status===401){ eu.guarda(null); await eu.pede(); r = await envia(); }
+          if (r.status===503 && typeof AvisoServidor!=='undefined') AvisoServidor.confere();   // v2.5-M: banco ilegível — aviso na hora
           return r;
         };
       }
@@ -1753,6 +1888,24 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
   };
 
+  // v2.5-M: aviso do servidor no topo — banco ilegível (gravação suspensa) e backup do iCloud/local
+  // que falhou ou atrasou. Vem de /api/health (aberta, sem dado de paciente) e é conferido a cada 2 min.
+  const AvisoServidor = {
+    api:null, soGrave:false, fechados:{}, _t:null,
+    inicia(api, j, soGrave){ this.api=api; this.soGrave=!!soGrave; this.pinta(j); clearInterval(this._t); this._t=setInterval(()=>this.confere(), 120000); },
+    async confere(){ if (!this.api) return; try{ const r=await fetch(this.api+'/api/health',{cache:'no-store'}); if (r.ok) this.pinta(await r.json()); }catch(e){} },
+    pinta(j){
+      const esc = t=>String(t==null?'':t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      let el = document.getElementById('mxAvisoSrv');
+      const lista = ((j && j.alertas) || []).filter(a=>a && a.texto && (a.nivel==='grave' || (!this.soGrave && !this.fechados[a.texto])));
+      if (!lista.length){ if (el) el.remove(); return; }
+      if (!el){ el=document.createElement('div'); el.id='mxAvisoSrv'; el.setAttribute('role','alert'); document.body.appendChild(el); }
+      el.className = lista.some(a=>a.nivel==='grave') ? 'grave' : 'aviso';
+      el.innerHTML = lista.map(a=>'<div><b>'+(a.nivel==='grave'?'Atenção':'Aviso')+'</b> '+esc(a.texto)
+        +(a.nivel!=='grave' ? ' <button type="button" data-t="'+esc(a.texto)+'">Entendi</button>' : '')+'</div>').join('');
+      el.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ this.fechados[b.dataset.t]=1; this.pinta(j); }; });
+    }
+  };
   const Store = {
     modo:'carregando', db:null, api:null,
     async init(){
@@ -1764,7 +1917,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (base){
         try{
           const r = await fetch(base.replace(/\/+$/,'') + '/api/health', {cache:'no-store'});
-          if (r.ok){ this.api = base.replace(/\/+$/,''); this.modo='rede'; await Sessao.instala(this.api, 'medico'); return; }
+          if (r.ok){ this.api = base.replace(/\/+$/,''); this.modo='rede'; AvisoServidor.inicia(this.api, await (async()=>{ try{ return await r.json(); }catch(e){ return null; } })(), false); await Sessao.instala(this.api, 'medico'); return; }
         }catch(e){}
       }
       this.modo='manual';
@@ -1795,8 +1948,15 @@ document.documentElement.setAttribute('data-tema',t)})();
              return {ciclo:arr[0], total:arr.length, ultimaData:arr[0].data}; }catch(e){ return null; }
       }
       if (this.modo==='rede'){
-        try{ const r=await fetch(this.api+'/api/paciente/'+encodeURIComponent(cod),{cache:'no-store'});
-             if(!r.ok) return null; const j=await r.json();
+        // v2.5-M: "não achei" (404) é diferente de "não consegui ler" (banco ilegível, servidor
+        // fora): só o 404 vira paciente sem histórico; o resto lança, e o retorno NÃO vira
+        // primeira avaliação em silêncio
+        let r;
+        try{ r=await fetch(this.api+'/api/paciente/'+encodeURIComponent(cod),{cache:'no-store'}); }
+        catch(e){ throw new Error('SERVIDOR_FORA'); }
+        if (r.status===503) throw new Error('BANCO_ILEGIVEL');
+        if (!r.ok && r.status!==404) throw new Error('HTTP_'+r.status);
+        try{ if(!r.ok) return null; const j=await r.json();
              if (j && j.ciclo && !this.ehClinico(j.ciclo)){
                const h=await fetch(this.api+'/api/historico/'+encodeURIComponent(cod),{cache:'no-store'});
                if (!h.ok) return null;
@@ -1976,10 +2136,12 @@ document.documentElement.setAttribute('data-tema',t)})();
     b.setAttribute('aria-expanded','true');
     p.querySelector('button').onclick=()=>{
       fecha();
-      const v = prompt('Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.', LS.get('maximus_api')||'');
-      if (v===null) return;
-      LS.set('maximus_api', (v||'').trim());
-      Store.init().then(()=>pintaStatus());
+      mxDialogo({titulo:'Servidor da clínica', texto:'Endereço do servidor (ex.: http://192.168.0.10:8080). Deixe vazio para trabalhar sem servidor.',
+        campo:true, valor:LS.get('maximus_api')||'', placeholder:'http://192.168.0.10:8080', ok:'Salvar'}).then(v=>{
+        if (v===null) return;
+        LS.set('maximus_api', (v||'').trim());
+        Store.init().then(()=>pintaStatus());
+      });
     };
     // "click" e "pointerdown": no iPad o toque numa área não clicável não gera click
     setTimeout(()=>{ document.addEventListener('click', fora, true); document.addEventListener('pointerdown', fora, true);
@@ -2116,6 +2278,38 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
 
   function escH(t){ return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  // v2.5-K (auditoria): diálogo do próprio app no lugar de prompt()/confirm()/alert() nativos.
+  // Mesmo comportamento: confirmar → true/false; com campo → texto digitado ou null (cancelar).
+  function mxDialogo(o){
+    return new Promise(res=>{
+      const ant = document.activeElement, id = 'mxDlgT'+Date.now();
+      const ov = document.createElement('div'); ov.className = 'mx-dlg-ov noprint';
+      ov.innerHTML = '<div class="mx-dlg" role="'+(o.perigo?'alertdialog':'dialog')+'" aria-modal="true" aria-labelledby="'+id+'">'
+        + (o.titulo ? '<h3 id="'+id+'">'+escH(o.titulo)+'</h3>' : '')
+        + '<p'+(o.titulo?'':' id="'+id+'"')+'>'+escH(o.texto||'')+'</p>'
+        + (o.campo ? '<input type="text" class="mx-dlg-in" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="'+escH(o.placeholder||'')+'">' : '')
+        + '<div class="mx-dlg-bts">'+(o.cancelar===false ? '' : '<button type="button" class="mx-dlg-b sec" data-v="0">'+escH(o.cancelar||'Cancelar')+'</button>')
+        + '<button type="button" class="mx-dlg-b pri'+(o.perigo?' perigo':'')+'" data-v="1">'+escH(o.ok||'OK')+'</button></div></div>';
+      document.body.appendChild(ov);
+      const inp = ov.querySelector('.mx-dlg-in'); if (inp) inp.value = o.valor||'';
+      const nao = o.campo ? null : false;
+      const fim = v=>{ window.removeEventListener('keydown', tec, true); ov.remove(); try{ if (ant && ant.focus) ant.focus(); }catch(e){} res(v); };
+      const sim = ()=>fim(o.campo ? inp.value : true);
+      const tec = e=>{
+        e.stopPropagation();
+        if (e.key==='Escape'){ e.preventDefault(); fim(nao); }
+        else if (e.key==='Enter' && !(e.target && e.target.tagName==='BUTTON')){ e.preventDefault(); sim(); }
+        else if (e.key==='Tab'){ const f=[...ov.querySelectorAll('input,button')]; const i=f.indexOf(document.activeElement);
+          e.preventDefault(); f[(i + (e.shiftKey ? f.length-1 : 1)) % f.length].focus(); }
+      };
+      ov.querySelector('[data-v="1"]').onclick = sim;
+      const c = ov.querySelector('[data-v="0"]'); if (c) c.onclick = ()=>fim(nao);
+      ov.addEventListener('mousedown', e=>{ if (e.target===ov) fim(nao); });
+      window.addEventListener('keydown', tec, true);
+      setTimeout(()=>{ const f = inp || ov.querySelector(o.perigo ? '[data-v="0"]' : '[data-v="1"]') || ov.querySelector('button'); if (f) f.focus(); if (inp) inp.select(); }, 0);
+    });
+  }
+  const mxConfirma = (texto, o)=>mxDialogo(Object.assign({texto}, o||{}));
   // escores: nome do questionário numa pílula, valor em outra (o texto é o mesmo — o prontuário copiado não muda)
   function qn(nome){ return '<span class="mx-qn">'+nome+'</span>'; }
   function qv(valor){ return '<span class="mx-qv">'+valor+'</span>'; }
@@ -2192,6 +2386,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (sc.textHtml) qText.innerHTML = sc.textHtml; else qText.textContent = explicaSiglas(sc.text);
     aplicaTooltips(qText);
     optsWrap.innerHTML='';
+    optsWrap.classList.toggle('mx-grade2', !!(sc.multi && sc.options && sc.options.length>8));   // v2.5-K: listas longas em 2 colunas
 
     const fx0 = ((sc.kind==='num'||sc.kind==='text') ? faixaDe(sc.id, sc) : null);
     if (fx0){
@@ -2367,9 +2562,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (painel) painel.style.display = temPainel ? 'block' : 'none';
     if (painel && temPainel && !painel.querySelector('.painel-mais')){
       const b=document.createElement('button'); b.type='button'; b.className='painel-mais';
-      b.textContent='Resumo do paciente'; b.setAttribute('aria-expanded','false');
+      b.textContent='Ver resumo completo';
       b.onclick=()=>{ const ab=painel.classList.toggle('aberto');
-        b.textContent = ab ? 'Recolher resumo' : 'Resumo do paciente'; b.setAttribute('aria-expanded', ab?'true':'false'); };
+        b.textContent = ab ? 'Recolher resumo' : 'Ver resumo completo'; };
       painel.appendChild(b);
     }
     const linha = document.getElementById('linhaQuiz');
@@ -2917,24 +3112,61 @@ document.documentElement.setAttribute('data-tema',t)})();
   const FILA_ENVIO = 'mx-fila-envio-v2';
   function filaLe(){ try{ return JSON.parse(localStorage.getItem(FILA_ENVIO)||'[]'); }catch(e){ return []; } }
   function filaGrava(l){ if (PREVIA) return; try{ localStorage.setItem(FILA_ENVIO, JSON.stringify(l)); }catch(e){} }
+  // v2.5-M: validade da fila deste navegador. O registro que não chegou ao banco nunca é apagado em
+  // silêncio (seria perder o atendimento): continua sendo reenviado, mas depois de 7 dias o aviso exige
+  // ação — baixar uma cópia e descartar daqui. Cópia baixada e com mais de 30 dias sai sozinha
+  // (dado clínico não fica para sempre no navegador).
+  const FILA_VALIDADE = 7*86400000, FILA_PURGA = 30*86400000;
+  const filaIdade = x => Date.now() - (x._enfileiradoEm || Date.parse(x.data||'') || Date.now());
   function filaEnfileira(reg){
     const l = filaLe();
-    if (!l.some(x=>x.opId===reg.opId)){ l.push(reg); filaGrava(l); }
+    if (!l.some(x=>x.opId===reg.opId)){ l.push(Object.assign({}, reg, {_enfileiradoEm: Date.now()})); filaGrava(l); }
+    atualizaPendentes();
+  }
+  function filaPurga(){
+    const l = filaLe(), fica = l.filter(x=>!(x._exportadoEm && filaIdade(x) > FILA_PURGA));
+    if (fica.length !== l.length) filaGrava(fica);
+  }
+  function filaBaixa(){
+    const l = filaLe(); if (!l.length) return;
+    const blob = new Blob([JSON.stringify(l.map(x=>{ const c=Object.assign({}, x); delete c._enfileiradoEm; delete c._exportadoEm; return c; }), null, 1)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'maximus-atendimentos-nao-gravados-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    filaGrava(l.map(x=>Object.assign({}, x, {_exportadoEm: x._exportadoEm || Date.now()})));
+    atualizaPendentes();
+  }
+  async function filaDescartaVencidos(){
+    const venc = filaLe().filter(x=>filaIdade(x) > FILA_VALIDADE);
+    if (!venc.length) return;
+    if (venc.some(x=>!x._exportadoEm)){ await mxDialogo({titulo:'Baixe a cópia primeiro', texto:'Estes atendimentos não estão no banco. Baixe a cópia antes de descartar.', ok:'Entendi', cancelar:false}); return; }
+    if (!(await mxConfirma(venc.length+' atendimento'+(venc.length>1?'s':'')+' com mais de 7 dias sairá'+(venc.length>1?'ão':'')+' deste computador. A cópia baixada é a única que fica — leve-a ao banco.', {titulo:'Descartar deste computador?', ok:'Descartar', perigo:true}))) return;
+    filaGrava(filaLe().filter(x=>filaIdade(x) <= FILA_VALIDADE));
     atualizaPendentes();
   }
   function atualizaPendentes(){
     if (PREVIA) return;
-    const n = filaLe().length, t = document.getElementById('salvoTag');
+    const l = filaLe(), n = l.length, t = document.getElementById('salvoTag');
     if (!t) return;
-    if (n){ t.style.display='block'; t.classList.add('falhou');
-      t.textContent = n+' atendimento'+(n>1?'s':'')+' aguardando gravação. Mantenha esta tela aberta — tentamos de novo sozinhos.'; }
+    if (!n) return;
+    const venc = l.filter(x=>filaIdade(x) > FILA_VALIDADE).length;
+    t.style.display='block'; t.classList.add('falhou');
+    if (!venc){ t.textContent = n+' atendimento'+(n>1?'s':'')+' aguardando gravação. Mantenha esta tela aberta — tentamos de novo sozinhos.'; return; }
+    t.innerHTML = '<b>'+venc+' atendimento'+(venc>1?'s':'')+' há mais de 7 dias sem chegar ao banco</b>'+(n>venc?' (e '+(n-venc)+' recente'+(n-venc>1?'s':'')+')':'')
+      + ' — continuamos tentando, mas não deixe dado clínico parado neste navegador. '
+      + '<button type="button" id="filaBaixar">Baixar cópia</button> <button type="button" id="filaDescartar">Descartar daqui</button>';
+    document.getElementById('filaBaixar').onclick = filaBaixa;
+    document.getElementById('filaDescartar').onclick = filaDescartaVencidos;
   }
   async function processaFila(){
     if (PREVIA) return;
+    filaPurga();
     const l = filaLe(); if (!l.length) return;
     const restantes = [];
     for (const reg of l){
-      try{ const r = await Store.salvar(reg); if (r===false) restantes.push(reg); }
+      // os campos de controle da fila não vão para o banco
+      const limpo = Object.assign({}, reg); delete limpo._enfileiradoEm; delete limpo._exportadoEm;
+      try{ const r = await Store.salvar(limpo); if (r===false) restantes.push(reg); }
       catch(e){ restantes.push(reg); }
     }
     filaGrava(restantes);
@@ -2942,6 +3174,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   setInterval(processaFila, 20000);
   window.addEventListener('online', processaFila);
+  // só para os testes automatizados (tests/teste_sessao.js abre com ?mxteste=1)
+  if (/[?&]mxteste=1\b/.test(location.search)) window.__mxTeste = { Store, processaFila, AvisoServidor };
 
   function ocultaQuiz(){
     const l=document.getElementById('linhaQuiz'); if(l) l.style.display='none';
@@ -3366,7 +3600,18 @@ document.documentElement.setAttribute('data-tema',t)})();
       .filter(Boolean).map(x=>/^[A-ZÀ-Ý][a-zà-ÿ]+(?=\s|$|\.)/.test(x) ? x.charAt(0).toLowerCase()+x.slice(1) : x).join(', ');
   }
   // kit da consulta em tela (v2.5): dá a dose real aos protocolos de dose variável
-  let KIT_CTX = null;
+  let KIT_CTX = null, PROT_CTX = null, PREV_CTX = null;
+  // v2.5-M: forma curta (a do painel) quando ela já traz todas as substâncias-chave da sigla —
+  // usada nos alertas, nas observações e na impressão, onde a composição longa se repetia
+  function ativoCurto(cod){
+    const curto = PAINEL_TXT[cod];
+    if (curto && /^R\d/.test(cod)===false){
+      const a = semAcento(ativoTxt(cod)).split(/, sem | — /)[0];
+      const k = SUBST.filter(x=>a.indexOf(x)>=0);
+      if (k.length && k.every(x=>semAcento(curto).indexOf(x)>=0)) return curto;
+    }
+    return ativoTxt(cod);
+  }
   function ativoTxt(cod){
     if (!cod) return '';
     const mR = /^R(\d{1,2})$/.exec(cod);
@@ -3375,9 +3620,13 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (PROTO_COMPO[cod]){
       // v2.5 (item 5): DUO-3/DUO-4/DUO-1D/DUO-TOPICO têm dose que depende do nível
       // ("tadalafila 5, 10 ou 20 mg"). Com o kit da consulta conhecido, mostra a dose real.
-      if (KIT_CTX && /conforme o nível| ou \d/.test(PROTO_COMPO[cod])){
-        const pr = unicos(KIT_CTX).filter(c=>F[c] && !SIGLA_FORA[c] && c!==cod).map(c=>ativoTxt(c))
-          .filter(t=>/tadalafila|paroxetina|dapoxetina|clomifeno|clomipramina|lidoca/i.test(t||''));
+      // v2.5-M: o kit de HOJE só explica o protocolo de hoje; o protocolo anterior usa o kit anterior
+      // (antes, "Protocolo anterior: DUO-1D" saía com as fórmulas do kit de hoje). Forma curta do
+      // painel ("tadalafila 10 mg/jato"), sem repetir a mesma substância/dose.
+      const ctx = (KIT_CTX && cod===PROT_CTX) ? KIT_CTX : (PREV_CTX && cod===PREV_CTX.prot ? PREV_CTX.kit : null);
+      if (ctx && /conforme o nível| ou \d/.test(PROTO_COMPO[cod])){
+        const pr = [...new Set(unicos(ctx).filter(c=>F[c] && !SIGLA_FORA[c] && c!==cod).map(c=>ativoCurto(c))
+          .filter(t=>/tadalafila|paroxetina|dapoxetina|clomifeno|clomipramina|lidoca/i.test(t||'')))];
         if (pr.length) return pr.join(' + ');
       }
       return PROTO_COMPO[cod];
@@ -3448,7 +3697,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     });
     return saida;
   }
-  function garanteSiglas(txt, soFormulas){
+  function garanteSiglas(txt, soFormulas, curto){
     if (!txt || typeof txt !== 'string') return txt;
     if (!soFormulas) txt = explicaForaDeFormula(txt);
     const re = reSiglas(), re2 = reSiglas();
@@ -3456,12 +3705,13 @@ document.documentElement.setAttribute('data-tema',t)})();
     while ((m = re.exec(txt)) !== null){
       const cod = m[1], fim = m.index + cod.length;
       out += txt.slice(pos, fim);
-      if (!siglaAuto(cod) && !jaTemAtivo(cod, janelaDepois(txt, fim, re2))) out += ' · ' + ativoTxt(cod);
+      if (!siglaAuto(cod) && !jaTemAtivo(cod, janelaDepois(txt, fim, re2))) out += ' · ' + (curto ? ativoCurto(cod) : ativoTxt(cod));
       pos = fim;
     }
     return out + txt.slice(pos);
   }
   function explicaSiglas(txt){ return garanteSiglas(txt); }
+  function explicaSiglasCurto(txt){ return garanteSiglas(txt, false, true); }   // v2.5-M: alertas e observações
   // para tests/teste_siglas.js: a mesma lista e as mesmas chaves que o app usa
   window.__maximusSiglas = { codigos:()=>siglasComAtivo().slice(), chaves:chavesDaSigla, ativo:ativoTxt };
 
@@ -3526,7 +3776,10 @@ document.documentElement.setAttribute('data-tema',t)})();
         frag.appendChild(ab);
         const resto = txt.slice(fim) + depoisNo;
         if (!semAtivo && !siglaAuto(cod) && !jaTemAtivo(cod, janelaDepois(resto, 0, re2))){
-          const s = document.createElement('span'); s.className = 'sig-ativo'; s.textContent = ' · ' + ativoTxt(cod);
+          // v2.5-K: o separador fica num span próprio — no cartão do kit o ativo vai na linha de baixo, sem "·" solto
+          const s = document.createElement('span'); s.className = 'sig-ativo';
+          const sep = document.createElement('span'); sep.className = 'sig-sep'; sep.textContent = ' · ';
+          s.appendChild(sep); s.appendChild(document.createTextNode(ativoTxt(cod)));
           frag.appendChild(s);
         }
         pos = fim;
@@ -3544,8 +3797,11 @@ document.documentElement.setAttribute('data-tema',t)})();
     const b = B.find(x=>v>=x.min && v<=x.max); if (!b) return '';
     return b.label.replace(/^Sem disfunção erétil$/,'sem disfunção erétil').replace(/^DE /,'disfunção erétil ').replace(/^EP /,'ejaculação precoce ');
   }
-  function faixaIief(v){ v=+v; if(!(v>0)) return ''; if(v<=7) return 'disfun\u00e7\u00e3o grave'; if(v<=11) return 'moderada'; if(v<=16) return 'leve a moderada'; if(v<=21) return 'leve'; return 'sem disfun\u00e7\u00e3o'; }
-  function faixaPedt(v){ v=+v; if(!(v>=0)) return ''; if(v<=8) return 'precocidade improv\u00e1vel'; if(v<=10) return 'lim\u00edtrofe'; return 'precocidade prov\u00e1vel'; }
+  // v2.5-J (item 1): uma só nomenclatura de faixa — a das faixas que classificam (BANDS_DE/BANDS_EP),
+  // na forma curta do bloco de classificação. Painel, ficha, histórico e bloco dizem o mesmo nome.
+  function faixaCurtaDe(B, v){ const b = B.find(x=>v>=x.min && v<=x.max); return !b ? '' : b.label.replace(/^Sem disfunção erétil$/,'sem disfunção').replace(/^(DE|EP) /,''); }
+  function faixaIief(v){ v=+v; if(!(v>0)) return ''; return faixaCurtaDe(BANDS_DE, v); }
+  function faixaPedt(v){ v=+v; if(!(v>=0)) return ''; return faixaCurtaDe(BANDS_EP, v); }
   function variacao(ant, hoje, menorEhMelhor){
     if (ant==null || hoje==null || ant==='' || hoje==='') return '';
     const d = (+hoje) - (+ant);
@@ -3971,11 +4227,21 @@ document.documentElement.setAttribute('data-tema',t)})();
     return b;
   }
   async function carregarHistorico(origem){
-    S.hist = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null; S.queixasRegistro = null; S.primeiraAval = null;
+    S.hist = null; S.serieEsc = null; S.resumoHist = ''; S.tefiBanco = null; S.contatoBanco = null; S.queixasRegistro = null; S.primeiraAval = null;
     S.codigoBuscado = norm(S.codigo);
     if (S.visita !== 'reav'){ prev = null; return; }
+    S.histErro = null;
+    let r = null;
+    try{ r = await carregarPaciente(S.codigo); }
+    catch(e){
+      // v2.5-M: histórico ilegível — segue como retorno, com o ciclo anterior informado à mão
+      prev = null; S.hist = null; S.semHistorico = false; S.nReav = null;
+      S.histErro = e && e.message==='BANCO_ILEGIVEL' ? 'O banco da clínica está ilegível' : 'O servidor não respondeu';
+      S.resumoHist = S.histErro+' — o histórico deste paciente não pôde ser lido. O atendimento continua como retorno: confira no prontuário o protocolo e os escores do ciclo anterior e informe nas próximas telas.';
+      if (typeof AvisoServidor!=='undefined') AvisoServidor.confere();
+      return;
+    }
     S.tefiBanco = await buscarPorTipo(S.codigo,'tefi');
-    const r = await carregarPaciente(S.codigo);
     prev = r ? r.ciclo : null; S.hist = r;
     let todos = [];
     // contato do cadastro: o mais recente de cada campo, em qualquer registro
@@ -3984,6 +4250,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       const ord = todos.slice().sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
       const ult = k => { for (let i=ord.length-1;i>=0;i--){ if (ord[i][k]) return ord[i][k]; } return null; };
       S.contatoBanco = {iniciais:ult('iniciais'), telefone:ult('telefone'), email:ult('email')};
+      // v2.5-I: escores de cada consulta clínica, do mais antigo ao mais recente — só exibição (bloco de classificação)
+      S.serieEsc = ord.filter(c=>c.tipo==='primeira'||c.tipo==='reavaliacao').map(c=>({d:dataDoCiclo(c), iief:c.iief!=null?+c.iief:null, pedt:c.pedt!=null?+c.pedt:null}));
     }catch(e){}
     // v2.4: queixas em tratamento, tiradas do prontuário (primeira avaliação e
     // reavaliações): servem só para o texto do retorno — não entram na conduta
@@ -4155,7 +4423,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       after: async () => { await carregarHistorico('manual'); }});
 
     if (S.resumoHist) s.push({id:'confirmHist',kind:'opts',step:'Abertura',
-      eyebrow: S.semHistorico ? 'Sem histórico na clínica' : 'Histórico',
+      eyebrow: S.histErro ? 'Histórico indisponível' : (S.semHistorico ? 'Sem histórico na clínica' : 'Histórico'),
       text: S.resumoHist,
       hint: (prev && prev.protocolo) ? ('No banco: '+prev.protocolo
         + ((prev.kitCodes||[]).length ? ' · '+unicos(prev.kitCodes).filter(x=>!['TEFI','LABS'].includes(x)).join(', ') : '')
@@ -4163,7 +4431,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       hintHtml: (prev && prev.protocolo) ? (escH(explicaSiglas('No banco: '+prev.protocolo
         + ((prev.kitCodes||[]).length ? ' · '+unicos(prev.kitCodes).filter(x=>!['TEFI','LABS'].includes(x)).join(', ') : '')))
         + (prev.iief!=null?' · '+qEscore('IIEF-5',prev.iief):'') + (prev.pedt!=null?' · '+qEscore('PEDT',prev.pedt):'')) : '',
-      options: S.semHistorico
+      options: S.histErro ? [{v:'ok',badge:'!',label:'Entendi, informar o ciclo anterior à mão'}]
+        : S.semHistorico
         ? [{v:'ok',badge:'✓',label:'Entendi, seguir como primeira avaliação'}]
         : [{v:'ok',badge:'✓',label:'Confirmar e continuar'}]});
     // v2.4: consultas anteriores são registro fechado — sem "corrigir protocolo
@@ -4326,8 +4595,9 @@ document.documentElement.setAttribute('data-tema',t)})();
                  {v:4,badge:'4',label:'4 — rigidez máxima, não dobrável'}];
       s.push({id:'tefiMed',kind:'select',step:T,eyebrow:'Fármaco utilizado',text:'Qual formulação foi injetada?',
         list:['R5 (trimix clássico) — padrão da clínica','R1','R2','R4','R6','R7','R8','R9','R10','R11','R12']});
-      s.push({id:'tefiDose',kind:'select',step:T,eyebrow:'Fármaco utilizado',text:'Dose inicial aplicada',
-        list:['0,05 mL','0,1 mL — padrão da clínica','0,15 mL','0,2 mL','0,3 mL']});
+      // v2.5-K: dose em botões (eram 5 opções num seletor nativo); mesmos valores gravados
+      s.push({id:'tefiDose',kind:'opts',step:T,eyebrow:'Fármaco utilizado',text:'Dose inicial aplicada',
+        options:['0,05 mL','0,1 mL — padrão da clínica','0,15 mL','0,2 mL','0,3 mL'].map(x=>({v:x,label:x}))});
       s.push({id:'t10grau',kind:'opts',step:T,eyebrow:'Avaliação aos 10 minutos',text:'Grau de tumescência aos 10 min',options:TUM});
       s.push({id:'t20grau',kind:'opts',step:T,eyebrow:'Avaliação aos 20 minutos',text:'Grau de tumescência aos 20 min',options:TUM});
       if (S.t20grau!==undefined && Number(S.t20grau)<4){
@@ -4600,7 +4870,7 @@ document.documentElement.setAttribute('data-tema',t)})();
                 options:ICI_LISTA.map(x=>({v:x,badge:'R',label:x.replace(' (trimix clássico)','')}))});
               s.push({id:'iciDose',kind:'opts',mostraDica:true,step:'Reavaliação',eyebrow:'Intracavernosa',text:'Qual dose inicial?',
                 hint:'Dose-teste sempre em consultório, com observação da detumescência.',
-                options:['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'].map(x=>({v:x,badge:'mL',label:x}))});
+                options:['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'].map(x=>({v:x,label:x}))});
             }
           }
         }
@@ -4655,7 +4925,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         after: async ()=>{
           if (S.refazer!=='restaurar') return;
           const txt = 'Desfazer a revisão e voltar às respostas que o paciente deu na recepção ('+partes(false).join(' e ')+')? As respostas revisadas no consultório serão substituídas.';
-          if (rr && window.confirm(txt)){
+          if (rr && await mxConfirma(txt, {titulo:'Voltar às respostas da recepção?', ok:'Restaurar', cancelar:'Manter a revisão'})){
             ['i0','i1','i2','i3','i4','p0','p1','p2','p3','p4'].forEach(k=>{ if (rr[k]!==undefined && rr[k]!==null) S[k]=rr[k]; });
             S.refazer='nao'; mxToast('Respostas da recepção restauradas.');
           } else S.refazer = S.refazerAnt || 'nao';
@@ -4831,6 +5101,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       const telaAdam = () => s.push({id:'adam',kind:'opts',multi:true,step:D,eyebrow:'Questionário ADAM',
         text:'Marque todos os sintomas que o paciente apresenta:',
         options:ADAM.map(a=>({v:a.v,badge:a.chave?'★':'•',label:a.label})).concat([{v:'nenhum',badge:'—',label:'Nenhum destes sintomas'}])});
+      // v2.5-J (item 3): ADAM não reaplicado hoje → o valor vem da última consulta com ADAM (data guardada para o cartão)
+      S.adamHerdado = null;
       if (adamDaFila){ /* ADAM respondido na recepção hoje */ }
       else if (refAdam && refAdam.length){
         // v2.4: ADAM não é reaplicado no retorno — mostra o que ele marcou na primeira
@@ -4853,6 +5125,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         // v2.5 (item 7): sem sintoma de ADAM na última consulta (nunca teve ou já
         // melhorou e foi zerado): o ADAM não é mais perguntado no retorno
         S.adam = ['nenhum'];
+        S.adamHerdado = {data: (S.primeiraAval && S.primeiraAval.dataAdam) || ''};
       } else telaAdam();
       // a libido sai do ADAM respondido agora: sem recalcular aqui, a pergunta de
       // testosterona entrava no fluxo tarde demais e nunca era feita
@@ -4917,16 +5190,17 @@ document.documentElement.setAttribute('data-tema',t)})();
             temOpc, idxComOpc:esc(total+opcional), totalComOpc:Math.round((total+opcional)*10)/10};
   }
 
-  function renderKit(codes){
+  function renderKit(codes, ctx){
     const k=el('kitGrid'); k.innerHTML='';
+    const iciDose = ctx && ctx.iciDose;
     codes.forEach(entry=>{
-      const code=Array.isArray(entry)?entry[0]:entry, tag=Array.isArray(entry)?entry[1]:null, it=F[code];
+      const code=Array.isArray(entry)?entry[0]:entry, tag=Array.isArray(entry)?entry[1]:null, it=itemKit(code, codes);
       if(!it) return;
       const d=document.createElement('div'); d.className='kit-card';
       const ehIci = code==='ICI', rc = ehIci ? iciCodConsulta() : '';
       d.innerHTML=(ehIci ? chipCor(rc) : chipCor(code, iciDaConsulta()))+`<span class="kc-role"><span class="kc-icon">${ICON[it.role]||'•'}</span>${tag||it.role}</span>
         <span class="kc-code">${ehIci ? rc : code.replace('-1J','')}</span>
-        <span class="kc-formula">${ehIci ? rc : it.txt}<br><b>${it.pos}</b></span>`;
+        <span class="kc-formula">${ehIci ? 'Intracavernosa · '+(iciDose ? 'dose '+escH(iciDose) : (rc==='R5' ? 'dose inicial 0,1 mL (padrão da clínica)' : 'dose inicial a definir em consultório')) : it.txt}<br><b>${it.pos}</b></span>`;
       k.appendChild(d);
     });
     if(!codes.length){const d=document.createElement('div');d.className='kit-card empty';d.innerHTML='<span class="kc-code">Nenhuma formulação indicada</span>';k.appendChild(d);}
@@ -5135,7 +5409,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </ol>`;
 
 
-  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração/i;
+  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração|teto de 30 mg\/dia|Nível oral mantido|Cápsula sobe de|Protocolo ajustado de|objetivo atingido/i;
   // v2.5-F: alertas com hierarquia — título, uma linha de resumo e o detalhe recolhível.
   // Cada alerta guarda o texto original num <p class="al-orig"> oculto: é dele que o texto do
   // prontuário, a prévia e a contagem do cabeçalho leem (mesmo conteúdo de antes).
@@ -5219,12 +5493,12 @@ document.documentElement.setAttribute('data-tema',t)})();
     const alertas = notas.filter(ehAlerta);
     const demais  = notas.filter(n=>!ehAlerta(n));
     const alt = el('altNote');
-    if (alertas.length){ alt.style.display='block'; alt.innerHTML = alertasHtml(alertas.map(n=>explicaSiglas(n))); }
+    if (alertas.length){ alt.style.display='block'; alt.innerHTML = alertasHtml(alertas.map(n=>explicaSiglasCurto(n))); }
     else alt.style.display='none';
     const mais = el('notasMais');
     mais.innerHTML = demais.length
       ? '<details'+(abrirPadrao?' open':'')+'><summary>Observações clínicas — '+demais.length+(demais.length>1?' itens':' item')+'</summary>'
-        + demais.map(n=>'<p>'+explicaSiglas(n)+'</p>').join('') + '</details>'
+        + demais.map(n=>'<p>'+explicaSiglasCurto(n)+'</p>').join('') + '</details>'
       : '';
   }
 
@@ -5278,7 +5552,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     box.dataset.linha = linha; box.dataset.receita = receita ? 'sim' : 'nao';
   }
   async function calculaResultados(){
-    window.__mxDiag = null; window.__mxKit = null; KIT_CTX = null;
+    window.__mxDiag = null; window.__mxKit = null; window.__mxNivelHint = ''; KIT_CTX = null; PROT_CTX = null;
+    PREV_CTX = (prev && prev.protocolo && prev.kitCodes) ? {prot: nomeProtocolo(prev.protocolo), kit: prev.kitCodes} : null;
     const hoje=new Date().toLocaleDateString('pt-BR');
     // o aviso de ISRS só aparece quando a prescrição associa paroxetina e
     // clomipramina; em qualquer outro caminho ele fica escondido
@@ -5649,9 +5924,11 @@ document.documentElement.setAttribute('data-tema',t)})();
       el('marcador').textContent = [ (S.tefiMed||'').replace(' — padrão da clínica',''), S.tefiDose?String(S.tefiDose).replace(' — padrão da clínica',''):'',
         S.doseComp==='sim'?('complemento '+(S.doseCompML||'')):'', suspeita ].filter(Boolean).join(' · ');
       el('recoLine').textContent = explicaSiglas(reco); el('recoText').innerHTML = explicaSiglas(recoText);
+      // v2.5-K (auditoria): o código (R5) no título do cartão e a composição na linha de baixo — antes ia tudo no título
+      const medT = String(S.tefiMed||'—').replace(' — padrão da clínica',''), codT = medT.split(/\s/)[0], resT = medT.slice(codT.length).replace(/^\s*·\s*/,'').replace(/^\((.*)\)$/,'$1').trim();
       el('kitGrid').innerHTML = '<div class="kit-card"><span class="kc-role"><span class="kc-icon">💉</span>Fármaco do teste</span>'
-        + '<span class="kc-code">'+String(S.tefiMed||'—').replace(' — padrão da clínica','')+'</span>'
-        + '<span class="kc-formula">Dose inicial '+String(S.tefiDose||'—').replace(' — padrão da clínica','')
+        + '<span class="kc-code">'+escH(codT)+'</span>'
+        + '<span class="kc-formula">'+(resT ? escH(resT)+'<br>' : '')+'Dose inicial '+String(S.tefiDose||'—').replace(' — padrão da clínica','')
         + (S.doseComp==='sim'?('<br>Complemento de '+(S.doseCompML||'—')+' aos 20 min'):'')+'</span></div>';
       el('custoBox').innerHTML=''; el('racTitulo').style.display='none'; el('racBox').innerHTML='';
       renderNotas(notasT, true);
@@ -5939,6 +6216,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       S.queixaMudouDoCiclo = (antes!=='outra' && agora!=='outra' && antes!==agora);
     }
     const dIIEF = reav && S.iiefAnt ? sIIEF-Number(S.iiefAnt) : null;
+    // v2.5-M: IIEF-5 de hoje já na faixa sem disfunção (22+) com ganho < 4 = objetivo atingido: mantém o
+    // protocolo — não sobe dose, não troca mecanismo, não dispara teto nem oferta de ondas por "pouco ganho"
+    const iiefMeta = dIIEF!==null && dIIEF<4 && sIIEF>=22;
     const dPEDT = reav && S.pedtAnt ? sPEDT-Number(S.pedtAnt) : null;
     // v2.5 (item 19): quem já está em intracavernosa não regride para a via oral.
     // Em intracavernosa = no ciclo anterior o kit tinha ICI, o TEFI definiu ICI, o
@@ -5968,6 +6248,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (!travado){
         if (dIIEF!==null && !emICIant){
           if (dIIEF>=4) notas.push('<b>IIEF-5 subiu '+dIIEF+' pontos</b> — ganho acima da diferença clinicamente relevante. Manter o protocolo.');
+          else if (iiefMeta) notas.push('<b>IIEF-5 '+(dIIEF>0?'subiu '+dIIEF+' ponto(s)':dIIEF===0?'estável':'caiu '+Math.abs(dIIEF)+' ponto(s)')+' e está em '+sIIEF+'</b>, na faixa sem disfunção — objetivo atingido. Manter o protocolo, sem subir dose nem trocar mecanismo.');   // v2.5-L/M
           else if (dIIEF>=1){ notas.push('<b>IIEF-5 subiu apenas '+dIIEF+' ponto(s)</b> — resposta parcial. Subir um nível de BASE.'); mudanca='Subir um nível de BASE'; }
           else { notas.push('<b>IIEF-5 sem ganho ('+dIIEF+')</b> com boa adesão e sem efeito limitante — trocar mecanismo, não aumentar dose.'); mudanca='Trocar mecanismo'; }
         }
@@ -5977,7 +6258,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           else { notas.push('<b>PEDT sem ganho</b> — trocar classe.'); mudanca=mudanca||'Trocar classe do agente de EP'; }
         }
         const antTeto = ((S.protAnt==='Outro / combinação não listada'?(S.formulasAnt||[]).join(' '):S.protAnt)||'').match(/T20|DE-3|DUO-3|EP-4|DUO-4/);
-        if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4)||(dPEDT!==null&&dPEDT>-4))){
+        if (antTeto && !emICIant && ((dIIEF!==null&&dIIEF<4&&!iiefMeta)||(dPEDT!==null&&dPEDT>-4))){
           // v2.5-F: o TEFI foi feito nesta consulta — não se pede o teste de novo; a via segue o resultado
           if (reav && S.tefiFeito==='sim')
             notas.push('<b>Teto de escalonamento.</b> O paciente já estava no degrau oral mais alto e não atingiu ganho relevante. Não subir mais dose: o teste de ereção foi feito nesta consulta e a via seguinte é a definida pelo resultado.');
@@ -6089,6 +6370,54 @@ document.documentElement.setAttribute('data-tema',t)})();
       lvlDE=Math.min(lvlDE+1,3);
       notas.push('<b>Falha real a PDE5i em dose plena:</b> nível elevado automaticamente.'+((reav && S.tefiFeito==='sim') ? '' : ' Considerar teste de ereção fármaco-induzida em consultório.'));
     }
+    // v2.5-L (decisão do Dr. Marco, opção B): no retorno oral DE/DUO o nível da cápsula parte do
+    // nível ANTERIOR, não só da faixa de hoje. Ganho ≥ 4 → mantém o nível que funcionou (nunca reduz);
+    // ganho de 1 a 3 → sobe um nível a partir do anterior (teto BASE-T20); sem ganho → a lógica de troca
+    // de mecanismo segue, sem reduzir o nível. Não vale para intracavernosa (não regride), adesão baixa ou
+    // efeito limitante (travado), troca de queixa, nem sem o IIEF-5 anterior.
+    const NB_ORAL=['','BASE-T5','BASE-T10','BASE-T20'];
+    const nivelOralAnt = (()=>{ if (!reav || !prev) return 0;
+      for (const c of unicos(prev.kitCodes||[])){ const m=/^BASE-T(5|10|20)(?:-I)?$/.exec(c); if (m) return {'5':1,'10':2,'20':3}[m[1]]; }
+      return Number((String(S.protAnt||prev.protocolo||'').match(/^(?:DE|DUO)-([123])/)||[])[1])||0; })();
+    let regraOral = null;
+    // travado (adesão insuficiente ou efeito limitante): o rótulo já é "<protocolo anterior> (mantido)" e
+    // "não escalonar". A cápsula fica no nível anterior — nem sobe pela faixa pior, nem desce pela melhor.
+    if (reav && S.hasDE && !emICIant && travado && !S.queixaMudouDoCiclo && nivelOralAnt>=1){
+      if (lvlDE!==nivelOralAnt) regraOral = {tipo:'travado', ant:nivelOralAnt, novo:nivelOralAnt, faixa:lvlDE};
+      lvlDE = nivelOralAnt;
+    }
+    if (reav && S.hasDE && !emICIant && !travado && !S.queixaMudouDoCiclo && dIIEF!==null && nivelOralAnt>=1 && lvlDE<4){
+      const faixaHoje = lvlDE;
+      if (dIIEF>=4 || iiefMeta){   // ganho grande, ou ganho < 4 que já está na faixa sem disfunção (v2.5-M: inclui sem ganho)
+        lvlDE = Math.max(lvlDE, nivelOralAnt);
+        regraOral = {tipo:'manter', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+        if (faixaHoje < nivelOralAnt)
+          notas.push('<b>Nível oral mantido em '+NB_ORAL[nivelOralAnt]+'.</b> A faixa de hoje sozinha indicaria '+(faixaHoje>=1?NB_ORAL[faixaHoje]:'suspender a cápsula')
+            +', mas a melhora veio com este nível: a regra da clínica é não reduzir a via oral automaticamente. Reduzir só por decisão do médico, na receita.');
+      } else if (dIIEF>=1){
+        if (nivelOralAnt>=3){
+          lvlDE = Math.max(lvlDE, 3);
+          regraOral = {tipo:'teto', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+          // teto: o mesmo encaminhamento do "teto de escalonamento" (que só olha o nome do protocolo anterior)
+          if (!/Escalonar de mecanismo|Teto oral/.test(mudanca||'')){
+            if (S.tefiFeito==='sim')
+              notas.push('<b>Teto de escalonamento.</b> O paciente já estava em '+NB_ORAL[3]+', o degrau oral mais alto, e o ganho foi parcial. Não subir mais dose: o teste de ereção foi feito nesta consulta e a via seguinte é a definida pelo resultado.');
+            else
+              notas.push('<b>Teto de escalonamento.</b> O paciente já estava em '+NB_ORAL[3]+', o degrau oral mais alto, e o ganho foi parcial. Não subir mais dose: indicar <b>teste de ereção fármaco-induzida</b> e via intracavernosa, ou terapia sexual de casal se o eixo for comportamental.');
+            mudanca = S.tefiFeito==='sim' ? 'Teto oral atingido · via definida pelo TEFI de hoje' : 'Escalonar de mecanismo (intracavernosa / terapia)';
+          }
+        } else {
+          const alvo = nivelOralAnt+1;
+          lvlDE = Math.max(lvlDE, alvo);
+          regraOral = {tipo:'subir', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+          notas.push('<b>Cápsula sobe de '+NB_ORAL[nivelOralAnt]+' para '+NB_ORAL[lvlDE]+'</b> — um nível acima do que ele usava, não pela faixa de hoje'
+            +(faixaHoje<lvlDE?' (que indicaria '+(faixaHoje>=1?NB_ORAL[faixaHoje]:'suspender a cápsula')+')':'')+'.');
+        }
+      } else {
+        lvlDE = Math.max(lvlDE, nivelOralAnt);
+        regraOral = {tipo:'semGanho', ant:nivelOralAnt, novo:lvlDE, faixa:faixaHoje};
+      }
+    }
     if (S.previa==='falhou'&&S.adequado==='nao') notas.push('<b>Não é falha real:</b> a tentativa anterior foi inadequada. Manter o nível do escore e orientar uso correto.');
     const comorb = (S.comorb||[]).filter(v=>v!=='nenhuma');
     if (comorb.indexOf('alcool')>=0) notas.push('<b>Álcool em quantidade relevante.</b> É causa direta de disfunção erétil e reduz a resposta ao inibidor de PDE5. Sem reduzir, o tratamento compete com a causa.');
@@ -6181,7 +6510,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     // --- ondas de choque e TEFI
     const falhaOral = S.previa==='falhou';
     const dosePlena = S.previa==='falhou' && S.adequado==='sim';
-    const respParcial = reav && !travado && ((dIIEF!==null && dIIEF>0 && dIIEF<4)) && /T20/.test(S.protAnt||'');
+    const respParcial = reav && !travado && !iiefMeta && ((dIIEF!==null && dIIEF>0 && dIIEF<4)) && /T20/.test(S.protAnt||'');
     let ondas = false, tefi = false, ondasComp = false, motivoOndas = [], motivoTefi = [], motivoOndasOpc = [];
     if (!psico){
       const arterialDM = comorb.indexOf('vasc')>=0 || comorb.indexOf('dm')>=0;
@@ -6203,7 +6532,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     // v2.5-F: TEFI realizado nesta consulta — não volta ao kit nem aos lembretes ("Agendar TEFI")
     if (reav && S.tefiFeito==='sim'){ tefi = false; motivoTefi.length = 0; }
     if (iciMud) mudanca = iciMud + (mudanca ? ' · ' + mudanca : '');
-    const semProgresso = reav && !travado && ((dIIEF!==null && dIIEF<4) || (dPEDT!==null && dPEDT>-4));
+    const semProgresso = reav && !travado && ((dIIEF!==null && dIIEF<4 && !iiefMeta) || (dPEDT!==null && dPEDT>-4));
     const insatisfeito  = reav && S.satisf!=null && S.satisf<=6;
     let ondasOpc = false;
     if (reav && !ondas && S.hasDE && lvlDE>=1 && (semProgresso || insatisfeito)) ondasOpc = true;
@@ -6270,8 +6599,12 @@ document.documentElement.setAttribute('data-tema',t)})();
         prot='DUO-'+n; kit=[BT[n-1],'NOITE-1','SP-DUO'].concat(S.preserv==='sim'?ret:[]);
         reco='Linha DUO — sob demanda, duas opções';
         recoText='Cápsula matinal contínua para a ereção e uma das duas opções sob demanda para a ejaculação.';
-        notas.push(NOTA_DEMANDA);
+        notas.push(n===3 ? NOTA_DEMANDA.replace('é titulável em 1 ou 2 jatos','fica em no máximo 1 jato com a cápsula de 20 mg') : NOTA_DEMANDA);
       }
+      // v2.5-L: teto de tadalafila (30 mg/dia) também na linha DUO — com a cápsula de 20 mg, o spray
+      // que leva tadalafila (SP-DE ou SP-DUO) fica em no máximo 1 jato (SP-DUO-1J já é de 1 jato)
+      const spTada = kit.find(c=>c==='SP-DE'||c==='SP-DUO');
+      if (n===3 && spTada) notas.push('No nível 3 a cápsula traz tadalafila 20 mg: <b>máximo 1 jato</b> do '+spTada+' (teto de 30 mg/dia de tadalafila).');
     } else if (trataDE){
       const n=lvlDE, base=ramoL?BTI[n-1]:BT[n-1];
       prot='DE-'+n+(ramoL?'L':''); kit=[base,ramoL?'NOITE-2':'NOITE-1','SP-DE'];
@@ -6322,6 +6655,13 @@ document.documentElement.setAttribute('data-tema',t)})();
       else
         notas.push('<b>Sem recurso possível para a ejaculação precoce neste paciente.</b> A via serotoninérgica está bloqueada'+(usaISRS?' (ISRS em uso)':'')+' e há restrição às duas vias tópicas. Reabordar a restrição ao creme ou ao preservativo'+(usaISRS?' e conversar com o psiquiatra sobre o antidepressivo':'')+'; até lá, abordagem comportamental.');
     }
+    // v2.5-L: teto de 30 mg/dia de tadalafila quando o piso soma o SP-DUO a um kit que já tem SP-DE —
+    // os dois sprays levam tadalafila 10 mg/jato e a nota do nível só fala de um deles
+    if (cods().indexOf('SP-DE')>=0 && cods().indexOf('SP-DUO')>=0){
+      const mgCap = ({'BASE-T5':5,'BASE-T10':10,'BASE-T20':20})[(cods().find(c=>/^BASE-T(5|10|20)(?:-I)?$/.test(c))||'').replace(/-I$/,'')]||0;
+      const jatos = Math.floor((30-mgCap)/10);
+      notas.push('<b>Sprays com tadalafila: no máximo '+jatos+' jato'+(jatos>1?'s':'')+' por dia somando SP-DE e SP-DUO</b> — cada jato tem 10 mg'+(mgCap?' e a cápsula já traz '+mgCap+' mg':'')+' (teto de 30 mg/dia de tadalafila).');
+    }
     if (S.hasDE && !semTada && !cods().some(c=>/^SP-DE|^SP-DUO|^ICI/.test(c))){
       kit = kit.concat(['SP-DE']);
       notas.push('<b>Piso terapêutico aplicado:</b> paciente que procurou a clínica por queixa de ereção sai no mínimo com o spray de tadalafila sob demanda.');
@@ -6340,6 +6680,37 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (ondas && !noKit('ONDAS')) kit = kit.concat(['ONDAS']);
     else if (ondasComp && !noKit('ONDAS')) kit = kit.concat([['ONDAS','Complementar — oferecer ao paciente']]);
     if (pedirLabs && !noKit('LABS')) kit = kit.concat(['LABS']);
+    // v2.5-K (auditoria): no retorno oral, o nível da cápsula segue a faixa do IIEF-5 de HOJE
+    // (lvlDE), não o nível anterior. Quando a faixa muda, o kit muda de nível — e o rótulo
+    // dizia "protocolo mantido" (ganho ≥ 4) ou "dose aumentada" com a cápsula descendo.
+    // Só o rótulo muda aqui: diz o que o kit faz. A conduta (kit) é a mesma de antes.
+    const nivelBase = arr => { for (const c of arr){ const m=/^BASE-T(5|10|20)(?:-I)?$/.exec(c); if (m) return {'5':1,'10':2,'20':3}[m[1]]; } return 0; };
+    let recalcNivel = null;
+    if (reav && !travado && prev && !emICIant && !S.queixaMudouDoCiclo && !noKit('ICI')){
+      const lvAnt = nivelBase(unicos(prev.kitCodes||[])) || (Number((String(S.protAnt||'').match(/^(?:DE|DUO)-([123])/)||[])[1])||0);
+      const lvNovo = nivelBase(cods());
+      const dizSubir = !!(mudanca && /^Subir um nível de BASE$/.test(mudanca));
+      if (lvAnt && lvNovo && ((!mudanca && lvNovo!==lvAnt) || (dizSubir && lvNovo<lvAnt))) recalcNivel = {de:lvAnt, para:lvNovo};
+    }
+    if (recalcNivel){
+      const NB=['','BASE-T5','BASE-T10','BASE-T20'], fx=(bDE&&bDE.label)||'';
+      mudanca = 'Nível da cápsula recalculado pela faixa de hoje: '+NB[recalcNivel.de]+' → '+NB[recalcNivel.para];
+      notas.push('<b>Nível da cápsula recalculado pela faixa de hoje.</b> O IIEF-5 está agora na faixa '+escH(fx.replace(/^DE\s*/,''))+' e a cápsula passou de '+NB[recalcNivel.de]+' para '+NB[recalcNivel.para]+
+        (recalcNivel.para<recalcNivel.de ? ' — redução de dose, não manutenção.' : '.')+' Se a decisão for manter '+NB[recalcNivel.de]+', ajustar a receita manualmente.');
+    }
+    // v2.5-L: com a regra do nível anterior (opção B) a cápsula não desce mais sozinha, mas a linha
+    // oral ainda pode mudar de código sem mudança de dose (ex.: DUO-3 → DUO-4 pela resposta da EP).
+    // "Protocolo mantido" seria falso: o rótulo diz que o protocolo foi ajustado.
+    let protAjustado = null;
+    if (reav && !travado && !mudanca && prev && !S.queixaMudouDoCiclo){
+      const semMant = x => String(x||'').replace(/\s*\(mantido\)\s*$/,'').trim();
+      const pa = semMant(S.protAnt && S.protAnt!=='Outro / combinação não listada' ? S.protAnt : prev.protocolo), pn = semMant(prot);
+      if (/^(?:DE|DUO)-/.test(pa) && /^(?:DE|DUO)-/.test(pn) && pa!==pn) protAjustado = {de:pa, para:pn};
+    }
+    if (protAjustado){
+      mudanca = 'Protocolo ajustado: '+protAjustado.de+' → '+protAjustado.para;
+      notas.push('<b>Protocolo ajustado de '+escH(protAjustado.de)+' para '+escH(protAjustado.para)+'</b> pela resposta de hoje. Não é manutenção: conferir a receita item a item.');
+    }
     if (reav && !travado && !mudanca) mudanca = 'Nenhuma — protocolo mantido';
     if (reav && !travado && (!mudanca || /mantido/.test(mudanca)) && prot.indexOf('mantido')<0) prot = prot + ' (mantido)';
     if (reav&&travado){
@@ -6370,6 +6741,15 @@ document.documentElement.setAttribute('data-tema',t)})();
       notas.push('<b>O TEFI indicou intracavernosa</b>, mas a conduta de hoje mantém só a via oral, por decisão médica. Reabordar no próximo retorno.');
     }
     KIT_CTX = unicos(kit);   // v2.5: dose real de DUO-3/DUO-4 etc. nos textos desta consulta
+    PROT_CTX = nomeProtocolo(prot).replace(/\s*\+\s*INTRACAVERNOSA$/,'');
+    // v2.5-M: "DE leve · DE-3" confundia — o nível vem do ciclo anterior, não da faixa de hoje. Dica no cabeçalho.
+    if (regraOral && regraOral.novo>=1 && regraOral.novo<=3 && cods().some(c=>c.indexOf(NB_ORAL[regraOral.novo])===0)){
+      const fx = regraOral.faixa>=1 && regraOral.faixa<=3 ? NB_ORAL[regraOral.faixa] : (regraOral.faixa===0 ? 'nenhuma cápsula' : 'intracavernosa');
+      if (regraOral.tipo==='subir')
+        window.__mxNivelHint = 'Nível a partir do ciclo anterior: '+NB_ORAL[regraOral.ant]+' → '+NB_ORAL[regraOral.novo]+(regraOral.faixa!==regraOral.novo ? ' (a faixa de hoje sozinha daria '+fx+')' : '');
+      else if (regraOral.novo!==regraOral.faixa)
+        window.__mxNivelHint = 'Nível do ciclo anterior mantido ('+NB_ORAL[regraOral.novo]+') — a faixa de hoje sozinha daria '+fx;
+    }
     window.__mxKit = kit.slice();   // v2.5: cabeçalho da conduta, um item por linha (com a etiqueta)
     const lembretes=[];
     if (!reav) lembretes.push('Entregar o guia <b>Protocolo de Performance</b> (2ª edição) '+(temMedicacaoNoKit(kit)?'junto da receita ':'')+'e pedir que traga o registro de 12 semanas na próxima consulta.');
@@ -6439,10 +6819,12 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (travado && (S.adesao==='baixa'||S.adesao==='parou')) marc.push('mantido por adesão insuficiente');
       else if (travado) marc.push('ajustado por efeito adverso');
       else if (mudanca && /indicação do TEFI/.test(mudanca)) marc.push('intracavernosa pelo TEFI');
+      else if (recalcNivel) marc.push(recalcNivel.para<recalcNivel.de ? 'dose reduzida pela faixa de hoje' : 'dose recalculada pela faixa de hoje');
       else if (mudanca && /Reduzir/.test(mudanca)) marc.push('dose reduzida');
       else if (mudanca && /Subir/.test(mudanca)) marc.push('dose aumentada');
       else if (mudanca && /Trocar/.test(mudanca)) marc.push('mecanismo trocado');
       else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) marc.push('saída da via oral');
+      else if (protAjustado) marc.push('protocolo ajustado');
       else marc.push('protocolo mantido');
     }
     if (semTada) marc.push('bloqueio por contraindicação cardiovascular');
@@ -6459,16 +6841,15 @@ document.documentElement.setAttribute('data-tema',t)})();
     el('recoLine').textContent=explicaSiglas(reco); el('recoText').textContent=explicaSiglas(recoText);
     { const cs=kit.map(e=>Array.isArray(e)?e[0]:e), a=el('avisoISRS');
       if (a) a.style.display = (cs.some(c=>/PAROX/.test(c)) && cs.some(c=>/^SP-DUO/.test(c))) ? '' : 'none'; }
-    renderKit(kit);
+    renderKit(kit, {iciDose: iciDoseIndicada});
     const CUS = custoDoCiclo(kit);
     const barras = '█'.repeat(CUS.idx) + '░'.repeat(10-CUS.idx);
     const drivers = CUS.itens.slice(0,3).map(i=>i.cod).join(', ');
     const custoHtml = `<div style="margin-top:14px;padding:12px 14px;border:1px solid rgba(11,31,59,.15);border-radius:12px;">
-      <div style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:6px;">Custo estimado do ciclo de 2 meses</div>
+      <div style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:6px;">Índice do ciclo de 2 meses</div>
       <div style="font-size:20px;font-weight:600;">${CUS.idx} <span style="font-size:14px;font-weight:400;opacity:.6;">de 10</span> <span style="font-family:monospace;letter-spacing:2px;opacity:.45;">${barras}</span></div>
       <div style="font-size:13px;opacity:.7;margin-top:6px;">Maior peso: ${drivers||'—'}</div>
       ${CUS.temOpc ? `<div style="font-size:13px;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(11,31,59,.15);">Com as ondas de choque opcionais: <b>${CUS.idxComOpc} de 10</b></div>` : ''}
-      ${CUS.temOpc ? `<div style="font-size:13px;margin-top:7px;padding-top:7px;border-top:1px dashed rgba(11,31,59,.15);">Com o item opcional aceito, o índice passa a <b>${CUS.idxComOpc} de 10</b>.</div>` : ''}
       <div style="font-size:12px;opacity:.55;margin-top:4px;">Índice relativo entre os protocolos disponíveis, não valor em reais. Recalibrar quando as cotações da farmácia chegarem.</div>
     </div>`;
     el('custoBox').innerHTML = custoHtml;
@@ -6512,7 +6893,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (semTada) rc_porque.push('Contraindicação cardiovascular à tadalafila: <b>sem linha oral e sublingual</b>.');
 
     kit.forEach(e=>{ const c=Array.isArray(e)?e[0]:e;
-      if (RAZAO[c] && !rc_comp.some(x=>x.startsWith('<b>'+c))) rc_comp.push('<b>'+c+'</b> — '+RAZAO[c]); });
+      // v2.5-M: com BASE-T20 o SP-DUO não é "1 ou 2 jatos" — teto de 30 mg/dia de tadalafila
+      const raz = (c==='SP-DUO' && mgTadaCapsula(cods())>=20) ? RAZAO[c].replace('(1 ou 2 jatos)','(máximo 1 jato com a cápsula de 20 mg)') : RAZAO[c];
+      if (RAZAO[c] && !rc_comp.some(x=>x.startsWith('<b>'+c))) rc_comp.push('<b>'+c+'</b> — '+raz); });
     if (/-I$/.test((kit[0]&&(Array.isArray(kit[0])?kit[0][0]:kit[0]))||''))
       rc_comp.push('<b>Ioimbina na base</b> — libido reduzida com testosterona normal e sem contraindicação.');
 
@@ -6538,11 +6921,13 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (travado && (S.adesao==='baixa'||S.adesao==='parou')) rc_mud.push('<b>Protocolo mantido</b> — adesão insuficiente: o ciclo não testou o tratamento.');
       else if (travado) rc_mud.push('<b>Ajustado por efeito adverso</b>, não por falta de eficácia.');
       else if (mudanca && /indicação do TEFI/.test(mudanca)) rc_mud.push('<b>Acrescentamos a intracavernosa</b> — o teste de ereção em consultório indicou essa via.');
+      else if (recalcNivel) rc_mud.push('<b>'+(recalcNivel.para<recalcNivel.de?'Cápsula reduzida':'Cápsula recalculada')+' pela faixa de hoje</b> — '+['','BASE-T5','BASE-T10','BASE-T20'][recalcNivel.de]+' → '+['','BASE-T5','BASE-T10','BASE-T20'][recalcNivel.para]+'; conferir se a decisão é manter a dose anterior.');
       else if (mudanca && /Reduzir a dose da intracavernosa/.test(mudanca)) rc_mud.push('<b>Reduzimos a dose da intracavernosa</b> — a ereção está durando mais que o alvo de cerca de 1 hora.');
       else if (mudanca && /Subir dose ou esquema da intracavernosa/.test(mudanca)) rc_mud.push('<b>Subimos a dose da intracavernosa</b> — a ereção ainda não é suficiente ou dura menos que o alvo.');
       else if (mudanca && /Subir/.test(mudanca)) rc_mud.push('<b>Subimos um degrau</b> — houve ganho, mas abaixo do clinicamente relevante.');
       else if (mudanca && /Trocar/.test(mudanca)) rc_mud.push('<b>Trocamos o mecanismo</b> — sem ganho, com boa adesão e sem efeito limitante.');
       else if (mudanca && /Escalonar de mecanismo/.test(mudanca)) rc_mud.push('<b>Saímos da via oral</b> — já no degrau mais alto, sem ganho relevante.');
+      else if (protAjustado) rc_mud.push('<b>Protocolo ajustado</b> — '+escH(protAjustado.de)+' → '+escH(protAjustado.para)+' pela resposta de hoje; conferir item a item.');
       else rc_mud.push('<b>Protocolo mantido</b> — ganho consistente.');
     }
 
@@ -6602,8 +6987,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.hasEP){ add(qn('PEDT')+' total','<b>'+qv(sPEDT+'/20')+' — '+bEP.label+'</b>'); Q_PEDT.forEach(q=>add('· '+q.short,S[q.id])); }
     const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
     screens.filter(s=>LBL[s.id]).forEach(s=>{const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
-    add('Custo estimado do ciclo', CUS.idx+'/10'+(CUS.temOpc?'  ·  com opcional: '+CUS.idxComOpc+'/10':'')+'  ('+CUS.total+' pontos · maior peso: '+(CUS.itens.slice(0,3).map(i=>i.cod).join(', ')||'—')+')');
-    const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=F[c];if(!i) return '';
+    add('Custo estimado do ciclo', CUS.idx+'/10'+(CUS.temOpc?'  ·  com opcional: '+CUS.idxComOpc+'/10':'')+'  ('+String(CUS.total).replace('.',',')+' pontos · maior peso: '+(CUS.itens.slice(0,3).map(i=>i.cod).join(', ')||'—')+')');
+    const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=itemKit(c, kit);if(!i) return '';
       // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
       // v2.5-H (item 1): sem dose indicada (1ª consulta), a dose inicial padrão da clínica para a R5 (a mesma do TEFI)
       if (c==='ICI'){ const rc=iciCodConsulta();
@@ -6625,7 +7010,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const retorno = dUtil.toLocaleDateString('pt-BR') + ', ' + ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'][dUtil.getDay()];
     const temICI = kit.some(e=>(Array.isArray(e)?e[0]:e)==='ICI');
     const medsPac = kit.map(e=>{
-      const c=Array.isArray(e)?e[0]:e, tag=Array.isArray(e)?e[1]:'', it=F[c];
+      const c=Array.isArray(e)?e[0]:e, tag=Array.isArray(e)?e[1]:'', it=itemKit(c, kit);
       if(!it||!it.pac) return null;
       const opc = /Opcional/.test(tag||'') ? ' <i>(opcional — converse conosco)</i>' : '';
       const alt = /opção B/.test(tag||'') ? ' <i>(alternativa à opção anterior — use apenas uma)</i>' : '';
@@ -6753,7 +7138,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       + '<style>html,body{background:#fff!important;color:#101826}body{padding:10mm;margin:0}'
       + 'body *{visibility:visible!important}.noprint,.ficha-top,button{display:none!important}'
       + '.impresso{display:block!important;position:static!important;max-width:190mm;margin:0 auto}'
-      + '.impresso .ficha-doc,.ficha-doc.impresso{box-shadow:none;max-height:none;overflow:visible}</style></head>'
+      + '.impresso .ficha-doc,.ficha-doc.impresso{box-shadow:none;max-height:none;overflow:visible}'
+      // v2.5-K: no papel a margem é a do @page (o padding da aba empurrava uma folha em branco no fim);
+      // e o triângulo de "abrir/fechar" das observações é coisa de tela
+      + '@media print{body{padding:0!important}details>summary{list-style:none}details>summary::-webkit-details-marker{display:none}details>summary::marker{content:""}}</style></head>'
       + '<body class="'+classe+'"><div class="impresso">'+corpo+'</div></body></html>');
     w.document.close();
     w.focus();
@@ -7013,7 +7401,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const c=document.getElementById('copiaErro');
     if (c) c.onclick=()=>{
       const txt='Maximus · erro\n'+(ev.message||'')+'\n'+((ev.error&&ev.error.stack)||'')+'\ntela: '+((screens[si]||{}).id||'')+'\n'+new Date().toISOString();
-      try{ navigator.clipboard.writeText(txt); c.textContent='Copiado'; }catch(e){ alert(txt); }
+      try{ navigator.clipboard.writeText(txt); c.textContent='Copiado'; }catch(e){ mxDialogo({titulo:'Diagnóstico do erro', texto:txt, ok:'Fechar', cancelar:false}); }
     };
   });
 
@@ -7104,10 +7492,22 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   function mxAgendaPrevia(){
     const box = el('previaCard'), shell = el('mxShell'); if (!box || !shell || PREVIA) return;
-    const ativo = !MX_JSDOM && mxTemPaciente() && !mxEmResultados() && (S.hasDE || S.hasEP)
+    const naTela = !MX_JSDOM && mxTemPaciente() && !mxEmResultados()
       && el('quizCard') && (el('quizCard').style.display!=='none' || (el('panoramaCard')||{}).style.display==='block');
-    shell.classList.toggle('com-previa', !!ativo);
+    const ativo = naTela && (S.hasDE || S.hasEP);
+    // v2.5-K: com o painel do paciente aberto, a coluna da prévia fica sempre (com aviso quando não se aplica),
+    // para a coluna das perguntas não mudar de largura entre telas
+    const coluna = ativo || (naTela && shell.classList.contains('com-rail'));
+    shell.classList.toggle('com-previa', !!coluna);
+    if (coluna && !ativo){
+      clearTimeout(mxPrevTimer); mxPrevSeq++;
+      const qx = S.queixa || S.novaQueixa;
+      box.innerHTML = '<div class="mx-eyebrow">Conduta ao vivo</div><p class="pv-vazio">'
+        + (qx ? 'Sem prévia para esta queixa — a conduta aparece ao concluir.' : 'A prévia aparece depois da queixa e dos escores (IIEF-5 / PEDT).')+'</p>';
+      return;
+    }
     if (!ativo) return;
+    if (!box.innerHTML.trim()) box.innerHTML = '<div class="mx-eyebrow">Conduta ao vivo</div><p class="pv-vazio">Calculando a prévia…</p>';
     clearTimeout(mxPrevTimer);
     mxPrevTimer = setTimeout(mxRodaPrevia, 220);
   }
@@ -7336,7 +7736,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const atual = norm(S.codigo||S.daFila||'');
     const emCurso = mxTemPaciente() && !mxEmResultados();
     if (emCurso && atual===norm(it.cod)){ mxFechaSheet('mxBusca'); return; }
-    if (emCurso && !window.confirm('Sair do atendimento de '+atual+' e abrir '+norm(it.cod)+'? As respostas deste atendimento que ainda não geraram conduta serão descartadas.')) return;
+    if (emCurso && !(await mxConfirma('As respostas deste atendimento que ainda não geraram conduta serão descartadas.', {titulo:'Sair do atendimento de '+atual+' e abrir '+norm(it.cod)+'?', ok:'Sair e abrir', cancelar:'Continuar aqui', perigo:true}))) return;
     mxFechaSheet('mxBusca');
     mxRecomeca();
     try{
@@ -7410,6 +7810,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
   // ---- teclado (fase de captura: roda antes dos atalhos antigos) ----
   window.addEventListener('keydown', e=>{
+    if (document.querySelector('.mx-dlg-ov')) return;   // v2.5-K: diálogo aberto cuida do teclado
     const k = e.key, mod = e.metaKey || e.ctrlKey;
     const vis = id=>{ const o=el(id); return !!o && o.style.display==='flex'; };
     // prontuário e histórico abertos têm os próprios atalhos
@@ -7550,6 +7951,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const cta = el('mxCta'); if (!cta) return;
     const ativo = mxTemPaciente() && !mxEmResultados() && quizCard.style.display!=='none' && !!S.queixa;
     cta.style.display = ativo ? 'flex' : 'none';
+    document.body.classList.toggle('mx-cta-on', !!ativo);
     if (!ativo) return;
     const obrig = screens.filter(x=>!x.plumb && !x.optional);
     const ok = obrig.filter(x=>val(x)).length;
@@ -7651,7 +8053,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     mxConcluindo = true; if (btn){ btn.disabled=true; btn.textContent='Concluindo…'; }
     // 1. gravar: o ciclo já foi gravado ao gerar a conduta; reenvia o que ficou pendente
     try{ await processaFila(); }catch(e){}
-    if (filaLe().length && !window.confirm('O registro deste atendimento ainda não chegou ao banco — está guardado neste computador e será reenviado sozinho. Concluir mesmo assim?')){
+    if (filaLe().length && !(await mxConfirma('O registro deste atendimento ainda não chegou ao banco — está guardado neste computador e será reenviado sozinho.', {titulo:'Concluir mesmo assim?', ok:'Concluir', cancelar:'Aguardar'}))){
       volta('Atendimento não concluído: o registro ainda está pendente de envio.'); return; }
     // 2. marcar como atendido o registro da recepção de hoje (se ele passou pela recepção)
     let todos = [];
@@ -7728,10 +8130,102 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
   }
 
+  // ---- v2.5-I: bloco "Classificação IIEF-5" na tela da conduta ----
+  // O Dr. Marco julga a evolução por aqui: valor de hoje, o anterior, a variação, a faixa e a régua das faixas
+  // (○ anterior, ● hoje). Com 3+ consultas, a linha da evolução. Só exibição: nada aqui entra na conduta.
+  function mxFaixaCurta(b){ return !b ? '' : faixaCurtaDe([b], b.min); }
+  function mxCartaoEscore(nome, hoje, ant, dataAnt, bands, ini, fim, menorMelhor, serie){
+    const faixa = v => bands.find(b=>v>=b.min && v<=b.max) || null;
+    const bh = faixa(hoje), ba = ant!=null ? faixa(ant) : null;
+    const pos = v => Math.max(0, Math.min(100, (Math.max(ini, Math.min(fim, v)) - ini) / (fim - ini) * 100));
+    const d = ant!=null ? hoje - ant : null;
+    const sentido = d==null ? '' : (d===0 ? 'igual' : ((menorMelhor ? d<0 : d>0) ? 'melhor' : 'pior'));
+    const segs = bands.slice().sort((a,b)=>a.min-b.min).map(b=>{
+      const a0 = Math.max(ini, b.min), a1 = Math.min(fim, b.max+1);
+      if (a1<=a0) return '';
+      return '<i class="'+(b===bh?'on':'')+'" style="left:'+pos(a0)+'%;width:'+(pos(a1)-pos(a0))+'%;background:var(--sev-'+b.key+')"></i>';
+    }).join('');
+    let h = '<div class="mx-esct">'
+      + '<div class="mx-esct-cab">'+qn(escH(nome))
+      + (bh ? '<span class="mx-esct-fx"><i style="background:var(--sev-'+bh.key+')"></i>'+escH(mxFaixaCurta(bh))+'</span>' : '')+'</div>'
+      + '<div class="mx-esct-val">'+qv(escH(String(hoje)))+'<span class="de">/'+fim+'</span>'
+      + (d!=null ? '<span class="mx-esct-d '+sentido+'">'+(d>0?'+':(d<0?'−':''))+(d===0?'=':Math.abs(d))+'</span>' : '')+'</div>'
+      + '<div class="mx-esct-ant">'+(ant!=null
+          ? 'antes <b>'+escH(String(ant))+'</b>'+(dataAnt?' · '+escH(dataAnt):'')+' — '+escH(variacao(ant, hoje, menorMelhor))
+            + (ba && bh && ba!==bh ? '<br>faixa: '+escH(mxFaixaCurta(ba))+' → '+escH(mxFaixaCurta(bh)) : '')
+          : 'primeira medida')+'</div>'
+      + '<div class="mx-esct-regua" aria-hidden="true">'+segs
+      + (ant!=null ? '<b class="ant" style="left:'+pos(ant)+'%"></b>' : '')
+      + '<b class="hoje" style="left:'+pos(hoje)+'%"></b></div>'
+      + '<div class="mx-esct-lim"><span>'+ini+'</span><span>'+fim+'</span></div>';
+    if (serie && serie.length>=3){
+      // escala local (mín–máx da série, com folga) para a forma da evolução aparecer
+      const lo = Math.max(ini, Math.min.apply(null, serie)-2), hi = Math.min(fim, Math.max.apply(null, serie)+2);
+      const W=170, H=36, xs = i => 5 + i*(W-10)/(serie.length-1), ys = v => H-5 - (v-lo)/((hi-lo)||1)*(H-10);
+      const pts = serie.map((v,i)=>xs(i).toFixed(1)+','+ys(v).toFixed(1));
+      h += '<div class="mx-esct-evo"><svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" aria-hidden="true"><polyline points="'+pts.join(' ')+'"/>'
+        + serie.map((v,i)=>'<circle cx="'+xs(i).toFixed(1)+'" cy="'+ys(v).toFixed(1)+'" r="'+(i===serie.length-1?3.2:2.2)+'"'+(i===serie.length-1?' class="hoje"':'')+'/>').join('')
+        + '</svg><span>'+escH(serie.join(' → '))+'</span></div>';
+    }
+    return h + '</div>';
+  }
+  // v2.5-J (item 2): imp=true monta a cópia para o papel (#mxEscoresImp, dentro do #printArea), com o mesmo conteúdo
+  function mxBlocoEscores(iief, pedt, imp){
+    if (iief==null && pedt==null) return '';
+    const p = (S.visita==='reav' && prev) ? prev : null;
+    const dataAnt = p ? dataDoCiclo(p) : '';
+    const serie = k => {
+      const hist = (S.serieEsc||[]).map(c=>c[k]).filter(v=>v!=null);
+      return hist.length>=2 ? hist.concat([k==='iief'?+iief:+pedt]) : null;
+    };
+    const cards = [];
+    if (iief!=null) cards.push(mxCartaoEscore('IIEF-5', +iief, p && p.iief!=null ? +p.iief : null, dataAnt, BANDS_DE, 5, 25, false, serie('iief')));
+    if (pedt!=null) cards.push(mxCartaoEscore('PEDT', +pedt, p && p.pedt!=null ? +p.pedt : null, dataAnt, BANDS_EP, 0, 20, true, serie('pedt')));
+    // ADAM (rastreio androgênico) — sem régua: positivo/negativo e nº de sintomas.
+    // v2.5-J (item 3): no retorno em que o ADAM não foi reaplicado, o cartão diz que o valor é o da
+    // consulta anterior (com a data), e não o de hoje.
+    const adamOn = !!(S.hasDE && Array.isArray(S.adam) && S.adam.length);
+    if (adamOn){
+      const a = S.adam.filter(v=>v!=='nenhum'), pa = p && Array.isArray(p.adam) ? p.adam.filter(v=>v!=='nenhum') : null;
+      const pos = adamPositivo(a), her = S.visita==='reav' && S.adamHerdado ? S.adamHerdado : null;
+      cards.push('<div class="mx-esct mx-esct-adam'+(her?' herdado':'')+'"><div class="mx-esct-cab">'+qn('ADAM')
+        + (her ? '<span class="mx-esct-her">não reaplicado hoje</span>' : '')+'</div>'
+        + '<div class="mx-esct-val"><span class="mx-esct-adv '+(pos?'pos':'')+'">'+(pos?'positivo':'negativo')+'</span></div>'
+        + '<div class="mx-esct-ant">'+(her
+            ? 'valor da consulta anterior'+(her.data?' ('+escH(her.data)+')':'')+' · <span class="nw">'+a.length+' de 10 sintomas</span>'
+            : '<span class="nw">'+a.length+' de 10 sintomas</span>'+(pa ? '<br>antes '+(adamPositivo(pa)?'positivo':'negativo')+' · '+pa.length+' de 10' : ''))+'</div></div>');
+    }
+    const tit = iief!=null && pedt!=null ? 'Classificação IIEF-5 e PEDT' : (iief!=null ? 'Classificação IIEF-5' : 'Classificação PEDT');
+    return '<div class="mx-escores'+(imp?' mx-escores-imp':'')+'" id="'+(imp?'mxEscoresImp':'mxEscores')+'"><div class="mx-eyebrow">'+(imp?'Escores':tit)+(p?' · hoje × consulta anterior':'')+'</div>'
+      + '<div class="mx-esc-grade n'+cards.length+(adamOn?' com-adam':'')+'">'+cards.join('')+'</div></div>';
+  }
+
+  // v2.5-J (item 2): o papel leva o mesmo bloco da tela (hoje, anterior com data, variação, faixa, régua e
+  // evolução) logo abaixo da pílula da classificação — no lugar da linha "IIEF-5 10/25". O #mxCdHead fica de fora
+  // da impressão; por isso a cópia mora no #printArea, escondida na tela.
+  function mxEscoresImpressao(html){
+    const pa = el('printArea'); if (!pa) return;
+    const rt = pa.querySelector('.result-top'), velho = el('mxEscoresImp');
+    if (velho) velho.remove();
+    if (rt){ rt.classList.toggle('com-esc', !!html); if (html) rt.insertAdjacentHTML('afterend', html); }
+  }
+
+  // v2.5-M: pílula da mudança do ciclo com cor pelo tipo — mantido (verde), dose aumentada (âmbar),
+  // dose reduzida / ajuste / troca (violeta), saída da via oral / intracavernosa (vermelho),
+  // travado por adesão ou efeito adverso (âmbar com contorno)
+  function tipoMudanca(c){
+    const t = String(c||'').toLowerCase();
+    if (/^protocolo mantido$/.test(t)) return ['mantido','Mudança do ciclo: protocolo mantido'];
+    if (/^dose aumentada/.test(t)) return ['sobe','Mudança do ciclo: dose aumentada'];
+    if (/^dose (reduzida|recalculada)|^mecanismo trocado|^protocolo ajustado/.test(t)) return ['ajuste','Mudança do ciclo: '+c];
+    if (/^saída da via oral|^intracavernosa pelo tefi/.test(t)) return ['sai','Mudança do ciclo: '+c];
+    if (/^mantido por adesão|^ajustado por efeito adverso/.test(t)) return ['trava','Mudança do ciclo: '+c];
+    return null;
+  }
   // ---- conduta em 3 níveis ----
   function mxPintaConduta(){
     const head = el('mxCdHead'), rc = el('resultsCard'); if (!head || !rc) return;
-    if (!mxEmResultados()){ head.style.display='none'; rc.classList.remove('mx-cd-on'); return; }
+    if (!mxEmResultados()){ head.style.display='none'; rc.classList.remove('mx-cd-on'); mxEscoresImpressao(''); return; }
     const txt = id=>((el(id)||{}).textContent||'').replace(/\s+/g,' ').trim();
     const reg = window.__mxReg || null;
     const proto = reg && reg.protocolo ? String(reg.protocolo) : '';
@@ -7756,6 +8250,10 @@ document.documentElement.setAttribute('data-tema',t)})();
         let t = '';
         if (cd==='ICI'){ const n = numDaFormulaIci(iciCodConsulta()) || 5; t = iciCurto(n); itensKit.push(['R'+n, t, '', true]); return; }
         else t = painelTxt(cd);
+        // v2.5-K: sigla autoexplicativa (BASE-T10, MOD-PAROX-20…) não ganha composição, mas a linha
+        // deixava o meio vazio — leva o modo de uso, curto
+        if (!t && siglaAuto(cd)) t = (/^BASE-T/.test(cd) ? 'cápsula matinal diária' : /^MOD-PAROX/.test(cd) ? 'uso contínuo pela manhã'
+          : /^MOD-DAPO/.test(cd) ? 'sob demanda, 1 a 3 h antes' : /^MOD-CLOMI/.test(cd) ? 'em dias alternados' : '');
         const tg = cd==='ONDAS' ? (/opcional/i.test(tag) ? 'opcional, custo à parte' : (tag ? tag.split(' — ')[0].toLowerCase() : '')) : '';
         itensKit.push([cd, t, tg]);
       });
@@ -7782,22 +8280,39 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     const chips = txt('marcador').split(' · ').map(s=>s.trim()).filter(c=>c && c.toLowerCase()!==vis.toLowerCase())
       .filter(c=>!linhaDE || !/^(ondas de choque|TEFI)/i.test(c));
-    const esc = [];
+    // v2.5-K (auditoria): "R5 · alprostadil…" partido no " · " virava dois chips com a composição duas vezes
+    for (let i=chips.length-2; i>=0; i--) if (/^R\d{1,2}$/.test(chips[i]) && /^[a-zà-ÿ(]/.test(chips[i+1])) chips.splice(i, 2, chips[i]+' · '+chips[i+1]);
     const iief = reg && reg.iief!=null ? reg.iief : null, pedt = reg && reg.pedt!=null ? reg.pedt : null;
-    if (iief!=null) esc.push(['IIEF-5', iief, prev && prev.iief!=null ? 'antes '+prev.iief : 'de 25']);
-    if (pedt!=null) esc.push(['PEDT', pedt, prev && prev.pedt!=null ? 'antes '+prev.pedt : 'de 20']);
+    const blocoEsc = mxBlocoEscores(iief, pedt);
     const alertas = el('altNote') && el('altNote').style.display!=='none' ? el('altNote').querySelectorAll('p').length : 0;
+    // v2.5-K (auditoria): título só em maiúsculas ("REPOSIÇÃO CONTRAINDICADA", "INTRACAVERNOSA") aparece em
+    // caixa de frase só no visual (CSS) — o texto continua igual; siglas e códigos (TEFI, DE-3) ficam como estão
+    const tituloCaixaAlta = /[A-ZÀ-Ý]{3}/.test(titulo) && !/[a-zà-ÿ]/.test(titulo);
+    const SIGLAS_TIT = /^(TEFI|ICI|PSA|LH|FSH|HCG|TRT|IIEF-5|IIEF|PEDT|ADAM|DUO|EP|DE|EAU)$/;
+    const tituloHtml = tituloCaixaAlta
+      ? titulo.split(/(\s+)/).map((w,i)=> /^\s+$/.test(w) ? w : ((/[\d\-+]/.test(w) || (SIGLAS_TIT.test(w) && !(w==='DE' && i>0))) ? '<span class="ac">'+escH(w)+'</span>' : escH(w))).join('')
+      : escH(titulo);
     head.innerHTML = '<div style="min-width:0">'
       + '<div class="mx-eyebrow">'+escH(['Conduta sugerida', vis, queixa].filter(Boolean).join(' · '))+'</div>'
-      + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+'">'+escH(titulo)+(etiqueta?' <span class="mx-cdtag">'+escH(etiqueta)+'</span>':'')+'</div>'
+      + '<div class="mx-cdproto'+(codigoCurto?'':' longo')+(tituloCaixaAlta?' frase':'')+'">'+tituloHtml+(etiqueta?' <span class="mx-cdtag">'+escH(etiqueta)+'</span>':'')+'</div>'
       + (sub && sub!==titulo ? '<div class="mx-cdtit">'+(ativo ? '<span class="sig-ativo">'+escH(sub)+'</span>' : escH(kitTag ? sub : explicaSiglas(sub)))+'</div>' : '')
+      + (kitTag && window.__mxNivelHint ? '<div class="mx-cdhint" id="mxNivelHint">'+escH(window.__mxNivelHint)+'</div>' : '')
       + (itensKit.length ? '<div class="mx-cdkit" id="mxCdKit">'+itensKit.map(([c,t,g,ici])=>'<span'+(ici?' class="ici" role="button" tabindex="0" aria-expanded="false" aria-label="'+escH(c)+': ver a composição completa" onclick="mxAbreIci(this,event)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();mxAbreIci(this,event)}"':'')+'>'+chipCor(c, iciDaConsulta() || (reg && reg.tefi && reg.tefi.formula) || '')+'<b>'+escH(c)+'</b>'+(t?'<em>'+escH(t)+'</em>':'')+(ici?'<s class="mx-exp" aria-hidden="true"></s>':'')+(g?'<i>'+escH(g)+'</i>':'')+'</span>').join('')+'</div>' : '')
-      + (chips.length ? '<div class="mx-chips">'+chips.map(c=>'<span class="mx-chip">'+escH(garanteSiglas(c, true))+'</span>').join('')+'</div>' : '')
+      + (chips.length ? '<div class="mx-chips">'+chips.map(c=>{ const t=tipoMudanca(c); return '<span class="mx-chip'+(t?' mud-'+t[0]:'')+'"'+(t?' title="'+escH(t[1])+'"':'')+'>'+escH(garanteSiglas(c, true))+'</span>'; }).join('')+'</div>' : '')
       + (st.length ? '<div class="mx-cdstatus" id="mxCdStatus">'+st.map(([c,n,v])=>'<span class="'+c+'"><b>'+escH(n)+'</b>'+escH(v)+'</span>').join('')+'</div>' : '')
       + (alertas ? '<button type="button" class="mx-alertas" id="mxVerAlertas">'+alertas+' alerta'+(alertas>1?'s':'')+' nesta conduta ↓</button>' : '')
       + '</div>'
-      + (esc.length ? '<div class="mx-scores">'+esc.map(([n,v,d])=>'<div class="mx-esc">'+qn(escH(n))+qv(escH(String(v)))+'<small>'+escH(d)+'</small></div>').join('')+'</div>' : '');
+      + blocoEsc;
     head.classList.add('sem-ativo');
+    head.classList.toggle('com-esc', !!blocoEsc);
+    rc.classList.toggle('mx-esc-on', !!blocoEsc);
+    // v2.5-K (auditoria): nos fluxos sem escore o bloco antigo repetia, logo abaixo, o título do cabeçalho
+    // numa pílula e a linha de recomendação — some só da tela quando é igual (o papel continua igual)
+    { const nT = t=>String(t||'').toLowerCase().replace(/\s+/g,' ').trim();
+      rc.classList.toggle('mx-rt-dup', !blocoEsc && !!titulo && (nT(classe)===nT(titulo) || nT(classe.split(' · ').pop())===nT(titulo)));
+      rc.classList.toggle('mx-rt-vazio', rc.classList.contains('mx-rt-dup') && !txt('classDesc'));
+      rc.classList.toggle('mx-reco-dup', !!sub && nT(txt('recoLine'))===nT(sub.replace(/^·\s*/,''))); }
+    mxEscoresImpressao(blocoEsc ? mxBlocoEscores(iief, pedt, true) : '');
     head.style.display = 'flex';
     rc.classList.add('mx-cd-on');
     const va = el('mxVerAlertas');

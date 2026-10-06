@@ -136,24 +136,46 @@ Fim da conduta: Concluir é o único botão principal; copiar/imprimir agrupados
 (`#mxAcoes`), WhatsApp/email maiores. Celular (< 600 px): ajustes
 inofensivos (o `display:contents` do trilho saiu na v2.5-H — fora do alvo).
 
-**Refino (v2.5-H) — alvo: desktop (1280–1920) e iPad (retrato e paisagem, toque).**
-Sem layout de celular (o bloco < 600 px só evita quebrar). Primeira intracavernosa: o
-"Protocolo prescrito" traz a dose (`iciDoseIndicada`; R5 sem dose = "dose inicial 0,1 mL
-(padrão da clínica)", o padrão marcado no TEFI; outra fórmula = "dose inicial a definir
-em consultório"). Via do paciente: código da fórmula (R10) no lugar de "ICI", ainda sem
-dose nem concentração (`.so-codigo`, dispensado no `teste_siglas`). Adesão com as
-palavras da pergunta (`rotAdesao(v, ici)`: oral "todos os dias…", intracavernosa
-"sempre como recomendado…") no histórico, prontuário, painel e relatório. Histórico:
-"Sequência de protocolos" só com códigos (`protCurto`, sem "(mantido)" nem repetição).
-ADAM "negativo — nenhum sintoma"; a 3ª linha da cópia não repete tipo de visita/
-intervalo; o bloco "Classificação IIEF-5" some da tela da conduta (fica na impressão).
-Toque: a linha da intracavernosa no cabeçalho abre a composição (`mxAbreIci`,
-`aria-expanded`); banco no cabeçalho (`#dbTag` em `#mxTopo`: ponto verde ou "Sem banco",
-toque abre `#mxDbPop` com "Configurar servidor"); `(hover:none) and (pointer:coarse)`
-esconde "?" e as teclas. Grade de impressão em 6 colunas (3 · 2×2 · 3+2, via `:has`).
-iPad em retrato (≤ 900 px): o trilho é um cabeçalho em grade — código + ações, pílulas
-de contexto + "Resumo do paciente" (recolhível, 3 colunas aberto), módulos em pílulas
-que quebram linha. Conferido no WebKit (Playwright) com viewport de iPad e toque.
+**Refino (v2.5-H).** Primeira intracavernosa: o "Protocolo prescrito" traz a dose
+(`iciDoseIndicada`; R5 sem dose = "dose inicial 0,1 mL (padrão da clínica)", o padrão
+marcado no TEFI; outra fórmula = "dose inicial a definir em consultório"). Via do
+paciente: código da fórmula (R10) no lugar de "ICI", ainda sem dose nem concentração
+(`.so-codigo`, dispensado no `teste_siglas`). Adesão com as palavras da pergunta
+(`rotAdesao(v, ici)`) no histórico, prontuário, painel e relatório. Histórico:
+"Sequência de protocolos" só com códigos (`protCurto`). ADAM "negativo — nenhum
+sintoma"; a 3ª linha da cópia não repete tipo de visita/intervalo. Composição da
+intracavernosa no cabeçalho abre com clique (`mxAbreIci`); banco no cabeçalho
+(`#dbTag` em `#mxTopo`, clique abre `#mxDbPop` com "Configurar servidor"); grade de
+impressão em 6 colunas (3 · 2×2 · 3+2, via `:has`).
+
+**Só desktop (v2.5-I).** A triagem (consultório) é usada só no desktop (1280–1920); o
+iPad usa a recepção. Não investir em layout de iPad/celular aqui: o layout de iPad em
+retrato e o bloco `(hover:none)` da v2.5-H saíram; abaixo de 900 px fica só a faixa
+simples da v2.5-G, e abaixo de 600 px só ajustes inofensivos.
+
+**Classificação na tela (v2.5-I).** O Dr. Marco julga a evolução pelo bloco de
+classificação: `mxBlocoEscores()` desenha no fim do cabeçalho da conduta
+(`#mxEscores`) um cartão por escore — IIEF-5 (de 25), PEDT (de 20, menor é melhor) e
+ADAM quando respondido — com o valor de hoje, o anterior e a data, a variação
+(`variacao()`), a faixa (`BANDS_DE`/`BANDS_EP`), a régua das faixas (○ anterior, ● hoje)
+e, com 3+ consultas, a linha da evolução (`S.serieEsc`, montada em
+`carregarHistorico`). Só exibição. Com o bloco novo, `.result-top` some só da tela
+(`.mx-esc-on`) e continua na impressão; nos fluxos sem IIEF/PEDT (hipogonadismo, TEFI,
+preenchimento…) o `.result-top` aparece na tela como antes (a v2.5-H o escondia).
+
+**Final (v2.5-J).** (1) Uma só nomenclatura de faixa: `faixaIief`/`faixaPedt`
+(painel, ficha/prontuário, histórico) derivam de `BANDS_DE`/`BANDS_EP` pela forma curta
+de `faixaCurtaDe()` — a mesma do bloco (`mxFaixaCurta`): severa · moderada · leve a
+moderada · leve · sem disfunção; EP improvável · provável · confirmada · intensa. Os nomes
+antigos ("disfunção grave", "limítrofe", "precocidade provável" com corte em 11) saíram.
+(2) Papel = tela: `mxEscoresImpressao()` põe no `#printArea`, logo abaixo da pílula, uma
+cópia do bloco (`#mxEscoresImp`, eyebrow "Escores"), escondida na tela do app; o
+`.result-top` ganha `.com-esc` e a linha "IIEF-5 10/25" (`#classDesc`) sai do papel. O
+CSS do bloco saiu do `@media screen` para valer também na impressão
+(`print-color-adjust:exact` mantém a régua). (3) ADAM não reaplicado no retorno
+(`refAdam` vazio): `S.adamHerdado = {data}` e o cartão diz "não reaplicado hoje · valor
+da consulta anterior (data)". O relatório e o prontuário continuam como antes. Só
+exibição; conduta e texto do prontuário inalterados.
 
 **Identificação:** obrigatórios o código, o telefone **e** o email (v2.5 — no
 consultório a consulta não chega à conduta sem os dois; a recepção continua
@@ -306,6 +328,75 @@ impressão; se o navegador bloquear a aba, imprime pela própria página.
 
 **Descartar** o atendimento interrompido confirma na própria faixa, nunca com
 `confirm()` nativo (pode estar bloqueado).
+
+**Nenhum `prompt()`/`confirm()`/`alert()` nativo (v2.5-K).** Os três apps usam
+o diálogo do próprio app: `mxDialogo({titulo, texto, ok, cancelar, perigo, campo, valor})`
+devolve uma Promise (true/false; com `campo`, o texto ou null). Esc cancela,
+Enter confirma, Tab fica preso no diálogo e o teclado do app é ignorado enquanto
+ele está aberto. Testes jsdom respondem clicando em `.mx-dlg-ov [data-v="1"]`
+(ver `teste_retorno.js` e `teste_kiosk.js`).
+
+**Recepção (v2.5-K):** iPad retrato (768/1024), paisagem e desktop. Idade, peso e
+altura em três roletas lado a lado (≥700 px). Lista de marcar com opção
+"nenhuma" (sintomas, comorbidades, remédios): sem nada marcado, o botão vira
+"Nenhuma delas — continuar" e grava `['nenhuma']` — o paciente sem sintomas não
+precisa procurar a última opção. Contador único: "Antes de entregar o tablet"
+nas telas da equipe e "Pergunta k de N" nas do paciente (o total só aparece
+depois da queixa). Triagem e financeiro são só desktop.
+
+**Retorno oral DE/DUO: o nível parte do ANTERIOR (v2.5-L, opção B do Dr. Marco).**
+Com IIEF-5 anterior e cápsula BASE-T anterior (kit; na falta, o número de DE-n/DUO-n):
+ganho ≥ 4 → mantém o nível que funcionou, mesmo se a faixa de hoje pedisse menos
+ou nenhuma cápsula (a via oral nunca é reduzida automaticamente; reduzir é decisão
+do médico na receita); ganho de 1 a 3 → sobe um nível a partir do anterior
+(BASE-T5 → T10 → T20); ganho de 1 a 3 que já chegou a 22+ → objetivo atingido,
+mantém sem subir; sem ganho → "Trocar mecanismo", sem reduzir (exceto já em 22+, v2.5-M: mantém); já em BASE-T20 com
+ganho < 4 → teto de escalonamento + TEFI (inclusive quando o nome do protocolo
+anterior não traz o nível, ex.: DUO-1D com BASE-T20). Adesão insuficiente ou
+efeito limitante (travado) → a cápsula fica exatamente no nível anterior, como o
+rótulo "(mantido)" diz. Não se aplica a intracavernosa (nunca regride), troca de
+queixa, nem sem IIEF-5 anterior (aí vale a faixa de hoje e o rótulo "Nível da
+cápsula recalculado pela faixa de hoje" da v2.5-K). Se a linha oral muda de código
+sem mudança de dose (ex.: DUO-3 → DUO-4), o rótulo é "Protocolo ajustado: X → Y",
+nunca "mantido". Teto de tadalafila 30 mg/dia: com BASE-T20, máximo 1 jato do
+SP-DE ou do SP-DUO (DE e DUO); com SP-DE e SP-DUO no mesmo kit, um alerta dá o
+total de jatos/dia somando os dois. Testes: `tests/teste_retorno_oral.js` (etapa
+7j) e R-14 a R-19 da regressão.
+
+**v2.5-M (aprovado pelo Dr. Marco em 06/10/2026).** (1) IIEF-5 ≥ 22 sem ganho
+(ganho < 4, inclusive queda) → objetivo atingido: mantém o protocolo, sem
+"Trocar mecanismo" e sem disparar o teto de escalonamento (R-20, R-21). Abaixo
+de 22, sem ganho continua "Trocar mecanismo". (2) Teto de tadalafila em todo
+lugar: com BASE-T20, SP-DE/SP-DUO saem como "MÁXIMO 1 JATO por dia" no cartão
+do kit, na receita e no relatório, e "Nunca mais de 1 jato por dia" na via do
+paciente (que continua sem dose em mg); com os dois sprays, o máximo vale
+somando os dois (`itemKit`, `jatosMaxDia`). (3) "Nível oral mantido",
+"Cápsula sobe de…", "Protocolo ajustado de…" e "objetivo atingido" são alertas
+visíveis (`RE_ALERTA`), e o cabeçalho da conduta explica o nível quando ele vem
+do ciclo anterior ("a faixa de hoje sozinha daria …"). Pílulas de mudança
+coloridas pelo tipo (`tipoMudanca`). Expansão curta das siglas nos alertas; o
+"Protocolo anterior" é expandido com o kit ANTERIOR (antes usava o de hoje).
+
+**Confiabilidade (v2.5-M).** Banco ilegível falha fechado (503, cópia
+`.corrompido-…`, nada gravado por cima; nos apps, faixa vermelha e retorno que
+não vira primeira avaliação). `/api/health` traz `banco`, `app`, `backupLocal`,
+`backupIcloud` e `alertas`, que viram a faixa no topo dos três apps. Reenvio
+com o mesmo `opId` não duplica. Fila do navegador: depois de 7 dias exige
+baixar a cópia antes de descartar; exportado há mais de 30 dias sai sozinho;
+nada não exportado é apagado. `scripts/instalar_launchd.sh` (auto-início e
+auto-reinício no Mac) e `scripts/conferir_restauracao.py` (backup restaura?).
+`testar.sh` roda `npm ci` em `tests/` se faltar o jsdom.
+
+**Toque duplo na recepção (v2.5-N).** Tocar numa opção avança sozinho 160 ms
+depois; cada tela avança uma vez só (`agendaAvanco`): o segundo toque só troca a
+resposta e o avanço não acontece se a tela já mudou (Continuar ou Voltar). No
+"novo ou retorno", enquanto confere o banco, um segundo toque é ignorado. Antes
+um toque duplo pulava a pergunta seguinte, inclusive o contato. Teste:
+`tests/teste_toque.js` (etapa 10 do `testar.sh`). Triagem e financeiro não têm avanço sozinho.
+O `teste_kiosk.js` tocava de novo 40 ms depois de cada toque e só passava da
+tela de várias escolhas quando o avanço em dobro a pulava (daí a falha
+intermitente "não chegou ao fim em 120 passos"); agora espera a tela trocar,
+marca e continua na tela de várias escolhas, e roda junto com as outras etapas.
 
 **O esquema medicamentoso anterior vem sempre do banco**, nunca do formulário
 da recepção.
