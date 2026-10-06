@@ -112,13 +112,15 @@ const tela = doc => doc.getElementById('quizCard').getAttribute('data-tela');
   console.log('aviso de ISRS');
   for (const q of ['emag', 'uro']) {
     const r = await roda({ id: 'J-' + q, codigo: 'JR' + q.toUpperCase(), respostas: { visita: 'primeira', queixa: q } }, true, { manter: true });
-    ok(!r.falha && !visivel(r.win.document.getElementById('avisoISRS')), q + ': aviso de ISRS escondido');
+    ok(!r.falha && !r.win.document.getElementById('resultsCard').textContent.includes('Paroxetina + clomipramina'), q + ': sem alerta de paroxetina + clomipramina');
     ok(r.caminho[r.caminho.length - 1] === 'notaFinal', q + ': também termina na nota do atendimento');
     r.win.close();
   }
   const rEp4 = await roda({ id: 'J-ep4', codigo: 'JREP4', respostas: { visita: 'primeira', queixa: 'ep', p0: 3, p1: 3, p2: 3, p3: 2, p4: 2, parox: 'sim' } }, true, { manter: true });
-  ok(!rEp4.falha && rEp4.conduta.protocolo === 'EP-4' && visivel(rEp4.win.document.getElementById('avisoISRS')),
-    'EP-4 (paroxetina + clomipramina): aviso de ISRS aparece');
+  // v2.5-P: um alerta só, curto, nas observações — e nunca o texto longo antigo
+  ok(!rEp4.falha && rEp4.conduta.protocolo === 'EP-4' && rEp4.win.document.getElementById('resultsCard').textContent.includes('Paroxetina + clomipramina: o spray não deve passar de 1 jato por dia.')
+    && !/Nunca associar paroxetina/.test(rEp4.win.document.body.textContent),
+    'EP-4 (paroxetina + clomipramina): alerta único de 1 jato aparece');
   rEp4.win.close();
 
   // ---- retorno: escolher o paciente numa lista -----------------------------

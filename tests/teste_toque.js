@@ -33,9 +33,10 @@ async function abre() {
     async ateNovoOuRetorno() { doc.getElementById('avancar').click(); await espera(250); },
     // preenche o contato e segue até a primeira pergunta de toque do paciente
     async passaContato() {
-      const inps = [...doc.querySelectorAll('.kcontato input')];
+      // v2.5-P: na primeira visita a tela também tem nome completo e nascimento (opcionais)
+      const campo = c => doc.querySelector('.kcontato input[data-campo="' + c + '"]');
       const disp = el => el.dispatchEvent(new win.Event('input', { bubbles: true }));
-      inps[0].value = 'TST'; disp(inps[0]); inps[1].value = '21988887766'; disp(inps[1]);
+      campo('iniciais').value = 'TST'; disp(campo('iniciais')); campo('telefone').value = '21988887766'; disp(campo('telefone'));
       doc.getElementById('avancar').click(); await espera(250);
       // "Tudo certo por aqui" (entrega do tablet) e a abertura vão no Continuar
       for (let k = 0; k < 6 && !doc.querySelector('.kopt, .knum'); k++) { doc.getElementById('avancar').click(); await espera(250); }

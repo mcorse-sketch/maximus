@@ -48,6 +48,7 @@ etapa "7g. retorno e questionários da recepção (v2.4) — nova queixa, ficha 
 etapa "7h. tela da conduta (v2.4) — situação de ondas/TEFI, racional curto e sem repetição" "node teste_conduta.js"
 etapa "7i. correções v2.5 — retorno sem perguntas do passado, painel enxuto, intracavernosa, contato, envio" "node teste_v25.js"
 etapa "7j. retorno oral DE/DUO (v2.5-L) — nível parte do anterior: mantém, sobe, teto, DUO, trava, intracavernosa" "node teste_retorno_oral.js"
+etapa "7k. ajustes v2.5-P — via do paciente sem regra interna, porquê de cada item, ondas, alerta 1 jato, pedido de exames" "node teste_v25p.js"
 etapa "8. tela de senha dos três apps" "node teste_sessao.js"
 etapa "9. servidor — acesso por perfil e rotas" "servidor"
 etapa "10. recepção — toque duplo avança uma tela só (v2.5-N)" "node teste_toque.js '$RECEP'"

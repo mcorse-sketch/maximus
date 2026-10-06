@@ -159,6 +159,8 @@ class Servidor(unittest.TestCase):
              {"medico": 200, "recepcao": 200, "financeiro": 403}),
             ("PUT", "/api/triagem/MX0999/atendido", {"atendido": True},
              {"medico": 404, "recepcao": 404, "financeiro": 403}),
+            ("PUT", "/api/triagem/MX0999/identificacao", {"nome": "Fulano de Tal"},
+             {"medico": 404, "recepcao": 403, "financeiro": 403}),
         ]
         for metodo, rota, corpo, esperado in casos:
             for perfil, codigo in esperado.items():
@@ -196,6 +198,38 @@ class Servidor(unittest.TestCase):
         st, j = self.req("GET", "/api/pacientes", token=m)
         p = [x for x in j["pacientes"] if x["codigo"] == "MX0200"][0]
         self.assertEqual((p["iniciais"], p["clinicos"]), ("RAM", 1))
+
+    def test_identificacao_nome_e_nascimento(self):
+        """v2.5-P: nome completo e nascimento — a recepcao grava no registro
+        dela, o medico completa depois (pedido de exames); o financeiro nunca
+        recebe esses dois campos (LGPD)."""
+        m, r, f = self.tok["medico"], self.tok["recepcao"], self.tok["financeiro"]
+        import datetime
+        hoje = datetime.date.today().isoformat()
+        self.req("POST", "/api/ciclo", {"codigo": "MX0400", "tipo": "recepcao", "linha": "recepcao", "dataLocal": hoje,
+                                        "iniciais": "JPS", "nome": "Joao P Silva", "nascimento": "1980-05-02"}, token=r)
+        self.req("POST", "/api/ciclo", {"codigo": "MX0400", "tipo": "primeira", "linha": "DE", "protocolo": "DE-2",
+                                        "custoIndice": 4}, token=m)
+        self.assertEqual(self.req("PUT", "/api/triagem/MX0400/identificacao", {"nascimento": "02/05/1980"}, token=m)[0], 400)
+        self.assertEqual(self.req("PUT", "/api/triagem/MX0400/identificacao", {}, token=m)[0], 400)
+        st, j = self.req("PUT", "/api/triagem/MX0400/identificacao", {"nome": "  Joao   Pedro Silva ", "nascimento": "1980-05-02"}, token=m)
+        self.assertEqual((st, j["gravado"]), (200, ["nascimento", "nome"]))
+        st, j = self.req("GET", "/api/historico/MX0400", token=m)
+        clin = [c for c in j["ciclos"] if c["tipo"] != "recepcao"][-1]
+        self.assertEqual((clin["nome"], clin["nascimento"]), ("Joao Pedro Silva", "1980-05-02"))
+        # financeiro: o resto do registro chega (custo incluso), nome e nascimento nao
+        for rota, chave in (("/api/historico/MX0400", "ciclos"), ("/api/triagens-hoje", "triagens")):
+            st, j = self.req("GET", rota, token=f)
+            self.assertEqual(st, 200)
+            for c in j[chave]:
+                self.assertNotIn("nome", c)
+                self.assertNotIn("nascimento", c)
+        st, j = self.req("GET", "/api/historico/MX0400", token=f)
+        self.assertEqual([c.get("custoIndice") for c in j["ciclos"] if c["tipo"] != "recepcao"], [4])
+        st, j = self.req("GET", "/api/paciente/MX0400", token=f)
+        self.assertNotIn("nome", j["ciclo"])
+        st, j = self.req("GET", "/api/triagens-hoje", token=r)
+        self.assertIn("Joao P Silva", [t.get("nome") for t in j["triagens"]])
 
     def test_concluir_atendimento_marca_sem_apagar(self):
         """v2.4: 'Concluir atendimento' marca o registro da recepcao de hoje

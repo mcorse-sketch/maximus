@@ -69,7 +69,23 @@ PERMISSOES = {
     ("POST", "ciclo"):         {"medico", "recepcao"},
     ("PUT", "nota"):           {"medico"},
     ("PUT", "atendido"):       {"medico", "recepcao"},
+    ("PUT", "identificacao"):  {"medico"},
 }
+
+# v2.5-P (LGPD): nome completo e data de nascimento existem so para o pedido de
+# exames e o cabecalho do medico. O perfil financeiro nunca os recebe.
+CAMPOS_IDENTIDADE = ("nome", "nascimento")
+NASC_OK = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def sem_identidade(obj, perfil):
+    if perfil != "financeiro":
+        return obj
+    if isinstance(obj, list):
+        return [sem_identidade(x, perfil) for x in obj]
+    if isinstance(obj, dict):
+        return {k: v for k, v in obj.items() if k not in CAMPOS_IDENTIDADE}
+    return obj
 
 _sessoes = {}              # token -> (perfil, expira_em)
 _falhas = {}               # endereco -> (erros seguidos, bloqueado_ate)
@@ -544,7 +560,7 @@ def fila_ficticia(n, sorteio=None):
                    "satisfRelatada": sorteio.randint(3, 10), "revisar": sorteio.random() < 0.15,
                    "dificuldade": None, "leuTermo": False, "retornoPreench": None, "adam": [],
                    "iief": None, "pedt": None, "respostas": {}}
-            for campo in ("iniciais", "telefone", "email", "medidas"):
+            for campo in ("iniciais", "telefone", "email", "medidas", "nome", "nascimento"):
                 reg[campo] = rec_ant[-1].get(campo) if rec_ant else None
             if queixa in ("de", "ambos", "libido"):
                 t = sorteio.randint(8, 22)
@@ -797,10 +813,13 @@ class Handler(BaseHTTPRequestHandler):
                 self._json({"erro": "senha necessaria"}, 401)
             return
 
+        perfil_get = None
         if caminho.startswith("/api/") and not caminho.startswith("/api/triagem/"):
             rota = caminho[len("/api/"):].split("/")[0]
-            if ("GET", rota) in PERMISSOES and not self._autoriza("GET", rota):
-                return
+            if ("GET", rota) in PERMISSOES:
+                perfil_get = self._autoriza("GET", rota)
+                if not perfil_get:
+                    return
 
         if caminho.startswith("/api/paciente/"):
             cod = caminho[len("/api/paciente/"):].upper()
@@ -813,7 +832,7 @@ class Handler(BaseHTTPRequestHandler):
             if not ciclos:
                 self._json({"ciclo": None, "total": 0}, 404)
                 return
-            self._json({"ciclo": ciclos[-1], "total": len(ciclos),
+            self._json({"ciclo": sem_identidade(ciclos[-1], perfil_get), "total": len(ciclos),
                         "ultimaData": ciclos[-1].get("data")})
             return
 
@@ -824,7 +843,7 @@ class Handler(BaseHTTPRequestHandler):
                 return
             with _lock:
                 dados = carregar()
-            self._json({"ciclos": dados["pacientes"].get(cod, [])})
+            self._json({"ciclos": sem_identidade(dados["pacientes"].get(cod, []), perfil_get)})
             return
 
         if caminho == "/api/triagens-hoje":
@@ -841,7 +860,7 @@ class Handler(BaseHTTPRequestHandler):
                     if dia == hoje:
                         fila.append(c)
             fila.sort(key=lambda x: x.get("data", ""))
-            self._json({"triagens": fila})
+            self._json({"triagens": sem_identidade(fila, perfil_get)})
             return
 
         if caminho == "/api/pacientes":
@@ -940,6 +959,49 @@ class Handler(BaseHTTPRequestHandler):
         print("  %s: %s" % ("atendido" if marca else "devolvido a fila", cod))
         self._json({"ok": True, "codigo": cod, "atendido": marca, "recepcao": alvo.get("data")})
 
+    def _put_identificacao(self, cod):
+        """PUT /api/triagem/<codigo>/identificacao — v2.5-P. O medico informa
+        nome completo e/ou data de nascimento (AAAA-MM-DD) depois de gravada a
+        conduta, no pedido de exames. Entra no registro clinico mais recente
+        (ou no mais recente de qualquer tipo). So grava campo preenchido;
+        nunca apaga."""
+        if not self._autoriza("PUT", "identificacao"):
+            return
+        cod = cod.upper()
+        if not COD_OK.match(cod):
+            self._json({"erro": "codigo invalido"}, 400)
+            return
+        corpo = self._corpo_json()
+        if not isinstance(corpo, dict):
+            self._json({"erro": "corpo invalido"}, 400)
+            return
+        novo = {}
+        nome = corpo.get("nome")
+        if isinstance(nome, str) and nome.strip():
+            novo["nome"] = " ".join(nome.split())[:120]
+        nasc = corpo.get("nascimento")
+        if isinstance(nasc, str) and nasc.strip():
+            if not NASC_OK.match(nasc.strip()):
+                self._json({"erro": "nascimento deve ser AAAA-MM-DD"}, 400)
+                return
+            novo["nascimento"] = nasc.strip()
+        if not novo:
+            self._json({"erro": "nada para gravar"}, 400)
+            return
+        with _lock:
+            dados = carregar()
+            ciclos = dados["pacientes"].get(cod) or []
+            if not ciclos:
+                self._json({"erro": "paciente nao encontrado"}, 404)
+                return
+            clin = [c for c in ciclos if c.get("tipo") != "recepcao"]
+            alvo = (clin or ciclos)[-1]
+            backup_do_dia()
+            alvo.update(novo)
+            gravar(dados)
+        print("  identificacao: %s (%s)" % (cod, ", ".join(sorted(novo))))
+        self._json({"ok": True, "codigo": cod, "gravado": sorted(novo)})
+
     def do_PUT(self):
         self._protegido(self._do_PUT)
 
@@ -952,6 +1014,10 @@ class Handler(BaseHTTPRequestHandler):
         ma = re.match(r"^/api/triagem/([^/]+)/atendido$", caminho)
         if ma:
             self._put_atendido(ma.group(1))
+            return
+        mi = re.match(r"^/api/triagem/([^/]+)/identificacao$", caminho)
+        if mi:
+            self._put_identificacao(mi.group(1))
             return
         m = re.match(r"^/api/triagem/([^/]+)/nota$", caminho)
         if not m:

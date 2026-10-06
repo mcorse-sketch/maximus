@@ -2,7 +2,7 @@
  "versao": 1,
  "descricao": "Banco de teste fictício (40 pacientes, MX9101–MX9140). Carregar com: python3 servidor_maximus.py --carregar-teste",
  "referencia": "2026-10-06",
- "geradoEm": "2026-10-06T10:26:20.958Z",
+ "geradoEm": "2026-10-06T16:14:29.215Z",
  "pacientes": {
   "MX9101": [
    {
@@ -11,6 +11,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "ARF",
+    "nome": "Antônio Ribeiro Fonseca",
+    "nascimento": "1960-02-15",
     "telefone": "(21)90000-9101",
     "email": "teste9101@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -64,6 +66,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -112,7 +115,7 @@
     "iniciais": "ARF",
     "telefone": "(21)90000-9101",
     "email": "teste9101@exemplo.invalid",
-    "opId": "MX9101-primeira-2026-01-31T12:10:00.981Z",
+    "opId": "MX9101-primeira-2026-01-31T12:10:00.972Z",
     "dataLocal": "2026-01-31",
     "demo": true
    },
@@ -122,6 +125,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "ARF",
+    "nome": "Antônio Ribeiro Fonseca",
+    "nascimento": "1960-02-15",
     "telefone": "(21)90000-9101",
     "email": "teste9101@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -174,6 +179,7 @@
      "NOITE-1",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "INTRACAVERNOSA",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -224,7 +230,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9101-reavaliacao-2026-04-19T13:30:00.809Z",
+    "opId": "MX9101-reavaliacao-2026-04-19T13:30:00.753Z",
     "dataLocal": "2026-04-19",
     "demo": true
    }
@@ -236,6 +242,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "CMS",
+    "nome": "Carlos Mendes Souza",
+    "nascimento": "1974-07-22",
     "telefone": "(21)90000-9102",
     "email": "teste9102@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -289,6 +297,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -336,7 +345,7 @@
     "iniciais": "CMS",
     "telefone": "(21)90000-9102",
     "email": "teste9102@exemplo.invalid",
-    "opId": "MX9102-primeira-2025-11-30T17:00:00.754Z",
+    "opId": "MX9102-primeira-2025-11-30T17:00:00.692Z",
     "dataLocal": "2025-11-30",
     "demo": true
    },
@@ -346,6 +355,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "CMS",
+    "nome": "Carlos Mendes Souza",
+    "nascimento": "1974-07-22",
     "telefone": "(21)90000-9102",
     "email": "teste9102@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -399,6 +410,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-3",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -443,7 +455,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9102-reavaliacao-2026-02-12T17:30:00.613Z",
+    "opId": "MX9102-reavaliacao-2026-02-12T17:30:00.549Z",
     "dataLocal": "2026-02-12",
     "demo": true
    },
@@ -453,6 +465,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "CMS",
+    "nome": "Carlos Mendes Souza",
+    "nascimento": "1974-07-22",
     "telefone": "(21)90000-9102",
     "email": "teste9102@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -506,6 +520,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-3",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -550,7 +565,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9102-reavaliacao-2026-05-09T18:00:00.645Z",
+    "opId": "MX9102-reavaliacao-2026-05-09T18:00:00.583Z",
     "dataLocal": "2026-05-09",
     "demo": true
    }
@@ -562,6 +577,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "JPL",
+    "nome": "João Pedro Lacerda",
+    "nascimento": "1967-12-02",
     "telefone": "(21)90000-9103",
     "email": "teste9103@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -615,6 +632,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -664,7 +682,7 @@
     "iniciais": "JPL",
     "telefone": "(21)90000-9103",
     "email": "teste9103@exemplo.invalid",
-    "opId": "MX9103-primeira-2026-03-15T11:40:00.771Z",
+    "opId": "MX9103-primeira-2026-03-15T11:40:00.592Z",
     "dataLocal": "2026-03-15",
     "demo": true
    },
@@ -674,6 +692,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "JPL",
+    "nome": "João Pedro Lacerda",
+    "nascimento": "1967-12-02",
     "telefone": "(21)90000-9103",
     "email": "teste9103@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -728,6 +748,7 @@
      "ONDAS",
      "TEFI"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-3",
     "mudanca": "Escalonar de mecanismo (intracavernosa / terapia)",
@@ -774,7 +795,7 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 7,
-    "opId": "MX9103-reavaliacao-2026-05-28T12:00:00.589Z",
+    "opId": "MX9103-reavaliacao-2026-05-28T12:00:00.511Z",
     "dataLocal": "2026-05-28",
     "demo": true
    }
@@ -786,6 +807,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "RTB",
+    "nome": "Rafael Teixeira Barros",
+    "nascimento": "1979-05-09",
     "telefone": "(21)90000-9104",
     "email": "teste9104@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -838,6 +861,7 @@
      "NOITE-1",
      "SP-DE"
     ],
+    "ondasSessoes": null,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -883,7 +907,7 @@
     "iniciais": "RTB",
     "telefone": "(21)90000-9104",
     "email": "teste9104@exemplo.invalid",
-    "opId": "MX9104-primeira-2026-04-09T14:00:00.667Z",
+    "opId": "MX9104-primeira-2026-04-09T14:00:00.556Z",
     "dataLocal": "2026-04-09",
     "demo": true
    },
@@ -893,6 +917,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "RTB",
+    "nome": "Rafael Teixeira Barros",
+    "nascimento": "1979-05-09",
     "telefone": "(21)90000-9104",
     "email": "teste9104@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -946,6 +972,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-2",
     "mudanca": "Subir um nível de BASE",
@@ -988,7 +1015,7 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 7,
-    "opId": "MX9104-reavaliacao-2026-06-16T14:15:00.596Z",
+    "opId": "MX9104-reavaliacao-2026-06-16T14:15:00.529Z",
     "dataLocal": "2026-06-16",
     "demo": true
    }
@@ -1000,6 +1027,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "LGV",
+    "nome": "Leonardo Gomes Vieira",
+    "nascimento": "1981-10-16",
     "telefone": "(21)90000-9105",
     "email": "teste9105@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1052,6 +1081,7 @@
      "NOITE-1",
      "SP-DE"
     ],
+    "ondasSessoes": null,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -1097,7 +1127,7 @@
     "iniciais": "LGV",
     "telefone": "(21)90000-9105",
     "email": "teste9105@exemplo.invalid",
-    "opId": "MX9105-primeira-2026-05-19T19:00:00.670Z",
+    "opId": "MX9105-primeira-2026-05-19T19:00:00.581Z",
     "dataLocal": "2026-05-19",
     "demo": true
    },
@@ -1107,6 +1137,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "LGV",
+    "nome": "Leonardo Gomes Vieira",
+    "nascimento": "1981-10-16",
     "telefone": "(21)90000-9105",
     "email": "teste9105@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1160,6 +1192,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-2",
     "mudanca": "Nenhuma — manter e resolver a causa",
@@ -1204,7 +1237,7 @@
     ],
     "satisf": 6,
     "nps": 8,
-    "opId": "MX9105-reavaliacao-2026-07-20T19:20:00.616Z",
+    "opId": "MX9105-reavaliacao-2026-07-20T19:20:00.568Z",
     "dataLocal": "2026-07-20",
     "demo": true
    }
@@ -1216,6 +1249,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "TAN",
+    "nome": "Thiago Almeida Nunes",
+    "nascimento": "1997-03-23",
     "telefone": "(21)90000-9106",
     "email": "teste9106@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1268,6 +1303,7 @@
      "NOITE-1",
      "SP-DE"
     ],
+    "ondasSessoes": null,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -1313,7 +1349,7 @@
     "iniciais": "TAN",
     "telefone": "(21)90000-9106",
     "email": "teste9106@exemplo.invalid",
-    "opId": "MX9106-primeira-2026-07-02T21:00:00.674Z",
+    "opId": "MX9106-primeira-2026-07-02T21:00:00.555Z",
     "dataLocal": "2026-07-02",
     "demo": true
    }
@@ -1325,6 +1361,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "EMC",
+    "nome": "Eduardo Moreira Campos",
+    "nascimento": "1971-08-03",
     "telefone": "(21)90000-9107",
     "email": "teste9107@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1378,6 +1416,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -1425,7 +1464,7 @@
     "iniciais": "EMC",
     "telefone": "(21)90000-9107",
     "email": "teste9107@exemplo.invalid",
-    "opId": "MX9107-primeira-2025-10-21T13:00:00.727Z",
+    "opId": "MX9107-primeira-2025-10-21T13:00:00.624Z",
     "dataLocal": "2025-10-21",
     "demo": true
    },
@@ -1435,6 +1474,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "EMC",
+    "nome": "Eduardo Moreira Campos",
+    "nascimento": "1971-08-03",
     "telefone": "(21)90000-9107",
     "email": "teste9107@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1488,6 +1529,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-1",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -1532,7 +1574,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9107-reavaliacao-2025-12-30T13:00:00.592Z",
+    "opId": "MX9107-reavaliacao-2025-12-30T13:00:00.540Z",
     "dataLocal": "2025-12-30",
     "demo": true
    },
@@ -1542,6 +1584,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "EMC",
+    "nome": "Eduardo Moreira Campos",
+    "nascimento": "1971-08-03",
     "telefone": "(21)90000-9107",
     "email": "teste9107@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1595,6 +1639,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-1",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -1639,7 +1684,7 @@
     "eaQuais": [],
     "satisf": 10,
     "nps": 10,
-    "opId": "MX9107-reavaliacao-2026-03-24T13:20:00.583Z",
+    "opId": "MX9107-reavaliacao-2026-03-24T13:20:00.559Z",
     "dataLocal": "2026-03-24",
     "demo": true
    }
@@ -1651,6 +1696,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "OBF",
+    "nome": "Otávio Bastos Freitas",
+    "nascimento": "1976-01-10",
     "telefone": "(21)90000-9108",
     "email": "teste9108@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1704,6 +1751,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -1751,7 +1799,7 @@
     "iniciais": "OBF",
     "telefone": "(21)90000-9108",
     "email": "teste9108@exemplo.invalid",
-    "opId": "MX9108-primeira-2026-08-07T16:30:00.733Z",
+    "opId": "MX9108-primeira-2026-08-07T16:30:00.632Z",
     "dataLocal": "2026-08-07",
     "demo": true
    }
@@ -1763,6 +1811,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "HSD",
+    "nome": "Henrique Santos Duarte",
+    "nascimento": "1977-06-17",
     "telefone": "(21)90000-9109",
     "email": "teste9109@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1820,6 +1870,7 @@
      "SP-DE",
      "LABS"
     ],
+    "ondasSessoes": null,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -1867,7 +1918,7 @@
     "iniciais": "HSD",
     "telefone": "(21)90000-9109",
     "email": "teste9109@exemplo.invalid",
-    "opId": "MX9109-primeira-2026-08-22T18:40:00.762Z",
+    "opId": "MX9109-primeira-2026-08-22T18:40:00.677Z",
     "dataLocal": "2026-08-22",
     "demo": true
    }
@@ -1879,6 +1930,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "GIP",
+    "nome": "Gustavo Ivo Pires",
+    "nascimento": "1987-11-24",
     "telefone": "(21)90000-9110",
     "email": "teste9110@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -1931,6 +1984,7 @@
      "NOITE-1",
      "SP-DE"
     ],
+    "ondasSessoes": null,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -1976,7 +2030,7 @@
     "iniciais": "GIP",
     "telefone": "(21)90000-9110",
     "email": "teste9110@exemplo.invalid",
-    "opId": "MX9110-primeira-2026-09-03T12:30:00.659Z",
+    "opId": "MX9110-primeira-2026-09-03T12:30:00.622Z",
     "dataLocal": "2026-09-03",
     "demo": true
    }
@@ -1988,6 +2042,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "NCR",
+    "nome": "Nelson Cardoso Rocha",
+    "nascimento": "1958-04-04",
     "telefone": "(21)90000-9111",
     "email": "teste9111@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -2041,6 +2097,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -2089,7 +2146,7 @@
     "iniciais": "NCR",
     "telefone": "(21)90000-9111",
     "email": "teste9111@exemplo.invalid",
-    "opId": "MX9111-primeira-2026-06-08T11:20:00.709Z",
+    "opId": "MX9111-primeira-2026-06-08T11:20:00.687Z",
     "dataLocal": "2026-06-08",
     "demo": true
    }
@@ -2101,6 +2158,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "VSO",
+    "nome": "Vítor Silveira Oliveira",
+    "nascimento": "1973-09-11",
     "telefone": "(21)90000-9112",
     "email": "teste9112@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -2154,6 +2213,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -2201,7 +2261,7 @@
     "iniciais": "VSO",
     "telefone": "(21)90000-9112",
     "email": "teste9112@exemplo.invalid",
-    "opId": "MX9112-primeira-2026-08-05T13:40:00.694Z",
+    "opId": "MX9112-primeira-2026-08-05T13:40:00.777Z",
     "dataLocal": "2026-08-05",
     "demo": true
    },
@@ -2211,6 +2271,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "VSO",
+    "nome": "Vítor Silveira Oliveira",
+    "nascimento": "1973-09-11",
     "telefone": "(21)90000-9112",
     "email": "teste9112@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -2254,6 +2316,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "PAL",
+    "nome": "Paulo Andrade Lima",
+    "nascimento": "1965-02-18",
     "telefone": "(21)90000-9113",
     "email": "teste9113@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -2297,6 +2361,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "BRM",
+    "nome": "Bruno Rezende Machado",
+    "nascimento": "1984-07-25",
     "telefone": "(21)90000-9114",
     "email": "teste9114@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -2349,6 +2415,7 @@
      "NOITE-1",
      "SP-DE"
     ],
+    "ondasSessoes": null,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -2394,7 +2461,7 @@
     "iniciais": "BRM",
     "telefone": "(21)90000-9114",
     "email": "teste9114@exemplo.invalid",
-    "opId": "MX9114-primeira-2026-09-11T20:10:00.651Z",
+    "opId": "MX9114-primeira-2026-09-11T20:10:00.710Z",
     "dataLocal": "2026-09-11",
     "demo": true
    }
@@ -2406,6 +2473,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "FDS",
+    "nome": "Felipe Dias Siqueira",
+    "nascimento": "1991-12-05",
     "telefone": "(21)90000-9115",
     "email": "teste9115@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -2458,6 +2527,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -2501,7 +2571,7 @@
     "iniciais": "FDS",
     "telefone": "(21)90000-9115",
     "email": "teste9115@exemplo.invalid",
-    "opId": "MX9115-primeira-2025-12-20T22:00:00.748Z",
+    "opId": "MX9115-primeira-2025-12-20T22:00:00.778Z",
     "dataLocal": "2025-12-20",
     "demo": true
    },
@@ -2511,6 +2581,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "FDS",
+    "nome": "Felipe Dias Siqueira",
+    "nascimento": "1991-12-05",
     "telefone": "(21)90000-9115",
     "email": "teste9115@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -2563,6 +2635,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": "EP-2",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -2603,7 +2676,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 9,
-    "opId": "MX9115-reavaliacao-2026-02-28T22:00:00.560Z",
+    "opId": "MX9115-reavaliacao-2026-02-28T22:00:00.522Z",
     "dataLocal": "2026-02-28",
     "demo": true
    },
@@ -2613,6 +2686,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "FDS",
+    "nome": "Felipe Dias Siqueira",
+    "nascimento": "1991-12-05",
     "telefone": "(21)90000-9115",
     "email": "teste9115@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -2664,6 +2739,7 @@
      "NOITE-1",
      "SP-DUO"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": "EP-2",
     "mudanca": "Subir dose de EP ou somar tópico",
@@ -2704,7 +2780,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9115-reavaliacao-2026-05-09T21:40:00.567Z",
+    "opId": "MX9115-reavaliacao-2026-05-09T21:40:00.511Z",
     "dataLocal": "2026-05-09",
     "demo": true
    }
@@ -2716,6 +2792,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "ICT",
+    "nome": "Igor Costa Tavares",
+    "nascimento": "1985-05-12",
     "telefone": "(21)90000-9116",
     "email": "teste9116@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -2767,6 +2845,7 @@
      "SP-DUO",
      "NOITE-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -2810,7 +2889,7 @@
     "iniciais": "ICT",
     "telefone": "(21)90000-9116",
     "email": "teste9116@exemplo.invalid",
-    "opId": "MX9116-primeira-2026-04-29T15:00:00.753Z",
+    "opId": "MX9116-primeira-2026-04-29T15:00:00.674Z",
     "dataLocal": "2026-04-29",
     "demo": true
    },
@@ -2820,6 +2899,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "ICT",
+    "nome": "Igor Costa Tavares",
+    "nascimento": "1985-05-12",
     "telefone": "(21)90000-9116",
     "email": "teste9116@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -2871,6 +2952,7 @@
      "PRESERV",
      "NOITE-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": "EP-1",
     "mudanca": "Subir dose de EP ou somar tópico",
@@ -2911,7 +2993,7 @@
     "eaQuais": [],
     "satisf": 8,
     "nps": 9,
-    "opId": "MX9116-reavaliacao-2026-07-03T15:10:00.563Z",
+    "opId": "MX9116-reavaliacao-2026-07-03T15:10:00.524Z",
     "dataLocal": "2026-07-03",
     "demo": true
    }
@@ -2923,6 +3005,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "MAV",
+    "nome": "Marcelo Araújo Viana",
+    "nascimento": "1988-10-19",
     "telefone": "(21)90000-9117",
     "email": "teste9117@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -2975,6 +3059,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -3018,7 +3103,7 @@
     "iniciais": "MAV",
     "telefone": "(21)90000-9117",
     "email": "teste9117@exemplo.invalid",
-    "opId": "MX9117-primeira-2026-03-20T20:30:00.752Z",
+    "opId": "MX9117-primeira-2026-03-20T20:30:00.620Z",
     "dataLocal": "2026-03-20",
     "demo": true
    },
@@ -3028,6 +3113,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "MAV",
+    "nome": "Marcelo Araújo Viana",
+    "nascimento": "1988-10-19",
     "telefone": "(21)90000-9117",
     "email": "teste9117@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3081,6 +3168,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": "EP-3",
     "mudanca": "Subir dose de EP ou somar tópico",
@@ -3121,7 +3209,7 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 6,
-    "opId": "MX9117-reavaliacao-2026-05-25T20:30:00.568Z",
+    "opId": "MX9117-reavaliacao-2026-05-25T20:30:00.539Z",
     "dataLocal": "2026-05-25",
     "demo": true
    }
@@ -3133,6 +3221,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "SLB",
+    "nome": "Samuel Lopes Batista",
+    "nascimento": "1999-03-26",
     "telefone": "(21)90000-9118",
     "email": "teste9118@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3184,6 +3274,7 @@
      "SP-DUO",
      "NOITE-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -3227,7 +3318,7 @@
     "iniciais": "SLB",
     "telefone": "(21)90000-9118",
     "email": "teste9118@exemplo.invalid",
-    "opId": "MX9118-primeira-2026-08-15T23:00:00.747Z",
+    "opId": "MX9118-primeira-2026-08-15T23:00:00.637Z",
     "dataLocal": "2026-08-15",
     "demo": true
    }
@@ -3239,6 +3330,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "DCG",
+    "nome": "Diego Carvalho Guimarães",
+    "nascimento": "1981-08-06",
     "telefone": "(21)90000-9119",
     "email": "teste9119@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3291,6 +3384,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -3334,7 +3428,7 @@
     "iniciais": "DCG",
     "telefone": "(21)90000-9119",
     "email": "teste9119@exemplo.invalid",
-    "opId": "MX9119-primeira-2026-07-23T14:45:00.740Z",
+    "opId": "MX9119-primeira-2026-07-23T14:45:00.693Z",
     "dataLocal": "2026-07-23",
     "demo": true
    }
@@ -3346,6 +3440,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "RPN",
+    "nome": "Renato Pereira Neves",
+    "nascimento": "1987-01-13",
     "telefone": "(21)90000-9120",
     "email": "teste9120@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3398,6 +3494,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -3441,7 +3538,7 @@
     "iniciais": "RPN",
     "telefone": "(21)90000-9120",
     "email": "teste9120@exemplo.invalid",
-    "opId": "MX9120-primeira-2026-02-18T19:00:00.753Z",
+    "opId": "MX9120-primeira-2026-02-18T19:00:00.678Z",
     "dataLocal": "2026-02-18",
     "demo": true
    },
@@ -3451,6 +3548,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "RPN",
+    "nome": "Renato Pereira Neves",
+    "nascimento": "1987-01-13",
     "telefone": "(21)90000-9120",
     "email": "teste9120@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3504,6 +3603,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": "EP-3",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -3546,7 +3646,7 @@
     ],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9120-reavaliacao-2026-04-29T19:15:00.582Z",
+    "opId": "MX9120-reavaliacao-2026-04-29T19:15:00.516Z",
     "dataLocal": "2026-04-29",
     "demo": true
    }
@@ -3558,6 +3658,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "AJT",
+    "nome": "André Jordão Torres",
+    "nascimento": "1993-06-20",
     "telefone": "(21)90000-9121",
     "email": "teste9121@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3610,6 +3712,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -3653,7 +3756,7 @@
     "iniciais": "AJT",
     "telefone": "(21)90000-9121",
     "email": "teste9121@exemplo.invalid",
-    "opId": "MX9121-primeira-2026-07-28T21:20:00.768Z",
+    "opId": "MX9121-primeira-2026-07-28T21:20:00.622Z",
     "dataLocal": "2026-07-28",
     "demo": true
    },
@@ -3663,6 +3766,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "AJT",
+    "nome": "André Jordão Torres",
+    "nascimento": "1993-06-20",
     "telefone": "(21)90000-9121",
     "email": "teste9121@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3706,6 +3811,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "LMO",
+    "nome": "Lucas Martins Oliveira",
+    "nascimento": "1995-11-27",
     "telefone": "(21)90000-9122",
     "email": "teste9122@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -3749,6 +3856,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "CEF",
+    "nome": "César Esteves Figueiredo",
+    "nascimento": "1978-04-07",
     "telefone": "(21)90000-9123",
     "email": "teste9123@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -3808,6 +3917,7 @@
      "SP-DE",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -3853,7 +3963,7 @@
     "iniciais": "CEF",
     "telefone": "(21)90000-9123",
     "email": "teste9123@exemplo.invalid",
-    "opId": "MX9123-primeira-2025-11-10T12:00:00.975Z",
+    "opId": "MX9123-primeira-2025-11-10T12:00:00.900Z",
     "dataLocal": "2025-11-10",
     "demo": true
    },
@@ -3863,6 +3973,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "CEF",
+    "nome": "César Esteves Figueiredo",
+    "nascimento": "1978-04-07",
     "telefone": "(21)90000-9123",
     "email": "teste9123@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -3922,6 +4034,7 @@
      "SP-DE",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": "DUO-3",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -3964,7 +4077,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9123-reavaliacao-2026-01-17T12:20:00.757Z",
+    "opId": "MX9123-reavaliacao-2026-01-17T12:20:01.186Z",
     "dataLocal": "2026-01-17",
     "demo": true
    },
@@ -3974,6 +4087,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "CEF",
+    "nome": "César Esteves Figueiredo",
+    "nascimento": "1978-04-07",
     "telefone": "(21)90000-9123",
     "email": "teste9123@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4033,6 +4148,7 @@
      "SP-DUO",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": 22,
     "protocoloAnterior": "DUO-3",
     "mudanca": "Subir dose de EP ou somar tópico",
@@ -4075,7 +4191,7 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9123-reavaliacao-2026-03-30T12:00:00.764Z",
+    "opId": "MX9123-reavaliacao-2026-03-30T12:00:01.188Z",
     "dataLocal": "2026-03-30",
     "demo": true
    }
@@ -4087,6 +4203,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "GTR",
+    "nome": "Gabriel Torres Ramos",
+    "nascimento": "1983-09-14",
     "telefone": "(21)90000-9124",
     "email": "teste9124@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4146,6 +4264,7 @@
      "SP-DE",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -4191,7 +4310,7 @@
     "iniciais": "GTR",
     "telefone": "(21)90000-9124",
     "email": "teste9124@exemplo.invalid",
-    "opId": "MX9124-primeira-2026-05-09T17:40:00.978Z",
+    "opId": "MX9124-primeira-2026-05-09T17:40:00.972Z",
     "dataLocal": "2026-05-09",
     "demo": true
    },
@@ -4201,6 +4320,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "GTR",
+    "nome": "Gabriel Torres Ramos",
+    "nascimento": "1983-09-14",
     "telefone": "(21)90000-9124",
     "email": "teste9124@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4261,6 +4382,7 @@
      "RET-1",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": 22,
     "protocoloAnterior": "DUO-3",
     "mudanca": "Nenhuma — manter e resolver a causa",
@@ -4303,7 +4425,7 @@
     "eaQuais": [],
     "satisf": 6,
     "nps": 7,
-    "opId": "MX9124-reavaliacao-2026-07-13T18:00:00.763Z",
+    "opId": "MX9124-reavaliacao-2026-07-13T18:00:00.940Z",
     "dataLocal": "2026-07-13",
     "demo": true
    }
@@ -4315,6 +4437,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "PHS",
+    "nome": "Pedro Henrique Sales",
+    "nascimento": "1969-02-21",
     "telefone": "(21)90000-9125",
     "email": "teste9125@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4375,6 +4499,7 @@
      "RET-1",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -4423,7 +4548,7 @@
     "iniciais": "PHS",
     "telefone": "(21)90000-9125",
     "email": "teste9125@exemplo.invalid",
-    "opId": "MX9125-primeira-2026-03-05T13:10:01.058Z",
+    "opId": "MX9125-primeira-2026-03-05T13:10:01.052Z",
     "dataLocal": "2026-03-05",
     "demo": true
    },
@@ -4433,6 +4558,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "PHS",
+    "nome": "Pedro Henrique Sales",
+    "nascimento": "1969-02-21",
     "telefone": "(21)90000-9125",
     "email": "teste9125@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4493,6 +4620,7 @@
      "RET-1",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": 22,
     "protocoloAnterior": "DUO-3",
     "mudanca": "Protocolo ajustado: DUO-3 → DUO-4",
@@ -4538,7 +4666,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9125-reavaliacao-2026-05-14T13:10:00.862Z",
+    "opId": "MX9125-reavaliacao-2026-05-14T13:10:00.840Z",
     "dataLocal": "2026-05-14",
     "demo": true
    }
@@ -4550,6 +4678,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "NBA",
+    "nome": "Nicolas Brandão Azevedo",
+    "nascimento": "1990-07-01",
     "telefone": "(21)90000-9126",
     "email": "teste9126@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4609,6 +4739,7 @@
      "SP-DE",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -4654,7 +4785,7 @@
     "iniciais": "NBA",
     "telefone": "(21)90000-9126",
     "email": "teste9126@exemplo.invalid",
-    "opId": "MX9126-primeira-2026-08-27T22:30:00.973Z",
+    "opId": "MX9126-primeira-2026-08-27T22:30:00.791Z",
     "dataLocal": "2026-08-27",
     "demo": true
    }
@@ -4666,6 +4797,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "OVC",
+    "nome": "Osvaldo Vasconcelos Cruz",
+    "nascimento": "1979-12-08",
     "telefone": "(21)90000-9127",
     "email": "teste9127@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4725,6 +4858,7 @@
      "SP-DE",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -4770,7 +4904,7 @@
     "iniciais": "OVC",
     "telefone": "(21)90000-9127",
     "email": "teste9127@exemplo.invalid",
-    "opId": "MX9127-primeira-2026-08-01T14:20:00.947Z",
+    "opId": "MX9127-primeira-2026-08-01T14:20:00.816Z",
     "dataLocal": "2026-08-01",
     "demo": true
    },
@@ -4780,6 +4914,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "OVC",
+    "nome": "Osvaldo Vasconcelos Cruz",
+    "nascimento": "1979-12-08",
     "telefone": "(21)90000-9127",
     "email": "teste9127@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4828,6 +4964,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "TSM",
+    "nome": "Tiago Sampaio Moura",
+    "nascimento": "1975-05-15",
     "telefone": "(21)90000-9128",
     "email": "teste9128@exemplo.invalid",
     "queixaRecepcao": "ambos",
@@ -4876,6 +5014,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "KWE",
+    "nome": "Kléber Wagner Estrela",
+    "nascimento": "1990-10-22",
     "telefone": "(21)90000-9129",
     "email": "teste9129@exemplo.invalid",
     "queixaRecepcao": "preench",
@@ -4948,7 +5088,7 @@
     "iniciais": "KWE",
     "telefone": "(21)90000-9129",
     "email": "teste9129@exemplo.invalid",
-    "opId": "MX9129-preench-inicial-2026-05-31T16:00:00.538Z",
+    "opId": "MX9129-preench-inicial-2026-05-31T16:00:00.468Z",
     "dataLocal": "2026-05-31",
     "demo": true
    },
@@ -4958,6 +5098,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "KWE",
+    "nome": "Kléber Wagner Estrela",
+    "nascimento": "1990-10-22",
     "telefone": "(21)90000-9129",
     "email": "teste9129@exemplo.invalid",
     "queixaRecepcao": "preench",
@@ -5032,7 +5174,7 @@
      "satisfPaciente": 7,
      "novaAplicacao": null
     },
-    "opId": "MX9129-preench-retorno-2026-06-22T16:30:00.439Z",
+    "opId": "MX9129-preench-retorno-2026-06-22T16:30:00.361Z",
     "dataLocal": "2026-06-22",
     "demo": true
    }
@@ -5044,6 +5186,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "DRZ",
+    "nome": "Daniel Rocha Zanetti",
+    "nascimento": "1986-03-02",
     "telefone": "(21)90000-9130",
     "email": "teste9130@exemplo.invalid",
     "queixaRecepcao": "preench",
@@ -5116,7 +5260,7 @@
     "iniciais": "DRZ",
     "telefone": "(21)90000-9130",
     "email": "teste9130@exemplo.invalid",
-    "opId": "MX9130-preench-inicial-2026-09-13T17:00:00.592Z",
+    "opId": "MX9130-preench-inicial-2026-09-13T17:00:00.505Z",
     "dataLocal": "2026-09-13",
     "demo": true
    },
@@ -5126,6 +5270,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "DRZ",
+    "nome": "Daniel Rocha Zanetti",
+    "nascimento": "1986-03-02",
     "telefone": "(21)90000-9130",
     "email": "teste9130@exemplo.invalid",
     "queixaRecepcao": "preench",
@@ -5170,6 +5316,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "ELU",
+    "nome": "Emanuel Leite Ugarte",
+    "nascimento": "1982-08-09",
     "telefone": "(21)90000-9131",
     "email": "teste9131@exemplo.invalid",
     "queixaRecepcao": "preench",
@@ -5242,7 +5390,7 @@
     "iniciais": "ELU",
     "telefone": "(21)90000-9131",
     "email": "teste9131@exemplo.invalid",
-    "opId": "MX9131-preench-inicial-2026-03-10T18:00:00.536Z",
+    "opId": "MX9131-preench-inicial-2026-03-10T18:00:00.461Z",
     "dataLocal": "2026-03-10",
     "demo": true
    },
@@ -5252,6 +5400,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "ELU",
+    "nome": "Emanuel Leite Ugarte",
+    "nascimento": "1982-08-09",
     "telefone": "(21)90000-9131",
     "email": "teste9131@exemplo.invalid",
     "queixaRecepcao": "preench",
@@ -5328,7 +5478,7 @@
      "satisfPaciente": 6,
      "novaAplicacao": null
     },
-    "opId": "MX9131-preench-retorno-2026-04-01T18:20:00.433Z",
+    "opId": "MX9131-preench-retorno-2026-04-01T18:20:00.344Z",
     "dataLocal": "2026-04-01",
     "demo": true
    }
@@ -5340,6 +5490,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "FAG",
+    "nome": "Fábio Antunes Gouveia",
+    "nascimento": "1995-01-16",
     "telefone": "(21)90000-9132",
     "email": "teste9132@exemplo.invalid",
     "queixaRecepcao": "preench",
@@ -5412,7 +5564,7 @@
     "iniciais": "FAG",
     "telefone": "(21)90000-9132",
     "email": "teste9132@exemplo.invalid",
-    "opId": "MX9132-preench-inicial-2026-09-18T19:30:00.426Z",
+    "opId": "MX9132-preench-inicial-2026-09-18T19:30:00.335Z",
     "dataLocal": "2026-09-18",
     "demo": true
    }
@@ -5424,6 +5576,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "UMB",
+    "nome": "Ulisses Mattos Brito",
+    "nascimento": "1963-06-23",
     "telefone": "(21)90000-9133",
     "email": "teste9133@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -5478,6 +5632,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -5526,7 +5681,7 @@
     "iniciais": "UMB",
     "telefone": "(21)90000-9133",
     "email": "teste9133@exemplo.invalid",
-    "opId": "MX9133-primeira-2026-01-09T11:30:00.739Z",
+    "opId": "MX9133-primeira-2026-01-09T11:30:00.604Z",
     "dataLocal": "2026-01-09",
     "demo": true
    },
@@ -5553,7 +5708,7 @@
      "ir": 0.5,
      "suspeita": "Disfunção mista — arterial e veno-oclusiva"
     },
-    "opId": "MX9133-tefi-2026-01-31T11:00:00.522Z",
+    "opId": "MX9133-tefi-2026-01-31T11:00:00.451Z",
     "dataLocal": "2026-01-31",
     "demo": true
    },
@@ -5563,6 +5718,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "UMB",
+    "nome": "Ulisses Mattos Brito",
+    "nascimento": "1963-06-23",
     "telefone": "(21)90000-9133",
     "email": "teste9133@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -5615,6 +5772,7 @@
      "NOITE-1",
      "SP-DE"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "TEFI POSITIVO",
     "mudanca": "Nenhuma — protocolo mantido",
@@ -5663,7 +5821,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9133-reavaliacao-2026-04-09T11:30:00.723Z",
+    "opId": "MX9133-reavaliacao-2026-04-09T11:30:00.604Z",
     "dataLocal": "2026-04-09",
     "demo": true
    }
@@ -5675,6 +5833,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "WCA",
+    "nome": "Wagner Coelho Amaral",
+    "nascimento": "1966-11-03",
     "telefone": "(21)90000-9134",
     "email": "teste9134@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -5728,6 +5888,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -5776,7 +5937,7 @@
     "iniciais": "WCA",
     "telefone": "(21)90000-9134",
     "email": "teste9134@exemplo.invalid",
-    "opId": "MX9134-primeira-2026-06-08T12:30:00.733Z",
+    "opId": "MX9134-primeira-2026-06-08T12:30:00.649Z",
     "dataLocal": "2026-06-08",
     "demo": true
    },
@@ -5803,7 +5964,7 @@
      "ir": 0.5,
      "suspeita": "Disfunção veno-oclusiva"
     },
-    "opId": "MX9134-tefi-2026-06-29T11:00:00.562Z",
+    "opId": "MX9134-tefi-2026-06-29T11:00:00.496Z",
     "dataLocal": "2026-06-29",
     "demo": true
    }
@@ -5815,6 +5976,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "YRP",
+    "nome": "Yuri Rangel Prado",
+    "nascimento": "1972-04-10",
     "telefone": "(21)90000-9135",
     "email": "teste9135@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -5869,6 +6032,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -5914,7 +6078,7 @@
     "iniciais": "YRP",
     "telefone": "(21)90000-9135",
     "email": "teste9135@exemplo.invalid",
-    "opId": "MX9135-primeira-2026-07-10T13:45:00.679Z",
+    "opId": "MX9135-primeira-2026-07-10T13:45:00.671Z",
     "dataLocal": "2026-07-10",
     "demo": true
    },
@@ -5941,7 +6105,7 @@
      "ir": null,
      "suspeita": null
     },
-    "opId": "MX9135-tefi-2026-07-28T11:15:00.526Z",
+    "opId": "MX9135-tefi-2026-07-28T11:15:00.559Z",
     "dataLocal": "2026-07-28",
     "demo": true
    }
@@ -5953,6 +6117,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "IGH",
+    "nome": "Ivan Gusmão Holanda",
+    "nascimento": "1955-09-17",
     "telefone": "(21)90000-9136",
     "email": "teste9136@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -6004,6 +6170,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -6052,7 +6219,7 @@
     "iniciais": "IGH",
     "telefone": "(21)90000-9136",
     "email": "teste9136@exemplo.invalid",
-    "opId": "MX9136-primeira-2026-08-12T12:50:00.719Z",
+    "opId": "MX9136-primeira-2026-08-12T12:50:00.630Z",
     "dataLocal": "2026-08-12",
     "demo": true
    }
@@ -6064,6 +6231,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "BPE",
+    "nome": "Bernardo Prates Esteves",
+    "nascimento": "1988-02-24",
     "telefone": "(21)90000-9137",
     "email": "teste9137@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -6116,6 +6285,7 @@
      "NOITE-1",
      "SP-DUO"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -6161,7 +6331,7 @@
     "iniciais": "BPE",
     "telefone": "(21)90000-9137",
     "email": "teste9137@exemplo.invalid",
-    "opId": "MX9137-primeira-2026-05-19T21:00:00.760Z",
+    "opId": "MX9137-primeira-2026-05-19T21:00:00.735Z",
     "dataLocal": "2026-05-19",
     "demo": true
    },
@@ -6171,6 +6341,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "BPE",
+    "nome": "Bernardo Prates Esteves",
+    "nascimento": "1988-02-24",
     "telefone": "(21)90000-9137",
     "email": "teste9137@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -6223,6 +6395,7 @@
      "NOITE-1",
      "SP-DUO"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": "EP-2",
     "mudanca": "Subir dose de EP ou somar tópico",
@@ -6265,7 +6438,7 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9137-reavaliacao-2026-07-26T21:10:00.573Z",
+    "opId": "MX9137-reavaliacao-2026-07-26T21:10:00.486Z",
     "dataLocal": "2026-07-26",
     "demo": true
    },
@@ -6275,6 +6448,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "BPE",
+    "nome": "Bernardo Prates Esteves",
+    "nascimento": "1988-02-24",
     "telefone": "(21)90000-9137",
     "email": "teste9137@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -6318,6 +6493,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "JTF",
+    "nome": "Júlio Tavares Fontes",
+    "nascimento": "1991-07-04",
     "telefone": "(21)90000-9138",
     "email": "teste9138@exemplo.invalid",
     "queixaRecepcao": "ep",
@@ -6370,6 +6547,7 @@
      "NOITE-1",
      "RET-1"
     ],
+    "ondasSessoes": null,
     "biotens": 22,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -6415,7 +6593,7 @@
     "iniciais": "JTF",
     "telefone": "(21)90000-9138",
     "email": "teste9138@exemplo.invalid",
-    "opId": "MX9138-primeira-2026-09-06T20:00:00.746Z",
+    "opId": "MX9138-primeira-2026-09-06T20:00:00.646Z",
     "dataLocal": "2026-09-06",
     "demo": true
    }
@@ -6427,6 +6605,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "LKN",
+    "nome": "Luiz Kenji Nakamura",
+    "nascimento": "1961-12-11",
     "telefone": "(21)90000-9139",
     "email": "teste9139@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -6481,6 +6661,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -6532,7 +6713,7 @@
     "iniciais": "LKN",
     "telefone": "(21)90000-9139",
     "email": "teste9139@exemplo.invalid",
-    "opId": "MX9139-primeira-2026-03-30T11:50:00.722Z",
+    "opId": "MX9139-primeira-2026-03-30T11:50:00.621Z",
     "dataLocal": "2026-03-30",
     "demo": true
    },
@@ -6542,6 +6723,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "LKN",
+    "nome": "Luiz Kenji Nakamura",
+    "nascimento": "1961-12-11",
     "telefone": "(21)90000-9139",
     "email": "teste9139@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -6596,6 +6779,7 @@
      "TEFI",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-3",
     "mudanca": "Escalonar de mecanismo (intracavernosa / terapia)",
@@ -6646,7 +6830,7 @@
     ],
     "satisf": 6,
     "nps": 7,
-    "opId": "MX9139-reavaliacao-2026-06-10T12:00:00.688Z",
+    "opId": "MX9139-reavaliacao-2026-06-10T12:00:00.871Z",
     "dataLocal": "2026-06-10",
     "demo": true
    }
@@ -6658,6 +6842,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "MCD",
+    "nome": "Mauro Cunha Damasceno",
+    "nascimento": "1970-05-18",
     "telefone": "(21)90000-9140",
     "email": "teste9140@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -6716,6 +6902,7 @@
      "SP-DE",
      "LABS"
     ],
+    "ondasSessoes": null,
     "biotens": null,
     "protocoloAnterior": null,
     "mudanca": "manter",
@@ -6764,7 +6951,7 @@
     "iniciais": "MCD",
     "telefone": "(21)90000-9140",
     "email": "teste9140@exemplo.invalid",
-    "opId": "MX9140-primeira-2026-06-16T14:30:00.724Z",
+    "opId": "MX9140-primeira-2026-06-16T14:30:00.603Z",
     "dataLocal": "2026-06-16",
     "demo": true
    },
@@ -6774,6 +6961,8 @@
     "tipo": "recepcao",
     "linha": "recepcao",
     "iniciais": "MCD",
+    "nome": "Mauro Cunha Damasceno",
+    "nascimento": "1970-05-18",
     "telefone": "(21)90000-9140",
     "email": "teste9140@exemplo.invalid",
     "queixaRecepcao": "de",
@@ -6827,6 +7016,7 @@
      "SP-DE",
      "ONDAS"
     ],
+    "ondasSessoes": 10,
     "biotens": null,
     "protocoloAnterior": "DE-2",
     "mudanca": "Subir um nível de BASE",
@@ -6876,7 +7066,7 @@
     "eaQuais": [],
     "satisf": 6,
     "nps": 8,
-    "opId": "MX9140-reavaliacao-2026-08-19T14:40:00.724Z",
+    "opId": "MX9140-reavaliacao-2026-08-19T14:40:00.657Z",
     "dataLocal": "2026-08-19",
     "demo": true
    }
