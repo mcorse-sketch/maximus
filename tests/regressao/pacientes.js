@@ -82,11 +82,11 @@ module.exports = [
   P('LIM-024', 'Reavaliação, libido baixa, testosterona 335 no banco — abaixo do corte',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'] }))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12, labs: { tTotal: '335' } }],
-      espera: { protocolo: 'DE-2' } }),
+      espera: { protocolo: 'DE-3' } }),   // v2.5-L: IIEF 12 → 14 (+2) sobe um nível a partir do BASE-T10 anterior
   P('LIM-025', 'Reavaliação, libido baixa, testosterona 340 no banco — no corte, conta como normal',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok' }, de(14, { adam: ['a1'], contraIoim: 'nao' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12, labs: { tTotal: '340' } }],
-      espera: { protocolo: 'DE-2L' } }),
+      espera: { protocolo: 'DE-3L' } }),  // v2.5-L: idem, ramo libido
 
   // ---- ADAM (Morley): chave 1 ou 7, ou 3+ das outras -------------------------
   P('LIM-026', 'ADAM sem nenhum sintoma', de(14, { adam: ['nenhum'] })),
@@ -109,7 +109,7 @@ module.exports = [
   P('TEST-009', 'EP com frequência alta — paroxetina diária', ep(13, { freq: 'alta' })),
   P('TEST-010', 'EP intensa com frequência alta — paroxetina 20', ep(17, { freq: 'alta' })),
   P('TEST-011', 'EP refratária à paroxetina 20 — EP-4, limite de 1 jato', ep(13, { parox: 'sim' }), { espera: { protocolo: 'EP-4' } }),
-  P('TEST-012', 'EP em uso de ISRS — só via tópica', ep(13, { freq: 'baixa', medsRisco: ['isrs'] })),
+  P('TEST-012', 'EP em uso de ISRS — só via tópica', ep(13, { freq: 'baixa', medsRisco: ['isrs'], topico: 'ambos' })),   // v2.5-E: aceita as vias tópicas (o padrão do teste era "restrição a ambos")
   P('TEST-013', 'EP com história psiquiátrica — sem SP-DUO', ep(13, { freq: 'baixa', depre: 'sim' })),
   P('TEST-014', 'EP com restrição a tópicos', ep(13, { freq: 'baixa', topico: 'nenhum' })),
   P('TEST-015', 'EP leve, frequência baixa, aceita preservativo — comportamental', ep(9, { freq: 'baixa', topico: 'ambos', biotens: 15 })),
@@ -120,7 +120,9 @@ module.exports = [
   P('TEST-018', 'DUO leve a moderada, frequência baixa', duo(14, 12, { freq: 'baixa' })),
   P('TEST-019', 'DUO com frequência alta — ISRS contínuo', duo(14, 12, { freq: 'alta' })),
   P('TEST-020', 'DUO refratária à paroxetina — DUO-4', duo(14, 12, { parox: 'sim' }), { espera: { protocolo: 'DUO-4' } }),
-  P('TEST-021', 'DUO com ISRS em uso — EP por via tópica', duo(14, 12, { freq: 'baixa', medsRisco: ['isrs'] })),
+  // v2.5-E: o paciente declara aceitar as vias tópicas — sem isso o padrão do teste era "restrição a ambos"
+  P('TEST-021', 'DUO com ISRS em uso — EP por via tópica', duo(14, 12, { freq: 'baixa', medsRisco: ['isrs'], topico: 'ambos' })),
+  P('TEST-021B', 'DUO com ISRS em uso e restrição às duas vias tópicas — sem recurso para EP', duo(14, 12, { freq: 'baixa', medsRisco: ['isrs'], topico: 'nenhum' })),
 
   // ---- outras linhas ----------------------------------------------------------
   P('TEST-022', 'Hipogonadismo primário (LH 12)', {
@@ -150,24 +152,63 @@ module.exports = [
   P('R-04', 'Reavaliação DE com baixa adesão — não escalonar',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'baixa', motivo: 'esq', ea: 'nao' }, de(12))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12 }] }),
+  // ---- v2.5-L (opção B do Dr. Marco): no retorno oral DE/DUO o nível parte do ANTERIOR. Ganho ≥ 4
+  // mantém o nível que funcionou (nunca reduz); ganho de 1 a 3 sobe um nível a partir do anterior;
+  // em BASE-T20 não sobe mais (teto + TEFI); adesão baixa trava no nível anterior. Kit, "Mudança
+  // deste ciclo" e pílula dizem a mesma coisa. Mais casos em tests/teste_retorno_oral.js ----
+  ...[['R-14', 'IIEF 15 → 19 (+4) muda de faixa — mantém BASE-T10 / DE-2 (não reduz)', 19, 'DE-2 (mantido)'],
+      ['R-15', 'IIEF 15 → 17 (+2) — sobe de BASE-T10 para BASE-T20 / DE-3, a partir do anterior', 17, 'DE-3']]
+    .map(([id, d, hoje, prot]) => P(id, 'Reavaliação DE: ' + d,
+      retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(hoje))),
+      { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 15 }],
+        espera: { protocolo: prot } })),
+  P('R-16', 'Reavaliação DE: BASE-T5, IIEF 15 → 17 (+2) — sobe para BASE-T10 / DE-2',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(17))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-1', kitCodes: ['BASE-T5', 'NOITE-1', 'SP-DE'], iief: 15 }],
+      espera: { protocolo: 'DE-2' } }),
+  // v2.5-M: sem ganho, mas já sem disfunção (IIEF ≥ 22) — objetivo atingido: mantém, sem trocar mecanismo nem teto
+  P('R-20', 'Reavaliação DE: BASE-T5, IIEF 22 → 22 (sem ganho, já sem disfunção) — mantém DE-1, sem "Trocar mecanismo"',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(22))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-1', kitCodes: ['BASE-T5', 'NOITE-1', 'SP-DE'], iief: 22 }],
+      espera: { protocolo: 'DE-1 (mantido)' } }),
+  P('R-21', 'Reavaliação DE: já em BASE-T20, IIEF 24 → 22 (caiu, ainda sem disfunção) — mantém DE-3, sem teto/TEFI',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(22))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE'], iief: 24 }],
+      espera: { protocolo: 'DE-3 (mantido)' } }),
+  P('R-17', 'Reavaliação DE: já em BASE-T20, IIEF 15 → 17 (+2) — teto oral: fica em BASE-T20 e indica TEFI',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, de(17))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE'], iief: 15 }],
+      espera: { protocolo: 'DE-3' } }),
+  P('R-18', 'Reavaliação DUO: DUO-2, IIEF 14 → 16 (+2) — sobe para BASE-T20 / DUO-3, máximo 1 jato do SP-DUO',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, duo(16, 12, { freq: 'baixa' }))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DUO', protocolo: 'DUO-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DUO'], iief: 14, pedt: 14 }],
+      espera: { protocolo: 'DUO-3' } }),
+  P('R-19', 'Reavaliação DE com baixa adesão, IIEF 15 → 19 — cápsula fica em BASE-T10 (nem sobe nem desce)',
+    retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'baixa', motivo: 'esq', ea: 'nao' }, de(19))),
+    { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 15 }],
+      espera: { protocolo: 'DE-2 (mantido)', kit: ['BASE-T10', 'NOITE-1', 'SP-DE'] } }),
   P('R-05', 'Reavaliação EP: PEDT caiu 4 — manter',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao' }, ep(10, { freq: 'baixa' }))),
     { ciclos: [{ tipo: 'primeira', linha: 'EP', protocolo: 'EP-1', kitCodes: ['SP-DUO', 'NOITE-1'], pedt: 14 }] }),
 
-  // ---- v2.5 (item 19): em intracavernosa nunca regride para a via oral ----------
-  ...[['R-06', 'ICI: IIEF 7 → 14, ereção com rigidez máxima — manter a intracavernosa', 14, '4', '15a30', 'total', 'INTRACAVERNOSA (mantido)'],
-      ['R-07', 'ICI: IIEF sem ganho, ereção parcial — subir a intracavernosa, não voltar ao oral', 7, '2', '15a30', 'total', 'INTRACAVERNOSA'],
-      ['R-08', 'ICI com adesão baixa — não escalonar, continua intracavernosa', 9, '3', '15a30', 'baixa', 'INTRACAVERNOSA (mantido)'],
-      ['R-09', 'ICI com ereções acima de 2 horas — reduzir, nunca subir', 9, '4', '>2h', 'total', 'INTRACAVERNOSA']]
+  // ---- v2.5 (item 19) + v2.5-E: em intracavernosa nunca regride para a via oral; a dose segue
+  // a qualidade (suficiente para penetração) e a duração (alvo ~1 h), não o ganho no IIEF-5 ----
+  ...[['R-06', 'ICI: rigidez máxima, cerca de 1 hora — manter a intracavernosa', 14, '4', '1h', 'total', 'INTRACAVERNOSA (mantido)'],
+      ['R-07', 'ICI: ereção parcial — subir a intracavernosa, não voltar ao oral', 7, '2', '1h', 'total', 'INTRACAVERNOSA'],
+      ['R-08', 'ICI com adesão baixa — não escalonar, continua intracavernosa', 9, '3', '1h', 'baixa', 'INTRACAVERNOSA (mantido)'],
+      ['R-09', 'ICI com ereções acima de 2 horas — reduzir, nunca subir', 9, '4', '>2h', 'total', 'INTRACAVERNOSA'],
+      ['R-11', 'ICI: IIEF 7 → 16, mas ereção de menos de 30 min — subir (o IIEF não decide)', 16, '4', '<30', 'total', 'INTRACAVERNOSA'],
+      ['R-12', 'ICI: ereção suficiente durando 1 a 2 horas — reduzir um degrau', 14, '4', '1a2h', 'total', 'INTRACAVERNOSA'],
+      ['R-13', 'ICI: IIEF sem ganho, ereção suficiente de cerca de 1 hora — manter (o IIEF não decide)', 7, '3', '1h', 'total', 'INTRACAVERNOSA (mantido)']]
     .map(([id, d, hoje, q, tempo, adesao, prot]) => P(id, 'Reavaliação ' + d,
       retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao, ea: 'nao',
-        iciQual: { iciQualidade: q, iciTempo: tempo, iciFreq: '1a2' } }, adesao === 'baixa' ? { motivo: 'esq' } : {}, de(hoje))),
+        iciUso: { iciTempo: tempo }, iciQual: { iciQualidade: q, iciFreq: '1a2' } }, adesao === 'baixa' ? { motivo: 'esq' } : {}, de(hoje))),
       { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'INTRACAVERNOSA', kitCodes: ['ICI', 'NOITE-1', 'TEFI'], iief: 7,
           iciAnterior: 'R5 (trimix clássico)', iciDosePrescrita: '0,1 mL' }],
         espera: { protocolo: prot } })),
-  P('R-10', 'Reavaliação DE-3 que saiu do TEFI com intracavernosa, IIEF 7 → 14 — continua intracavernosa',
+  P('R-10', 'Reavaliação DE-3 que saiu do TEFI com intracavernosa, ereção suficiente de 30 a 60 min — continua intracavernosa',
     retorno(Object.assign({ visita: 'reav', confirmHist: 'ok', adesao: 'total', ea: 'nao',
-      iciQual: { iciQualidade: '4', iciTempo: '<15', iciFreq: '<1' } }, de(14))),
+      iciUso: { iciTempo: '30a60' }, iciQual: { iciQualidade: '4', iciFreq: '<1' } }, de(14))),
     { ciclos: [{ tipo: 'primeira', linha: 'DE', protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], iief: 7,
         tefi: { resp: 'parcial', doppler: 'arterial', conduta: 'ici', formula: 'R1', dose: '0,05 mL' } }],
       espera: { protocolo: 'INTRACAVERNOSA (mantido)' } }),

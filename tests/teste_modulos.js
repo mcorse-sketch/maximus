@@ -13,7 +13,7 @@ let seed = 5150;
 const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
 const pick = a => a[Math.floor(rnd() * a.length)];
 const intBetween = (a, b) => a + Math.floor(rnd() * (b - a + 1));
-const espera = ms => new Promise(r => setTimeout(r, ms));
+const { assenta, ate } = require('./assenta');   // v2.5-M: espera por condição, não por tempo
 const visivel = el => el && el.style.display !== 'none';
 
 const erros = [];
@@ -99,7 +99,9 @@ async function roda(i, mem, linha) {
   });
   const doc = dom.window.document;
   const rel = { i, modulosAbertos: 0, problemas: [] };
-  await espera(150);
+  // carregou: a primeira tela já tem data-tela
+  await ate(dom.window, () => !!doc.getElementById('quizCard') && !!doc.getElementById('quizCard').getAttribute('data-tela'), 3000);
+  await assenta(dom.window, { quieto: 10 });
 
   const opts = () => [...doc.querySelectorAll('#optsWrap .opt')];
   let codPaciente = '';
@@ -108,34 +110,34 @@ async function roda(i, mem, linha) {
     // caminho da fila da recepção
     const fila = opts().find(b => /fila/i.test(b.textContent));
     if (!fila) { rel.problemas.push('sem opcao de fila'); dom.window.close(); return rel; }
-    fila.click(); await espera(50); doc.getElementById('nextBtn').click(); await espera(200);
+    fila.click(); await assenta(dom.window); doc.getElementById('nextBtn').click(); await assenta(dom.window);
     const pac = opts().find(b => /MX\d{4}/.test(b.textContent));
     if (!pac) { rel.problemas.push('fila vazia'); dom.window.close(); return rel; }
     codPaciente = (pac.textContent.match(/MX\d{4}/) || [''])[0];
-    pac.click(); await espera(50); doc.getElementById('nextBtn').click(); await espera(300);
+    pac.click(); await assenta(dom.window); doc.getElementById('nextBtn').click(); await assenta(dom.window);
   } else {
     // atendimento sem questionário, escolhendo a linha na mão
     const semQuest = opts().find(b => /sem question/i.test(b.textContent));
     if (!semQuest) { rel.problemas.push('sem opcao de atender sem questionario'); dom.window.close(); return rel; }
-    semQuest.click(); await espera(50); doc.getElementById('nextBtn').click(); await espera(200);
+    semQuest.click(); await assenta(dom.window); doc.getElementById('nextBtn').click(); await assenta(dom.window);
     // tipo de visita
     const prim = opts().find(b => /primeira/i.test(b.textContent));
-    if (prim) { prim.click(); await espera(40); doc.getElementById('nextBtn').click(); await espera(150); }
+    if (prim) { prim.click(); await assenta(dom.window); doc.getElementById('nextBtn').click(); await assenta(dom.window); }
     // código
     const campo = doc.querySelector('#optsWrap input.fld');
     codPaciente = 'MX' + String(intBetween(1, 12)).padStart(4, '0');
     if (campo) { campo.value = codPaciente; campo.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
-      await espera(40); doc.getElementById('nextBtn').click(); await espera(300); }
+      await assenta(dom.window); doc.getElementById('nextBtn').click(); await assenta(dom.window); }
     // queixa
     let achouLinha = false;
     for (let t = 0; t < 4 && !achouLinha; t++) {
       const alvo = opts().find(b => linha.re.test(b.textContent));
-      if (alvo) { alvo.click(); await espera(40); doc.getElementById('nextBtn').click(); await espera(250); achouLinha = true; }
+      if (alvo) { alvo.click(); await assenta(dom.window); doc.getElementById('nextBtn').click(); await assenta(dom.window); achouLinha = true; }
       else {
         const nb = doc.getElementById('nextBtn');
-        if (nb.disabled) { preenche(doc, dom.window); await espera(40); }
+        if (nb.disabled) { preenche(doc, dom.window); await assenta(dom.window); }
         if (doc.getElementById('nextBtn').disabled) break;
-        doc.getElementById('nextBtn').click(); await espera(200);
+        doc.getElementById('nextBtn').click(); await assenta(dom.window);
       }
     }
     if (!achouLinha) { rel.problemas.push('nao achei a linha ' + linha.nome); dom.window.close(); return rel; }
@@ -148,17 +150,17 @@ async function roda(i, mem, linha) {
   for (let profundidade = 0; profundidade < 4; profundidade++) {
     const panBtn = doc.getElementById('panBtn');
     if (!panBtn) { rel.problemas.push('sem botao panorama'); break; }
-    panBtn.click(); await espera(120);
+    panBtn.click(); await assenta(dom.window);
     const card = doc.getElementById('panoramaCard');
     const total = card ? card.querySelectorAll('.pan-mod').length : 0;
     if (!total) { rel.problemas.push('panorama sem modulos na profundidade ' + profundidade); break; }
 
     for (let k = 0; k < total; k++) {
-      panBtn.click(); await espera(90);
+      panBtn.click(); await assenta(dom.window);
       const mods = [...doc.getElementById('panoramaCard').querySelectorAll('.pan-mod')];
       if (!mods[k]) break;
       const nome = (mods[k].textContent || '').slice(0, 26).replace(/\s+/g, ' ');
-      mods[k].click(); await espera(140);
+      mods[k].click(); await assenta(dom.window);
       rel.modulosAbertos++;
 
       const perg = (doc.getElementById('qText') || {}).textContent || '';
@@ -177,11 +179,11 @@ async function roda(i, mem, linha) {
     for (let p = 0; p < 3; p++) {
       if (visivel(doc.getElementById('resultsCard'))) break;
       const pan = doc.getElementById('panoramaCard');
-      if (visivel(pan)) { const c = doc.getElementById('panSeguir'); if (c) { c.click(); await espera(60); } }
-      preenche(doc, dom.window); await espera(40);
+      if (visivel(pan)) { const c = doc.getElementById('panSeguir'); if (c) { c.click(); await assenta(dom.window); } }
+      preenche(doc, dom.window); await assenta(dom.window);
       const nb = doc.getElementById('nextBtn');
       if (nb.disabled) break;
-      nb.click(); await espera(120);
+      nb.click(); await assenta(dom.window);
     }
     if (visivel(doc.getElementById('resultsCard'))) break;
   }

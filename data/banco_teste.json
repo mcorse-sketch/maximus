@@ -1,8 +1,8 @@
 {
  "versao": 1,
  "descricao": "Banco de teste fictício (40 pacientes, MX9101–MX9140). Carregar com: python3 servidor_maximus.py --carregar-teste",
- "referencia": "2026-10-03",
- "geradoEm": "2026-10-03T05:59:45.520Z",
+ "referencia": "2026-10-06",
+ "geradoEm": "2026-10-06T10:26:20.958Z",
  "pacientes": {
   "MX9101": [
    {
@@ -41,16 +41,16 @@
      "i3": 1,
      "i4": 1
     },
-    "data": "2026-01-28T11:55:00.000Z",
-    "dataLocal": "2026-01-28",
-    "dataBR": "28/01/2026",
+    "data": "2026-01-31T11:55:00.000Z",
+    "dataLocal": "2026-01-31",
+    "dataBR": "31/01/2026",
     "demo": true
    },
    {
-    "data": "2026-01-28T12:10:00.000Z",
+    "data": "2026-01-31T12:10:00.000Z",
     "codigo": "MX9101",
     "tipo": "primeira",
-    "dataBR": "28/01/2026",
+    "dataBR": "31/01/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 7,
@@ -94,6 +94,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -111,8 +112,8 @@
     "iniciais": "ARF",
     "telefone": "(21)90000-9101",
     "email": "teste9101@exemplo.invalid",
-    "opId": "MX9101-primeira-2026-01-28T12:10:00.995Z",
-    "dataLocal": "2026-01-28",
+    "opId": "MX9101-primeira-2026-01-31T12:10:00.981Z",
+    "dataLocal": "2026-01-31",
     "demo": true
    },
    {
@@ -151,16 +152,16 @@
      "i3": 3,
      "i4": 2
     },
-    "data": "2026-04-16T13:15:00.000Z",
-    "dataLocal": "2026-04-16",
-    "dataBR": "16/04/2026",
+    "data": "2026-04-19T13:15:00.000Z",
+    "dataLocal": "2026-04-19",
+    "dataBR": "19/04/2026",
     "demo": true
    },
    {
-    "data": "2026-04-16T13:30:00.000Z",
+    "data": "2026-04-19T13:30:00.000Z",
     "codigo": "MX9101",
     "tipo": "reavaliacao",
-    "dataBR": "16/04/2026",
+    "dataBR": "19/04/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 78,
     "iief": 14,
@@ -203,6 +204,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": "R1",
+    "iciPorTefi": null,
     "iciDosePrescrita": "0,05 mL",
     "iciDoseIndicada": "0,05 mL",
     "examesSolicitados": false,
@@ -214,16 +216,16 @@
     "adesao": "total",
     "iciCasa": {
      "qualidade": "4",
-     "tempo": "<15",
-     "freq": "<1",
+     "tempo": "1h",
+     "freq": "1a2",
      "dose": "0,05 mL"
     },
     "ea": "nao",
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9101-reavaliacao-2026-04-16T13:30:00.766Z",
-    "dataLocal": "2026-04-16",
+    "opId": "MX9101-reavaliacao-2026-04-19T13:30:00.809Z",
+    "dataLocal": "2026-04-19",
     "demo": true
    }
   ],
@@ -264,16 +266,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2025-11-27T16:45:00.000Z",
-    "dataLocal": "2025-11-27",
-    "dataBR": "27/11/2025",
+    "data": "2025-11-30T16:45:00.000Z",
+    "dataLocal": "2025-11-30",
+    "dataBR": "30/11/2025",
     "demo": true
    },
    {
-    "data": "2025-11-27T17:00:00.000Z",
+    "data": "2025-11-30T17:00:00.000Z",
     "codigo": "MX9102",
     "tipo": "primeira",
-    "dataBR": "27/11/2025",
+    "dataBR": "30/11/2025",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 10,
@@ -316,6 +318,7 @@
     "comorbControle": "parcial",
     "comorbMedico": "nao",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -333,8 +336,8 @@
     "iniciais": "CMS",
     "telefone": "(21)90000-9102",
     "email": "teste9102@exemplo.invalid",
-    "opId": "MX9102-primeira-2025-11-27T17:00:00.780Z",
-    "dataLocal": "2025-11-27",
+    "opId": "MX9102-primeira-2025-11-30T17:00:00.754Z",
+    "dataLocal": "2025-11-30",
     "demo": true
    },
    {
@@ -373,25 +376,25 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2026-02-09T17:15:00.000Z",
-    "dataLocal": "2026-02-09",
-    "dataBR": "09/02/2026",
+    "data": "2026-02-12T17:15:00.000Z",
+    "dataLocal": "2026-02-12",
+    "dataBR": "12/02/2026",
     "demo": true
    },
    {
-    "data": "2026-02-09T17:30:00.000Z",
+    "data": "2026-02-12T17:30:00.000Z",
     "codigo": "MX9102",
     "tipo": "reavaliacao",
-    "dataBR": "09/02/2026",
+    "dataBR": "12/02/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 74,
     "iief": 15,
     "pedt": null,
-    "protocolo": "DE-2 (mantido)",
-    "custoIndice": 4,
-    "custoPontos": 11.8,
+    "protocolo": "DE-3 (mantido)",
+    "custoIndice": 5,
+    "custoPontos": 12.3,
     "kitCodes": [
-     "BASE-T10",
+     "BASE-T20",
      "NOITE-1",
      "SP-DE",
      "ONDAS"
@@ -425,6 +428,7 @@
     "comorbControle": "parcial",
     "comorbMedico": "nao",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -439,8 +443,8 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9102-reavaliacao-2026-02-09T17:30:00.704Z",
-    "dataLocal": "2026-02-09",
+    "opId": "MX9102-reavaliacao-2026-02-12T17:30:00.613Z",
+    "dataLocal": "2026-02-12",
     "demo": true
    },
    {
@@ -479,31 +483,31 @@
      "i3": 4,
      "i4": 3
     },
-    "data": "2026-05-06T17:45:00.000Z",
-    "dataLocal": "2026-05-06",
-    "dataBR": "06/05/2026",
+    "data": "2026-05-09T17:45:00.000Z",
+    "dataLocal": "2026-05-09",
+    "dataBR": "09/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-06T18:00:00.000Z",
+    "data": "2026-05-09T18:00:00.000Z",
     "codigo": "MX9102",
     "tipo": "reavaliacao",
-    "dataBR": "06/05/2026",
+    "dataBR": "09/05/2026",
     "numeroReavaliacao": 2,
     "diasDesdeUltima": 86,
     "iief": 19,
     "pedt": null,
-    "protocolo": "DE-1 (mantido)",
-    "custoIndice": 4,
-    "custoPontos": 11.5,
+    "protocolo": "DE-3 (mantido)",
+    "custoIndice": 5,
+    "custoPontos": 12.3,
     "kitCodes": [
-     "BASE-T5",
+     "BASE-T20",
      "NOITE-1",
      "SP-DE",
      "ONDAS"
     ],
     "biotens": null,
-    "protocoloAnterior": "DE-2",
+    "protocoloAnterior": "DE-3",
     "mudanca": "Nenhuma — protocolo mantido",
     "tempo": "medio",
     "parceria": "fixa",
@@ -531,6 +535,7 @@
     "comorbControle": "parcial",
     "comorbMedico": "nao",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -545,8 +550,8 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9102-reavaliacao-2026-05-06T18:00:00.622Z",
-    "dataLocal": "2026-05-06",
+    "opId": "MX9102-reavaliacao-2026-05-09T18:00:00.645Z",
+    "dataLocal": "2026-05-09",
     "demo": true
    }
   ],
@@ -587,16 +592,16 @@
      "i3": 2,
      "i4": 1
     },
-    "data": "2026-03-12T11:25:00.000Z",
-    "dataLocal": "2026-03-12",
-    "dataBR": "12/03/2026",
+    "data": "2026-03-15T11:25:00.000Z",
+    "dataLocal": "2026-03-15",
+    "dataBR": "15/03/2026",
     "demo": true
    },
    {
-    "data": "2026-03-12T11:40:00.000Z",
+    "data": "2026-03-15T11:40:00.000Z",
     "codigo": "MX9103",
     "tipo": "primeira",
-    "dataBR": "12/03/2026",
+    "dataBR": "15/03/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 9,
@@ -641,6 +646,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -658,8 +664,8 @@
     "iniciais": "JPL",
     "telefone": "(21)90000-9103",
     "email": "teste9103@exemplo.invalid",
-    "opId": "MX9103-primeira-2026-03-12T11:40:00.737Z",
-    "dataLocal": "2026-03-12",
+    "opId": "MX9103-primeira-2026-03-15T11:40:00.771Z",
+    "dataLocal": "2026-03-15",
     "demo": true
    },
    {
@@ -698,16 +704,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-05-25T11:45:00.000Z",
-    "dataLocal": "2026-05-25",
-    "dataBR": "25/05/2026",
+    "data": "2026-05-28T11:45:00.000Z",
+    "dataLocal": "2026-05-28",
+    "dataBR": "28/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-25T12:00:00.000Z",
+    "data": "2026-05-28T12:00:00.000Z",
     "codigo": "MX9103",
     "tipo": "reavaliacao",
-    "dataBR": "25/05/2026",
+    "dataBR": "28/05/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 74,
     "iief": 11,
@@ -753,6 +759,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -767,8 +774,8 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 7,
-    "opId": "MX9103-reavaliacao-2026-05-25T12:00:00.597Z",
-    "dataLocal": "2026-05-25",
+    "opId": "MX9103-reavaliacao-2026-05-28T12:00:00.589Z",
+    "dataLocal": "2026-05-28",
     "demo": true
    }
   ],
@@ -809,16 +816,16 @@
      "i3": 3,
      "i4": 2
     },
-    "data": "2026-04-06T13:45:00.000Z",
-    "dataLocal": "2026-04-06",
-    "dataBR": "06/04/2026",
+    "data": "2026-04-09T13:45:00.000Z",
+    "dataLocal": "2026-04-09",
+    "dataBR": "09/04/2026",
     "demo": true
    },
    {
-    "data": "2026-04-06T14:00:00.000Z",
+    "data": "2026-04-09T14:00:00.000Z",
     "codigo": "MX9104",
     "tipo": "primeira",
-    "dataBR": "06/04/2026",
+    "dataBR": "09/04/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 14,
@@ -858,6 +865,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -875,8 +883,8 @@
     "iniciais": "RTB",
     "telefone": "(21)90000-9104",
     "email": "teste9104@exemplo.invalid",
-    "opId": "MX9104-primeira-2026-04-06T14:00:00.697Z",
-    "dataLocal": "2026-04-06",
+    "opId": "MX9104-primeira-2026-04-09T14:00:00.667Z",
+    "dataLocal": "2026-04-09",
     "demo": true
    },
    {
@@ -915,25 +923,25 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2026-06-13T14:00:00.000Z",
-    "dataLocal": "2026-06-13",
-    "dataBR": "13/06/2026",
+    "data": "2026-06-16T14:00:00.000Z",
+    "dataLocal": "2026-06-16",
+    "dataBR": "16/06/2026",
     "demo": true
    },
    {
-    "data": "2026-06-13T14:15:00.000Z",
+    "data": "2026-06-16T14:15:00.000Z",
     "codigo": "MX9104",
     "tipo": "reavaliacao",
-    "dataBR": "13/06/2026",
+    "dataBR": "16/06/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 68,
     "iief": 15,
     "pedt": null,
-    "protocolo": "DE-2",
-    "custoIndice": 4,
-    "custoPontos": 11.8,
+    "protocolo": "DE-3",
+    "custoIndice": 5,
+    "custoPontos": 12.3,
     "kitCodes": [
-     "BASE-T10",
+     "BASE-T20",
      "NOITE-1",
      "SP-DE",
      "ONDAS"
@@ -965,6 +973,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -979,8 +988,8 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 7,
-    "opId": "MX9104-reavaliacao-2026-06-13T14:15:00.590Z",
-    "dataLocal": "2026-06-13",
+    "opId": "MX9104-reavaliacao-2026-06-16T14:15:00.596Z",
+    "dataLocal": "2026-06-16",
     "demo": true
    }
   ],
@@ -1021,16 +1030,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-05-16T18:45:00.000Z",
-    "dataLocal": "2026-05-16",
-    "dataBR": "16/05/2026",
+    "data": "2026-05-19T18:45:00.000Z",
+    "dataLocal": "2026-05-19",
+    "dataBR": "19/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-16T19:00:00.000Z",
+    "data": "2026-05-19T19:00:00.000Z",
     "codigo": "MX9105",
     "tipo": "primeira",
-    "dataBR": "16/05/2026",
+    "dataBR": "19/05/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 13,
@@ -1070,6 +1079,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1087,8 +1097,8 @@
     "iniciais": "LGV",
     "telefone": "(21)90000-9105",
     "email": "teste9105@exemplo.invalid",
-    "opId": "MX9105-primeira-2026-05-16T19:00:00.690Z",
-    "dataLocal": "2026-05-16",
+    "opId": "MX9105-primeira-2026-05-19T19:00:00.670Z",
+    "dataLocal": "2026-05-19",
     "demo": true
    },
    {
@@ -1127,25 +1137,25 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2026-07-17T19:05:00.000Z",
-    "dataLocal": "2026-07-17",
-    "dataBR": "17/07/2026",
+    "data": "2026-07-20T19:05:00.000Z",
+    "dataLocal": "2026-07-20",
+    "dataBR": "20/07/2026",
     "demo": true
    },
    {
-    "data": "2026-07-17T19:20:00.000Z",
+    "data": "2026-07-20T19:20:00.000Z",
     "codigo": "MX9105",
     "tipo": "reavaliacao",
-    "dataBR": "17/07/2026",
+    "dataBR": "20/07/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 62,
     "iief": 17,
     "pedt": null,
     "protocolo": "DE-2 (mantido)",
     "custoIndice": 4,
-    "custoPontos": 11.5,
+    "custoPontos": 11.8,
     "kitCodes": [
-     "BASE-T5",
+     "BASE-T10",
      "NOITE-1",
      "SP-DE",
      "ONDAS"
@@ -1177,6 +1187,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1193,8 +1204,8 @@
     ],
     "satisf": 6,
     "nps": 8,
-    "opId": "MX9105-reavaliacao-2026-07-17T19:20:00.614Z",
-    "dataLocal": "2026-07-17",
+    "opId": "MX9105-reavaliacao-2026-07-20T19:20:00.616Z",
+    "dataLocal": "2026-07-20",
     "demo": true
    }
   ],
@@ -1235,16 +1246,16 @@
      "i3": 4,
      "i4": 3
     },
-    "data": "2026-06-29T20:45:00.000Z",
-    "dataLocal": "2026-06-29",
-    "dataBR": "29/06/2026",
+    "data": "2026-07-02T20:45:00.000Z",
+    "dataLocal": "2026-07-02",
+    "dataBR": "02/07/2026",
     "demo": true
    },
    {
-    "data": "2026-06-29T21:00:00.000Z",
+    "data": "2026-07-02T21:00:00.000Z",
     "codigo": "MX9106",
     "tipo": "primeira",
-    "dataBR": "29/06/2026",
+    "dataBR": "02/07/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 19,
@@ -1284,6 +1295,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1301,8 +1313,8 @@
     "iniciais": "TAN",
     "telefone": "(21)90000-9106",
     "email": "teste9106@exemplo.invalid",
-    "opId": "MX9106-primeira-2026-06-29T21:00:00.689Z",
-    "dataLocal": "2026-06-29",
+    "opId": "MX9106-primeira-2026-07-02T21:00:00.674Z",
+    "dataLocal": "2026-07-02",
     "demo": true
    }
   ],
@@ -1343,16 +1355,16 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2025-10-18T12:45:00.000Z",
-    "dataLocal": "2025-10-18",
-    "dataBR": "18/10/2025",
+    "data": "2025-10-21T12:45:00.000Z",
+    "dataLocal": "2025-10-21",
+    "dataBR": "21/10/2025",
     "demo": true
    },
    {
-    "data": "2025-10-18T13:00:00.000Z",
+    "data": "2025-10-21T13:00:00.000Z",
     "codigo": "MX9107",
     "tipo": "primeira",
-    "dataBR": "18/10/2025",
+    "dataBR": "21/10/2025",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 18,
@@ -1395,6 +1407,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1412,8 +1425,8 @@
     "iniciais": "EMC",
     "telefone": "(21)90000-9107",
     "email": "teste9107@exemplo.invalid",
-    "opId": "MX9107-primeira-2025-10-18T13:00:00.721Z",
-    "dataLocal": "2025-10-18",
+    "opId": "MX9107-primeira-2025-10-21T13:00:00.727Z",
+    "dataLocal": "2025-10-21",
     "demo": true
    },
    {
@@ -1452,26 +1465,28 @@
      "i3": 4,
      "i4": 4
     },
-    "data": "2025-12-27T12:45:00.000Z",
-    "dataLocal": "2025-12-27",
-    "dataBR": "27/12/2025",
+    "data": "2025-12-30T12:45:00.000Z",
+    "dataLocal": "2025-12-30",
+    "dataBR": "30/12/2025",
     "demo": true
    },
    {
-    "data": "2025-12-27T13:00:00.000Z",
+    "data": "2025-12-30T13:00:00.000Z",
     "codigo": "MX9107",
     "tipo": "reavaliacao",
-    "dataBR": "27/12/2025",
+    "dataBR": "30/12/2025",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 70,
     "iief": 22,
     "pedt": null,
-    "protocolo": "SEM DIAGNÓSTICO FORMAL (mantido)",
-    "custoIndice": 3,
-    "custoPontos": 6.5,
+    "protocolo": "DE-1 (mantido)",
+    "custoIndice": 4,
+    "custoPontos": 11.5,
     "kitCodes": [
+     "BASE-T5",
      "NOITE-1",
-     "SP-DE"
+     "SP-DE",
+     "ONDAS"
     ],
     "biotens": null,
     "protocoloAnterior": "DE-1",
@@ -1502,6 +1517,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1516,8 +1532,8 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9107-reavaliacao-2025-12-27T13:00:00.606Z",
-    "dataLocal": "2025-12-27",
+    "opId": "MX9107-reavaliacao-2025-12-30T13:00:00.592Z",
+    "dataLocal": "2025-12-30",
     "demo": true
    },
    {
@@ -1556,30 +1572,32 @@
      "i3": 4,
      "i4": 4
     },
-    "data": "2026-03-21T13:05:00.000Z",
-    "dataLocal": "2026-03-21",
-    "dataBR": "21/03/2026",
+    "data": "2026-03-24T13:05:00.000Z",
+    "dataLocal": "2026-03-24",
+    "dataBR": "24/03/2026",
     "demo": true
    },
    {
-    "data": "2026-03-21T13:20:00.000Z",
+    "data": "2026-03-24T13:20:00.000Z",
     "codigo": "MX9107",
     "tipo": "reavaliacao",
-    "dataBR": "21/03/2026",
+    "dataBR": "24/03/2026",
     "numeroReavaliacao": 2,
     "diasDesdeUltima": 84,
     "iief": 23,
     "pedt": null,
-    "protocolo": "SEM DIAGNÓSTICO FORMAL",
-    "custoIndice": 3,
-    "custoPontos": 6.5,
+    "protocolo": "DE-1 (mantido)",
+    "custoIndice": 4,
+    "custoPontos": 11.5,
     "kitCodes": [
+     "BASE-T5",
      "NOITE-1",
-     "SP-DE"
+     "SP-DE",
+     "ONDAS"
     ],
     "biotens": null,
-    "protocoloAnterior": "SEM DIAGNÓSTICO FORMAL",
-    "mudanca": "Subir um nível de BASE",
+    "protocoloAnterior": "DE-1",
+    "mudanca": "Nenhuma — protocolo mantido",
     "tempo": "medio",
     "parceria": "fixa",
     "topicoPref": null,
@@ -1606,6 +1624,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1620,8 +1639,8 @@
     "eaQuais": [],
     "satisf": 10,
     "nps": 10,
-    "opId": "MX9107-reavaliacao-2026-03-21T13:20:00.611Z",
-    "dataLocal": "2026-03-21",
+    "opId": "MX9107-reavaliacao-2026-03-24T13:20:00.583Z",
+    "dataLocal": "2026-03-24",
     "demo": true
    }
   ],
@@ -1662,16 +1681,16 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2026-08-04T16:15:00.000Z",
-    "dataLocal": "2026-08-04",
-    "dataBR": "04/08/2026",
+    "data": "2026-08-07T16:15:00.000Z",
+    "dataLocal": "2026-08-07",
+    "dataBR": "07/08/2026",
     "demo": true
    },
    {
-    "data": "2026-08-04T16:30:00.000Z",
+    "data": "2026-08-07T16:30:00.000Z",
     "codigo": "MX9108",
     "tipo": "primeira",
-    "dataBR": "04/08/2026",
+    "dataBR": "07/08/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 16,
@@ -1714,6 +1733,7 @@
     "comorbControle": "parcial",
     "comorbMedico": "nao",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1731,8 +1751,8 @@
     "iniciais": "OBF",
     "telefone": "(21)90000-9108",
     "email": "teste9108@exemplo.invalid",
-    "opId": "MX9108-primeira-2026-08-04T16:30:00.745Z",
-    "dataLocal": "2026-08-04",
+    "opId": "MX9108-primeira-2026-08-07T16:30:00.733Z",
+    "dataLocal": "2026-08-07",
     "demo": true
    }
   ],
@@ -1777,16 +1797,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-08-19T18:25:00.000Z",
-    "dataLocal": "2026-08-19",
-    "dataBR": "19/08/2026",
+    "data": "2026-08-22T18:25:00.000Z",
+    "dataLocal": "2026-08-22",
+    "dataBR": "22/08/2026",
     "demo": true
    },
    {
-    "data": "2026-08-19T18:40:00.000Z",
+    "data": "2026-08-22T18:40:00.000Z",
     "codigo": "MX9109",
     "tipo": "primeira",
-    "dataBR": "19/08/2026",
+    "dataBR": "22/08/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 12,
@@ -1829,6 +1849,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": true,
@@ -1846,8 +1867,8 @@
     "iniciais": "HSD",
     "telefone": "(21)90000-9109",
     "email": "teste9109@exemplo.invalid",
-    "opId": "MX9109-primeira-2026-08-19T18:40:00.814Z",
-    "dataLocal": "2026-08-19",
+    "opId": "MX9109-primeira-2026-08-22T18:40:00.762Z",
+    "dataLocal": "2026-08-22",
     "demo": true
    }
   ],
@@ -1888,16 +1909,16 @@
      "i3": 4,
      "i4": 4
     },
-    "data": "2026-08-31T12:15:00.000Z",
-    "dataLocal": "2026-08-31",
-    "dataBR": "31/08/2026",
+    "data": "2026-09-03T12:15:00.000Z",
+    "dataLocal": "2026-09-03",
+    "dataBR": "03/09/2026",
     "demo": true
    },
    {
-    "data": "2026-08-31T12:30:00.000Z",
+    "data": "2026-09-03T12:30:00.000Z",
     "codigo": "MX9110",
     "tipo": "primeira",
-    "dataBR": "31/08/2026",
+    "dataBR": "03/09/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 21,
@@ -1937,6 +1958,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -1954,8 +1976,8 @@
     "iniciais": "GIP",
     "telefone": "(21)90000-9110",
     "email": "teste9110@exemplo.invalid",
-    "opId": "MX9110-primeira-2026-08-31T12:30:00.686Z",
-    "dataLocal": "2026-08-31",
+    "opId": "MX9110-primeira-2026-09-03T12:30:00.659Z",
+    "dataLocal": "2026-09-03",
     "demo": true
    }
   ],
@@ -1996,16 +2018,16 @@
      "i3": 1,
      "i4": 1
     },
-    "data": "2026-06-05T11:05:00.000Z",
-    "dataLocal": "2026-06-05",
-    "dataBR": "05/06/2026",
+    "data": "2026-06-08T11:05:00.000Z",
+    "dataLocal": "2026-06-08",
+    "dataBR": "08/06/2026",
     "demo": true
    },
    {
-    "data": "2026-06-05T11:20:00.000Z",
+    "data": "2026-06-08T11:20:00.000Z",
     "codigo": "MX9111",
     "tipo": "primeira",
-    "dataBR": "05/06/2026",
+    "dataBR": "08/06/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 6,
@@ -2049,6 +2071,7 @@
     "comorbControle": "nao",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2066,8 +2089,8 @@
     "iniciais": "NCR",
     "telefone": "(21)90000-9111",
     "email": "teste9111@exemplo.invalid",
-    "opId": "MX9111-primeira-2026-06-05T11:20:00.734Z",
-    "dataLocal": "2026-06-05",
+    "opId": "MX9111-primeira-2026-06-08T11:20:00.709Z",
+    "dataLocal": "2026-06-08",
     "demo": true
    }
   ],
@@ -2108,16 +2131,16 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2026-08-02T13:25:00.000Z",
-    "dataLocal": "2026-08-02",
-    "dataBR": "02/08/2026",
+    "data": "2026-08-05T13:25:00.000Z",
+    "dataLocal": "2026-08-05",
+    "dataBR": "05/08/2026",
     "demo": true
    },
    {
-    "data": "2026-08-02T13:40:00.000Z",
+    "data": "2026-08-05T13:40:00.000Z",
     "codigo": "MX9112",
     "tipo": "primeira",
-    "dataBR": "02/08/2026",
+    "dataBR": "05/08/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 15,
@@ -2160,6 +2183,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2177,8 +2201,8 @@
     "iniciais": "VSO",
     "telefone": "(21)90000-9112",
     "email": "teste9112@exemplo.invalid",
-    "opId": "MX9112-primeira-2026-08-02T13:40:00.769Z",
-    "dataLocal": "2026-08-02",
+    "opId": "MX9112-primeira-2026-08-05T13:40:00.694Z",
+    "dataLocal": "2026-08-05",
     "demo": true
    },
    {
@@ -2217,9 +2241,9 @@
      "i3": 4,
      "i4": 3
     },
-    "data": "2026-10-03T11:10:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T11:10:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -2260,9 +2284,9 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-10-03T12:05:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T12:05:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -2303,16 +2327,16 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2026-09-08T19:55:00.000Z",
-    "dataLocal": "2026-09-08",
-    "dataBR": "08/09/2026",
+    "data": "2026-09-11T19:55:00.000Z",
+    "dataLocal": "2026-09-11",
+    "dataBR": "11/09/2026",
     "demo": true
    },
    {
-    "data": "2026-09-08T20:10:00.000Z",
+    "data": "2026-09-11T20:10:00.000Z",
     "codigo": "MX9114",
     "tipo": "primeira",
-    "dataBR": "08/09/2026",
+    "dataBR": "11/09/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 17,
@@ -2352,6 +2376,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2369,8 +2394,8 @@
     "iniciais": "BRM",
     "telefone": "(21)90000-9114",
     "email": "teste9114@exemplo.invalid",
-    "opId": "MX9114-primeira-2026-09-08T20:10:00.699Z",
-    "dataLocal": "2026-09-08",
+    "opId": "MX9114-primeira-2026-09-11T20:10:00.651Z",
+    "dataLocal": "2026-09-11",
     "demo": true
    }
   ],
@@ -2411,16 +2436,16 @@
      "p3": 3,
      "p4": 3
     },
-    "data": "2025-12-17T21:45:00.000Z",
-    "dataLocal": "2025-12-17",
-    "dataBR": "17/12/2025",
+    "data": "2025-12-20T21:45:00.000Z",
+    "dataLocal": "2025-12-20",
+    "dataBR": "20/12/2025",
     "demo": true
    },
    {
-    "data": "2025-12-17T22:00:00.000Z",
+    "data": "2025-12-20T22:00:00.000Z",
     "codigo": "MX9115",
     "tipo": "primeira",
-    "dataBR": "17/12/2025",
+    "dataBR": "20/12/2025",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -2458,6 +2483,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2475,8 +2501,8 @@
     "iniciais": "FDS",
     "telefone": "(21)90000-9115",
     "email": "teste9115@exemplo.invalid",
-    "opId": "MX9115-primeira-2025-12-17T22:00:00.792Z",
-    "dataLocal": "2025-12-17",
+    "opId": "MX9115-primeira-2025-12-20T22:00:00.748Z",
+    "dataLocal": "2025-12-20",
     "demo": true
    },
    {
@@ -2515,16 +2541,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-02-25T21:45:00.000Z",
-    "dataLocal": "2026-02-25",
-    "dataBR": "25/02/2026",
+    "data": "2026-02-28T21:45:00.000Z",
+    "dataLocal": "2026-02-28",
+    "dataBR": "28/02/2026",
     "demo": true
    },
    {
-    "data": "2026-02-25T22:00:00.000Z",
+    "data": "2026-02-28T22:00:00.000Z",
     "codigo": "MX9115",
     "tipo": "reavaliacao",
-    "dataBR": "25/02/2026",
+    "dataBR": "28/02/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 70,
     "iief": null,
@@ -2562,6 +2588,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2576,8 +2603,8 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 9,
-    "opId": "MX9115-reavaliacao-2026-02-25T22:00:00.597Z",
-    "dataLocal": "2026-02-25",
+    "opId": "MX9115-reavaliacao-2026-02-28T22:00:00.560Z",
+    "dataLocal": "2026-02-28",
     "demo": true
    },
    {
@@ -2616,16 +2643,16 @@
      "p3": 1,
      "p4": 1
     },
-    "data": "2026-05-06T21:25:00.000Z",
-    "dataLocal": "2026-05-06",
-    "dataBR": "06/05/2026",
+    "data": "2026-05-09T21:25:00.000Z",
+    "dataLocal": "2026-05-09",
+    "dataBR": "09/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-06T21:40:00.000Z",
+    "data": "2026-05-09T21:40:00.000Z",
     "codigo": "MX9115",
     "tipo": "reavaliacao",
-    "dataBR": "06/05/2026",
+    "dataBR": "09/05/2026",
     "numeroReavaliacao": 2,
     "diasDesdeUltima": 70,
     "iief": null,
@@ -2662,6 +2689,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2676,8 +2704,8 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9115-reavaliacao-2026-05-06T21:40:00.598Z",
-    "dataLocal": "2026-05-06",
+    "opId": "MX9115-reavaliacao-2026-05-09T21:40:00.567Z",
+    "dataLocal": "2026-05-09",
     "demo": true
    }
   ],
@@ -2718,16 +2746,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-04-26T14:45:00.000Z",
-    "dataLocal": "2026-04-26",
-    "dataBR": "26/04/2026",
+    "data": "2026-04-29T14:45:00.000Z",
+    "dataLocal": "2026-04-29",
+    "dataBR": "29/04/2026",
     "demo": true
    },
    {
-    "data": "2026-04-26T15:00:00.000Z",
+    "data": "2026-04-29T15:00:00.000Z",
     "codigo": "MX9116",
     "tipo": "primeira",
-    "dataBR": "26/04/2026",
+    "dataBR": "29/04/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -2764,6 +2792,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2781,8 +2810,8 @@
     "iniciais": "ICT",
     "telefone": "(21)90000-9116",
     "email": "teste9116@exemplo.invalid",
-    "opId": "MX9116-primeira-2026-04-26T15:00:00.791Z",
-    "dataLocal": "2026-04-26",
+    "opId": "MX9116-primeira-2026-04-29T15:00:00.753Z",
+    "dataLocal": "2026-04-29",
     "demo": true
    },
    {
@@ -2821,16 +2850,16 @@
      "p3": 2,
      "p4": 1
     },
-    "data": "2026-06-30T14:55:00.000Z",
-    "dataLocal": "2026-06-30",
-    "dataBR": "30/06/2026",
+    "data": "2026-07-03T14:55:00.000Z",
+    "dataLocal": "2026-07-03",
+    "dataBR": "03/07/2026",
     "demo": true
    },
    {
-    "data": "2026-06-30T15:10:00.000Z",
+    "data": "2026-07-03T15:10:00.000Z",
     "codigo": "MX9116",
     "tipo": "reavaliacao",
-    "dataBR": "30/06/2026",
+    "dataBR": "03/07/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 65,
     "iief": null,
@@ -2867,6 +2896,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2881,8 +2911,8 @@
     "eaQuais": [],
     "satisf": 8,
     "nps": 9,
-    "opId": "MX9116-reavaliacao-2026-06-30T15:10:00.576Z",
-    "dataLocal": "2026-06-30",
+    "opId": "MX9116-reavaliacao-2026-07-03T15:10:00.563Z",
+    "dataLocal": "2026-07-03",
     "demo": true
    }
   ],
@@ -2923,16 +2953,16 @@
      "p3": 3,
      "p4": 3
     },
-    "data": "2026-03-17T20:15:00.000Z",
-    "dataLocal": "2026-03-17",
-    "dataBR": "17/03/2026",
+    "data": "2026-03-20T20:15:00.000Z",
+    "dataLocal": "2026-03-20",
+    "dataBR": "20/03/2026",
     "demo": true
    },
    {
-    "data": "2026-03-17T20:30:00.000Z",
+    "data": "2026-03-20T20:30:00.000Z",
     "codigo": "MX9117",
     "tipo": "primeira",
-    "dataBR": "17/03/2026",
+    "dataBR": "20/03/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -2970,6 +3000,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -2987,8 +3018,8 @@
     "iniciais": "MAV",
     "telefone": "(21)90000-9117",
     "email": "teste9117@exemplo.invalid",
-    "opId": "MX9117-primeira-2026-03-17T20:30:00.827Z",
-    "dataLocal": "2026-03-17",
+    "opId": "MX9117-primeira-2026-03-20T20:30:00.752Z",
+    "dataLocal": "2026-03-20",
     "demo": true
    },
    {
@@ -3027,16 +3058,16 @@
      "p3": 3,
      "p4": 3
     },
-    "data": "2026-05-22T20:15:00.000Z",
-    "dataLocal": "2026-05-22",
-    "dataBR": "22/05/2026",
+    "data": "2026-05-25T20:15:00.000Z",
+    "dataLocal": "2026-05-25",
+    "dataBR": "25/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-22T20:30:00.000Z",
+    "data": "2026-05-25T20:30:00.000Z",
     "codigo": "MX9117",
     "tipo": "reavaliacao",
-    "dataBR": "22/05/2026",
+    "dataBR": "25/05/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 66,
     "iief": null,
@@ -3075,6 +3106,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3089,8 +3121,8 @@
     "eaQuais": [],
     "satisf": 5,
     "nps": 6,
-    "opId": "MX9117-reavaliacao-2026-05-22T20:30:00.654Z",
-    "dataLocal": "2026-05-22",
+    "opId": "MX9117-reavaliacao-2026-05-25T20:30:00.568Z",
+    "dataLocal": "2026-05-25",
     "demo": true
    }
   ],
@@ -3131,16 +3163,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-08-12T22:45:00.000Z",
-    "dataLocal": "2026-08-12",
-    "dataBR": "12/08/2026",
+    "data": "2026-08-15T22:45:00.000Z",
+    "dataLocal": "2026-08-15",
+    "dataBR": "15/08/2026",
     "demo": true
    },
    {
-    "data": "2026-08-12T23:00:00.000Z",
+    "data": "2026-08-15T23:00:00.000Z",
     "codigo": "MX9118",
     "tipo": "primeira",
-    "dataBR": "12/08/2026",
+    "dataBR": "15/08/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -3177,6 +3209,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3194,8 +3227,8 @@
     "iniciais": "SLB",
     "telefone": "(21)90000-9118",
     "email": "teste9118@exemplo.invalid",
-    "opId": "MX9118-primeira-2026-08-12T23:00:00.894Z",
-    "dataLocal": "2026-08-12",
+    "opId": "MX9118-primeira-2026-08-15T23:00:00.747Z",
+    "dataLocal": "2026-08-15",
     "demo": true
    }
   ],
@@ -3236,16 +3269,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-07-20T14:30:00.000Z",
-    "dataLocal": "2026-07-20",
-    "dataBR": "20/07/2026",
+    "data": "2026-07-23T14:30:00.000Z",
+    "dataLocal": "2026-07-23",
+    "dataBR": "23/07/2026",
     "demo": true
    },
    {
-    "data": "2026-07-20T14:45:00.000Z",
+    "data": "2026-07-23T14:45:00.000Z",
     "codigo": "MX9119",
     "tipo": "primeira",
-    "dataBR": "20/07/2026",
+    "dataBR": "23/07/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -3283,6 +3316,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3300,8 +3334,8 @@
     "iniciais": "DCG",
     "telefone": "(21)90000-9119",
     "email": "teste9119@exemplo.invalid",
-    "opId": "MX9119-primeira-2026-07-20T14:45:00.774Z",
-    "dataLocal": "2026-07-20",
+    "opId": "MX9119-primeira-2026-07-23T14:45:00.740Z",
+    "dataLocal": "2026-07-23",
     "demo": true
    }
   ],
@@ -3342,16 +3376,16 @@
      "p3": 3,
      "p4": 3
     },
-    "data": "2026-02-15T18:45:00.000Z",
-    "dataLocal": "2026-02-15",
-    "dataBR": "15/02/2026",
+    "data": "2026-02-18T18:45:00.000Z",
+    "dataLocal": "2026-02-18",
+    "dataBR": "18/02/2026",
     "demo": true
    },
    {
-    "data": "2026-02-15T19:00:00.000Z",
+    "data": "2026-02-18T19:00:00.000Z",
     "codigo": "MX9120",
     "tipo": "primeira",
-    "dataBR": "15/02/2026",
+    "dataBR": "18/02/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -3389,6 +3423,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3406,8 +3441,8 @@
     "iniciais": "RPN",
     "telefone": "(21)90000-9120",
     "email": "teste9120@exemplo.invalid",
-    "opId": "MX9120-primeira-2026-02-15T19:00:00.801Z",
-    "dataLocal": "2026-02-15",
+    "opId": "MX9120-primeira-2026-02-18T19:00:00.753Z",
+    "dataLocal": "2026-02-18",
     "demo": true
    },
    {
@@ -3446,16 +3481,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-04-26T19:00:00.000Z",
-    "dataLocal": "2026-04-26",
-    "dataBR": "26/04/2026",
+    "data": "2026-04-29T19:00:00.000Z",
+    "dataLocal": "2026-04-29",
+    "dataBR": "29/04/2026",
     "demo": true
    },
    {
-    "data": "2026-04-26T19:15:00.000Z",
+    "data": "2026-04-29T19:15:00.000Z",
     "codigo": "MX9120",
     "tipo": "reavaliacao",
-    "dataBR": "26/04/2026",
+    "dataBR": "29/04/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 70,
     "iief": null,
@@ -3494,6 +3529,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3510,8 +3546,8 @@
     ],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9120-reavaliacao-2026-04-26T19:15:00.581Z",
-    "dataLocal": "2026-04-26",
+    "opId": "MX9120-reavaliacao-2026-04-29T19:15:00.582Z",
+    "dataLocal": "2026-04-29",
     "demo": true
    }
   ],
@@ -3552,16 +3588,16 @@
      "p3": 3,
      "p4": 2
     },
-    "data": "2026-07-25T21:05:00.000Z",
-    "dataLocal": "2026-07-25",
-    "dataBR": "25/07/2026",
+    "data": "2026-07-28T21:05:00.000Z",
+    "dataLocal": "2026-07-28",
+    "dataBR": "28/07/2026",
     "demo": true
    },
    {
-    "data": "2026-07-25T21:20:00.000Z",
+    "data": "2026-07-28T21:20:00.000Z",
     "codigo": "MX9121",
     "tipo": "primeira",
-    "dataBR": "25/07/2026",
+    "dataBR": "28/07/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -3599,6 +3635,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3616,8 +3653,8 @@
     "iniciais": "AJT",
     "telefone": "(21)90000-9121",
     "email": "teste9121@exemplo.invalid",
-    "opId": "MX9121-primeira-2026-07-25T21:20:00.764Z",
-    "dataLocal": "2026-07-25",
+    "opId": "MX9121-primeira-2026-07-28T21:20:00.768Z",
+    "dataLocal": "2026-07-28",
     "demo": true
    },
    {
@@ -3656,9 +3693,9 @@
      "p3": 2,
      "p4": 1
     },
-    "data": "2026-10-03T13:15:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T13:15:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -3699,9 +3736,9 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-10-03T13:50:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T13:50:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -3747,16 +3784,16 @@
      "p3": 3,
      "p4": 2
     },
-    "data": "2025-11-07T11:45:00.000Z",
-    "dataLocal": "2025-11-07",
-    "dataBR": "07/11/2025",
+    "data": "2025-11-10T11:45:00.000Z",
+    "dataLocal": "2025-11-10",
+    "dataBR": "10/11/2025",
     "demo": true
    },
    {
-    "data": "2025-11-07T12:00:00.000Z",
+    "data": "2025-11-10T12:00:00.000Z",
     "codigo": "MX9123",
     "tipo": "primeira",
-    "dataBR": "07/11/2025",
+    "dataBR": "10/11/2025",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 12,
@@ -3798,6 +3835,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3815,8 +3853,8 @@
     "iniciais": "CEF",
     "telefone": "(21)90000-9123",
     "email": "teste9123@exemplo.invalid",
-    "opId": "MX9123-primeira-2025-11-07T12:00:01.081Z",
-    "dataLocal": "2025-11-07",
+    "opId": "MX9123-primeira-2025-11-10T12:00:00.975Z",
+    "dataLocal": "2025-11-10",
     "demo": true
    },
    {
@@ -3860,16 +3898,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-01-14T12:05:00.000Z",
-    "dataLocal": "2026-01-14",
-    "dataBR": "14/01/2026",
+    "data": "2026-01-17T12:05:00.000Z",
+    "dataLocal": "2026-01-17",
+    "dataBR": "17/01/2026",
     "demo": true
    },
    {
-    "data": "2026-01-14T12:20:00.000Z",
+    "data": "2026-01-17T12:20:00.000Z",
     "codigo": "MX9123",
     "tipo": "reavaliacao",
-    "dataBR": "14/01/2026",
+    "dataBR": "17/01/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 68,
     "iief": 16,
@@ -3911,6 +3949,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -3925,8 +3964,8 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9123-reavaliacao-2026-01-14T12:20:00.897Z",
-    "dataLocal": "2026-01-14",
+    "opId": "MX9123-reavaliacao-2026-01-17T12:20:00.757Z",
+    "dataLocal": "2026-01-17",
     "demo": true
    },
    {
@@ -3970,25 +4009,25 @@
      "p3": 1,
      "p4": 1
     },
-    "data": "2026-03-27T11:45:00.000Z",
-    "dataLocal": "2026-03-27",
-    "dataBR": "27/03/2026",
+    "data": "2026-03-30T11:45:00.000Z",
+    "dataLocal": "2026-03-30",
+    "dataBR": "30/03/2026",
     "demo": true
    },
    {
-    "data": "2026-03-27T12:00:00.000Z",
+    "data": "2026-03-30T12:00:00.000Z",
     "codigo": "MX9123",
     "tipo": "reavaliacao",
-    "dataBR": "27/03/2026",
+    "dataBR": "30/03/2026",
     "numeroReavaliacao": 2,
     "diasDesdeUltima": 72,
     "iief": 20,
     "pedt": 7,
-    "protocolo": "DE-1",
+    "protocolo": "DE-2",
     "custoIndice": 6,
-    "custoPontos": 15,
+    "custoPontos": 15.3,
     "kitCodes": [
-     "BASE-T5",
+     "BASE-T10",
      "NOITE-1",
      "SP-DE",
      "SP-DUO",
@@ -4021,6 +4060,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -4035,8 +4075,8 @@
     "eaQuais": [],
     "satisf": 9,
     "nps": 10,
-    "opId": "MX9123-reavaliacao-2026-03-27T12:00:00.746Z",
-    "dataLocal": "2026-03-27",
+    "opId": "MX9123-reavaliacao-2026-03-30T12:00:00.764Z",
+    "dataLocal": "2026-03-30",
     "demo": true
    }
   ],
@@ -4082,16 +4122,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-05-06T17:25:00.000Z",
-    "dataLocal": "2026-05-06",
-    "dataBR": "06/05/2026",
+    "data": "2026-05-09T17:25:00.000Z",
+    "dataLocal": "2026-05-09",
+    "dataBR": "09/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-06T17:40:00.000Z",
+    "data": "2026-05-09T17:40:00.000Z",
     "codigo": "MX9124",
     "tipo": "primeira",
-    "dataBR": "06/05/2026",
+    "dataBR": "09/05/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 16,
@@ -4133,6 +4173,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -4150,8 +4191,8 @@
     "iniciais": "GTR",
     "telefone": "(21)90000-9124",
     "email": "teste9124@exemplo.invalid",
-    "opId": "MX9124-primeira-2026-05-06T17:40:01.004Z",
-    "dataLocal": "2026-05-06",
+    "opId": "MX9124-primeira-2026-05-09T17:40:00.978Z",
+    "dataLocal": "2026-05-09",
     "demo": true
    },
    {
@@ -4195,25 +4236,25 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-07-10T17:45:00.000Z",
-    "dataLocal": "2026-07-10",
-    "dataBR": "10/07/2026",
+    "data": "2026-07-13T17:45:00.000Z",
+    "dataLocal": "2026-07-13",
+    "dataBR": "13/07/2026",
     "demo": true
    },
    {
-    "data": "2026-07-10T18:00:00.000Z",
+    "data": "2026-07-13T18:00:00.000Z",
     "codigo": "MX9124",
     "tipo": "reavaliacao",
-    "dataBR": "10/07/2026",
+    "dataBR": "13/07/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 65,
     "iief": 18,
     "pedt": 10,
     "protocolo": "DUO-3 (mantido)",
     "custoIndice": 5,
-    "custoPontos": 14,
+    "custoPontos": 14.3,
     "kitCodes": [
-     "BASE-T5",
+     "BASE-T10",
      "MOD-PAROX-10",
      "NOITE-1",
      "SP-DE",
@@ -4247,6 +4288,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -4261,8 +4303,8 @@
     "eaQuais": [],
     "satisf": 6,
     "nps": 7,
-    "opId": "MX9124-reavaliacao-2026-07-10T18:00:00.769Z",
-    "dataLocal": "2026-07-10",
+    "opId": "MX9124-reavaliacao-2026-07-13T18:00:00.763Z",
+    "dataLocal": "2026-07-13",
     "demo": true
    }
   ],
@@ -4308,16 +4350,16 @@
      "p3": 3,
      "p4": 3
     },
-    "data": "2026-03-02T12:55:00.000Z",
-    "dataLocal": "2026-03-02",
-    "dataBR": "02/03/2026",
+    "data": "2026-03-05T12:55:00.000Z",
+    "dataLocal": "2026-03-05",
+    "dataBR": "05/03/2026",
     "demo": true
    },
    {
-    "data": "2026-03-02T13:10:00.000Z",
+    "data": "2026-03-05T13:10:00.000Z",
     "codigo": "MX9125",
     "tipo": "primeira",
-    "dataBR": "02/03/2026",
+    "dataBR": "05/03/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 9,
@@ -4363,6 +4405,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -4380,8 +4423,8 @@
     "iniciais": "PHS",
     "telefone": "(21)90000-9125",
     "email": "teste9125@exemplo.invalid",
-    "opId": "MX9125-primeira-2026-03-02T13:10:01.050Z",
-    "dataLocal": "2026-03-02",
+    "opId": "MX9125-primeira-2026-03-05T13:10:01.058Z",
+    "dataLocal": "2026-03-05",
     "demo": true
    },
    {
@@ -4425,25 +4468,25 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-05-11T12:55:00.000Z",
-    "dataLocal": "2026-05-11",
-    "dataBR": "11/05/2026",
+    "data": "2026-05-14T12:55:00.000Z",
+    "dataLocal": "2026-05-14",
+    "dataBR": "14/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-11T13:10:00.000Z",
+    "data": "2026-05-14T13:10:00.000Z",
     "codigo": "MX9125",
     "tipo": "reavaliacao",
-    "dataBR": "11/05/2026",
+    "dataBR": "14/05/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 70,
     "iief": 13,
     "pedt": 12,
-    "protocolo": "DUO-4 (mantido)",
+    "protocolo": "DUO-4",
     "custoIndice": 6,
-    "custoPontos": 15.4,
+    "custoPontos": 15.9,
     "kitCodes": [
-     "BASE-T10",
+     "BASE-T20",
      "MOD-PAROX-20",
      "SP-DUO-1J",
      "NOITE-1",
@@ -4452,7 +4495,7 @@
     ],
     "biotens": 22,
     "protocoloAnterior": "DUO-3",
-    "mudanca": "Nenhuma — protocolo mantido",
+    "mudanca": "Protocolo ajustado: DUO-3 → DUO-4",
     "tempo": "medio",
     "parceria": "fixa",
     "topicoPref": "ambos",
@@ -4480,6 +4523,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -4494,8 +4538,8 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9125-reavaliacao-2026-05-11T13:10:00.764Z",
-    "dataLocal": "2026-05-11",
+    "opId": "MX9125-reavaliacao-2026-05-14T13:10:00.862Z",
+    "dataLocal": "2026-05-14",
     "demo": true
    }
   ],
@@ -4541,16 +4585,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-08-24T22:15:00.000Z",
-    "dataLocal": "2026-08-24",
-    "dataBR": "24/08/2026",
+    "data": "2026-08-27T22:15:00.000Z",
+    "dataLocal": "2026-08-27",
+    "dataBR": "27/08/2026",
     "demo": true
    },
    {
-    "data": "2026-08-24T22:30:00.000Z",
+    "data": "2026-08-27T22:30:00.000Z",
     "codigo": "MX9126",
     "tipo": "primeira",
-    "dataBR": "24/08/2026",
+    "dataBR": "27/08/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 18,
@@ -4592,6 +4636,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -4609,8 +4654,8 @@
     "iniciais": "NBA",
     "telefone": "(21)90000-9126",
     "email": "teste9126@exemplo.invalid",
-    "opId": "MX9126-primeira-2026-08-24T22:30:01.014Z",
-    "dataLocal": "2026-08-24",
+    "opId": "MX9126-primeira-2026-08-27T22:30:00.973Z",
+    "dataLocal": "2026-08-27",
     "demo": true
    }
   ],
@@ -4656,16 +4701,16 @@
      "p3": 3,
      "p4": 3
     },
-    "data": "2026-07-29T14:05:00.000Z",
-    "dataLocal": "2026-07-29",
-    "dataBR": "29/07/2026",
+    "data": "2026-08-01T14:05:00.000Z",
+    "dataLocal": "2026-08-01",
+    "dataBR": "01/08/2026",
     "demo": true
    },
    {
-    "data": "2026-07-29T14:20:00.000Z",
+    "data": "2026-08-01T14:20:00.000Z",
     "codigo": "MX9127",
     "tipo": "primeira",
-    "dataBR": "29/07/2026",
+    "dataBR": "01/08/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 14,
@@ -4707,6 +4752,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -4724,8 +4770,8 @@
     "iniciais": "OVC",
     "telefone": "(21)90000-9127",
     "email": "teste9127@exemplo.invalid",
-    "opId": "MX9127-primeira-2026-07-29T14:20:00.978Z",
-    "dataLocal": "2026-07-29",
+    "opId": "MX9127-primeira-2026-08-01T14:20:00.947Z",
+    "dataLocal": "2026-08-01",
     "demo": true
    },
    {
@@ -4769,9 +4815,9 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-10-03T14:25:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T14:25:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -4817,9 +4863,9 @@
      "p3": 3,
      "p4": 2
     },
-    "data": "2026-10-03T14:40:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T14:40:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -4854,15 +4900,15 @@
     "satisfRelatada": null,
     "autorrelato": null,
     "respostas": {},
-    "data": "2026-05-28T15:45:00.000Z",
-    "dataLocal": "2026-05-28",
-    "dataBR": "28/05/2026",
+    "data": "2026-05-31T15:45:00.000Z",
+    "dataLocal": "2026-05-31",
+    "dataBR": "31/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-28T16:00:00.000Z",
+    "data": "2026-05-31T16:00:00.000Z",
     "codigo": "MX9129",
-    "dataBR": "28/05/2026",
+    "dataBR": "31/05/2026",
     "tipo": "preench-inicial",
     "protocolo": "PREENCHIMENTO REALIZADO",
     "linha": "preenchimento",
@@ -4902,8 +4948,8 @@
     "iniciais": "KWE",
     "telefone": "(21)90000-9129",
     "email": "teste9129@exemplo.invalid",
-    "opId": "MX9129-preench-inicial-2026-05-28T16:00:00.551Z",
-    "dataLocal": "2026-05-28",
+    "opId": "MX9129-preench-inicial-2026-05-31T16:00:00.538Z",
+    "dataLocal": "2026-05-31",
     "demo": true
    },
    {
@@ -4941,15 +4987,15 @@
     "satisfRelatada": null,
     "autorrelato": null,
     "respostas": {},
-    "data": "2026-06-19T16:15:00.000Z",
-    "dataLocal": "2026-06-19",
-    "dataBR": "19/06/2026",
+    "data": "2026-06-22T16:15:00.000Z",
+    "dataLocal": "2026-06-22",
+    "dataBR": "22/06/2026",
     "demo": true
    },
    {
-    "data": "2026-06-19T16:30:00.000Z",
+    "data": "2026-06-22T16:30:00.000Z",
     "codigo": "MX9129",
-    "dataBR": "19/06/2026",
+    "dataBR": "22/06/2026",
     "tipo": "preench-retorno",
     "protocolo": "RETORNO PÓS-PREENCHIMENTO",
     "linha": "preenchimento",
@@ -4986,8 +5032,8 @@
      "satisfPaciente": 7,
      "novaAplicacao": null
     },
-    "opId": "MX9129-preench-retorno-2026-06-19T16:30:00.439Z",
-    "dataLocal": "2026-06-19",
+    "opId": "MX9129-preench-retorno-2026-06-22T16:30:00.439Z",
+    "dataLocal": "2026-06-22",
     "demo": true
    }
   ],
@@ -5022,15 +5068,15 @@
     "satisfRelatada": null,
     "autorrelato": null,
     "respostas": {},
-    "data": "2026-09-10T16:45:00.000Z",
-    "dataLocal": "2026-09-10",
-    "dataBR": "10/09/2026",
+    "data": "2026-09-13T16:45:00.000Z",
+    "dataLocal": "2026-09-13",
+    "dataBR": "13/09/2026",
     "demo": true
    },
    {
-    "data": "2026-09-10T17:00:00.000Z",
+    "data": "2026-09-13T17:00:00.000Z",
     "codigo": "MX9130",
-    "dataBR": "10/09/2026",
+    "dataBR": "13/09/2026",
     "tipo": "preench-inicial",
     "protocolo": "PREENCHIMENTO REALIZADO",
     "linha": "preenchimento",
@@ -5070,8 +5116,8 @@
     "iniciais": "DRZ",
     "telefone": "(21)90000-9130",
     "email": "teste9130@exemplo.invalid",
-    "opId": "MX9130-preench-inicial-2026-09-10T17:00:00.542Z",
-    "dataLocal": "2026-09-10",
+    "opId": "MX9130-preench-inicial-2026-09-13T17:00:00.592Z",
+    "dataLocal": "2026-09-13",
     "demo": true
    },
    {
@@ -5111,9 +5157,9 @@
     "satisfRelatada": null,
     "autorrelato": null,
     "respostas": {},
-    "data": "2026-10-03T12:40:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T12:40:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -5148,15 +5194,15 @@
     "satisfRelatada": null,
     "autorrelato": null,
     "respostas": {},
-    "data": "2026-03-07T17:45:00.000Z",
-    "dataLocal": "2026-03-07",
-    "dataBR": "07/03/2026",
+    "data": "2026-03-10T17:45:00.000Z",
+    "dataLocal": "2026-03-10",
+    "dataBR": "10/03/2026",
     "demo": true
    },
    {
-    "data": "2026-03-07T18:00:00.000Z",
+    "data": "2026-03-10T18:00:00.000Z",
     "codigo": "MX9131",
-    "dataBR": "07/03/2026",
+    "dataBR": "10/03/2026",
     "tipo": "preench-inicial",
     "protocolo": "PREENCHIMENTO REALIZADO",
     "linha": "preenchimento",
@@ -5196,8 +5242,8 @@
     "iniciais": "ELU",
     "telefone": "(21)90000-9131",
     "email": "teste9131@exemplo.invalid",
-    "opId": "MX9131-preench-inicial-2026-03-07T18:00:00.645Z",
-    "dataLocal": "2026-03-07",
+    "opId": "MX9131-preench-inicial-2026-03-10T18:00:00.536Z",
+    "dataLocal": "2026-03-10",
     "demo": true
    },
    {
@@ -5237,15 +5283,15 @@
     "satisfRelatada": null,
     "autorrelato": null,
     "respostas": {},
-    "data": "2026-03-29T18:05:00.000Z",
-    "dataLocal": "2026-03-29",
-    "dataBR": "29/03/2026",
+    "data": "2026-04-01T18:05:00.000Z",
+    "dataLocal": "2026-04-01",
+    "dataBR": "01/04/2026",
     "demo": true
    },
    {
-    "data": "2026-03-29T18:20:00.000Z",
+    "data": "2026-04-01T18:20:00.000Z",
     "codigo": "MX9131",
-    "dataBR": "29/03/2026",
+    "dataBR": "01/04/2026",
     "tipo": "preench-retorno",
     "protocolo": "RETORNO PÓS-PREENCHIMENTO",
     "linha": "preenchimento",
@@ -5282,8 +5328,8 @@
      "satisfPaciente": 6,
      "novaAplicacao": null
     },
-    "opId": "MX9131-preench-retorno-2026-03-29T18:20:00.533Z",
-    "dataLocal": "2026-03-29",
+    "opId": "MX9131-preench-retorno-2026-04-01T18:20:00.433Z",
+    "dataLocal": "2026-04-01",
     "demo": true
    }
   ],
@@ -5318,15 +5364,15 @@
     "satisfRelatada": null,
     "autorrelato": null,
     "respostas": {},
-    "data": "2026-09-15T19:15:00.000Z",
-    "dataLocal": "2026-09-15",
-    "dataBR": "15/09/2026",
+    "data": "2026-09-18T19:15:00.000Z",
+    "dataLocal": "2026-09-18",
+    "dataBR": "18/09/2026",
     "demo": true
    },
    {
-    "data": "2026-09-15T19:30:00.000Z",
+    "data": "2026-09-18T19:30:00.000Z",
     "codigo": "MX9132",
-    "dataBR": "15/09/2026",
+    "dataBR": "18/09/2026",
     "tipo": "preench-inicial",
     "protocolo": "AVALIAÇÃO — procedimento não realizado",
     "linha": "preenchimento",
@@ -5366,8 +5412,8 @@
     "iniciais": "FAG",
     "telefone": "(21)90000-9132",
     "email": "teste9132@exemplo.invalid",
-    "opId": "MX9132-preench-inicial-2026-09-15T19:30:00.415Z",
-    "dataLocal": "2026-09-15",
+    "opId": "MX9132-preench-inicial-2026-09-18T19:30:00.426Z",
+    "dataLocal": "2026-09-18",
     "demo": true
    }
   ],
@@ -5408,16 +5454,16 @@
      "i3": 1,
      "i4": 1
     },
-    "data": "2026-01-06T11:15:00.000Z",
-    "dataLocal": "2026-01-06",
-    "dataBR": "06/01/2026",
+    "data": "2026-01-09T11:15:00.000Z",
+    "dataLocal": "2026-01-09",
+    "dataBR": "09/01/2026",
     "demo": true
    },
    {
-    "data": "2026-01-06T11:30:00.000Z",
+    "data": "2026-01-09T11:30:00.000Z",
     "codigo": "MX9133",
     "tipo": "primeira",
-    "dataBR": "06/01/2026",
+    "dataBR": "09/01/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 8,
@@ -5462,6 +5508,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -5479,14 +5526,14 @@
     "iniciais": "UMB",
     "telefone": "(21)90000-9133",
     "email": "teste9133@exemplo.invalid",
-    "opId": "MX9133-primeira-2026-01-06T11:30:00.799Z",
-    "dataLocal": "2026-01-06",
+    "opId": "MX9133-primeira-2026-01-09T11:30:00.739Z",
+    "dataLocal": "2026-01-09",
     "demo": true
    },
    {
-    "data": "2026-01-28T11:00:00.000Z",
+    "data": "2026-01-31T11:00:00.000Z",
     "codigo": "MX9133",
-    "dataBR": "28/01/2026",
+    "dataBR": "31/01/2026",
     "tipo": "tefi",
     "linha": "tefi",
     "protocolo": "TEFI POSITIVO",
@@ -5506,8 +5553,8 @@
      "ir": 0.5,
      "suspeita": "Disfunção mista — arterial e veno-oclusiva"
     },
-    "opId": "MX9133-tefi-2026-01-28T11:00:00.627Z",
-    "dataLocal": "2026-01-28",
+    "opId": "MX9133-tefi-2026-01-31T11:00:00.522Z",
+    "dataLocal": "2026-01-31",
     "demo": true
    },
    {
@@ -5546,16 +5593,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-04-06T11:15:00.000Z",
-    "dataLocal": "2026-04-06",
-    "dataBR": "06/04/2026",
+    "data": "2026-04-09T11:15:00.000Z",
+    "dataLocal": "2026-04-09",
+    "dataBR": "09/04/2026",
     "demo": true
    },
    {
-    "data": "2026-04-06T11:30:00.000Z",
+    "data": "2026-04-09T11:30:00.000Z",
     "codigo": "MX9133",
     "tipo": "reavaliacao",
-    "dataBR": "06/04/2026",
+    "dataBR": "09/04/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 68,
     "iief": 12,
@@ -5595,6 +5642,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -5615,8 +5663,8 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9133-reavaliacao-2026-04-06T11:30:00.874Z",
-    "dataLocal": "2026-04-06",
+    "opId": "MX9133-reavaliacao-2026-04-09T11:30:00.723Z",
+    "dataLocal": "2026-04-09",
     "demo": true
    }
   ],
@@ -5657,16 +5705,16 @@
      "i3": 1,
      "i4": 1
     },
-    "data": "2026-06-05T12:15:00.000Z",
-    "dataLocal": "2026-06-05",
-    "dataBR": "05/06/2026",
+    "data": "2026-06-08T12:15:00.000Z",
+    "dataLocal": "2026-06-08",
+    "dataBR": "08/06/2026",
     "demo": true
    },
    {
-    "data": "2026-06-05T12:30:00.000Z",
+    "data": "2026-06-08T12:30:00.000Z",
     "codigo": "MX9134",
     "tipo": "primeira",
-    "dataBR": "05/06/2026",
+    "dataBR": "08/06/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 7,
@@ -5710,6 +5758,7 @@
     "comorbControle": "parcial",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -5727,14 +5776,14 @@
     "iniciais": "WCA",
     "telefone": "(21)90000-9134",
     "email": "teste9134@exemplo.invalid",
-    "opId": "MX9134-primeira-2026-06-05T12:30:00.828Z",
-    "dataLocal": "2026-06-05",
+    "opId": "MX9134-primeira-2026-06-08T12:30:00.733Z",
+    "dataLocal": "2026-06-08",
     "demo": true
    },
    {
-    "data": "2026-06-26T11:00:00.000Z",
+    "data": "2026-06-29T11:00:00.000Z",
     "codigo": "MX9134",
-    "dataBR": "26/06/2026",
+    "dataBR": "29/06/2026",
     "tipo": "tefi",
     "linha": "tefi",
     "protocolo": "TEFI NEGATIVO",
@@ -5754,8 +5803,8 @@
      "ir": 0.5,
      "suspeita": "Disfunção veno-oclusiva"
     },
-    "opId": "MX9134-tefi-2026-06-26T11:00:00.558Z",
-    "dataLocal": "2026-06-26",
+    "opId": "MX9134-tefi-2026-06-29T11:00:00.562Z",
+    "dataLocal": "2026-06-29",
     "demo": true
    }
   ],
@@ -5796,16 +5845,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-07-07T13:30:00.000Z",
-    "dataLocal": "2026-07-07",
-    "dataBR": "07/07/2026",
+    "data": "2026-07-10T13:30:00.000Z",
+    "dataLocal": "2026-07-10",
+    "dataBR": "10/07/2026",
     "demo": true
    },
    {
-    "data": "2026-07-07T13:45:00.000Z",
+    "data": "2026-07-10T13:45:00.000Z",
     "codigo": "MX9135",
     "tipo": "primeira",
-    "dataBR": "07/07/2026",
+    "dataBR": "10/07/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 10,
@@ -5847,6 +5896,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -5864,14 +5914,14 @@
     "iniciais": "YRP",
     "telefone": "(21)90000-9135",
     "email": "teste9135@exemplo.invalid",
-    "opId": "MX9135-primeira-2026-07-07T13:45:00.768Z",
-    "dataLocal": "2026-07-07",
+    "opId": "MX9135-primeira-2026-07-10T13:45:00.679Z",
+    "dataLocal": "2026-07-10",
     "demo": true
    },
    {
-    "data": "2026-07-25T11:15:00.000Z",
+    "data": "2026-07-28T11:15:00.000Z",
     "codigo": "MX9135",
-    "dataBR": "25/07/2026",
+    "dataBR": "28/07/2026",
     "tipo": "tefi",
     "linha": "tefi",
     "protocolo": "TEFI POSITIVO",
@@ -5891,8 +5941,8 @@
      "ir": null,
      "suspeita": null
     },
-    "opId": "MX9135-tefi-2026-07-25T11:15:00.603Z",
-    "dataLocal": "2026-07-25",
+    "opId": "MX9135-tefi-2026-07-28T11:15:00.526Z",
+    "dataLocal": "2026-07-28",
     "demo": true
    }
   ],
@@ -5933,16 +5983,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-08-09T12:35:00.000Z",
-    "dataLocal": "2026-08-09",
-    "dataBR": "09/08/2026",
+    "data": "2026-08-12T12:35:00.000Z",
+    "dataLocal": "2026-08-12",
+    "dataBR": "12/08/2026",
     "demo": true
    },
    {
-    "data": "2026-08-09T12:50:00.000Z",
+    "data": "2026-08-12T12:50:00.000Z",
     "codigo": "MX9136",
     "tipo": "primeira",
-    "dataBR": "09/08/2026",
+    "dataBR": "12/08/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 11,
@@ -5984,6 +6034,7 @@
     "comorbControle": "sim",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -6001,8 +6052,8 @@
     "iniciais": "IGH",
     "telefone": "(21)90000-9136",
     "email": "teste9136@exemplo.invalid",
-    "opId": "MX9136-primeira-2026-08-09T12:50:00.883Z",
-    "dataLocal": "2026-08-09",
+    "opId": "MX9136-primeira-2026-08-12T12:50:00.719Z",
+    "dataLocal": "2026-08-12",
     "demo": true
    }
   ],
@@ -6043,16 +6094,16 @@
      "p3": 3,
      "p4": 2
     },
-    "data": "2026-05-16T20:45:00.000Z",
-    "dataLocal": "2026-05-16",
-    "dataBR": "16/05/2026",
+    "data": "2026-05-19T20:45:00.000Z",
+    "dataLocal": "2026-05-19",
+    "dataBR": "19/05/2026",
     "demo": true
    },
    {
-    "data": "2026-05-16T21:00:00.000Z",
+    "data": "2026-05-19T21:00:00.000Z",
     "codigo": "MX9137",
     "tipo": "primeira",
-    "dataBR": "16/05/2026",
+    "dataBR": "19/05/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -6092,6 +6143,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -6109,8 +6161,8 @@
     "iniciais": "BPE",
     "telefone": "(21)90000-9137",
     "email": "teste9137@exemplo.invalid",
-    "opId": "MX9137-primeira-2026-05-16T21:00:00.960Z",
-    "dataLocal": "2026-05-16",
+    "opId": "MX9137-primeira-2026-05-19T21:00:00.760Z",
+    "dataLocal": "2026-05-19",
     "demo": true
    },
    {
@@ -6149,16 +6201,16 @@
      "p3": 2,
      "p4": 2
     },
-    "data": "2026-07-23T20:55:00.000Z",
-    "dataLocal": "2026-07-23",
-    "dataBR": "23/07/2026",
+    "data": "2026-07-26T20:55:00.000Z",
+    "dataLocal": "2026-07-26",
+    "dataBR": "26/07/2026",
     "demo": true
    },
    {
-    "data": "2026-07-23T21:10:00.000Z",
+    "data": "2026-07-26T21:10:00.000Z",
     "codigo": "MX9137",
     "tipo": "reavaliacao",
-    "dataBR": "23/07/2026",
+    "dataBR": "26/07/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 68,
     "iief": null,
@@ -6198,6 +6250,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -6212,8 +6265,8 @@
     "eaQuais": [],
     "satisf": 7,
     "nps": 8,
-    "opId": "MX9137-reavaliacao-2026-07-23T21:10:00.710Z",
-    "dataLocal": "2026-07-23",
+    "opId": "MX9137-reavaliacao-2026-07-26T21:10:00.573Z",
+    "dataLocal": "2026-07-26",
     "demo": true
    },
    {
@@ -6252,9 +6305,9 @@
      "p3": 2,
      "p4": 1
     },
-    "data": "2026-10-03T11:35:00.000Z",
-    "dataLocal": "2026-10-03",
-    "dataBR": "03/10/2026",
+    "data": "2026-10-06T11:35:00.000Z",
+    "dataLocal": "2026-10-06",
+    "dataBR": "06/10/2026",
     "demo": true
    }
   ],
@@ -6295,16 +6348,16 @@
      "p3": 3,
      "p4": 3
     },
-    "data": "2026-09-03T19:45:00.000Z",
-    "dataLocal": "2026-09-03",
-    "dataBR": "03/09/2026",
+    "data": "2026-09-06T19:45:00.000Z",
+    "dataLocal": "2026-09-06",
+    "dataBR": "06/09/2026",
     "demo": true
    },
    {
-    "data": "2026-09-03T20:00:00.000Z",
+    "data": "2026-09-06T20:00:00.000Z",
     "codigo": "MX9138",
     "tipo": "primeira",
-    "dataBR": "03/09/2026",
+    "dataBR": "06/09/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": null,
@@ -6344,6 +6397,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -6361,8 +6415,8 @@
     "iniciais": "JTF",
     "telefone": "(21)90000-9138",
     "email": "teste9138@exemplo.invalid",
-    "opId": "MX9138-primeira-2026-09-03T20:00:00.940Z",
-    "dataLocal": "2026-09-03",
+    "opId": "MX9138-primeira-2026-09-06T20:00:00.746Z",
+    "dataLocal": "2026-09-06",
     "demo": true
    }
   ],
@@ -6403,16 +6457,16 @@
      "i3": 2,
      "i4": 1
     },
-    "data": "2026-03-27T11:35:00.000Z",
-    "dataLocal": "2026-03-27",
-    "dataBR": "27/03/2026",
+    "data": "2026-03-30T11:35:00.000Z",
+    "dataLocal": "2026-03-30",
+    "dataBR": "30/03/2026",
     "demo": true
    },
    {
-    "data": "2026-03-27T11:50:00.000Z",
+    "data": "2026-03-30T11:50:00.000Z",
     "codigo": "MX9139",
     "tipo": "primeira",
-    "dataBR": "27/03/2026",
+    "dataBR": "30/03/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 9,
@@ -6460,6 +6514,7 @@
     "comorbControle": "nao",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -6477,8 +6532,8 @@
     "iniciais": "LKN",
     "telefone": "(21)90000-9139",
     "email": "teste9139@exemplo.invalid",
-    "opId": "MX9139-primeira-2026-03-27T11:50:00.909Z",
-    "dataLocal": "2026-03-27",
+    "opId": "MX9139-primeira-2026-03-30T11:50:00.722Z",
+    "dataLocal": "2026-03-30",
     "demo": true
    },
    {
@@ -6517,25 +6572,25 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-06-07T11:45:00.000Z",
-    "dataLocal": "2026-06-07",
-    "dataBR": "07/06/2026",
+    "data": "2026-06-10T11:45:00.000Z",
+    "dataLocal": "2026-06-10",
+    "dataBR": "10/06/2026",
     "demo": true
    },
    {
-    "data": "2026-06-07T12:00:00.000Z",
+    "data": "2026-06-10T12:00:00.000Z",
     "codigo": "MX9139",
     "tipo": "reavaliacao",
-    "dataBR": "07/06/2026",
+    "dataBR": "10/06/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 72,
     "iief": 12,
     "pedt": null,
-    "protocolo": "DE-2",
+    "protocolo": "DE-3",
     "custoIndice": 9,
-    "custoPontos": 24.8,
+    "custoPontos": 25.3,
     "kitCodes": [
-     "BASE-T10",
+     "BASE-T20",
      "NOITE-1",
      "SP-DE",
      "TEFI",
@@ -6574,6 +6629,7 @@
     "comorbControle": "nao",
     "comorbMedico": "sim",
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -6590,8 +6646,8 @@
     ],
     "satisf": 6,
     "nps": 7,
-    "opId": "MX9139-reavaliacao-2026-06-07T12:00:00.854Z",
-    "dataLocal": "2026-06-07",
+    "opId": "MX9139-reavaliacao-2026-06-10T12:00:00.688Z",
+    "dataLocal": "2026-06-10",
     "demo": true
    }
   ],
@@ -6637,16 +6693,16 @@
      "i3": 2,
      "i4": 2
     },
-    "data": "2026-06-13T14:15:00.000Z",
-    "dataLocal": "2026-06-13",
-    "dataBR": "13/06/2026",
+    "data": "2026-06-16T14:15:00.000Z",
+    "dataLocal": "2026-06-16",
+    "dataBR": "16/06/2026",
     "demo": true
    },
    {
-    "data": "2026-06-13T14:30:00.000Z",
+    "data": "2026-06-16T14:30:00.000Z",
     "codigo": "MX9140",
     "tipo": "primeira",
-    "dataBR": "13/06/2026",
+    "dataBR": "16/06/2026",
     "numeroReavaliacao": 0,
     "diasDesdeUltima": null,
     "iief": 13,
@@ -6690,6 +6746,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": true,
@@ -6707,8 +6764,8 @@
     "iniciais": "MCD",
     "telefone": "(21)90000-9140",
     "email": "teste9140@exemplo.invalid",
-    "opId": "MX9140-primeira-2026-06-13T14:30:00.902Z",
-    "dataLocal": "2026-06-13",
+    "opId": "MX9140-primeira-2026-06-16T14:30:00.724Z",
+    "dataLocal": "2026-06-16",
     "demo": true
    },
    {
@@ -6747,25 +6804,25 @@
      "i3": 3,
      "i4": 3
     },
-    "data": "2026-08-16T14:25:00.000Z",
-    "dataLocal": "2026-08-16",
-    "dataBR": "16/08/2026",
+    "data": "2026-08-19T14:25:00.000Z",
+    "dataLocal": "2026-08-19",
+    "dataBR": "19/08/2026",
     "demo": true
    },
    {
-    "data": "2026-08-16T14:40:00.000Z",
+    "data": "2026-08-19T14:40:00.000Z",
     "codigo": "MX9140",
     "tipo": "reavaliacao",
-    "dataBR": "16/08/2026",
+    "dataBR": "19/08/2026",
     "numeroReavaliacao": 1,
     "diasDesdeUltima": 64,
     "iief": 15,
     "pedt": null,
-    "protocolo": "DE-2",
-    "custoIndice": 4,
-    "custoPontos": 11.8,
+    "protocolo": "DE-3",
+    "custoIndice": 5,
+    "custoPontos": 12.3,
     "kitCodes": [
-     "BASE-T10",
+     "BASE-T20",
      "NOITE-1",
      "SP-DE",
      "ONDAS"
@@ -6797,6 +6854,7 @@
     "comorbControle": null,
     "comorbMedico": null,
     "iciAnterior": null,
+    "iciPorTefi": null,
     "iciDosePrescrita": null,
     "iciDoseIndicada": null,
     "examesSolicitados": false,
@@ -6818,8 +6876,8 @@
     "eaQuais": [],
     "satisf": 6,
     "nps": 8,
-    "opId": "MX9140-reavaliacao-2026-08-16T14:40:00.934Z",
-    "dataLocal": "2026-08-16",
+    "opId": "MX9140-reavaliacao-2026-08-19T14:40:00.724Z",
+    "dataLocal": "2026-08-19",
     "demo": true
    }
   ]
@@ -6832,7 +6890,7 @@
    "consultas": 2,
    "fila": "",
    "evolucao": "INTRACAVERNOSA IIEF 7 → INTRACAVERNOSA (mantido) IIEF 14",
-   "nota": "DE grave, diabético, falha prévia a PDE5i → intracavernosa; melhora no retorno"
+   "nota": "DE grave, diabético, falha prévia a PDE5i → intracavernosa; no retorno ereção suficiente de cerca de 1 hora"
   },
   {
    "cod": "MX9102",
@@ -6840,7 +6898,7 @@
    "ini": "CMS",
    "consultas": 3,
    "fila": "",
-   "evolucao": "DE-3 IIEF 10 → DE-2 (mantido) IIEF 15 → DE-1 (mantido) IIEF 19",
+   "evolucao": "DE-3 IIEF 10 → DE-3 (mantido) IIEF 15 → DE-3 (mantido) IIEF 19",
    "nota": "DE moderada, tabagista; 10 → 15 → 19"
   },
   {
@@ -6858,7 +6916,7 @@
    "ini": "RTB",
    "consultas": 2,
    "fila": "",
-   "evolucao": "DE-2 IIEF 14 → DE-2 IIEF 15",
+   "evolucao": "DE-2 IIEF 14 → DE-3 IIEF 15",
    "nota": "DE leve-moderada; resposta insuficiente com adesão total"
   },
   {
@@ -6885,7 +6943,7 @@
    "ini": "EMC",
    "consultas": 3,
    "fila": "",
-   "evolucao": "DE-1 IIEF 18 → SEM DIAGNÓSTICO FORMAL (mantido) IIEF 22 → SEM DIAGNÓSTICO FORMAL IIEF 23",
+   "evolucao": "DE-1 IIEF 18 → DE-1 (mantido) IIEF 22 → DE-1 (mantido) IIEF 23",
    "nota": "DE leve; 18 → 22 → 23, estável"
   },
   {
@@ -7029,7 +7087,7 @@
    "ini": "CEF",
    "consultas": 3,
    "fila": "",
-   "evolucao": "DUO-3 IIEF 12 PEDT 14 → DUO-3 (mantido) IIEF 16 PEDT 10 → DE-1 IIEF 20 PEDT 7",
+   "evolucao": "DUO-3 IIEF 12 PEDT 14 → DUO-3 (mantido) IIEF 16 PEDT 10 → DE-2 IIEF 20 PEDT 7",
    "nota": "DUO; IIEF 12→16→20, PEDT 14→10→7"
   },
   {
@@ -7047,7 +7105,7 @@
    "ini": "PHS",
    "consultas": 2,
    "fila": "",
-   "evolucao": "DUO-3 IIEF 9 PEDT 17 → DUO-4 (mantido) IIEF 13 PEDT 12",
+   "evolucao": "DUO-3 IIEF 9 PEDT 17 → DUO-4 IIEF 13 PEDT 12",
    "nota": "DUO moderado, hipertenso"
   },
   {
@@ -7173,7 +7231,7 @@
    "ini": "LKN",
    "consultas": 2,
    "fila": "",
-   "evolucao": "DE-3 IIEF 9 → DE-2 IIEF 12",
+   "evolucao": "DE-3 IIEF 9 → DE-3 IIEF 12",
    "nota": "DE com risco cardiovascular alto (coronariopata, DM, HAS e tabagismo não controlados)"
   },
   {
@@ -7182,7 +7240,7 @@
    "ini": "MCD",
    "consultas": 2,
    "fila": "",
-   "evolucao": "DE-2 IIEF 13 → DE-2 IIEF 15",
+   "evolucao": "DE-2 IIEF 13 → DE-3 IIEF 15",
    "nota": "DE com libido baixa e testosterona na zona cinzenta (290 ng/dL, livre 55 pg/mL)"
   }
  ]
