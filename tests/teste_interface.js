@@ -166,8 +166,9 @@ async function atendimento(p, viaAtalho) {
   // ---------- atalhos, busca, pendência ----------
   console.log('\n--- atalhos e busca');
   {
+    // v2.5-J: dia LOCAL (como o app); com toISOString a fila sumia entre 21h e 24h em Brasília (já é amanhã em UTC)
     const hoje = new Date();
-    const fila = [{ codigo: 'MXF001', iniciais: 'A.B.', hora: '14:20', data: hoje.toISOString(), dataLocal: hoje.toISOString().slice(0, 10),
+    const fila = [{ codigo: 'MXF001', iniciais: 'A.B.', hora: '14:20', data: hoje.toISOString(), dataLocal: hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0'),
       queixaRecepcao: 'de', idade: 50, respostas: { i0: 3, i1: 3, i2: 3, i3: 3, i4: 3 } }];
     const mem = { recepcao: fila, codigos: [{ codigo: 'MXH001' }], pacientes: [],
       'pacientes/MXH001/ciclos': [{ codigo: 'MXH001', tipo: 'primeira', linha: 'DE', protocolo: 'DE-2', iief: 14,
