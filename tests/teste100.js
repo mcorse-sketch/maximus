@@ -99,6 +99,7 @@ function bootstrap(mem) {
 }
 
 const espera = ms => new Promise(r => setTimeout(r, ms));
+const { assenta, ate } = require('./assenta');   // v2.5-M: espera por condição, não por tempo
 
 function visivel(el) { return el && el.style.display !== 'none' && !el.hidden; }
 
@@ -182,7 +183,8 @@ async function rodaPaciente(i, mem) {
   const { window: win } = dom;
   const doc = win.document;
   const rel = { i, passos: 0, telas: [], falha: null, panorama: null };
-  await espera(60);
+  await ate(win, () => !!doc.getElementById('quizCard') && !!doc.getElementById('quizCard').getAttribute('data-tela'), 3000);
+  await assenta(win, { quieto: 10 });
 
   const next = doc.getElementById('nextBtn');
   const results = doc.getElementById('resultsCard');
@@ -198,7 +200,7 @@ async function rodaPaciente(i, mem) {
       if (!panCard.querySelector('.pan-mod.proximo') && panCard.querySelectorAll('.pan-mod').length) rel.semProximo = true;
       const seg = doc.getElementById('panSeguir');
       if (!seg) { rel.falha = 'panorama sem botao continuar'; break; }
-      seg.click(); await espera(45);
+      seg.click(); await assenta(win);
       continue;
     }
     const quiz = doc.getElementById('quizCard');
@@ -211,12 +213,12 @@ async function rodaPaciente(i, mem) {
     else if (doc.querySelectorAll('#optsWrap input.fld[inputmode=decimal]').length) rel.numDigitado = (rel.numDigitado||0)+1;
 
     try { preencheTela(doc, win); } catch(e){ erros.push('preencher: '+(e&&e.message)); }
-    await espera(4);
+    await assenta(win);
 
     if (next.disabled) {
       // tenta de novo: algumas telas exigem mais de um campo
       try { preencheTela(doc, win); } catch(e){ erros.push('preencher2: '+(e&&e.message)); }
-      await espera(4);
+      await assenta(win);
     }
     if (next.disabled) {
       travas++;
@@ -225,7 +227,7 @@ async function rodaPaciente(i, mem) {
     }
     const antes = rotulo;
     try { next.click(); } catch(e){ erros.push('clique next: '+(e&&e.message)); rel.falha='erro ao avancar: '+(e&&e.message); break; }
-    await espera(35);
+    await assenta(win);
     rel.passos++;
     const depois = (doc.getElementById('qText') || {}).textContent || '';
     if (depois === antes && !visivel(results)) {
