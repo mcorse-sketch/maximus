@@ -154,8 +154,28 @@ async function roda(i, mem, novo) {
       continue;
     }
     const escala = [...doc.querySelectorAll('.knum')];
-    if (opts.length) { pick(opts).click(); await espera(40); rel.passos++; continue; }
-    if (escala.length) { pick(escala).click(); await espera(40); rel.passos++; continue; }
+    // v2.5-N: o toque avança sozinho 160 ms depois, uma vez por tela. Antes o teste tocava
+    // de novo 40 ms depois e cada toque somava um avanço (pulava perguntas — o bug do toque
+    // duplo). Agora espera a tela trocar (até 600 ms; tela de várias escolhas não troca).
+    const esperaTrocar = async () => {
+      for (let t = 0; t < 60; t++) {
+        await espera(10);
+        if (visivel(doc.getElementById('fim')) || ((doc.getElementById('pergunta') || {}).textContent || '') !== pergunta) return;
+      }
+    };
+    // tela de várias escolhas ("Marque tudo…"): o Continuar fica à vista; marca uma ou duas
+    // e continua. Antes o teste só passava dela quando o avanço em dobro do toque duplo a
+    // pulava — quando caía nela, "não chegou ao fim em 120 passos" (a falha intermitente).
+    if (opts.length && visivel(cont)) {
+      const n = intBetween(1, 2);
+      for (let k = 0; k < n; k++) { const ag = [...doc.querySelectorAll('.kopt')]; pick(ag).click(); await espera(15); }
+      for (let k = 0; k < 4 && cont.disabled; k++) { pick([...doc.querySelectorAll('.kopt')]).click(); await espera(15); }
+      rel.multi = true;
+      if (cont.disabled) { rel.falha = rel.falha || 'várias escolhas não liberou o Continuar: ' + pergunta; break; }
+      cont.click(); await espera(45); rel.passos++; continue;
+    }
+    if (opts.length) { pick(opts).click(); await esperaTrocar(); rel.passos++; continue; }
+    if (escala.length) { pick(escala).click(); await esperaTrocar(); rel.passos++; continue; }
 
     if (cont.disabled) {
       const outros = [...doc.querySelectorAll('#quiz input.kfld')];
@@ -175,7 +195,8 @@ async function roda(i, mem, novo) {
 async function filaDeHoje() {
   const hoje = new Date();
   const dia = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  const reg = (cod, min, ret) => { const d = new Date(hoje.getTime() - min * 60000);
+  // v2.5-K: "min minutos atrás", mas nunca antes da meia-noite de hoje (entre 0h e 1h o registro caía no dia anterior)
+  const reg = (cod, min, ret) => { const d = new Date(Math.max(hoje.getTime() - min * 60000, new Date(hoje).setHours(0, 0, 0, 0) + (100 - min) * 1000));
     return { codigo: cod, tipo: 'recepcao', linha: 'recepcao', data: d.toISOString(), dataLocal: dia(d), hora: d.toTimeString().slice(0, 5), iniciais: 'XYZ', retorno: ret }; };
   const mem = { recepcao: [reg('MX7001', 50, true), reg('MX7002', 30, false), reg('MX7003', 10, false)], codigos: [] };
   mem.atendidos = [{ codigo: 'MX7001', recepcao: mem.recepcao[0].data, atendido: true, em: new Date().toISOString() }];
@@ -194,7 +215,11 @@ async function filaDeHoje() {
   r.push(['a lista separa aguardando (MX7002, MX7003) de atendidos (MX7001)', /Aguardando.*MX7002.*MX7003.*Atendidos hoje.*MX7001/.test(t1), t1.slice(0, 200)]);
   const dev = box.querySelector('[data-dev="MX7001"]');
   r.push(['atendido tem "Devolver à fila"', !!dev]);
-  if (dev) { dev.click(); await espera(80); }
+  if (dev) { dev.click(); await espera(30); }
+  // v2.5-K: a confirmação é o diálogo do próprio app (não mais window.confirm)
+  const dlg = doc.querySelector('.mx-dlg-ov');
+  r.push(['"Devolver à fila" pede confirmação no diálogo do app', !!dlg && /Devolver MX7001/.test(dlg.textContent), dlg ? dlg.textContent.slice(0, 120) : 'sem diálogo']);
+  if (dlg) { dlg.querySelector('[data-v="1"]').click(); await espera(80); }
   const ult = mem.atendidos[mem.atendidos.length - 1];
   r.push(['devolver (com confirmação) acrescenta atendido=false, sem apagar nada', mem.atendidos.length === 2 && ult.atendido === false && mem.recepcao.length === 3, JSON.stringify(ult)]);
   r.push(['depois de devolver: 3 aguardando', /3\s*aguardando/.test(box.textContent), box.textContent.slice(0, 80)]);
@@ -233,6 +258,7 @@ async function filaDeHoje() {
   const foraDoPadrao = tels.filter(t => !/^\(\d{2}\)\d{4,5}-\d{4}$/.test(t));
   console.log('telefones salvos:', tels.length, '| fora do padrao:', foraDoPadrao.length, foraDoPadrao.slice(0,3).join(' '));
   console.log('usaram a roleta:', rels.filter(r => r.roleta).length);
+  console.log('passaram pela tela de várias escolhas:', rels.filter(r => r.multi).length);
   console.log('erros de JS:', erros.length);
   erros.slice(0, 6).forEach(e => console.log('   -', e));
   console.log('falhas de fluxo:', falhas.length);
