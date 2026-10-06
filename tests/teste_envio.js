@@ -90,7 +90,8 @@ function confereOrientacoes(doc, onde) {
     const okLinha = box.dataset.linha === linha;
     const okRec = visivel(rec) === receita && (!receita || rec.checked) && (receita || !rec.checked);
     const okRot = !receita || limpa(rec.closest('label').textContent) === rotulo;
-    const okGuia = visivel(doc.getElementById('envGuia')) === guia && visivel(doc.getElementById('envApend')) === guia;
+    // v2.5 (item 10): o apêndice "reset do estímulo" saiu do envio
+    const okGuia = visivel(doc.getElementById('envGuia')) === guia && !doc.getElementById('envApend');
     const okOri = visivel(doc.getElementById('envOri'));
     const kit = (r.salvo && r.salvo.kitCodes || []).map(c => Array.isArray(c) ? c[0] : c).join(',');
     ok(okLinha && okRec && okRot && okGuia && okOri && !r.erros.length,

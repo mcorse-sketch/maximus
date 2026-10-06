@@ -325,6 +325,7 @@ function fakeDb(m) {
   checa.forEach(([nome, ok]) => { if (!ok) falhou++; console.log((ok ? '  ok   ' : '  FALHA') + '  ' + nome); });
   console.log('erros de JS:', erros.length);
   erros.slice(0, 5).forEach(e => console.log('   -', e));
-  if (!checa.find(c => c[0].indexOf('composicao do SP-DUO') >= 0)[1]) console.log('\ntrecho do resumo:\n', txt.slice(0, 400));
+  const cSp = checa.find(c => c[0].indexOf('SP-DUO') >= 0);
+  if (cSp && !cSp[1]) console.log('\ntrecho do resumo:\n', txt.slice(0, 400));
   process.exit(falhou || erros.length ? 1 : 0);
 })();

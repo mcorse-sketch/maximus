@@ -56,7 +56,7 @@ const tela = doc => doc.getElementById('quizCard').getAttribute('data-tela');
   // ---- contato digitado + nota final + texto do prontuário -----------------
   console.log('contato, nota final e texto do prontuário');
   const r1 = await roda({ id: 'J1', codigo: 'JR0001', respostas: Object.assign({ visita: 'primeira', queixa: 'de',
-    contato: { iniciais: 'rsm', telefone: '21987654321' }, notaFinal: 'Retorno antecipado combinado com o paciente.' }, iief14) }, true, { manter: true });
+    contato: { iniciais: 'rsm', telefone: '21987654321', email: 'rsm@exemplo.invalid' }, notaFinal: 'Retorno antecipado combinado com o paciente.' }, iief14) }, true, { manter: true });
   ok(!r1.falha, 'o atendimento chega à conduta' + (r1.falha ? ' — ' + r1.falha : ''));
   ok(r1.caminho.includes('contato'), 'sem contato da recepção nem do cadastro, a tela de contato aparece');
   ok(r1.caminho[r1.caminho.length - 1] === 'notaFinal', 'a última tela do caminho é a nota do atendimento');
@@ -97,10 +97,14 @@ const tela = doc => doc.getElementById('quizCard').getAttribute('data-tela');
   const rInv = await roda({ id: 'J2', codigo: 'JR0002', respostas: Object.assign({ visita: 'primeira', queixa: 'de',
     contato: { telefone: '2198' } }, iief14) }, true);
   ok(/tela contato/.test(rInv.falha || ''), 'telefone incompleto e sem email não deixa avançar');
+  // v2.5: telefone E email obrigatórios — só o telefone não chega à conduta
+  const rSoTel = await roda({ id: 'J2b', codigo: 'JR0012', respostas: Object.assign({ visita: 'primeira', queixa: 'de',
+    contato: { telefone: '21987654321' } }, iief14) }, true);
+  ok(/tela contato/.test(rSoTel.falha || '') && !rSoTel.salvo, 'só o telefone, sem email: não chega à conduta');
 
   // ---- retorno com contato no cadastro: não pergunta de novo ----------------
   const r2 = await roda({ id: 'J3', codigo: 'JR0003', respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'de' }, iief14),
-    ciclos: [{ tipo: 'recepcao', linha: 'recepcao', telefone: '(21)91234-5678', iniciais: 'AB' },
+    ciclos: [{ tipo: 'recepcao', linha: 'recepcao', telefone: '(21)91234-5678', email: 'ab@exemplo.invalid', iniciais: 'AB' },
              { tipo: 'primeira', protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'], iief: 12 }] }, true);
   ok(!r2.falha && !r2.caminho.includes('contato'), 'retorno com contato no cadastro não mostra a tela de contato');
 
