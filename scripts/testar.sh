@@ -50,6 +50,7 @@ etapa "7i. correções v2.5 — retorno sem perguntas do passado, painel enxuto,
 etapa "7j. retorno oral DE/DUO (v2.5-L) — nível parte do anterior: mantém, sobe, teto, DUO, trava, intracavernosa" "node teste_retorno_oral.js"
 etapa "7k. ajustes v2.5-P — via do paciente sem regra interna, porquê de cada item, ondas, alerta 1 jato, pedido de exames" "node teste_v25p.js"
 etapa "7l. v2.5-Q — XSS escapado, histórico que falha não vira 1ª avaliação, fila local (timeout/race/código)" "node teste_v25q.js"
+etapa "7m. v2.5-R — exames com ID, EA/PGE1, protocolo com dose, ondas destacadas, conduta ao vivo" "node teste_v25r.js"
 etapa "8. tela de senha dos três apps" "node teste_sessao.js"
 etapa "9. servidor — acesso por perfil e rotas" "servidor"
 etapa "10. recepção — toque duplo avança uma tela só (v2.5-N)" "node teste_toque.js '$RECEP'"
