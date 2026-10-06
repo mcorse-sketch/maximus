@@ -72,7 +72,7 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     const notas = r.win.document.getElementById('rc-notas') ? r.win.document.getElementById('rc-notas').textContent : r.win.document.body.textContent;
     ok(/não volta para a via oral/.test(notas) && /conta só para a satisfação/.test(notas), 'item 19: nota explica que a melhora do escore reflete a medicação');
     ok(r.caminho.includes('iciUso') && s.iciCasa && s.iciCasa.tempo === '1h', 'v2.5-E: duração da ereção perguntada na tela "Fórmula e dose"', JSON.stringify(s.iciCasa));
-    const chIci = [...r.win.document.querySelectorAll('#kitGrid .kit-card')].find(k => /^ICI/.test(k.querySelector('.kc-code').textContent.trim()));
+    const chIci = [...r.win.document.querySelectorAll('#kitGrid .kit-card')].find(k => /^(ICI|R\d+)\b/.test(k.querySelector('.kc-code').textContent.trim())); // v2.5-G: o cartão mostra o código (R5)
     ok(chIci && chIci.querySelector('.mx-cor') && /R5/.test(chIci.querySelector('.mx-cor').title), 'cartão da intracavernosa leva a cor da fórmula em uso (R5)');
     r.win.close();
   }
@@ -203,6 +203,231 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     ok(linhas.length && linhas.every(l => !COR[l.querySelector('b').textContent.trim()] || l.querySelector('.mx-cor')), 'cabeçalho da conduta: cada fórmula com a sua cor');
     ok([...doc.querySelectorAll('#printPaciente .med')].some(m => m.querySelector('.mx-cor')), 'via do paciente: a cor da embalagem ao lado da fórmula');
     r.win.close();
+  }
+
+  // ---- 5. v2.5-G: autocrítica aprovada pelo Dr. Marco (20 itens) ----
+  console.log('\n--- v2.5-G: prontuário enxuto, nome da fórmula (R10), dica do TEFI, "Próxima" diz o que falta');
+  {
+    const cOral = () => [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const base = { visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao', confirmaEstavel: 'nao',
+      caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso' };
+    // a tela da conduta após o TEFI mostra a sugestão, e o "Próxima" apagado diz o que falta
+    const p = await roda({ id: 'G1', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({}, base, { tefiConduta: '__parar__' }, iief(10)) }, false, { manter: true });
+    { const d = p.win.document;
+      ok(/Sugerido: intracavernosa/.test(d.getElementById('quizCard').textContent), 'item 6: "Sugerido: intracavernosa…" aparece na tela da conduta após o TEFI');
+      const f = d.getElementById('mxFalta'), nb = d.getElementById('nextBtn');
+      ok(nb.disabled && f && f.textContent === 'Escolha uma opção', 'item 17: "Próxima" apagado diz o que falta', f && f.textContent);
+      p.win.close(); }
+    const r = await roda({ id: 'G2', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({}, base, { tefiConduta: 'ici', tefiAddIci: 'sim',
+      iciFormula: 'R10', iciDose: '0,1 mL', satisfNps: { satisf: 5, nps: 7 } }, iief(10)) }, false, { manter: true });
+    const d = r.win.document, L = r.texto.split('\n');
+    ok(!r.falha, 'chega à conduta', r.falha);
+    ok(L.filter(l => /^ADAM\b/.test(l)).length === 1, 'item 1: uma única linha de ADAM no prontuário', L.filter(l => /ADAM/.test(l)).join(' | '));
+    ok(L.some(l => /^TEFI: realizado — resposta parcial · Doppler: escape venoso · conduta: iniciar intracavernosa/.test(l)), 'item 2: linha do TEFI em texto legível', L.filter(l => /^TEFI/.test(l)).join(' | '));
+    ok(!/tadalafila|mcg/i.test(L[1] || ''), 'item 3: a linha de classificação não repete a composição', L[1]);
+    ok(/itens/.test(d.getElementById('notasMais').textContent) && !/ITEMS|items/.test(d.getElementById('notasMais').textContent), 'item 4: "itens"');
+    const card = [...d.querySelectorAll('#kitGrid .kit-card .kc-code')].map(k => k.textContent.trim());
+    ok(card.some(c => /^R10\b/.test(c)) && !card.some(c => /^ICI\b/.test(c)), 'item 10: cartão do kit traz o código da fórmula (R10)', card.join(' | '));
+    ok(/^- R10 · .*— intracavernosa, 0,1 mL/m.test(r.texto) && !/ICI — R5/.test(r.texto), 'item 10: "Protocolo prescrito" com a fórmula escolhida (não mais R5 fixo)',
+      L.filter(l => /intracavernosa,/.test(l)).join(' | '));
+    ok([...d.querySelectorAll('#mxCdKit > span b')].some(b => b.textContent.trim() === 'R10'), 'item 10: cabeçalho da conduta com R10');
+    const folha = d.getElementById('printPaciente').textContent;
+    ok(!/Agende também:[^.]*ondas/i.test(folha), 'item 7: ondas só opcionais — a folha não manda agendar', (folha.match(/Agende também[^.]*/) || [''])[0]);
+    ok(!/\d\s*(mg|mcg|mL)\b/.test([...d.querySelectorAll('#printPaciente .med')].map(m => m.textContent).join(' ')), 'via do paciente continua sem dose de fórmula');
+    const bts = [...d.querySelectorAll('#resultsCard .btn-primary')].filter(b => b.offsetParent !== null || b.style.display !== 'none');
+    ok(bts.length === 1 && bts[0].id === 'concluirBtn', 'item 12: um único botão principal no fim da conduta (Concluir)', bts.map(b => b.id).join(','));
+    ok(!/Banco Claude conectado/.test(d.getElementById('dbTag').textContent), 'item 13: sem o texto técnico do banco na tela');
+    r.win.close();
+    // painel: intracavernosa sem dose registrada não fica com a linha vazia
+    const cICI = [Object.assign({ codigo: 'MXV002', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'INTRACAVERNOSA',
+      kitCodes: ['ICI', 'NOITE-1', 'TEFI', 'ONDAS'], tefiIndicado: true, iief: 7, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const q = await roda({ id: 'G3', codigo: 'MXV002', ciclos: cICI, respostas: { visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', iciUso: { iciAnt: '__parar__' } } }, false, { manter: true });
+    { const pn = q.win.document.getElementById('painelCard').textContent.replace(/\s+/g, ' ');
+      ok(/R5 · trimix · dose não registrada/.test(pn), 'item 9: painel — "dose não registrada" quando nenhum registro tem a dose', (pn.match(/R\d+[^·]*·[^·]*·[^·]{0,30}/) || [''])[0]);
+      q.win.close(); }
+  }
+
+  // ---- 6. v2.5-H: refino aprovado pelo Dr. Marco (desktop + iPad) ----
+  console.log('\n--- v2.5-H: dose inicial na 1ª intracavernosa, código na via do paciente, adesão, histórico curto, redundâncias, toque');
+  {
+    // item 1 e 2: primeira intracavernosa (paciente de regressão LIM-001)
+    const P = require('./regressao/pacientes');
+    const r1 = await roda(P.find(p => p.id === 'LIM-001'), false, { manter: true });
+    { const d = r1.win.document;
+      const lin = r1.texto.split('\n').filter(l => /— intracavernosa/.test(l));
+      ok(lin.length === 1 && /— intracavernosa, dose inicial 0,1 mL/.test(lin[0]), 'item 1: 1ª intracavernosa com a dose inicial indicada', lin.join(' | '));
+      const meds = [...d.querySelectorAll('#printPaciente .med')].map(m => m.textContent.replace(/\s+/g, ' ').trim());
+      const mi = meds.find(m => /alprostadil|papaverina/.test(m)) || '';
+      ok(/^R\d+\b/.test(mi) && !/\bICI\b/.test(mi), 'item 2: via do paciente traz o código da fórmula (R5), não "ICI"', mi);
+      ok(!/\d\s*(mg|mcg|mL)\b/.test(mi) && !d.querySelector('#printPaciente .sig-ativo'), 'item 2: via do paciente continua sem dose nem concentração', mi);
+      r1.win.close(); }
+    // item 3: adesão com as mesmas palavras da pergunta (oral × intracavernosa)
+    const r0 = await roda(P.find(p => p.id === 'R-06'), false, { manter: true });
+    { const m = (r0.texto.match(/^Adesão: .*$/m) || [''])[0];
+      ok(m === 'Adesão: Sempre como recomendado', 'item 3: intracavernosa — adesão com as palavras da pergunta ("Sempre como recomendado")', m);
+      r0.win.close(); }
+    // item 4: histórico — sequência de protocolos só com os códigos
+    const cH = [
+      Object.assign({ codigo: 'MXV007', tipo: 'primeira', linha: 'DE', data: iso(200), dataBR: br(200), protocolo: 'DE-2', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'],
+        iief: 12, mast: 'nao', matinal: 'nao', adam: ['nenhum'], adesao: 'total' }, ESTAVEL, CONTATO),
+      Object.assign({ codigo: 'MXV007', tipo: 'reavaliacao', linha: 'DE', data: iso(130), dataBR: br(130), protocolo: 'DE-2 (mantido)', kitCodes: ['BASE-T10', 'NOITE-1', 'SP-DE'],
+        iief: 13, mast: 'nao', matinal: 'nao', adam: ['nenhum'], adesao: 'total' }, ESTAVEL, CONTATO),
+      Object.assign({ codigo: 'MXV007', tipo: 'reavaliacao', linha: 'DE', data: iso(60), dataBR: br(60), protocolo: 'DE-3', kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE'],
+        iief: 11, mast: 'nao', matinal: 'nao', adam: ['nenhum'], adesao: 'parcial' }, ESTAVEL, CONTATO)];
+    const r2 = await roda({ id: 'H2', codigo: 'MXV007', ciclos: cH, respostas: { visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: '__parar__' } }, false, { manter: true });
+    { const d = r2.win.document; const hb = d.getElementById('histBtn');
+      if (hb) hb.click(); await new Promise(z => setTimeout(z, 60));
+      const tr = [...d.querySelectorAll('#histCorpo tr')].find(t => /Sequência de protocolos/.test(t.textContent));
+      const seq = tr ? tr.textContent.replace(/\s+/g, ' ').replace('Sequência de protocolos', '').trim() : '';
+      ok(seq === 'DE-2 → DE-3', 'item 4: sequência de protocolos curta (DE-2 → DE-3), sem composição nem repetição', seq);
+      const hc = d.getElementById('histCorpo').textContent;
+      ok(/todos os dias/i.test(hc) && /falhou alguns dias/i.test(hc) && !/\bregular\b/i.test(hc), 'item 3: histórico com as palavras da pergunta (sem "regular")');
+      r2.win.close(); }
+    // itens 5–9 na conduta (MXV005 → R10 0,1 mL)
+    const cOral = () => [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const r3 = await roda({ id: 'H3', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao',
+      confirmaEstavel: 'nao', caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso', tefiConduta: 'ici', tefiAddIci: 'sim',
+      iciFormula: 'R10', iciDose: '0,1 mL', satisfNps: { satisf: 5, nps: 7 } }, iief(10)) }, false, { manter: true });
+    { const d = r3.win.document, L = r3.texto.split('\n');
+      ok(L.some(l => l === 'ADAM: negativo — nenhum sintoma'), 'item 5: ADAM sem "0/10" redundante', L.filter(l => /^ADAM/.test(l)).join(' | '));
+      ok(!/reavaliação ·|dias desde a última ·|^Primeira avaliação ·/.test(L[2] || ''), 'item 5: 3ª linha do prontuário não repete tipo de visita/intervalo', L[2]);
+      ok(L.some(l => /^Adesão: Todos os dias$/.test(l)), 'item 3: paciente oral — "Todos os dias", como na pergunta', L.filter(l => /^Adesão/.test(l)).join(' | '));
+      const ici = d.querySelector('#mxCdKit > span.ici');
+      ok(ici && ici.getAttribute('role') === 'button' && ici.getAttribute('aria-expanded') === 'false', 'item 6: linha da intracavernosa no cabeçalho é um botão');
+      if (ici) { ici.click(); }
+      ok(ici && ici.classList.contains('aberto') && ici.getAttribute('aria-expanded') === 'true', 'item 6: um toque abre a composição completa');
+      if (ici) { ici.click(); }
+      ok(ici && !ici.classList.contains('aberto'), 'item 6: outro toque fecha');
+      const db = d.getElementById('dbTag');
+      ok(db && db.closest('#mxTopo') && !db.closest('#quizCard'), 'item 7: estado do banco no cabeçalho, não solto acima do "Voltar"');
+      const cfg = d.getElementById('cfgLink');
+      ok(cfg && cfg.tagName === 'BUTTON' && !cfg.getAttribute('title'), 'item 7: estado do banco é um botão (toque), sem depender de title');
+      if (cfg) cfg.click(); await new Promise(z => setTimeout(z, 10));
+      ok(!!d.getElementById('mxDbPop') && /Configurar servidor/.test(d.getElementById('mxDbPop').textContent), 'item 7: toque abre os detalhes e "Configurar servidor"');
+      d.body.click(); await new Promise(z => setTimeout(z, 10));
+      ok(!d.getElementById('mxDbPop'), 'item 7: toque fora fecha os detalhes');
+      // item 8 ("?" no toque) saiu na v2.5-I: a triagem é só desktop
+      const g = d.querySelector('.mx-acoes-grid');
+      const vis = [...g.children].filter(b => b.style.display !== 'none').length;
+      ok(vis >= 3 && /grid-template-columns:repeat\(6/.test(d.documentElement.innerHTML), 'item 9: grade de impressão em 6 colunas (3 · 2×2 · 3+2)', 'visíveis: ' + vis);
+      const res = d.querySelector('#printArea > .result-top');
+      ok(res && res.textContent.includes('IIEF-5'), 'bloco "Classificação" antigo continua no relatório impresso');
+      r3.win.close(); }
+  }
+
+  // ---- 7. v2.5-I: bloco "Classificação IIEF-5" de volta na tela (pedido do Dr. Marco) ----
+  console.log('\n--- v2.5-I: classificação na tela — hoje, anterior, variação, faixa, régua e evolução');
+  {
+    const P = require('./regressao/pacientes');
+    const cartao = (d, nome) => [...d.querySelectorAll('#mxEscores .mx-esct')].find(c => (c.querySelector('.mx-qn') || {}).textContent === nome);
+    // retorno: MXV005, IIEF-5 9 → 10
+    const cOral = () => [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const r = await roda({ id: 'I1', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao',
+      confirmaEstavel: 'nao', caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso', tefiConduta: 'ici', tefiAddIci: 'sim',
+      iciFormula: 'R10', iciDose: '0,1 mL', satisfNps: { satisf: 5, nps: 7 } }, iief(10)) }, false, { manter: true });
+    { const d = r.win.document, c = cartao(d, 'IIEF-5');
+      ok(!!d.querySelector('#mxCdHead #mxEscores') && d.getElementById('resultsCard').classList.contains('mx-esc-on'), 'bloco de classificação no cabeçalho da conduta (na tela)');
+      ok(c && c.querySelector('.mx-esct-val .mx-qv').textContent === '10' && /\/25/.test(c.querySelector('.mx-esct-val').textContent), 'IIEF-5 de hoje em destaque (10/25)', c && c.textContent);
+      const ant = c ? c.querySelector('.mx-esct-ant').textContent : '';
+      ok(/antes 9 · \d{2}\/\d{2}\/\d{4} — melhorou 1 ponto/.test(ant), 'anterior com data e variação ("antes 9 · data — melhorou 1 ponto")', ant);
+      ok(c && c.querySelector('.mx-esct-d.melhor') && c.querySelector('.mx-esct-d').textContent === '+1', 'variação +1 marcada como melhora');
+      ok(c && /moderada/.test(c.querySelector('.mx-esct-fx').textContent), 'faixa de hoje (moderada)');
+      ok(c && c.querySelector('.mx-esct-regua b.ant') && c.querySelector('.mx-esct-regua b.hoje') && c.querySelector('.mx-esct-regua i.on'), 'régua das faixas com anterior (○) e hoje (●)');
+      ok(!!cartao(d, 'ADAM') && /negativo/.test(cartao(d, 'ADAM').textContent), 'ADAM ao lado, quando respondido');
+      ok(!d.querySelector('#mxCdHead .mx-scores'), 'sem a coluna de números repetida no alto do cabeçalho');
+      // v2.5-J (item 2): o papel leva uma cópia do bloco (#mxEscoresImp); o cabeçalho de tela continua fora do #printArea
+      ok(!d.getElementById('printArea').contains(d.getElementById('mxEscores')) && !!d.querySelector('#printArea #mxEscoresImp'), 'bloco de tela fora do #printArea; cópia para o papel dentro');
+      r.win.close(); }
+    // primeira avaliação: sem anterior
+    const r2 = await roda(P.find(p => p.id === 'LIM-001'), false, { manter: true });
+    { const d = r2.win.document, c = cartao(d, 'IIEF-5');
+      ok(c && c.querySelector('.mx-qv').textContent === '7' && /primeira medida/.test(c.textContent) && !c.querySelector('.mx-esct-d') && !c.querySelector('b.ant'),
+        '1ª avaliação: valor, faixa e régua, sem anterior nem variação', c && c.textContent);
+      ok(c && /severa/.test(c.querySelector('.mx-esct-fx').textContent), '1ª avaliação: faixa severa (IIEF-5 7)');
+      r2.win.close(); }
+    // retorno com 3 consultas: linha da evolução
+    const c3 = [[200, 'primeira', 'DE-2', ['BASE-T10', 'NOITE-1', 'SP-DE'], 12, ['a1', 'a7']], [130, 'reavaliacao', 'DE-2 (mantido)', ['BASE-T10', 'NOITE-1', 'SP-DE'], 13, ['a1']],
+      [60, 'reavaliacao', 'DE-3', ['BASE-T20', 'NOITE-1', 'SP-DE'], 11, ['nenhum']]]
+      .map(([dd, t, pr, k, v, ad]) => Object.assign({ codigo: 'MXV007', tipo: t, linha: 'DE', data: iso(dd), dataBR: br(dd), protocolo: pr, kitCodes: k, iief: v, mast: 'nao', matinal: 'nao', adam: ad, adesao: 'total' }, ESTAVEL, CONTATO));
+    const r3 = await roda({ id: 'I3', codigo: 'MXV007', ciclos: c3, respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao', confirmaEstavel: 'nao',
+      caracteriza: { mast: 'nao', matinal: 'nao' }, satisfNps: { satisf: 6, nps: 8 } }, iief(15)) }, false, { manter: true });
+    { const d = r3.win.document, c = cartao(d, 'IIEF-5');
+      ok(!r3.falha, 'retorno com 3 consultas chega à conduta', r3.falha);
+      const evo = c && c.querySelector('.mx-esct-evo');
+      ok(evo && evo.textContent.trim() === '12 → 13 → 11 → 15' && evo.querySelectorAll('circle').length === 4, 'evolução de todas as consultas (12 → 13 → 11 → 15)', evo && evo.textContent);
+      ok(c && /faixa: moderada → leve a moderada/.test(c.textContent), 'mudança de faixa aparece', c && c.textContent);
+      r3.win.close(); }
+    // DE + EP: PEDT também (menor é melhor); EP sozinho; hipogonadismo mantém o bloco antigo na tela
+    const r4 = await roda(P.find(p => p.id === 'TEST-018'), false, { manter: true });
+    { const d = r4.win.document;
+      ok(!!cartao(d, 'IIEF-5') && !!cartao(d, 'PEDT') && /PEDT/.test(d.querySelector('#mxEscores .mx-eyebrow').textContent), 'DE + EP: IIEF-5 e PEDT lado a lado');
+      r4.win.close(); }
+    const r5 = await roda(P.find(p => p.id === 'LIM-010'), false, { manter: true });
+    { const d = r5.win.document;
+      ok(!!cartao(d, 'PEDT') && !cartao(d, 'IIEF-5') && /\/20/.test(cartao(d, 'PEDT').textContent), 'EP sozinha: PEDT (de 20)');
+      r5.win.close(); }
+    const r6 = await roda(P.find(p => p.id === 'TEST-022'), false, { manter: true });
+    { const d = r6.win.document;
+      ok(!d.getElementById('mxEscores') && !d.getElementById('resultsCard').classList.contains('mx-esc-on'), 'hipogonadismo: sem bloco novo — o bloco do resultado fica visível como antes');
+      r6.win.close(); }
+    const src = require('fs').readFileSync(path.join(__dirname, '..', 'apps', 'triagem.html'), 'utf8');
+    ok(!/@media \(hover:none\) and \(pointer:coarse\)/.test(src) && !/v2\.5-H: iPad em retrato/.test(src), 'triagem só desktop: sem o layout de iPad/toque da v2.5-H');
+  }
+
+  // ---- 8. v2.5-J: faixas iguais no painel e no bloco, papel = tela, ADAM herdado identificado ----
+  console.log('\n--- v2.5-J: faixas alinhadas, impressão com o bloco, ADAM da consulta anterior');
+  {
+    const P = require('./regressao/pacientes');
+    const cartao = (d, nome, sel) => [...d.querySelectorAll((sel || '#mxEscores') + ' .mx-esct')].find(c => (c.querySelector('.mx-qn') || {}).textContent === nome);
+    const linhaPainel = (d, nome) => [...d.querySelectorAll('#copiloto .bloco .lin')].map(n => n.textContent.replace(/\s+/g, ' ').trim()).find(t => t.startsWith(nome)) || '';
+    const fx = c => c ? c.querySelector('.mx-esct-fx').textContent.trim() : '?';
+    // retorno MXV005 (IIEF-5 9 → 10, ADAM zerado na consulta anterior → não reaplicado hoje)
+    const cOral = () => [Object.assign({ codigo: 'MXV005', tipo: 'primeira', linha: 'DE', data: iso(70), dataBR: br(70), protocolo: 'DE-3',
+      kitCodes: ['BASE-T20', 'NOITE-1', 'SP-DE', 'TEFI'], tefiIndicado: true, iief: 9, mast: 'nao', matinal: 'nao', adam: ['nenhum'] }, ESTAVEL, CONTATO)];
+    const r = await roda({ id: 'J1', codigo: 'MXV005', ciclos: cOral(), respostas: Object.assign({ visita: 'reav', confirmHist: 'ok', trocarQueixa: 'nao', adesao: 'total', ea: 'nao',
+      confirmaEstavel: 'nao', caracteriza: { mast: 'nao', matinal: 'nao' }, tefiFeito: 'sim', tefiResp: 'parcial', tefiDoppler: 'venoso', tefiConduta: 'ici', tefiAddIci: 'sim',
+      iciFormula: 'R10', iciDose: '0,1 mL', satisfNps: { satisf: 5, nps: 7 } }, iief(10)) }, false, { manter: true });
+    { const d = r.win.document, c = cartao(d, 'IIEF-5'), lp = linhaPainel(d, 'IIEF-5');
+      ok(!r.falha && c && lp.endsWith('· ' + fx(c)), 'item 1: painel e bloco com o mesmo nome de faixa (IIEF-5)', 'painel: ' + lp + ' | bloco: ' + fx(c));
+      // item 2: impressão
+      let escrito = '';
+      r.win.open = () => ({ document: { open() {}, write(h) { escrito += h; }, close() {} }, focus() {}, print() {} });
+      d.getElementById('printBtn').click(); await new Promise(z => setTimeout(z, 5));
+      const imp = d.getElementById('mxEscoresImp'), grade = s0 => (d.querySelector(s0 + ' .mx-esc-grade') || {}).textContent;
+      ok(imp && imp.previousElementSibling === d.querySelector('#printArea > .result-top') && d.querySelector('#printArea > .result-top').classList.contains('com-esc'),
+        'item 2: cópia do bloco logo abaixo da pílula da classificação, no lugar de "IIEF-5 10/25"');
+      ok(imp && grade('#mxEscoresImp') === grade('#mxEscores'), 'item 2: papel com o mesmo conteúdo da tela (hoje, anterior, variação, faixa, ADAM)');
+      ok(/id="mxEscoresImp"/.test(escrito) && /antes <b>9<\/b> · \d{2}\/\d{2}\/\d{4} — melhorou 1 ponto/.test(escrito) && /\+1<\/span>/.test(escrito) && !/mxCdHead/.test(escrito),
+        'item 2: relatório impresso traz anterior com data, variação (+1) e faixa — sem o cabeçalho de tela');
+      ok(/\.result-top\.com-esc #classDesc\{display:none!important\}/.test(escrito) && /print-color-adjust:exact/.test(escrito), 'item 2: no papel a linha "IIEF-5 10/25" sai e a régua mantém as cores');
+      // item 3: ADAM não reaplicado
+      const a = cartao(d, 'ADAM'), ai = cartao(d, 'ADAM', '#mxEscoresImp');
+      ok(a && a.classList.contains('herdado') && /não reaplicado hoje/.test(a.textContent) && /valor da consulta anterior \(\d{2}\/\d{2}\/\d{4}\)/.test(a.textContent),
+        'item 3: ADAM não reaplicado → "valor da consulta anterior (data)" e etiqueta "não reaplicado hoje"', a && a.textContent);
+      ok(a && a.textContent.includes(br(70)), 'item 3: a data é a da consulta em que o ADAM foi respondido', a && a.textContent);
+      ok(ai && ai.classList.contains('herdado'), 'item 3: o papel também diz que o ADAM é da consulta anterior');
+      r.win.close(); }
+    // 1ª avaliação: ADAM respondido hoje (sem etiqueta); faixa "severa" no painel e no bloco
+    const r2 = await roda(P.find(p => p.id === 'LIM-001'), false, { manter: true });
+    { const d = r2.win.document, c = cartao(d, 'IIEF-5'), a = cartao(d, 'ADAM'), lp = linhaPainel(d, 'IIEF-5');
+      ok(c && fx(c) === 'severa' && lp.endsWith('· severa') && !/disfunção grave/.test(d.getElementById('copiloto').textContent), 'item 1: IIEF-5 7 é "severa" no painel e no bloco (antes: "disfunção grave")', lp);
+      ok(a && !a.classList.contains('herdado') && !/não reaplicado/.test(a.textContent), 'item 3: ADAM respondido hoje não leva a etiqueta');
+      r2.win.close(); }
+    // DE + EP: PEDT com as faixas que classificam (antes "precocidade provável"/"limítrofe")
+    const r4 = await roda(P.find(p => p.id === 'TEST-018'), false, { manter: true });
+    { const d = r4.win.document, c = cartao(d, 'PEDT'), lp = linhaPainel(d, 'PEDT');
+      ok(c && lp.endsWith('· ' + fx(c)) && !/precocidade|limítrofe/.test(d.getElementById('copiloto').textContent), 'item 1: PEDT com o mesmo nome de faixa no painel e no bloco', 'painel: ' + lp + ' | bloco: ' + fx(c));
+      r4.win.close(); }
+    // hipogonadismo: sem bloco, sem cópia no papel; a linha antiga volta
+    const r6 = await roda(P.find(p => p.id === 'TEST-022'), false, { manter: true });
+    { const d = r6.win.document;
+      ok(!d.getElementById('mxEscoresImp') && !d.querySelector('#printArea > .result-top.com-esc'), 'item 2: fora de IIEF-5/PEDT, o papel continua como antes');
+      r6.win.close(); }
+    const src = require('fs').readFileSync(path.join(__dirname, '..', 'apps', 'triagem.html'), 'utf8');
+    ok(!/disfun\\u00e7\\u00e3o grave|precocidade improv|lim\\u00edtrofe'/.test(src), 'item 1: os nomes antigos de faixa saíram do código');
   }
 
   console.log('\n=== v2.5 ===');

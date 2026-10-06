@@ -1,4 +1,14 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+  /* v2.5-M: aviso do servidor (banco ilegível / backup) */
+  #mxAvisoSrv{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483000;max-width:min(760px,calc(100vw - 24px));
+    padding:10px 16px;border-radius:12px;font:500 13.5px/1.45 -apple-system,BlinkMacSystemFont,"Inter",system-ui,sans-serif;
+    box-shadow:0 8px 28px rgba(0,0,0,.18);text-align:left}
+  #mxAvisoSrv div+div{margin-top:6px}
+  #mxAvisoSrv b{margin-right:6px;letter-spacing:.02em}
+  #mxAvisoSrv.grave{background:#B00D26;color:#fff}
+  #mxAvisoSrv.aviso{background:#FFF4DE;color:#6B3E00;border:1px solid #F0D6A8}
+  #mxAvisoSrv button{margin-left:8px;font:600 12px/1 inherit;padding:5px 10px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+</style>
 
 </head><body>
 <title>Financeiro — Clínica Maximus</title>
@@ -708,6 +718,40 @@
 </style>
 <footer class="brand-footer">Cl&iacute;nica Maximus Medicina Masculina</footer>
 <script>
+  // v2.5-K (auditoria): diálogo do próprio app no lugar de prompt()/confirm()/alert() nativos
+  // (mesma implementação da triagem). Confirmar → true/false; com campo → texto ou null.
+  function dlgEsc(t){ return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function mxDialogo(o){
+    return new Promise(res=>{
+      const ant = document.activeElement, id = 'mxDlgT'+Date.now();
+      const ov = document.createElement('div'); ov.className = 'mx-dlg-ov noprint';
+      ov.innerHTML = '<div class="mx-dlg" role="'+(o.perigo?'alertdialog':'dialog')+'" aria-modal="true" aria-labelledby="'+id+'">'
+        + (o.titulo ? '<h3 id="'+id+'">'+dlgEsc(o.titulo)+'</h3>' : '')
+        + '<p'+(o.titulo?'':' id="'+id+'"')+'>'+dlgEsc(o.texto||'')+'</p>'
+        + (o.campo ? '<input type="text" class="mx-dlg-in" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="'+dlgEsc(o.placeholder||'')+'">' : '')
+        + '<div class="mx-dlg-bts">'+(o.cancelar===false ? '' : '<button type="button" class="mx-dlg-b sec" data-v="0">'+dlgEsc(o.cancelar||'Cancelar')+'</button>')
+        + '<button type="button" class="mx-dlg-b pri'+(o.perigo?' perigo':'')+'" data-v="1">'+dlgEsc(o.ok||'OK')+'</button></div></div>';
+      document.body.appendChild(ov);
+      const inp = ov.querySelector('.mx-dlg-in'); if (inp) inp.value = o.valor||'';
+      const nao = o.campo ? null : false;
+      const fim = v=>{ window.removeEventListener('keydown', tec, true); ov.remove(); try{ if (ant && ant.focus) ant.focus(); }catch(e){} res(v); };
+      const sim = ()=>fim(o.campo ? inp.value : true);
+      const tec = e=>{
+        e.stopPropagation();
+        if (e.key==='Escape'){ e.preventDefault(); fim(nao); }
+        else if (e.key==='Enter' && !(e.target && e.target.tagName==='BUTTON')){ e.preventDefault(); sim(); }
+        else if (e.key==='Tab'){ const f=[...ov.querySelectorAll('input,button')]; const i=f.indexOf(document.activeElement);
+          e.preventDefault(); f[(i + (e.shiftKey ? f.length-1 : 1)) % f.length].focus(); }
+      };
+      ov.querySelector('[data-v="1"]').onclick = sim;
+      const c = ov.querySelector('[data-v="0"]'); if (c) c.onclick = ()=>fim(nao);
+      ov.addEventListener('mousedown', e=>{ if (e.target===ov) fim(nao); });
+      window.addEventListener('keydown', tec, true);
+      setTimeout(()=>{ const f = inp || ov.querySelector(o.perigo ? '[data-v="0"]' : '[data-v="1"]') || ov.querySelector('button'); if (f) f.focus(); if (inp) inp.select(); }, 0);
+    });
+  }
+</script>
+<script>
 (function(){
   const LS = { get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},
                set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}} };
@@ -739,6 +783,7 @@
           };
           let r = await envia();
           if (r.status===401){ eu.guarda(null); await eu.pede(); r = await envia(); }
+          if (r.status===503 && typeof AvisoServidor!=='undefined') AvisoServidor.confere();   // v2.5-M: banco ilegível — aviso na hora
           return r;
         };
       }
@@ -792,6 +837,24 @@
     }
   };
 
+  // v2.5-M: aviso do servidor no topo — banco ilegível (gravação suspensa) e backup do iCloud/local
+  // que falhou ou atrasou. Vem de /api/health (aberta, sem dado de paciente) e é conferido a cada 2 min.
+  const AvisoServidor = {
+    api:null, soGrave:false, fechados:{}, _t:null,
+    inicia(api, j, soGrave){ this.api=api; this.soGrave=!!soGrave; this.pinta(j); clearInterval(this._t); this._t=setInterval(()=>this.confere(), 120000); },
+    async confere(){ if (!this.api) return; try{ const r=await fetch(this.api+'/api/health',{cache:'no-store'}); if (r.ok) this.pinta(await r.json()); }catch(e){} },
+    pinta(j){
+      const esc = t=>String(t==null?'':t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      let el = document.getElementById('mxAvisoSrv');
+      const lista = ((j && j.alertas) || []).filter(a=>a && a.texto && (a.nivel==='grave' || (!this.soGrave && !this.fechados[a.texto])));
+      if (!lista.length){ if (el) el.remove(); return; }
+      if (!el){ el=document.createElement('div'); el.id='mxAvisoSrv'; el.setAttribute('role','alert'); document.body.appendChild(el); }
+      el.className = lista.some(a=>a.nivel==='grave') ? 'grave' : 'aviso';
+      el.innerHTML = lista.map(a=>'<div><b>'+(a.nivel==='grave'?'Atenção':'Aviso')+'</b> '+esc(a.texto)
+        +(a.nivel!=='grave' ? ' <button type="button" data-t="'+esc(a.texto)+'">Entendi</button>' : '')+'</div>').join('');
+      el.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{ this.fechados[b.dataset.t]=1; this.pinta(j); }; });
+    }
+  };
   const Store = {
     modo:'carregando', db:null, api:null,
     async init(){
@@ -802,7 +865,7 @@
       if (base){
         try{
           const r = await fetch(base.replace(/\/+$/,'') + '/api/health', {cache:'no-store'});
-          if (r.ok){ this.api = base.replace(/\/+$/,''); this.modo='rede'; await Sessao.instala(this.api, 'financeiro'); return; }
+          if (r.ok){ this.api = base.replace(/\/+$/,''); this.modo='rede'; AvisoServidor.inicia(this.api, await (async()=>{ try{ return await r.json(); }catch(e){ return null; } })(), false); await Sessao.instala(this.api, 'financeiro'); return; }
         }catch(e){}
       }
       this.modo='manual';
@@ -877,9 +940,10 @@
     const t=document.getElementById('dbTag'); if(!t) return;
     t.innerHTML = (extra||Store.rotulo()) + ' &middot; <a href="#" id="cfgLink" style="text-decoration:underline;">configurar servidor</a>';
     const a=document.getElementById('cfgLink');
-    if (a) a.onclick=(e)=>{
+    if (a) a.onclick=async(e)=>{
       e.preventDefault();
-      const v = prompt('Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.', LS.get('maximus_api')||'');
+      const v = await mxDialogo({titulo:'Servidor da clínica', texto:'Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.',
+        campo:true, valor:LS.get('maximus_api')||'', placeholder:'http://192.168.0.10:8080', ok:'Salvar'});
       if (v===null) return;
       LS.set('maximus_api', (v||'').trim());
       Store.init().then(()=>pintaStatus());
@@ -920,7 +984,9 @@
 
   async function buscar(){
     const cod=norm(el('cod').value);
-    if(!cod){ return; }
+    // v2.5-K: "Copiar resumo" só existe com um paciente na tela (busca vazia ou sem registro esconde)
+    el('copiar').style.display='none'; window.__resumo='';
+    if(!cod){ el('res').style.display='none'; el('res').innerHTML=''; el('cod').focus(); return; }
     el('btn').disabled=true; el('btn').textContent='Buscando…';
     let ciclos=[];
     try{ ciclos = await Store.historico(cod); }catch(e){ ciclos=[]; }
@@ -1002,7 +1068,7 @@
     if(nReav===0) t.push('<b>Primeira venda.</b> O paciente está começando. Explique que o ciclo é de 2 meses e que o retorno faz parte do tratamento — sem ele não há ajuste de dose.');
     else t.push('<b>Renovação de ciclo '+(nReav+1)+'.</b> Ele já conhece o tratamento. Confirme se houve mudança de protocolo nesta consulta antes de repetir o pedido anterior.');
     if(/mantido/i.test(u.protocolo||'')) t.push('O protocolo foi <b>mantido</b> — a renovação é do mesmo esquema, sem alteração de itens.');
-    if(u.mudanca && /Subir|Trocar|Escalonar/i.test(u.mudanca)) t.push('Houve <b>mudança de protocolo</b> nesta consulta. Confira item a item: o pedido não é igual ao do ciclo anterior.');
+    if(u.mudanca && /Subir|Trocar|Escalonar|recalculado|ajustado/i.test(u.mudanca)) t.push('Houve <b>mudança de protocolo</b> nesta consulta. Confira item a item: o pedido não é igual ao do ciclo anterior.');
     if(u.satisf!=null && u.satisf<=6) t.push('<b>Satisfação em '+u.satisf+'/10.</b> Ouça antes de oferecer. Insistir na venda com paciente insatisfeito costuma custar o paciente inteiro.');
     if(u.satisf!=null && u.satisf>=8) t.push('<b>Satisfação em '+u.satisf+'/10.</b> Bom momento para falar de continuidade e de plano mais longo.');
     if(pend.length) t.push('Há <b>'+pend.length+' item'+(pend.length>1?'s':'')+' a agendar</b> além das fórmulas. A recepção precisa marcar antes de o paciente sair.');
@@ -1045,5 +1111,32 @@
   .fcopiar{border-color:#b9c0cb;color:#0b1f3b}
   .fcard{border-color:#d4d1c8}
   .brand-footer{color:#4a5464!important;opacity:1!important}
+/* v2.5-K (auditoria visual): subtítulo legível, coluna mais larga, cartão do paciente sem branco no escuro */
+@media screen{
+  header .t2{color:var(--mx-text2)!important}
+  .fwrap{max-width:880px!important;width:100%;box-sizing:border-box}
+  @media (prefers-color-scheme: dark){
+    .fdestaque{background:var(--mx-surf2)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important}
+  }
+}
+/* v2.5-K: diálogo do app */
+@media screen{
+  /* diálogo do app (no lugar de prompt/confirm nativos) */
+  .mx-dlg-ov{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:rgba(1,11,15,.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:mxDlgIn .16s ease-out}
+  .mx-dlg{width:min(440px,100%);background:var(--mx-surf);color:var(--mx-text);border:1px solid var(--mx-line);border-radius:20px;
+    box-shadow:0 24px 80px rgba(1,11,15,.28);padding:22px 22px 18px;font-family:var(--mx-font)}
+  .mx-dlg h3{margin:0 0 8px;font:600 17px var(--mx-font);letter-spacing:-.01em;color:var(--mx-text)}
+  .mx-dlg p{margin:0;font-size:14px;line-height:1.5;color:var(--mx-text2);white-space:pre-wrap;max-height:50vh;overflow:auto}
+  .mx-dlg-in{width:100%;margin-top:14px;height:42px;border-radius:12px;border:1px solid var(--mx-line2);background:var(--mx-surf2);
+    color:var(--mx-text);padding:0 12px;font:500 14px var(--mx-mono, ui-monospace, monospace);box-sizing:border-box}
+  .mx-dlg-in:focus{outline:none;border-color:var(--mx-focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 22%,transparent)}
+  .mx-dlg-bts{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+  .mx-dlg-b{height:38px;padding:0 16px;border-radius:999px;font:600 14px var(--mx-font);cursor:pointer;border:1px solid var(--mx-line2);background:transparent;color:var(--mx-text)}
+  .mx-dlg-b.pri{background:var(--mx-ink);color:var(--mx-inkt);border-color:var(--mx-ink)}
+  .mx-dlg-b.pri.perigo{background:var(--mx-stop);border-color:var(--mx-stop);color:#fff}
+  .mx-dlg-b:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 30%,transparent)}
+    @keyframes mxDlgIn{from{opacity:0}to{opacity:1}}
+}
 </style>
 </body></html>
