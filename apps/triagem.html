@@ -773,7 +773,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.5.16" title="v2.5-Q (16ª revisão da 2.5)">Vers&atilde;o 2.5.16 &middot; v2.5-Q &middot; 06/10/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.5.17" title="v2.5-R (17ª revisão da 2.5)">Vers&atilde;o 2.5.17 &middot; v2.5-R &middot; 06/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <div class="dbtag" id="dbTag">Verificando banco de dados…</div>
@@ -989,7 +989,22 @@ document.documentElement.setAttribute('data-tema',t)})();
   .pac .box{border:1px solid rgba(11,31,59,.25);border-radius:6px;padding:7px 9px;margin-top:7px;}
   .pac .alerta{border:1.5px solid #7b1e24;background:rgba(123,30,36,.05);}
   .pac .alerta b{color:#7b1e24;}
-  .pac .ondas-pac p{margin:0 0 3px}
+  .pac .ondas-pac{border:1.5px solid #1F6B8A;background:rgba(31,107,138,.07);border-radius:10px;padding:10px 12px;margin:8px 0 10px}
+  .pac .ondas-pac > b.ondas-tit{display:block;font-size:12.5px;color:#145E80;margin:0 0 6px;letter-spacing:.01em}
+  .pac .ondas-pac p{margin:0 0 5px}
+  .pac .ondas-pac p:last-child{margin-bottom:0}
+  /* v2.5-R: conduta ao vivo — cartões, sem parede de texto bege */
+  .mx-prev .pv-card{border:1px solid var(--mx-ln);border-radius:14px;padding:12px 14px;margin:8px 0;background:var(--mx-surf)}
+  .mx-prev .pv-card.destaque{border-color:rgba(31,107,138,.45);background:rgba(31,107,138,.06)}
+  .mx-prev .pv-card .pv-k{font:600 11px var(--mx-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mx-text2);margin:0 0 4px}
+  .mx-prev .pv-card .pv-v{font:300 26px var(--mx-disp);letter-spacing:-.03em;color:var(--mx-text);margin:0 0 4px;line-height:1.15}
+  .mx-prev .pv-card .pv-d{font-size:13px;color:var(--mx-text2);line-height:1.4;margin:0}
+  .mx-prev .pv-kit{display:grid;gap:6px;margin:6px 0 10px}
+  .mx-prev .pv-item{padding:10px 12px;border-radius:12px;background:var(--mx-surf2);border:1px solid var(--mx-ln);font-size:12.5px;color:var(--mx-text2);line-height:1.35}
+  .mx-prev .pv-item b{display:block;font:600 12px var(--mx-mono);color:var(--mx-text);margin-bottom:2px}
+  .mx-prev .pv-note{border-radius:12px;padding:9px 12px;font-size:12.5px;margin-bottom:6px;border:1px solid var(--mx-ln);background:var(--mx-surf2);color:var(--mx-text);line-height:1.4}
+  .mx-prev .pv-note.warn{border-color:var(--mx-warnln);background:var(--mx-warnbg)}
+  .mx-prev .pv-note.stop{border-color:var(--mx-stopln);background:var(--mx-stopbg)}
   .pac .linha{border-bottom:1px solid rgba(11,31,59,.35);display:inline-block;min-width:130px;margin:0 5px;}
   /* v2.5-P: agendamento — rótulos em cima, linha de escrita de 10 mm, colunas alinhadas */
   .pac .box:has(.ag-tab){padding:9px 11px 10px;break-inside:avoid;page-break-inside:avoid}
@@ -1443,13 +1458,9 @@ document.documentElement.setAttribute('data-tema',t)})();
 
   /* prévia ao vivo */
   .mx-prev .pv-lede{font-size:12px;color:var(--mx-text3);margin:4px 0 14px;line-height:1.4}
-  .mx-prev .pv-proto{font:300 34px var(--mx-disp);letter-spacing:-.04em;margin:2px 0 2px;color:var(--mx-text)}
+  .mx-prev .pv-proto{display:none}
   .mx-prev .pv-sub{font-size:13px;color:var(--mx-text2);margin-bottom:14px}
-  .mx-prev .pv-kit{display:grid;gap:6px;margin:6px 0 14px}
-  .mx-prev .pv-item{padding:9px 12px;border-radius:12px;background:var(--mx-surf2);font-size:12.5px;color:var(--mx-text2);line-height:1.35}
-  .mx-prev .pv-item b{display:block;font:600 12px var(--mx-mono);color:var(--mx-text);margin-bottom:2px}
-  .mx-prev .pv-flag{border-radius:12px;padding:9px 12px;font-size:12.5px;margin-bottom:8px;border:1px solid var(--mx-warnln);background:var(--mx-warnbg);color:var(--mx-text)}
-  .mx-prev .pv-flag.stop{border-color:var(--mx-stopln);background:var(--mx-stopbg)}
+  .mx-prev .pv-flag{display:none}
   .mx-prev .pv-pend{font-size:12px;color:var(--mx-text3);margin-top:12px;line-height:1.5}
   .mx-prev .pv-vazio{font-size:13px;color:var(--mx-text2);line-height:1.5}
 
@@ -1769,9 +1780,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     'MOD-DAPO-60':{role:'Sob demanda', txt:'Dapoxetina 60 mg', pos:'1 cáp VO, 1 a 3 h antes da relação', custo:4.0, pac:'Tome 1 cápsula de 1 a 3 horas antes da relação. No máximo uma vez ao dia.', pacq:'Para a ejaculação: aumenta o tempo até ejacular e é usada só nos dias em que você vai ter relação.'},
     'MOD-CLOMI-25':{role:'Módulo matinal', txt:'Citrato de clomifeno 25 mg', pos:'1 cáp em dias alternados', custo:2.0, pac:'Tome 1 cápsula pela manhã, em dias alternados — um dia sim, um dia não.', pacq:'Para a testosterona: estimula o seu próprio corpo a produzir mais, sem prejudicar a fertilidade.'},
     'MOD-CLOMI-50':{role:'Módulo matinal', txt:'Citrato de clomifeno 50 mg', pos:'1 cáp em dias alternados', custo:2.4, pac:'Tome 1 cápsula pela manhã, em dias alternados — um dia sim, um dia não.', pacq:'Para a testosterona: estimula o seu próprio corpo a produzir mais, sem prejudicar a fertilidade.'},
-    'NOITE-1'   : {role:'Composto noturno', txt:'Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI', pos:'2 cáps 000 à noite', custo:4.0, pac:'Tome 2 cápsulas à noite, todos os dias.', pacq:'Para o desejo e a disposição: apoia a libido e diminui o efeito do estresse e do cansaço sobre a resposta sexual.'},
-    'NOITE-2'   : {role:'Composto noturno', txt:'Ioimbina HCl 5,4 mg + Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI', pos:'2 cáps 000 à noite', custo:4.5, pac:'Tome 2 cápsulas à noite, todos os dias.', pacq:'Para o desejo e a disposição: apoia a libido, diminui o efeito do estresse e traz um componente extra para o desejo.'},
-    'FERT-SUP'  : {role:'Composto noturno', txt:'L-carnitina 1.200 mg + CoQ10 200 mg + Vit. C 200 mg + Vit. E 100 mg + Zinco 25 mg + Selênio 200 mcg + Folato 800 mcg', pos:'2 cáps 000 à noite', custo:5.0, pac:'Tome 2 cápsulas à noite, todos os dias.', pacq:'Para a fertilidade: apoia a qualidade do sêmen enquanto você faz o tratamento.'},
+    'NOITE-1'   : {role:'À noite', txt:'Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI', pos:'2 cáps 000 à noite', custo:4.0, pac:'Tome 2 cápsulas à noite, todos os dias.', pacq:'Para o desejo e a disposição: apoia a libido e diminui o efeito do estresse e do cansaço sobre a resposta sexual.'},
+    'NOITE-2'   : {role:'À noite', txt:'Ioimbina HCl 5,4 mg + Maca 1.200 mg + Ashwagandha KSM-66 600 mg + Açafrão 30 mg + Zinco 20 mg + Selênio 100 mcg + Vit. D3 2.000 UI', pos:'2 cáps 000 à noite', custo:4.5, pac:'Tome 2 cápsulas à noite, todos os dias.', pacq:'Para o desejo e a disposição: apoia a libido, diminui o efeito do estresse e traz um componente extra para o desejo.'},
+    'FERT-SUP'  : {role:'À noite', txt:'L-carnitina 1.200 mg + CoQ10 200 mg + Vit. C 200 mg + Vit. E 100 mg + Zinco 25 mg + Selênio 200 mcg + Folato 800 mcg', pos:'2 cáps 000 à noite', custo:5.0, pac:'Tome 2 cápsulas à noite, todos os dias.', pacq:'Para a fertilidade: apoia a qualidade do sêmen enquanto você faz o tratamento.'},
     'SP-DE'     : {role:'Spray sublingual', txt:'Tadalafila 50 mg/mL — 1 jato = 10 mg', pos:'1 a 2 jatos, 30 min antes', custo:2.5, pac:'Aplique 1 a 2 jatos embaixo da língua, 30 minutos antes da relação. Segure 60 a 90 segundos sem engolir.', pacq:'Para a ereção na hora: um reforço de ação rápida nos dias em que você vai ter relação.'},
     'SP-DUO'    : {role:'Spray sublingual', txt:'Tadalafila 50 mg/mL + Clomipramina 75 mg/mL — 1 jato = 10 + 15 mg', pos:'1 a 2 jatos sublinguais, 2 h antes', custo:3.5, pac:'Aplique 1 a 2 jatos embaixo da língua, cerca de 2 horas antes da relação. Segure 60 a 90 segundos sem engolir.', pacq:'Para a ereção e a ejaculação: numa aplicação só, ajuda a firmar a ereção e a aumentar o tempo até ejacular.'},
     'SP-DUO-1J' : {role:'Spray sublingual', txt:'Tadalafila 50 mg/mL + Clomipramina 75 mg/mL — 1 jato = 10 + 15 mg, no máximo 1 jato', pos:'MÁXIMO 1 JATO sublingual, 2 h antes (paroxetina inibe CYP2D6)', custo:3.5, pac:'Aplique 1 jato embaixo da língua, cerca de 2 horas antes da relação. Nunca mais de 1 jato.', pacq:'Para a ereção e a ejaculação: numa aplicação só, ajuda a firmar a ereção e a aumentar o tempo até ejacular. O limite de 1 jato é por segurança.'},
@@ -1783,7 +1794,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     'LABS'      : {role:'Exames', txt:'Perfil hormonal: T total, T livre, LH, FSH, estradiol, prolactina, SHBG', pos:'Coleta matinal, em jejum, entre 7h e 10h', custo:2.0, pac:'Faça a coleta de sangue pela manhã, em jejum, entre 7h e 10h.', pacq:'Verifica se há uma causa hormonal, como a testosterona baixa, por trás da sua queixa.'},
     'ICI'       : {role:'Intracavernosa', txt:'R5', pos:'Dose-teste SEMPRE em consultório', custo:3.0, pac:'Aplicação conforme a orientação recebida em consultório. Veja as instruções no verso desta folha.', pacq:'Para a ereção: age direto no pênis, por isso funciona mesmo quando o remédio por via oral não resolve.'},
   };
-  const ICON = {'Cápsula matinal':'💊','Módulo matinal':'➕','Composto noturno':'🌙','Spray sublingual':'💦','Creme retardante':'🧴','Suplemento':'🌿','Sob demanda':'⚡','Preservativo retardante':'🛡️','Intracavernosa':'💉','Ondas de choque':'📡','Teste em consultório':'🔬','Exames':'🧪'};
+  const ICON = {'Cápsula matinal':'💊','Módulo matinal':'➕','Composto noturno':'🌙','À noite':'🌙','Spray sublingual':'💦','Creme retardante':'🧴','Suplemento':'🌿','Sob demanda':'⚡','Preservativo retardante':'🛡️','Intracavernosa':'💉','Ondas de choque':'📡','Teste em consultório':'🔬','Exames':'🧪'};
   const PROTOS = ['DE-1','DE-2','DE-3','DE-1L','DE-2L','DE-3L','EP-1','EP-1D','EP-2','EP-2D','EP-3','EP-4','DUO-1','DUO-2','DUO-3','DUO-4','DUO-1D','FERT','INTRACAVERNOSA','Nenhum / só comportamental'];
 
   // v2.5-M: teto de 30 mg/dia de tadalafila também no que o paciente lê. A posologia fixa dos sprays
@@ -1843,6 +1854,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     {v:'ansiedade', label:'Ansiedade, palpitação, insônia ou PA alta', culpado:'ioimbina'},
     {v:'dormencia', label:'Dormência excessiva ou perda de ereção com o creme', culpado:'creme retardante'},
     {v:'gastro', label:'Desconforto gástrico à noite', culpado:'composto noturno'},
+    // v2.5-R: dor local da intracavernosa — culpado PGE1, nunca tadalafila oral
+    {v:'dorLocal', label:'Dor local no pênis após a aplicação intracavernosa', culpado:'alprostadil (PGE1)', soIci:true},
   ];
   const TROCA = {
     'tadalafila':'Reduzir um nível de BASE ou fracionar a dose; se persistir, considerar via intracavernosa.',
@@ -1852,6 +1865,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     'ioimbina':'Retirar a ioimbina — voltar para BASE sem -I e NOITE-1.',
     'creme retardante':'Reduzir para 0,5 g e no máximo 20 min de contato; se persistir, retirar o creme.',
     'composto noturno':'Tomar com alimento; se persistir, fracionar em 1 cápsula ao jantar e 1 ao deitar.',
+    'alprostadil (PGE1)':'Dor importante ou que impede o uso: reduzir o volume ou escolher (na pergunta) uma fórmula com menos PGE1 / sem PGE1. O app lista as opções; a escolha é do médico.',
   };
 
   const S = {};
@@ -2857,7 +2871,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     if (prev){
       h += '<h4>Protocolo em uso</h4><table>'
-        + linhaFicha('Protocolo', prev.protocolo ? escH(explicaSiglas(String(prev.protocolo))) : null)
+        + linhaFicha('Protocolo', prev.protocolo ? escH(protocoloComDose(prev.protocolo, prev.kitCodes)) : null)
         + linhaFicha('Fórmulas', unicos(prev.kitCodes).filter(c=>!['TEFI','LABS'].includes(c))
             .map(c=>{ const comp=siglaAuto(c)?'':compoTxt(c); return escH(c)+(comp?' <span class="vazio">('+escH(comp)+')</span>':''); }).join('<br>') || null)
         + linhaFicha('Adesão relatada', prev.adesao ? rotAdesao(prev.adesao, !!prev.iciCasa) : null)
@@ -2895,7 +2909,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       h += '<table>';
       clin.slice().reverse().forEach(c=>{
         const d = c.dataBR || (c.data? new Date(c.data).toLocaleDateString('pt-BR') : '—');
-        const partes = [escH(rotuloLinha(c.linha)||''), c.protocolo?escH(explicaSiglas(String(c.protocolo))):null,
+        const partes = [escH(rotuloLinha(c.linha)||''), c.protocolo?escH(protocoloComDose(c.protocolo, c.kitCodes)):null,
                         c.iief!=null?qEscore('IIEF-5',c.iief):null, c.pedt!=null?qEscore('PEDT',c.pedt):null].filter(Boolean);
         h += '<tr><td>'+escH(d)+'</td><td>'+partes.join(' · ')+'</td></tr>';
       });
@@ -3072,7 +3086,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       add('Laboratório', labsDoCiclo(c.labs) || null);
       if (c.tipo==='reavaliacao' && c.mudanca && c.mudanca!=='manter')
         add('Mudança de conduta', escH(explicaSiglas(String(c.mudanca))));
-      add('Protocolo', c.protocolo ? escH(explicaSiglas(String(c.protocolo))) : null);
+      add('Protocolo', c.protocolo ? escH(protocoloComDose(c.protocolo, c.kitCodes)) : null);
       add('Fórmulas', formulasDoCiclo(c) || null);
       const ped = [c.examesSolicitados?'perfil hormonal':null, c.tefiIndicado?'TEFI com Doppler':null].filter(Boolean);
       if (ped.length) add('Solicitado', ped.join(' · '));
@@ -3088,7 +3102,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (t.curvatura) add('Curvatura', R.curvatura[t.curvatura]||escH(t.curvatura));
       add('Doppler', [t.psv!=null?'PSV '+t.psv+' cm/s':null, t.edv!=null?'EDV '+t.edv+' cm/s':null, t.ir!=null?'IR '+t.ir:null].filter(Boolean).join(' · ')||null);
       add('Suspeita', t.suspeita ? escH(t.suspeita) : null);
-      add('Conduta', c.protocolo ? escH(explicaSiglas(String(c.protocolo))) : null);
+      add('Conduta', c.protocolo ? escH(protocoloComDose(c.protocolo, c.kitCodes)) : null);
     } else if (c.linha==='preenchimento' && c.preench){
       const p = c.preench;
       if (c.tipo==='preench-inicial'){
@@ -3112,7 +3126,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       add('Laboratório', [h.tTotal?'T total '+escH(h.tTotal):null, h.lh?'LH '+escH(h.lh):null,
         h.ht?'Ht '+escH(h.ht):null, h.psa?'PSA '+escH(h.psa):null].filter(Boolean).join(' · ')||null);
       if (h.trtPrevio) add('Testosterona prévia', escH(h.trtPrevio));
-      add('Conduta', c.protocolo ? escH(explicaSiglas(String(c.protocolo))) : null);
+      add('Conduta', c.protocolo ? escH(protocoloComDose(c.protocolo, c.kitCodes)) : null);
       if (h.via) add('Formulação', escH((FORM_H[h.via] && FORM_H[h.via].nome) || h.via));
     } else {
       add('Conduta', c.protocolo ? escH(c.protocolo) : null);
@@ -3615,7 +3629,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     'BASE-T5-I':'tadalafila 5 mg + ioimbina', 'BASE-T10-I':'tadalafila 10 mg + ioimbina', 'BASE-T20-I':'tadalafila 20 mg + ioimbina',
     'SP-DE':'tadalafila 10 mg/jato', 'SP-DUO':'tadalafila 10 mg + clomipramina 15 mg/jato',
     'SP-DUO-1J':'tadalafila 10 mg + clomipramina 15 mg/jato, máx. 1 jato',
-    'NOITE-1':'composto noturno', 'NOITE-2':'composto noturno + ioimbina', 'FERT-SUP':'suporte à fertilidade',
+    'NOITE-1':'', 'NOITE-2':'ioimbina', 'FERT-SUP':'suporte à fertilidade',
     'RET-1':'lidocaína + prilocaína', 'PRESERV':'preservativo com benzocaína', 'POWER MIX':'suplemento',
     'ONDAS':'Li-ESWT', 'LABS':'perfil hormonal', 'TEFI':'teste de ereção com Doppler'
   };
@@ -3638,26 +3652,26 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
 
   const PROTO_COMPO = {
-    'DE-1':'cápsula matinal com tadalafila 5 mg + spray sublingual de tadalafila 50 mg/mL sob demanda',
-    'DE-2':'cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL sob demanda',
-    'DE-3':'cápsula matinal com tadalafila 20 mg + spray sublingual de tadalafila 50 mg/mL, máximo 1 jato',
-    'DE-1L':'cápsula matinal com tadalafila 5 mg + ioimbina 5,4 mg manhã e noite + spray de tadalafila 50 mg/mL',
-    'DE-2L':'cápsula matinal com tadalafila 10 mg + ioimbina 5,4 mg manhã e noite + spray de tadalafila 50 mg/mL',
-    'DE-3L':'cápsula matinal com tadalafila 20 mg + ioimbina 5,4 mg manhã e noite + spray de tadalafila 50 mg/mL',
-    'EP-1':'spray sublingual sob demanda com tadalafila 50 mg/mL + clomipramina 75 mg/mL',
+    'DE-1':'cápsula matinal com tadalafila 5 mg + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg) sob demanda',
+    'DE-2':'cápsula matinal com tadalafila 10 mg + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg) sob demanda',
+    'DE-3':'cápsula matinal com tadalafila 20 mg + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg), máximo 1 jato',
+    'DE-1L':'cápsula matinal com tadalafila 5 mg + ioimbina 5,4 mg manhã e noite + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg)',
+    'DE-2L':'cápsula matinal com tadalafila 10 mg + ioimbina 5,4 mg manhã e noite + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg)',
+    'DE-3L':'cápsula matinal com tadalafila 20 mg + ioimbina 5,4 mg manhã e noite + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg)',
+    'EP-1':'spray sublingual sob demanda com tadalafila 50 mg/mL + clomipramina 75 mg/mL (1 jato = 10 + 15 mg)',
     'EP-1D':'dapoxetina 30 mg oral sob demanda',
     'EP-2':'paroxetina 10 mg diária',
     'EP-2D':'dapoxetina 60 mg oral sob demanda',
     'EP-3':'paroxetina 20 mg diária',
-    'EP-4':'paroxetina 20 mg diária + spray sublingual com tadalafila 50 mg/mL e clomipramina 75 mg/mL, máximo 1 jato',
+    'EP-4':'paroxetina 20 mg diária + spray sublingual com tadalafila 50 mg/mL + clomipramina 75 mg/mL (1 jato = 10 + 15 mg), máximo 1 jato',
     'EP-TOPICO':'creme retardante com lidocaína 2,5% e prilocaína 2,5%, sem nenhum serotoninérgico oral',
-    'DUO-1':'cápsula matinal com tadalafila 5 mg + spray sob demanda com tadalafila 50 mg/mL e clomipramina 75 mg/mL',
-    'DUO-2':'cápsula matinal com tadalafila 10 mg + spray sob demanda com tadalafila 50 mg/mL e clomipramina 75 mg/mL',
-    'DUO-3':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + paroxetina 10 ou 20 mg diária + spray de tadalafila 50 mg/mL',
-    'DUO-4':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + paroxetina 20 mg diária + spray com tadalafila 50 mg/mL e clomipramina 75 mg/mL, máximo 1 jato',
-    'DUO-1D':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + dapoxetina 30 ou 60 mg oral sob demanda + spray de tadalafila 50 mg/mL',
-    'DUO-TOPICO':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + spray de tadalafila 50 mg/mL + creme com lidocaína 2,5% e prilocaína 2,5%, sem serotoninérgico',
-    'FERT':'clomifeno 25 mg + suplemento de fertilidade + spray de tadalafila 50 mg/mL',
+    'DUO-1':'cápsula matinal com tadalafila 5 mg + spray sob demanda com tadalafila 50 mg/mL + clomipramina 75 mg/mL (1 jato = 10 + 15 mg)',
+    'DUO-2':'cápsula matinal com tadalafila 10 mg + spray sob demanda com tadalafila 50 mg/mL + clomipramina 75 mg/mL (1 jato = 10 + 15 mg)',
+    'DUO-3':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + paroxetina 10 ou 20 mg diária + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg)',
+    'DUO-4':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + paroxetina 20 mg diária + spray com tadalafila 50 mg/mL e clomipramina 75 mg/mL (1 jato = 10 + 15 mg), máximo 1 jato',
+    'DUO-1D':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + dapoxetina 30 ou 60 mg oral sob demanda + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg)',
+    'DUO-TOPICO':'cápsula matinal com tadalafila 5, 10 ou 20 mg (conforme o nível) + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg) + creme com lidocaína 2,5% e prilocaína 2,5%, sem serotoninérgico',
+    'FERT':'clomifeno 25 mg + suplemento de fertilidade + spray sublingual de tadalafila 50 mg/mL (1 jato = 10 mg)',
     'INTRACAVERNOSA':'aplicação intracavernosa, titulada em consultório',
     'COMPORTAMENTAL':'preservativo e técnica comportamental, sem fármaco',
     'BLOQUEIO':'linha com tadalafila contraindicada'
@@ -3743,15 +3757,14 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (mR) return iciTxt(mR[1]);
     if (ATIVO_FIXO[cod]) return ATIVO_FIXO[cod];
     if (PROTO_COMPO[cod]){
-      // v2.5 (item 5): DUO-3/DUO-4/DUO-1D/DUO-TOPICO têm dose que depende do nível
-      // ("tadalafila 5, 10 ou 20 mg"). Com o kit da consulta conhecido, mostra a dose real.
-      // v2.5-M: o kit de HOJE só explica o protocolo de hoje; o protocolo anterior usa o kit anterior
-      // (antes, "Protocolo anterior: DUO-1D" saía com as fórmulas do kit de hoje). Forma curta do
-      // painel ("tadalafila 10 mg/jato"), sem repetir a mesma substância/dose.
+      // v2.5-R: registro gravado / ficha / histórico / painel — com o kit do ciclo, sempre a dose
+      // concreta (BASE-T20 → tadalafila 20 mg; MOD-PAROX-20 → paroxetina 20 mg; SP-DE → 1 jato = 10 mg).
+      // Sem kit, mantém PROTO_COMPO (ainda com "conforme o nível" só como fallback).
       const ctx = (KIT_CTX && cod===PROT_CTX) ? KIT_CTX : (PREV_CTX && cod===PREV_CTX.prot ? PREV_CTX.kit : null);
-      if (ctx && /conforme o nível| ou \d/.test(PROTO_COMPO[cod])){
-        const pr = [...new Set(unicos(ctx).filter(c=>F[c] && !SIGLA_FORA[c] && c!==cod).map(c=>ativoCurto(c))
-          .filter(t=>/tadalafila|paroxetina|dapoxetina|clomifeno|clomipramina|lidoca/i.test(t||'')))];
+      if (ctx){
+        const pr = [...new Set(unicos(ctx).filter(c=>F[c] && !SIGLA_FORA[c] && c!==cod && !/^NOITE|^ONDAS|^TEFI|^LABS|^PRESERV|^ICI$/.test(c))
+          .map(c=>ativoCurto(c))
+          .filter(t=>/tadalafila|paroxetina|dapoxetina|clomifeno|clomipramina|lidoca|priloca|ioimbina/i.test(t||'')))];
         if (pr.length) return pr.join(' + ');
       }
       return PROTO_COMPO[cod];
@@ -3769,7 +3782,67 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   // códigos cobertos: protocolos e fórmulas; ficam de fora palavras que não
   // são sigla de fórmula (TEFI é exame; ICI, ONDAS e LABS são vias/condutas)
-  const SIGLA_FORA = {'INTRACAVERNOSA':1,'COMPORTAMENTAL':1,'BLOQUEIO':1,'ICI':1,'ONDAS':1,'LABS':1,'TEFI':1};
+  // v2.5-R: texto do protocolo com as doses do kit daquele ciclo (prontuário, ficha, histórico, painel)
+  function protocoloComDose(prot, kit){
+    const cod = nomeProtocolo(prot||'');
+    if (!cod) return '';
+    const prevKit = KIT_CTX, prevProt = PROT_CTX, prevPrev = PREV_CTX;
+    try{
+      if (kit && kit.length){ KIT_CTX = unicos(kit); PROT_CTX = cod; PREV_CTX = {prot:cod, kit:KIT_CTX}; }
+      const t = ativoTxt(cod);
+      return t ? (cod+' · '+t) : cod;
+    } finally { KIT_CTX = prevKit; PROT_CTX = prevProt; PREV_CTX = prevPrev; }
+  }
+  // v2.5-R: o culpado de um efeito adverso só vale se a substância está no kit em uso
+  function kitTemCulpado(kit, culpado){
+    if (!culpado) return false;
+    const c = semAcento(String(culpado));
+    const codes = unicos(kit||[]);
+    if (/alprostadil|pge1/.test(c)) return codes.some(x=>x==='ICI'||/^R\d/.test(x)) || codes.some(x=>{
+      const n = numDaFormulaIci(x); return n!=null && ICI_COMPO['R'+n] && ICI_COMPO['R'+n].pge1!=null;
+    });
+    if (/tadalafila/.test(c)) return codes.some(x=>/^BASE-T|^SP-DE|^SP-DUO/.test(x));
+    if (/dapoxetina/.test(c)) return codes.some(x=>/^MOD-DAPO/.test(x));
+    if (/paroxetina/.test(c)) return codes.some(x=>/^MOD-PAROX/.test(x));
+    if (/clomipramina/.test(c)) return codes.some(x=>/^SP-DUO/.test(x));
+    if (/ioimbina/.test(c)) return codes.some(x=>/-I$/.test(x)||x==='NOITE-2');
+    if (/creme retardante|lidoca|priloca/.test(c)) return codes.indexOf('RET-1')>=0;
+    if (/composto noturno|noite/.test(c)) return codes.some(x=>/^NOITE/.test(x));
+    return true;
+  }
+  function kitEmUsoEA(){
+    if (prev && prev.kitCodes && prev.kitCodes.length) return unicos(prev.kitCodes);
+    if (S.formulasAnt && S.formulasAnt.length) return unicos(S.formulasAnt);
+    return unicos((window.__mxReg&&window.__mxReg.kitCodes)||[]);
+  }
+  function eaDoKit(kit){
+    const k = kit || kitEmUsoEA();
+    const emIci = !!(S.emICI || (k||[]).some(x=>x==='ICI'||/^R\d/.test(x)));
+    return EA.filter(e=>{
+      if (e.soIci) return emIci;
+      return kitTemCulpado(k, e.culpado);
+    });
+  }
+  // v2.5-R: dor local importante/impeditiva → fórmula com menos PGE1 (R7/R8 sem PGE1, ou menor concentração)
+  // v2.5-R (ajuste Marco): NÃO escolhe sozinho — devolve as fórmulas Fluka elegíveis
+  // (PGE1 estritamente menor que a atual, ou sem PGE1: R7/R8) para o médico escolher.
+  function iciFormulasMenorPge1(atual){
+    const n = numDaFormulaIci(atual);
+    const cur = n!=null ? ICI_COMPO['R'+n] : null;
+    if (!cur || cur.pge1==null) return [];   // já sem PGE1: nada a oferecer por PGE1
+    const ordem = ['R1','R2','R4','R5','R6','R7','R8','R9','R10','R11','R12'];
+    return ordem.filter(cod=>{
+      if (cod==='R'+n) return false;
+      const c = ICI_COMPO[cod]; if (!c) return false;
+      return c.pge1==null || c.pge1 < cur.pge1;
+    }).map(cod=>({cod, pge1:ICI_COMPO[cod].pge1, faixa:ICI_COMPO[cod].faixa}));
+  }
+  function iciPge1Rotulo(cod){
+    const c = ICI_COMPO[cod]; if (!c) return cod;
+    return c.pge1==null ? (cod+' · sem PGE1 · faixa '+c.faixa) : (cod+' · PGE1 '+numBR(c.pge1)+' mcg/mL · faixa '+c.faixa);
+  }
+
+    const SIGLA_FORA = {'INTRACAVERNOSA':1,'COMPORTAMENTAL':1,'BLOQUEIO':1,'ICI':1,'ONDAS':1,'LABS':1,'TEFI':1};
   let _siglasCache = null;
   function siglasComAtivo(){
     if (_siglasCache) return _siglasCache;
@@ -3942,7 +4015,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     {n:'Queixa e protocolo', ids:['queixa','confirma','confirmaEstavel','tempo','parceira','caracteriza','mast','matinal','previa','adequado','protAnt','formulasAnt','iciUso','iciAnt','iciAntDose','iciQual','iciQualidade','iciTempo','iciFreq','iciDoseAtual','refazer']},
     {n:'Antecedentes', ids:['comorb','comorbCtrl','comorbMed','contra','contraIoim','depre','adam','adamEvol','reversiveis','duasDosagens','sintomas','convive','contexto']},
     {n:'Medica\u00e7\u00f5es e alergias', ids:['medsRisco','alergia','parox','topico','freq','fert','querFilho','trtPrevio','contraind','pref','experiencia']},
-    {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','satisf','nps','satisfNps',
+    {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','iciDor','iciDorImpede','iciPge1Troca','satisf','nps','satisfNps',
       'i0','i1','i2','i3','i4','p0','p1','p2','p3','p4','p5','refazer','usarTotaisRec']},
     {n:'Exames', ids:['labs','tTotal','tLivre','shbg','lh','fsh','prolactina','estradiol','ht','psa','testo','biotens','idade','examesFeitos','tefiFeito','tefiResp','tefiDoppler','tefiConduta','tefiAddIci','tefiMed','tefiDose','t10grau','t20grau','doseComp','doseCompML','t30grau','tefiFinal','dorGrau','dorQuando','curvGrau','dopplerFeito','doppler','psv','edv','ir','iciFormula','iciDose']},
     {n:'Procedimento', ids:['tipoPenis','medPre','compFlac','diamFlac','prepucio','retracao','plano','previsaoML','planoBotox','concordou','termo','medPos','compPos','diamPos','mlUsado','botox','marcaAH','notaMedico','medRet','compRet','diamRet','retracaoRet','nodulos','notaMedicoRet','satisfPac','conduta','botoxUI','mlRetoque','marcaRetoque','aplicacao','mlHialuro']},
@@ -4316,7 +4389,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const kc = prev.kitCodes || [];
     const linhas = kc.map(c=>F[c] ? ('• <b style="display:inline;font-size:12.5px;letter-spacing:0;text-transform:none;opacity:1;">'+escH(c)+'</b> — '+escH(F[c].pos)) : ('• '+escH(c)));
     b.style.display='block';
-    b.innerHTML = '<b>Em uso agora — protocolo '+escH(prev.protocolo||'não registrado')+'</b>' +
+    b.innerHTML = '<b>Em uso agora — '+escH(prev.protocolo ? protocoloComDose(prev.protocolo, prev.kitCodes) : 'protocolo não registrado')+'</b>' +
       (linhas.length ? linhas.join('<br>') : 'Fórmulas não registradas no ciclo anterior.');
   }
 
@@ -4384,6 +4457,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       const ord = todos.slice().sort((a,b)=>new Date(a.data||0)-new Date(b.data||0));
       const ult = k => { for (let i=ord.length-1;i>=0;i--){ if (ord[i][k]) return ord[i][k]; } return null; };
       S.contatoBanco = {iniciais:ult('iniciais'), telefone:ult('telefone'), email:ult('email'), nome:ult('nome'), nascimento:ult('nascimento')};
+      // v2.5-R: se o cadastro já tem nome/nascimento e S ainda não, preenche para o pedido de exames
+      if (S.contatoBanco.nome && !S.nome) S.nome = S.contatoBanco.nome;
+      if (S.contatoBanco.nascimento && !S.nascimento) S.nascimento = S.contatoBanco.nascimento;
       // v2.5-I: escores de cada consulta clínica, do mais antigo ao mais recente — só exibição (bloco de classificação)
       S.serieEsc = ord.filter(c=>c.tipo==='primeira'||c.tipo==='reavaliacao').map(c=>({d:dataDoCiclo(c), iief:c.iief!=null?+c.iief:null, pedt:c.pedt!=null?+c.pedt:null}));
     }catch(e){}
@@ -4512,6 +4588,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (f){
         S.filaAplicada=true; S.codigo=f.codigo;
         if (S.visita===undefined) S.visita = f.retorno ? 'reav' : 'primeira';
+        // v2.5-R: nome/nascimento da recepção já entram em S (pedido de exames não fica em branco)
+        if (f.nome && !S.nome) S.nome = String(f.nome).trim();
+        if (f.nascimento && !S.nascimento) S.nascimento = f.nascimento;
         S.queixa = f.queixaRecepcao==='libido' ? 'de'
                  : (f.queixaRecepcao==='clinica' ? 'de' : f.queixaRecepcao);
         S.queixaFila = S.queixa;
@@ -4928,8 +5007,50 @@ document.documentElement.setAttribute('data-tema',t)})();
         options:[{v:'ea',badge:'!',label:'Efeito adverso'},{v:'esq',badge:'~',label:'Esquecimento'},{v:'naoprec',badge:'—',label:'Achou que não precisava'},{v:'faltou',badge:'!',label:'Ficou sem a medicação'},{v:'outro',badge:'?',label:'Outro motivo'}]});
       s.push({id:'ea',kind:'opts',step:'Reavaliação',eyebrow:'Tolerabilidade',text:'Teve efeitos adversos?',
         options:[{v:'nao',badge:'✓',label:'Nenhum'},{v:'leve',badge:'~',label:'Leves, toleráveis'},{v:'atrap',badge:'!',label:'Atrapalharam o uso'}]});
-      if (S.ea==='leve'||S.ea==='atrap') s.push({id:'eaQuais',kind:'opts',multi:true,step:'Reavaliação',eyebrow:'Tolerabilidade',
-        text:'Quais? (marque todos)', options:EA.map(e=>({v:e.v,badge:'•',label:e.label}))});
+      if (S.ea==='leve'||S.ea==='atrap'){
+        const optsEA = eaDoKit().map(e=>({v:e.v,badge:'•',label:e.label}));
+        s.push({id:'eaQuais',kind:'opts',multi:true,step:'Reavaliação',eyebrow:'Tolerabilidade',
+          text:'Quais? (marque todos)', options: optsEA.length ? optsEA : EA.filter(e=>!e.soIci).map(e=>({v:e.v,badge:'•',label:e.label}))});
+      }
+      // v2.5-R: em ICI, perguntar dor local e se impediu o uso (regra PGE1)
+      if (emICI){
+        s.push({id:'iciDor',kind:'opts',step:'Reavaliação',eyebrow:'Tolerabilidade · intracavernosa',
+          text:'Teve dor local no pênis após a aplicação?',
+          options:[{v:'nao',badge:'✓',label:'Não'},{v:'leve',badge:'~',label:'Sim, leve'},{v:'importante',badge:'!',label:'Sim, importante'}]});
+        if (S.iciDor==='leve'||S.iciDor==='importante')
+          s.push({id:'iciDorImpede',kind:'opts',step:'Reavaliação',eyebrow:'Tolerabilidade · intracavernosa',
+            text:'A dor impediu de usar a medicação?',
+            options:[{v:'nao',badge:'✓',label:'Não — conseguiu usar'},{v:'sim',badge:'!',label:'Sim — impediu o uso'}]});
+        // dor importante ou impeditiva: o médico ESCOLHE a fórmula com menos PGE1 (não há auto-pick)
+        const dorOferta = (S.iciDor==='importante') || (S.iciDorImpede==='sim');
+        if (dorOferta){
+          const formAtual = String(S.iciAnt || (prev && prev.iciAnterior) || 'R5').replace(' (trimix clássico)','');
+          const nAt = numDaFormulaIci(formAtual);
+          const curC = nAt!=null ? ICI_COMPO['R'+nAt] : null;
+          const eleg = iciFormulasMenorPge1(formAtual);
+          const doseUsoScr = S.iciDoseAtual || S.iciAntDose || '';
+          const DEG_SCR = ['0,05 mL','0,1 mL','0,15 mL','0,2 mL','0,3 mL','0,4 mL','0,5 mL'];
+          const iUscr = DEG_SCR.indexOf(doseUsoScr);
+          const doseMenorScr = iUscr>0 ? DEG_SCR[iUscr-1] : null;
+          const optsP = [];
+          if (doseMenorScr)
+            optsP.push({v:'vol',badge:'↓',label:'Reduzir volume · '+doseUsoScr+' → '+doseMenorScr+' (manter fórmula atual)'});
+          eleg.forEach(e=>{
+            // badge 'R' como nas outras telas de fórmula (evita expandir R* dentro do badge)
+            optsP.push({v:e.cod, badge:'R', label: e.pge1==null
+              ? (e.cod+' · sem PGE1 · faixa '+e.faixa)
+              : (e.cod+' · PGE1 '+numBR(e.pge1)+' mcg/mL · faixa '+e.faixa)});
+          });
+          const atualTxt = nAt && curC
+            ? ('R'+nAt+' · '+(curC.pge1==null?'sem PGE1':'PGE1 '+numBR(curC.pge1)+' mcg/mL')+' · faixa '+curC.faixa+' (atual)')
+            : (formAtual+' (atual)');
+          if (optsP.length)
+            s.push({id:'iciPge1Troca',kind:'opts',mostraDica:true,step:'Reavaliação',eyebrow:'Dor local · reduzir PGE1',
+              text:'Escolha a conduta para a dor local (PGE1)',
+              hint:'Fórmula em uso: '+atualTxt+'. Só entram fórmulas com PGE1 menor que a atual, ou sem PGE1 (R7/R8). A escolha é sua — o app não escolhe sozinho.',
+              options:optsP});
+        }
+      }
       if (usaICI){
         s.push({id:'iciQual',kind:'grupo',step:'Reavaliação',eyebrow:'Intracavernosa em casa',
           text:'Resultado das aplicações domiciliares',
@@ -5544,7 +5665,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </ol>`;
 
 
-  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|Paroxetina \+ clomipramina|Dapoxetina retirada|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração|teto de 30 mg\/dia|Nível oral mantido|Cápsula sobe de|Protocolo ajustado de|objetivo atingido/i;
+  const RE_ALERTA = /ALERTA|ANTES DE ENCERRAR|Piso terapêutico|Paroxetina \+ clomipramina|Dapoxetina retirada|via serotoninérgica está bloqueada|Encaminhar|Conflito entre indicação|NÃO REGISTRADO|NÃO ASSINAD|priapismo|Priapismo|MÁXIMO 1 JATO|Alergias declaradas|Teto de escalonamento|Adesão insuficiente|Efeito adverso limitante|Dor local|ONDAS DE CHOQUE|não é indicação de ioimbina|contraindicaç|Registro fotográfico|síndrome serotoninérgica|impossibilita a penetração|teto de 30 mg\/dia|Nível oral mantido|Cápsula sobe de|Protocolo ajustado de|objetivo atingido/i;
   // v2.5-F: alertas com hierarquia — título, uma linha de resumo e o detalhe recolhível.
   // Cada alerta guarda o texto original num <p class="al-orig"> oculto: é dele que o texto do
   // prontuário, a prévia e a contagem do cabeçalho leem (mesmo conteúdo de antes).
@@ -6367,13 +6488,20 @@ document.documentElement.setAttribute('data-tema',t)})();
       }
       if (S.ea==='atrap'){
         travado=true;
-        const culpados=[...new Set((S.eaQuais||[]).map(v=>(EA.find(e=>e.v===v)||{}).culpado).filter(Boolean))];
+        // v2.5-R: só culpa o que está no kit em uso (ICI puro não inventa tadalafila oral)
+        const kitEA = kitEmUsoEA();
+        // dor local da ICI é tratada no bloco PGE1 (iciDor) — evita alerta duplicado
+        const quaisEA = (S.eaQuais||[]).filter(v=>v!=='dorLocal' || !(S.iciDor||S.iciDorImpede));
+        const culpados=[...new Set(quaisEA.map(v=>(EA.find(e=>e.v===v)||{}).culpado).filter(c=>c && kitTemCulpado(kitEA, c)))];
         if (culpados.length){
-          notas.push('<b>Efeito adverso limitante — trocar, não subir.</b> Provável responsável: '+culpados.join(', ')+'. '+culpados.map(c=>TROCA[c]).join(' '));
+          notas.push('<b>Efeito adverso limitante — trocar, não subir.</b> Provável responsável: '+culpados.join(', ')+'. '+culpados.map(c=>TROCA[c]||'').filter(Boolean).join(' '));
           mudanca='Ajuste por efeito adverso ('+culpados.join(', ')+')';
-        } else notas.push('<b>Efeito adverso limitante — trocar, não subir.</b> Detalhar os sintomas para identificar o responsável.');
+        } else if (!(S.iciDor||S.iciDorImpede)) {
+          notas.push('<b>Efeito adverso limitante — trocar, não subir.</b> Detalhar os sintomas para identificar o responsável no kit atual (não atribuir tadalafila se ela não está no protocolo).');
+        }
       } else if (S.ea==='leve'){
-        const culpados=[...new Set((S.eaQuais||[]).map(v=>(EA.find(e=>e.v===v)||{}).culpado).filter(Boolean))];
+        const kitEA = kitEmUsoEA();
+        const culpados=[...new Set((S.eaQuais||[]).map(v=>(EA.find(e=>e.v===v)||{}).culpado).filter(c=>c && kitTemCulpado(kitEA, c)))];
         if (culpados.length) notas.push('Efeitos leves toleráveis, atribuíveis a '+culpados.join(', ')+'. Não impedem escalonamento, mas registrar para acompanhar no próximo ciclo.');
       }
       if (!travado){
@@ -6440,6 +6568,36 @@ document.documentElement.setAttribute('data-tema',t)})();
       const formula = String(S.iciAnt || 'fórmula em uso').replace(' (trimix clássico)','');
       iciDoseIndicada = doseUso || null;
       notas.push('<b>Paciente em intracavernosa — não volta para a via oral.</b> O IIEF-5 de hoje mede a ereção com a aplicação: a melhora reflete o efeito do remédio e conta só para a satisfação. A dose segue a qualidade e a duração da ereção.');
+      // v2.5-R (ajuste Marco): dor importante/impeditiva → o médico ESCOLHE (volume ou fórmula com menos PGE1). Sem auto-pick.
+      const dorPge1 = (S.iciDor==='importante') || (S.iciDorImpede==='sim') || ((S.eaQuais||[]).indexOf('dorLocal')>=0 && S.ea==='atrap');
+      if (dorPge1){
+        travado = true;
+        const doseMenor = iU>0 ? DEGI[iU-1] : null;
+        const eleg = iciFormulasMenorPge1(formula);
+        const escolha = S.iciPge1Troca || null;
+        iciMud = 'Reduzir PGE1 por dor local';
+        let acao = '';
+        if (escolha==='vol'){
+          if (doseMenor){ iciDoseIndicada = doseMenor; acao = 'Volume reduzido de '+doseUso+' para <b>'+doseMenor+'</b> (fórmula '+formula+' mantida).'; }
+          else acao = 'Volume já na menor dose — manter '+formula+' e reavaliar em consultório.';
+        } else if (escolha && ICI_COMPO[escolha]){
+          const c = ICI_COMPO[escolha];
+          acao = 'Troca escolhida: '+formula+' → <b>'+escolha+'</b> ('+(c.pge1==null?'sem PGE1':'PGE1 '+numBR(c.pge1)+' mcg/mL')+', faixa '+c.faixa+').';
+          // a fórmula nova vira a referência da conduta; dose de teste em consultório
+          S.iciAnt = escolha;
+          if (!iciDoseIndicada) iciDoseIndicada = doseUso || '0,1 mL';
+        } else {
+          // ainda sem escolha (prévia): lista o que está à disposição, sem escolher
+          const lista = eleg.map(e=>e.cod+' ('+(e.pge1==null?'sem PGE1':numBR(e.pge1)+' mcg/mL')+')').join(', ');
+          acao = (doseMenor ? 'Opções: reduzir volume para '+doseMenor : 'Opções')
+            +(lista ? (doseMenor?'; ou trocar para ':' ')+lista : '')
+            +'. Aguarde a escolha na pergunta "Dor local · reduzir PGE1".';
+        }
+        notas.push('<b>Dor local '+(S.iciDor==='importante'?'importante':(S.iciDorImpede==='sim'?'impeditiva do uso':'na aplicação'))+' — reduzir PGE1.</b> Provável responsável: alprostadil (PGE1). '+acao);
+        mudanca = escolha && escolha!=='vol' && ICI_COMPO[escolha]
+          ? ('Ajuste por dor local (PGE1) → '+escolha)
+          : (escolha==='vol' ? 'Ajuste por dor local (PGE1) — volume' : 'Ajuste por dor local (PGE1)');
+      }
       if (!travado){
         const reduz = (alvo, pq) => {
           iciMud = 'Reduzir a dose da intracavernosa';
@@ -6676,7 +6834,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         (psico ? ' <b>Atenção neste caso:</b> o perfil foi classificado como psicogênico. Antes de oferecer equipamento, vale reconsiderar a classificação e checar se a abordagem comportamental foi de fato conduzida — ausência de resposta num perfil psicogênico costuma apontar para o eixo do casal, não para o vaso.' : ''));
     }
     if (ondasComp && !ondas) notas.push('<b>Ondas de choque como complemento, a critério do paciente:</b> '+motivoOndasOpc.join('; ')+'. Não é indicação estrita — entra como oferta adicional ao protocolo. Idealmente após Doppler.');
-    if (ondas) notas.push('<b>Oferecer ondas de choque de baixa intensidade (Li-ESWT):</b> '+motivoOndas.join('; ')+'. Disponível na clínica, como adjuvante ao tratamento oral.');
+    if (ondas) notas.push('<b>ONDAS DE CHOQUE — oferecer na consulta:</b> '+motivoOndas.join('; ')+'. Disponível na clínica, como adjuvante. Apresentar ao paciente com o racional acima (caixa destacada na via dele).');
     if (tefi) notas.push('<b>Indicar TEFI com Doppler peniano:</b> '+(motivoTefi.length?motivoTefi.join('; '):'avaliação hemodinâmica antes das ondas de choque')+'. O Doppler separa insuficiência arterial de escape venoso — escape venoso responde mal às ondas de choque, então o exame vem ANTES das sessões, não depois da frustração. <b>Protocolo da clínica: R5 (trimix clássico), 0,1 mL.</b>');
 
     const trataDE=S.hasDE&&lvlDE>=1, trataEP=S.hasEP&&lvlEP>=1;
@@ -6858,7 +7016,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       else if (semTada) prot = prot + ' (mantido)';
       else if (emICIant) prot = 'INTRACAVERNOSA (mantido)';
       else prot = (S.protAnt&&S.protAnt!=='—') ? (protAntExibe(' + ')||'esquema anterior')+' (mantido)' : prot+' (mantido)';
-      mudanca='Nenhuma — manter e resolver a causa';
+      // v2.5-R: se já há ajuste concreto (dor/PGE1 ou EA com troca), não apaga a mudança
+      if (!(mudanca && /Ajuste por|dor local|PGE1|efeito adverso/i.test(mudanca)))
+        mudanca='Nenhuma — manter e resolver a causa';
     }
     // v2.5-E (item 2): TEFI indicou intracavernosa num paciente só com via oral — se o médico
     // aceitou, a intracavernosa entra no kit junto do protocolo oral e o registro diz que a
@@ -6997,8 +7157,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       'MOD-DAPO-60':'Dapoxetina 60 mg sob demanda — dose plena, pela intensidade da queixa.',
       'MOD-CLOMI-25':'Clomifeno 25 mg em dias alternados — eleva a testosterona preservando a fertilidade.',
       'MOD-CLOMI-50':'Clomifeno 50 mg em dias alternados — dose maior, por resposta hormonal insuficiente.',
-      'NOITE-1':'Composto noturno — suporte à libido, ao estresse e ao eixo hormonal.',
-      'NOITE-2':'Composto noturno com ioimbina — suporte à libido, com ioimbina pela queda de desejo.',
+      'NOITE-1':'Suporte à libido, ao estresse e ao eixo hormonal.',
+      'NOITE-2':'Suporte à libido com ioimbina — pela queda de desejo.',
       'FERT-SUP':'Composto de suporte à espermatogênese — suporte, não tratamento.',
       'SP-DE':'Spray sublingual de tadalafila — dose sob demanda antes da relação, de ação rápida.',
       'SP-DUO':'Spray sublingual com tadalafila e clomipramina — ereção e ejaculação no mesmo jato (1 ou 2 jatos).',
@@ -7260,7 +7420,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (ondasOpc && !m.length) m.push('a melhora até agora ficou abaixo do que esperamos');
       if (!m.length) m.push('melhorar a circulação do pênis soma ao efeito do tratamento');
       const frase = m.join('; ');
-      return '<h4>Ondas de choque — por que no seu caso</h4><div class="ondas-pac">'
+      // v2.5-R: oferta de ondas em caixa destacada, com o porquê no mesmo quadro
+      return '<div class="ondas-pac"><b class="ondas-tit">Ondas de choque — por que no seu caso</b>'
         + '<p>São aplicações de baixa intensidade no pênis, feitas na clínica, sem cortes e sem anestesia. Elas estimulam a formação de novos vasos e melhoram a circulação, o que ajuda a ereção a vir com mais facilidade.</p>'
         + '<p><b>Por que indicamos para você:</b> '+frase.charAt(0).toUpperCase()+frase.slice(1)+'.</p>'
         + '<p><b>Como é:</b> protocolo de '+nSessoes+' sessões na clínica, agendadas na recepção.'
@@ -7303,7 +7464,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
       iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),ondasSessoes:((kit.some(e=>(Array.isArray(e)?e[0]:e)==='ONDAS') || S.tefiConduta==='ondas') ? ((prev && Number(prev.ondasSessoes)) || ONDAS_SESSOES) : null),biotens:(bio===null?null:bio),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
-      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
+      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),iciDor:S.iciDor||null,iciDorImpede:S.iciDorImpede||null,iciPge1Troca:S.iciPge1Troca||null,ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);
     pintaStatus(ok?'Ciclo salvo.':'Não foi possível salvar — guarde o relatório impresso.');
@@ -7433,7 +7594,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   // hormonal que a clínica pede (o mesmo de LABS: testosterona total e livre, SHBG,
   // LH, FSH, estradiol e prolactina); o médico marca/desmarca e acrescenta antes de imprimir.
   const EXA_BASE = ['Testosterona total','Testosterona livre','SHBG','LH','FSH','Estradiol','Prolactina'];
-  const EXA_OPC  = ['Hemograma completo','PSA total','Perfil hepático (TGO, TGP, GGT, bilirrubinas)','Perfil lipídico','Glicemia de jejum','Espermograma'];
+  const EXA_OPC  = ['Hemograma completo','PSA total','Perfil hepático (TGO, TGP, GGT, bilirrubinas)','Perfil lipídico','Glicemia de jejum','Espermograma','US abdome total','US de próstata via abdominal (com medida de resíduo urinário)'];
   let exaSel = null, exaExtra = [], exaCod = null, exaIndic = null, exaIdMudou = false;
   // v2.5-P: todo pedido leva a indicação clínica — a mais específica que o app conhece, editável
   function exaIndicacaoPadrao(){
@@ -7503,7 +7664,18 @@ document.documentElement.setAttribute('data-tema',t)})();
   function abreExames(){
     const cod = norm(S.codigo||'') + '|' + ((window.__mxReg||{}).data||'');
     if (!exaSel || exaCod!==cod){ exaSel = exaPadrao(); exaExtra = []; exaCod = cod; exaIndic = exaIndicacaoPadrao(); exaIdMudou = false; }   // novo atendimento = lista padrão
+    // v2.5-R: hidrata nome/nascimento do registro atual / fila / cadastro antes de pintar
+    const ca0 = contatoAtual();
+    const reg = window.__mxReg || {};
+    if (!S.nome && (ca0.nome || reg.nome)) S.nome = ca0.nome || reg.nome;
+    if (!S.nascimento && (ca0.nascimento || reg.nascimento)) S.nascimento = ca0.nascimento || reg.nascimento;
     pintaExames(); el('exaOverlay').style.display = 'flex';
+    setTimeout(()=>{
+      const ca = contatoAtual();
+      const faltaNome = !preenchido(ca.nome), faltaNasc = !ca.nascimento;
+      const alvo = faltaNome ? el('exaNome') : (faltaNasc ? el('exaNasc') : null);
+      if (alvo) try{ alvo.focus(); }catch(e){}
+    }, 40);
   }
   el('examesBtn').onclick = abreExames;
   // v2.5-P: nome/nascimento digitados no modal, depois de gravada a conduta, vão para o registro
@@ -7779,13 +7951,31 @@ document.documentElement.setAttribute('data-tema',t)})();
       box.innerHTML = cab + '<p class="pv-vazio">'+(r && r.erro ? 'Prévia indisponível neste navegador.' : 'Ainda sem dados suficientes para uma conduta.')+'</p>' + rodape;
       return;
     }
-    const kit = (r.kit||[]).map(c=>'<div class="pv-item"><b>'+escH(c)+'</b>'+escH(siglasComAtivo().indexOf(c)>=0 ? ativoTxt(c) : ((F[c]&&F[c].txt)||''))+'</div>').join('');
-    const flags = (r.alertas||[]).slice(0,4).map(a=>'<div class="pv-flag'+(/contraindic|bloque|nunca|não usar|urg/i.test(a)?' stop':'')+'">'+escH(explicaSiglas(a))+'</div>').join('');
+    // v2.5-R: cartões — protocolo com dose concreta, kit com dose/jato, notas curtas (sem parede bege)
+    const prevKit = KIT_CTX, prevProt = PROT_CTX;
+    try{ KIT_CTX = unicos(r.kit||[]); PROT_CTX = nomeProtocolo(r.protocolo||''); }catch(e){}
+    const protoDose = (()=>{ try{ return protocoloComDose(r.protocolo, r.kit||[]); }catch(e){ return r.protocolo||''; } })();
+    const kit = (r.kit||[]).map(c=>{
+      let dose = '';
+      try{ dose = (siglasComAtivo().indexOf(c)>=0 ? ativoTxt(c) : ((F[c]&&F[c].txt)||ATIVO_FIXO[c]||'')); }catch(e){}
+      return '<div class="pv-item"><b>'+escH(c)+'</b>'+escH(dose||'')+'</div>';
+    }).join('');
+    const notes = (r.alertas||[]).slice(0,5).map(a=>{
+      const stop = /contraindic|bloque|nunca|não usar|urg|priapismo/i.test(a);
+      const warn = /efeito|dor|teto|escalon|reduzir|PGE1|ondas/i.test(a);
+      const txt = explicaSiglas(a);
+      // encurta: 1ª frase
+      const curto = (txt.match(/^(.{20,140}?[.!?])(\s|$)/) || [null, txt.slice(0,140)])[1];
+      return '<div class="pv-note'+(stop?' stop':(warn?' warn':''))+'">'+escH(curto)+'</div>';
+    }).join('');
+    try{ KIT_CTX = prevKit; PROT_CTX = prevProt; }catch(e){}
+    const protoNome = escH(nomeProtocolo(r.protocolo||'')||'—');
+    const protoDesc = escH((protoDose.indexOf(' · ')>=0 ? protoDose.split(' · ').slice(1).join(' · ') : (ativoTxt(nomeProtocolo(r.protocolo||''))||r.classe||'')));
     box.innerHTML = cab
-      + '<div class="pv-proto">'+escH(r.protocolo)+'</div>'
-      + '<div class="pv-sub">'+escH(ativoTxt(r.protocolo) || r.classe || '')+'</div>'
-      + flags
+      + '<div class="pv-card destaque"><div class="pv-k">Protocolo</div><div class="pv-v">'+protoNome+'</div>'
+      + (protoDesc ? '<p class="pv-d">'+protoDesc+'</p>' : '')+'</div>'
       + (kit ? '<div class="mx-eyebrow">Kit</div><div class="pv-kit">'+kit+'</div>' : '')
+      + (notes ? '<div class="mx-eyebrow">Notas</div>'+notes : '')
       + rodape;
   }
   // dentro do iframe da prévia: calcula e devolve, sem gravar nada

@@ -90,7 +90,9 @@ acima de 2 horas → "Reduzir a dose", nunca subir; insuficiente para penetraç�
 ou menos de 30 min → "Subir dose ou esquema da intracavernosa" (próximo degrau
 da dose em uso; no topo, trocar a formulação); suficiente e 1 a 2 horas →
 reduzir um degrau; suficiente e 30 a 60 min ou cerca de 1 hora → manter
-fórmula e dose. O ganho no IIEF-5 conta só para a satisfação. Adesão baixa ou
+fórmula e dose. **Dor local importante ou impeditiva (v2.5-R):** o médico escolhe em
+`iciPge1Troca` (volume ou fórmula Fluka com PGE1 menor / sem PGE1); sem auto-pick.
+Perguntas `iciDor` e `iciDorImpede`. O ganho no IIEF-5 conta só para a satisfação. Adesão baixa ou
 efeito limitante → "INTRACAVERNOSA (mantido)". Sem TEFI no kit e sem a lógica
 oral. A dose decidida vai para `iciDoseIndicada` e preenche a próxima consulta.
 **TEFI que indica intracavernosa (v2.5-E).** Paciente só com via oral cujo TEFI
@@ -408,6 +410,15 @@ de `case` dentro de `$( )` (use uma função), nada de bash 4+ (`wait -n`,
 (`MAXIMUS_SECO=1`) no bash 3.2: `/bin/bash` no Mac, `bash3.2` no box
 (`/usr/local/bin/bash3.2`, compilado do GNU bash 3.2.57) ou `MAXIMUS_BASH32`.
 Sem bash 3.2, só a parte estática, com aviso.
+
+**Conduta, exames, ICI e protocolo com dose (v2.5-R · 2.5.17).**
+- **Pedido de exames:** nome completo e nascimento já vêm preenchidos da fila/cadastro (`S` hidratado ao aplicar a fila e ao carregar histórico); se faltarem, o modal foca o campo vazio.
+- **Dor local na ICI (PGE1):** perguntas `iciDor` / `iciDorImpede`. Dor importante ou impeditiva → tela `iciPge1Troca`: o médico **escolhe** entre reduzir volume ou uma fórmula Fluka com PGE1 estritamente menor (ou sem PGE1: R7/R8); o app **não** auto-escolhe. Lista via `iciFormulasMenorPge1` + `ICI_COMPO`. Rotina em `calculaResultados` (`emICIant`). **Não existia** regra explícita dor→PGE1 antes da v2.5-R.
+- **Atribuição de EA:** `kitTemCulpado` / `eaDoKit` — só culpa substância presente no kit; ICI puro nunca inventa "tadalafila / reduzir BASE".
+- **Protocolo no prontuário/ficha/histórico/painel:** `protocoloComDose(prot, kit)` mostra doses concretas do kit (ex. tadalafila 20 mg, paroxetina 20 mg, 1 jato = 10 mg), não o menu "5, 10 ou 20 mg (conforme o nível)".
+- **Ondas na via do paciente:** caixa destacada `.ondas-pac` com o racional no mesmo quadro.
+- **Conduta ao vivo:** cartões (protocolo + dose, kit com dose/jato, notas curtas).
+- Teste: `tests/teste_v25r.js` (etapa 7m).
 
 **Segurança e fila local (v2.5-Q · 2.5.16).**
 - **XSS:** campos gravados (`protocolo`, fórmulas, iniciais/nome no painel, notas) passam por `escH` antes de `innerHTML` na ficha (tecla F), no histórico e no painel. Payload `<img onerror>` não executa.
