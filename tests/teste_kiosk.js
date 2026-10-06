@@ -175,7 +175,8 @@ async function roda(i, mem, novo) {
 async function filaDeHoje() {
   const hoje = new Date();
   const dia = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  const reg = (cod, min, ret) => { const d = new Date(hoje.getTime() - min * 60000);
+  // v2.5-K: "min minutos atrás", mas nunca antes da meia-noite de hoje (entre 0h e 1h o registro caía no dia anterior)
+  const reg = (cod, min, ret) => { const d = new Date(Math.max(hoje.getTime() - min * 60000, new Date(hoje).setHours(0, 0, 0, 0) + (100 - min) * 1000));
     return { codigo: cod, tipo: 'recepcao', linha: 'recepcao', data: d.toISOString(), dataLocal: dia(d), hora: d.toTimeString().slice(0, 5), iniciais: 'XYZ', retorno: ret }; };
   const mem = { recepcao: [reg('MX7001', 50, true), reg('MX7002', 30, false), reg('MX7003', 10, false)], codigos: [] };
   mem.atendidos = [{ codigo: 'MX7001', recepcao: mem.recepcao[0].data, atendido: true, em: new Date().toISOString() }];
@@ -194,7 +195,11 @@ async function filaDeHoje() {
   r.push(['a lista separa aguardando (MX7002, MX7003) de atendidos (MX7001)', /Aguardando.*MX7002.*MX7003.*Atendidos hoje.*MX7001/.test(t1), t1.slice(0, 200)]);
   const dev = box.querySelector('[data-dev="MX7001"]');
   r.push(['atendido tem "Devolver à fila"', !!dev]);
-  if (dev) { dev.click(); await espera(80); }
+  if (dev) { dev.click(); await espera(30); }
+  // v2.5-K: a confirmação é o diálogo do próprio app (não mais window.confirm)
+  const dlg = doc.querySelector('.mx-dlg-ov');
+  r.push(['"Devolver à fila" pede confirmação no diálogo do app', !!dlg && /Devolver MX7001/.test(dlg.textContent), dlg ? dlg.textContent.slice(0, 120) : 'sem diálogo']);
+  if (dlg) { dlg.querySelector('[data-v="1"]').click(); await espera(80); }
   const ult = mem.atendidos[mem.atendidos.length - 1];
   r.push(['devolver (com confirmação) acrescenta atendido=false, sem apagar nada', mem.atendidos.length === 2 && ult.atendido === false && mem.recepcao.length === 3, JSON.stringify(ult)]);
   r.push(['depois de devolver: 3 aguardando', /3\s*aguardando/.test(box.textContent), box.textContent.slice(0, 80)]);

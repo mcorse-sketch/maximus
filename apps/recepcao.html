@@ -679,6 +679,40 @@
 </main>
 <footer class="brand-footer">Cl&iacute;nica Maximus Medicina Masculina</footer>
 <script>
+  // v2.5-K (auditoria): diálogo do próprio app no lugar de prompt()/confirm()/alert() nativos
+  // (mesma implementação da triagem). Confirmar → true/false; com campo → texto ou null.
+  function dlgEsc(t){ return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function mxDialogo(o){
+    return new Promise(res=>{
+      const ant = document.activeElement, id = 'mxDlgT'+Date.now();
+      const ov = document.createElement('div'); ov.className = 'mx-dlg-ov noprint';
+      ov.innerHTML = '<div class="mx-dlg" role="'+(o.perigo?'alertdialog':'dialog')+'" aria-modal="true" aria-labelledby="'+id+'">'
+        + (o.titulo ? '<h3 id="'+id+'">'+dlgEsc(o.titulo)+'</h3>' : '')
+        + '<p'+(o.titulo?'':' id="'+id+'"')+'>'+dlgEsc(o.texto||'')+'</p>'
+        + (o.campo ? '<input type="text" class="mx-dlg-in" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="'+dlgEsc(o.placeholder||'')+'">' : '')
+        + '<div class="mx-dlg-bts">'+(o.cancelar===false ? '' : '<button type="button" class="mx-dlg-b sec" data-v="0">'+dlgEsc(o.cancelar||'Cancelar')+'</button>')
+        + '<button type="button" class="mx-dlg-b pri'+(o.perigo?' perigo':'')+'" data-v="1">'+dlgEsc(o.ok||'OK')+'</button></div></div>';
+      document.body.appendChild(ov);
+      const inp = ov.querySelector('.mx-dlg-in'); if (inp) inp.value = o.valor||'';
+      const nao = o.campo ? null : false;
+      const fim = v=>{ window.removeEventListener('keydown', tec, true); ov.remove(); try{ if (ant && ant.focus) ant.focus(); }catch(e){} res(v); };
+      const sim = ()=>fim(o.campo ? inp.value : true);
+      const tec = e=>{
+        e.stopPropagation();
+        if (e.key==='Escape'){ e.preventDefault(); fim(nao); }
+        else if (e.key==='Enter' && !(e.target && e.target.tagName==='BUTTON')){ e.preventDefault(); sim(); }
+        else if (e.key==='Tab'){ const f=[...ov.querySelectorAll('input,button')]; const i=f.indexOf(document.activeElement);
+          e.preventDefault(); f[(i + (e.shiftKey ? f.length-1 : 1)) % f.length].focus(); }
+      };
+      ov.querySelector('[data-v="1"]').onclick = sim;
+      const c = ov.querySelector('[data-v="0"]'); if (c) c.onclick = ()=>fim(nao);
+      ov.addEventListener('mousedown', e=>{ if (e.target===ov) fim(nao); });
+      window.addEventListener('keydown', tec, true);
+      setTimeout(()=>{ const f = inp || ov.querySelector(o.perigo ? '[data-v="0"]' : '[data-v="1"]') || ov.querySelector('button'); if (f) f.focus(); if (inp) inp.select(); }, 0);
+    });
+  }
+</script>
+<script>
 (function(){
   const LS = { get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},
                set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}} };
@@ -905,9 +939,10 @@
     const t=document.getElementById('dbTag'); if(!t) return;
     t.innerHTML = (extra||Store.rotulo()) + ' &middot; <a href="#" id="cfgLink" style="text-decoration:underline;">configurar servidor</a>';
     const a=document.getElementById('cfgLink');
-    if (a) a.onclick=(e)=>{
+    if (a) a.onclick=async(e)=>{
       e.preventDefault();
-      const v = prompt('Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.', LS.get('maximus_api')||'');
+      const v = await mxDialogo({titulo:'Servidor da clínica', texto:'Endereço do servidor da clínica (ex.: http://192.168.0.10:8080). Vazio = sem servidor.',
+        campo:true, valor:LS.get('maximus_api')||'', placeholder:'http://192.168.0.10:8080', ok:'Salvar'});
       if (v===null) return;
       LS.set('maximus_api', (v||'').trim());
       const storePronto = Store.init().then(()=>pintaStatus());
@@ -1121,8 +1156,8 @@
         hint:'0 é nada satisfeito, 10 é muito satisfeito.'});
     }
     if (S.queixa && S.queixa!=='preench')
-      t.push({id:'medidas',kind:'campos',eyebrow:'Duas medidas rápidas',
-        text:'Seu peso e sua altura',
+      t.push({id:'medidas',kind:'campos',eyebrow:'Três medidas rápidas',
+        text:'Sua idade, seu peso e sua altura',
         hint: (S.pesoAnt ? 'Na última visita: '+S.pesoAnt+' kg'+(S.alturaAnt?' e '+S.alturaAnt+' cm':'')+'. ' : '')
               + 'Ajudam o médico a avaliar fatores que afetam a circulação e os hormônios. Se não souber de cabeça, pode seguir sem preencher.',
         campos:[{id:'idade',label:'Idade (anos)',ph:'ex.: 48',min:18,max:99,inicio:45,unidade:'anos'},
@@ -1200,9 +1235,9 @@
       const v=el('filaVer'); if(v) v.onclick=()=>{ filaAberta=!filaAberta; desenha(); };
       box.querySelectorAll('[data-dev]').forEach(b=>b.onclick=async()=>{
         const cod=b.dataset.dev;
-        if (!window.confirm('Devolver '+cod+' à fila do médico? Use só se ele foi marcado como atendido por engano. Nada é apagado.')) return;
+        if (!(await mxDialogo({titulo:'Devolver '+cod+' à fila do médico?', texto:'Use só se ele foi marcado como atendido por engano. Nada é apagado.', ok:'Devolver à fila'}))) return;
         const okk=await Store.marcarAtendido({codigo:cod, data:b.dataset.rec||undefined}, false);
-        if (!okk){ window.alert('Não foi possível devolver '+cod+' à fila agora.'); return; }
+        if (!okk){ await mxDialogo({titulo:'Não deu certo', texto:'Não foi possível devolver '+cod+' à fila agora.', cancelar:false, ok:'Entendi'}); return; }
         filaEm=0; pintaFilaHoje(true);
       });
     };
@@ -1217,12 +1252,24 @@
     setTimeout(()=>{ try{ pintaFilaHoje(); }catch(e){} }, 0);
     const sc=telas[i];
     const mostraBarra = sc.kind!=='intro' && sc.kind!=='jornada' && sc.id!=='codigo';
-    el('passo').textContent = mostraBarra ? (sc.passo || (i+' de '+(telas.length-1))) : '';
-    el('barra').style.width = Math.round((i/Math.max(1,telas.length-1))*100)+'%';
+    // contador único: "Recepção" nas telas da equipe; "Pergunta k de N" nas do paciente
+    // (o total só aparece depois da queixa, que é o que define quais questionários entram)
+    const iEnt = telas.findIndex(t=>t.kind==='entrega');
+    const doPac = iEnt>=0 && i>iEnt;   // antes da tela "entregue o tablet" é tudo da equipe
+    const perg = telas.filter((t,k)=>k>iEnt && ['opts','multi','campos','escala','text'].indexOf(t.kind)>=0);
+    const posP = perg.indexOf(sc);
+    let txtPasso = '', fracao = i/Math.max(1,telas.length-1);
+    if (!doPac){ txtPasso='Antes de entregar o tablet'; fracao = iEnt>=0 ? i/Math.max(1,iEnt) : 0.5; }
+    else if (posP>=0){ const sabeTotal = S.queixa || sc.id!=='queixa';
+      fracao = sabeTotal ? (posP+1)/(perg.length+1) : 0.04;
+      if (sabeTotal) txtPasso='Pergunta '+(posP+1)+' de '+perg.length; }
+    el('passo').textContent = mostraBarra ? txtPasso : '';
+    el('barra').style.width = Math.round(Math.min(1,fracao)*100)+'%';
     el('barra').parentElement.style.visibility = mostraBarra?'visible':'hidden';
     el('eyebrow').textContent=sc.eyebrow||'';
     el('pergunta').textContent=sc.text;
     const w=el('opcoes'); w.innerHTML='';
+    w.classList.toggle('kgrade2', sc.kind==='multi' && (sc.options||[]).length>8);
 
     if (sc.kind==='intro' && S.achou){
       const q=S.diasUlt;
@@ -1339,7 +1386,16 @@
       box.appendChild(aviso);
       w.appendChild(box);
     } else if (sc.kind==='campos'){
+      // roletas lado a lado (idade | peso | altura) em telas largas; empilhadas no estreito
+      const todasRoleta = sc.campos.every(c=>c.min!==undefined && c.max!==undefined);
+      const grade = todasRoleta ? document.createElement('div') : null;
+      if (grade){ grade.className='kcampos'; w.appendChild(grade); }
       sc.campos.forEach(c=>{
+        if (grade){
+          const cel=document.createElement('div'); cel.className='kcampo';
+          const l=document.createElement('div'); l.className='klab'; l.textContent=c.label; cel.appendChild(l);
+          cel.appendChild(montaRoleta(c)); grade.appendChild(cel); return;
+        }
         const l=document.createElement('div'); l.className='klab'; l.textContent=c.label; w.appendChild(l);
         if (c.min!==undefined && c.max!==undefined){ w.appendChild(montaRoleta(c)); return; }
         const inp=document.createElement('input'); inp.className='kfld kfld-num'; inp.type='text';
@@ -1372,7 +1428,7 @@
       sc.options.forEach(o=>{
         const b=document.createElement('button'); b.type='button';
         const sel = sc.kind==='multi' ? (S[sc.id]||[]).includes(o.v) : S[sc.id]===o.v;
-        b.className='kopt'+(sel?' sel':''); b.textContent=o.label;
+        b.className='kopt'+(sel?' sel':'')+(o.v==='nenhuma'?' knenhuma':''); b.textContent=o.label;
         b.onclick=()=>{
           if (sc.id==='tipoVisita'){
             S[sc.id]=o.v; pinta();
@@ -1398,6 +1454,7 @@
     }
     if (sc.hint){ const h=document.createElement('div'); h.className='khint'; h.textContent=sc.hint; w.appendChild(h); }
     el('voltar').style.visibility = i===0?'hidden':'visible';
+    el('voltar').style.display = i===0?'none':'';   // v2.5-K: na primeira tela o Continuar ocupa a linha toda
     salvarRascunho();
     sync();
   }
@@ -1472,10 +1529,14 @@
     if (sc.kind==='contato') return temContatoValido() && contatoSemErro();
     if (['intro','jornada','campos','termo','entrega','preintro','prefim'].indexOf(sc.kind)>=0) return true;
     if (sc.kind==='corrigir') return false;
-    if (sc.kind==='multi') return (S[sc.id]||[]).length>0;
+    if (sc.kind==='multi') return (S[sc.id]||[]).length>0 || !!opcaoNenhuma(sc);
     if (sc.kind==='escala') return S[sc.id]!==undefined;
     if (sc.id==='codigo') return codValido();
     return ok(S[sc.id]);
+  }
+  // lista múltipla com "nenhuma": sem nada marcado, o botão vira "Nenhuma delas — continuar"
+  function opcaoNenhuma(sc){
+    return sc && sc.kind==='multi' && (S[sc.id]||[]).length===0 && (sc.options||[]).find(o=>o.v==='nenhuma') || null;
   }
   function sync(){
     const sc=telas[i], fim=i===telas.length-1, b=el('avancar');
@@ -1490,6 +1551,9 @@
                   : (sc.kind==='jornada' ? 'Entendi'
                   : (sc.kind==='termo' ? 'Terminei de ler'
                   : (fim ? 'Enviar respostas' : 'Continuar')));
+    const nada = opcaoNenhuma(sc);
+    b.classList.toggle('knada', !!nada);
+    if (nada) b.textContent = nada.label+' — continuar';
   }
   async function buscarPaciente(){
     const cod=norm(S.codigo);
@@ -1544,6 +1608,7 @@
   el('avancar').onclick=async()=>{
     const sc=telas[i];
     if(!respondida(sc)) return;
+    if (opcaoNenhuma(sc)) S[sc.id]=['nenhuma'];
     if (sc.id==='codigo'){
       if (!codOK(S.codigo)){
         const e=el('kerro');
@@ -1799,6 +1864,64 @@
   #sessaoSenha{background:var(--mx-surf2)!important;color:var(--mx-text)!important;border:1px solid var(--mx-line2)!important;border-radius:12px!important;font-size:17px!important}
   #sessaoErro{color:var(--mx-stop)!important}
   #sessaoEntrar{background:var(--mx-ink)!important;color:var(--mx-inkt)!important;border-radius:12px!important;min-height:48px}
+}
+/* v2.5-K (auditoria visual): roletas lado a lado, sintomas em duas colunas, telas baixas,
+   fila de hoje no escuro, faixa "entregue o tablet" como aviso (não botão), atalho "nenhuma" */
+@media screen{
+  .kwrap{width:100%;box-sizing:border-box}   /* coluna de largura constante (antes encolhia com o conteúdo) */
+  .kcampos{display:grid;grid-template-columns:1fr;gap:2px}
+  @media (min-width:700px){
+    .kcampos{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:4px}
+    .kcampo .klab{text-align:center;margin:0 0 8px!important}
+    .kcampo .krol{height:224px;max-width:none;margin:0}
+    .kcampo .krol .lista{height:224px;padding:84px 0}
+    .kcampo .krol .band{top:84px}
+    .kcampo .krol .un{top:100px;right:12px;font-size:15px}
+    .kcampo .krol .it{font-size:26px} .kcampo .krol .it.on{font-size:32px}
+    #opcoes.kgrade2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    #opcoes.kgrade2 .kopt{margin:0!important;font-size:18px!important;min-height:64px;padding:16px 20px!important;display:flex;align-items:center}
+    #opcoes.kgrade2 .khint{grid-column:1/-1}
+    #opcoes.kgrade2 .knenhuma{grid-column:1/-1}
+  }
+  @media (max-height:920px){
+    header.brand{padding:14px 24px 4px!important}
+    .kbar{margin:8px 0 18px!important}
+    .kpergunta{font-size:clamp(24px,3vw,30px)!important;margin:0 0 18px!important}
+    .kopt{min-height:56px;padding:14px 20px!important;font-size:18px!important;margin-bottom:9px!important}
+    #opcoes.kgrade2 .kopt{min-height:54px;padding:12px 18px!important;font-size:17px!important}
+    .knav{margin-top:16px!important;padding:12px 0 calc(12px + env(safe-area-inset-bottom))}
+    .kbtn{min-height:60px}
+  }
+  .kfila{color:var(--mx-text2)!important;border-top-color:var(--mx-line)!important}
+  .kfila-cab b,.kfila-ver,.kfila li{color:var(--mx-text)!important}
+  .kfila-tit{color:var(--mx-text3)!important}
+  .kfila li .h{color:var(--mx-text2)!important}
+  .kfila li .t{color:var(--mx-text2)!important;border-color:var(--mx-line2)!important}
+  .kfila li .s{color:var(--mx-ok)!important}
+  .kentrega{background:var(--mx-surf2)!important;color:var(--mx-text)!important;border:1.5px dashed var(--mx-line2)!important;
+    font-weight:500!important;font-size:19px!important;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:none!important}
+  .kentrega::before{content:'';flex:0 0 auto;width:20px;height:28px;border:2px solid currentColor;border-radius:5px;opacity:.55}
+}
+/* v2.5-K: diálogo do app */
+@media screen{
+  /* diálogo do app (no lugar de prompt/confirm nativos) */
+  .mx-dlg-ov{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:rgba(1,11,15,.32);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:mxDlgIn .16s ease-out}
+  .mx-dlg{width:min(440px,100%);background:var(--mx-surf);color:var(--mx-text);border:1px solid var(--mx-line);border-radius:20px;
+    box-shadow:0 24px 80px rgba(1,11,15,.28);padding:22px 22px 18px;font-family:var(--mx-font)}
+  .mx-dlg h3{margin:0 0 8px;font:600 17px var(--mx-font);letter-spacing:-.01em;color:var(--mx-text)}
+  .mx-dlg p{margin:0;font-size:14px;line-height:1.5;color:var(--mx-text2);white-space:pre-wrap;max-height:50vh;overflow:auto}
+  .mx-dlg-in{width:100%;margin-top:14px;height:42px;border-radius:12px;border:1px solid var(--mx-line2);background:var(--mx-surf2);
+    color:var(--mx-text);padding:0 12px;font:500 14px var(--mx-mono, ui-monospace, monospace);box-sizing:border-box}
+  .mx-dlg-in:focus{outline:none;border-color:var(--mx-focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 22%,transparent)}
+  .mx-dlg-bts{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+  .mx-dlg-b{height:38px;padding:0 16px;border-radius:999px;font:600 14px var(--mx-font);cursor:pointer;border:1px solid var(--mx-line2);background:transparent;color:var(--mx-text)}
+  .mx-dlg-b.pri{background:var(--mx-ink);color:var(--mx-inkt);border-color:var(--mx-ink)}
+  .mx-dlg-b.pri.perigo{background:var(--mx-stop);border-color:var(--mx-stop);color:#fff}
+  .mx-dlg-b:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--mx-focus) 30%,transparent)}
+    .mx-dlg-b{height:46px;padding:0 20px;font-size:15px}
+  .mx-dlg p{font-size:15px}
+  @keyframes mxDlgIn{from{opacity:0}to{opacity:1}}
 }
 </style>
 
