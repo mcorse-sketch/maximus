@@ -45,6 +45,71 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
 - **Teste de integração travado (v2.5)** — o resumo final procurava uma
   checagem pelo nome antigo e lançava erro dentro do async: o processo ficava
   parado sem sair. Busca tolerante ao nome.
+- **Intracavernosa voltando para o oral (v2.5)** — no retorno a conduta saía
+  só da faixa do IIEF-5 de hoje, que mede a ereção COM a aplicação: quem
+  melhorava na intracavernosa voltava para BASE-T10/T20 (MX9101 2ª consulta:
+  "DE-3 (mantido)" com BASE-T20). Com adesão baixa o rótulo dizia
+  "INTRACAVERNOSA (mantido)" mas o kit era oral. Agora em intracavernosa só
+  mantém, sobe ou reduz a dose (`emICIant`).
+- **Dose da intracavernosa pelo IIEF (v2.5-E)** — a regra do item 19 subia a dose
+  quando o IIEF-5 não subia, mesmo com ereção boa. O Dr. Marco definiu: decidem a
+  qualidade (suficiente para penetração) e a duração (alvo de cerca de 1 hora); o
+  IIEF conta só para a satisfação. A duração passou para a tela "Fórmula e dose".
+- **TEFI indicando intracavernosa sem mudar o kit (v2.5-E)** — com "iniciar
+  intracavernosa" após o TEFI, o kit continuava só oral, com uma nota. Agora o app
+  pergunta se acrescenta, com fórmula e dose, e registra que seguiu o TEFI.
+- **"Piso terapêutico aplicado" sem nada aplicado (v2.5-E)** — com ISRS em uso e
+  restrição às duas vias tópicas não há recurso para a EP, mas a nota dizia que o
+  piso entrou. A nota agora diz que não há recurso e o que reabordar. O TEST-021
+  ("EP por via tópica") caía nesse caso porque o teste respondia "restrição a
+  ambos" por padrão; passou a declarar que aceita as vias tópicas.
+- **Texto da opção marcada quase invisível (v2.5-E)** — a composição ao lado da
+  sigla (`.sig-ativo`) mantinha o cinza sobre o fundo escuro da opção marcada.
+- **TEFI pedido de novo depois de feito (v2.5-F)** — com o TEFI feito na própria
+  consulta, a conduta ainda dizia "Agendar TEFI" e "indicar teste de ereção", e o
+  painel mostrava "TEFI indicado, não realizado". Agora some do kit e dos
+  lembretes, e o painel mostra "realizado hoje" com o resultado.
+- **Escore "9 → 9 · manteve" antes de responder (v2.5-F)** — o painel usava o
+  IIEF/PEDT anterior pré-preenchido como se fosse o de hoje.
+- **"TEFI (… com Doppler peniano) com Doppler peniano" (v2.5-F)** — a expansão da
+  sigla repetia o resto da frase.
+- **Dicas invisíveis nas telas do TEFI → intracavernosa (v2.5-F)** — as telas de
+  opções só mostram a dica com `mostraDica`; faltava nas três telas novas da v2.5-E.
+- **"Protocolo prescrito" sempre com R5 (v2.5-G)** — o texto da intracavernosa
+  vinha de `F['ICI'].txt='R5'` fixo; com R10 escolhida, o cartão do kit, o
+  relatório da clínica e o texto do prontuário diziam "ICI — R5". Agora usam a
+  fórmula da consulta (`iciCodConsulta()`).
+- **Dica do TEFI invisível na tela "Qual a conduta definida?" (v2.5-G)** — faltava
+  `mostraDica`.
+- **"Agende também: ondas de choque" com ondas só opcionais (v2.5-G)**, **"há 0
+  dias"** no histórico (agora "hoje") e **ADAM em duas linhas** no prontuário.
+- **Bloco de classificação escondido na tela (v2.5-H → corrigido na v2.5-I)** — a
+  v2.5-H tirou da tela o "Classificação IIEF-5" por repetir a manchete; o Dr. Marco o
+  usa para julgar a evolução. Voltou como cartões (hoje × anterior, variação, faixa,
+  régua e evolução). A v2.5-H também escondia o bloco do resultado nos fluxos sem
+  IIEF/PEDT (TEFI, preenchimento, hipogonadismo), onde ele trazia informação única.
+- **Nomes de faixa diferentes no painel e no bloco (v2.5-J)** — o painel e a ficha
+  usavam uma tabela própria ("disfunção grave"; PEDT "limítrofe"/"precocidade provável",
+  com corte diferente do que classifica). Agora todos usam `BANDS_DE`/`BANDS_EP`.
+- **Papel diferente da tela (v2.5-J)** — o bloco de classificação era só de tela; o
+  relatório impresso trazia só "IIEF-5 10/25". Agora o papel leva o mesmo bloco (anterior
+  com data, variação, faixa, régua). O CSS do bloco estava dentro do `@media screen`.
+- **ADAM do retorno parecia de hoje (v2.5-J)** — sem sintomas na última consulta o ADAM
+  não é reaplicado, mas o cartão mostrava "negativo" como resposta do dia. Agora diz
+  "não reaplicado hoje · valor da consulta anterior (data)".
+- **Primeira intracavernosa sem dose no "Protocolo prescrito" (v2.5-H)** — a linha
+  saía "R5 · … — intracavernosa" sem dose (ex.: LIM-001). Agora traz a dose indicada
+  ou a dose inicial padrão da clínica (R5 0,1 mL).
+- **"Adesão: regular" × "Todos os dias" (v2.5-H)** — histórico, painel e relatório
+  usavam palavras diferentes das da pergunta; agora `rotAdesao()` é a fonte única,
+  com o texto da intracavernosa quando a pergunta foi da intracavernosa.
+- **Histórico com a sequência de protocolos repetida (v2.5-H)** — "DE-2 → DE-2
+  (mantido)" e composições longas; agora só códigos e sem repetição.
+- **Hover sem alternativa no iPad (v2.5-H)** — composição da intracavernosa no
+  cabeçalho e o estado do banco dependiam de `title`; agora abrem com um toque.
+- **Dose na cópia do paciente (v2.5)** — a via do paciente repetia mg e
+  mcg/mL de cada fórmula, o que confundia com a posologia. Agora sai sigla e
+  substâncias; a dose fica no relatório. Apêndice do envio retirado.
 
 ## Dados e persistência
 

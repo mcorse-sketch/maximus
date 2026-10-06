@@ -84,6 +84,50 @@ A restauração nunca sobrescreve um arquivo existente e confere que o
 resultado é um banco válido. A abertura do servidor diz se o backup no iCloud
 está ativo.
 
+**Conferir se o backup restaura (v2.5-M).** Decifra o backup mais recente do
+iCloud (ou o arquivo indicado) num arquivo temporário, confere que é um banco
+válido, conta pacientes e registros, compara com o banco atual e confere o
+último backup local. Não toca no banco nem no backup; o temporário é apagado:
+
+```bash
+python3 scripts/conferir_restauracao.py              # último .enc do iCloud
+python3 scripts/conferir_restauracao.py "<arquivo .json.enc>"
+```
+
+Saída 0 = tudo restaura; 1 = algum backup não restaura (senha, arquivo,
+JSON); 2 = nenhum backup para conferir. Paciente no backup que não está no
+banco atual aparece como ATENÇÃO. Rodar uma vez por mês.
+
+**Banco ilegível falha fechado (v2.5-M).** Se `banco_triagem.json` não abre
+(JSON quebrado, `pacientes` que não é objeto, arquivo de 0 bytes quando já há
+backup com dados), o servidor guarda uma cópia `.corrompido-…`, responde 503 a
+toda leitura e gravação de dados e **não grava nada por cima** — antes servia
+lista vazia e o próximo atendimento sobrescrevia o histórico. Os três apps
+mostram uma faixa vermelha fixa; o retorno não vira "primeira avaliação" (o
+ciclo anterior é informado à mão) e o atendimento fica na fila do navegador.
+Restaurado o arquivo, o servidor volta sozinho, sem reiniciar.
+
+**Saúde do servidor.** `GET /api/health` (aberta, sem dados de paciente) diz se
+o banco está legível, a versão do app servido e o estado dos backups local e
+iCloud, com a lista `alertas` que os apps mostram no topo (vermelho = grave;
+âmbar = aviso, com "Entendi"; a recepção só vê o grave). Falha do iCloud é
+tentada de novo no máximo uma vez por hora, e o resultado sobrevive a um
+reinício (`backups/estado_backup.json`).
+
+**Abrir sozinho e reabrir se cair (launchd, macOS).** Instala um LaunchAgent
+(`br.com.maximus.servidor`) que sobe o servidor ao entrar no Mac e o reabre em
+até ~10 s se ele cair ou for morto. Log em `servidor.log`, na pasta do projeto:
+
+```bash
+scripts/instalar_launchd.sh            # instala (para um servidor solto na 8080 antes)
+scripts/instalar_launchd.sh --status   # está rodando? pid?
+scripts/instalar_launchd.sh --remover  # volta ao modo manual
+```
+
+É LaunchAgent (sessão do usuário), não LaunchDaemon: precisa do Chaveiro (senha
+do backup) e do iCloud Drive, que só existem com o usuário logado. Para parar
+de vez use `--remover` — matar o processo não adianta, o launchd o reabre.
+
 **Pacientes fictícios para teste.** O banco de teste tem 200 pacientes
 fictícios (`MX0001` a `MX0200`, todos com `demo: true`), atendidos pelo próprio
 app com respostas sorteadas — cerca de um terço com reavaliação —, mais 6 na
