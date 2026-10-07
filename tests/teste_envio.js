@@ -17,9 +17,9 @@ const visivel = cb => !!cb && (cb.closest('label') || cb.parentNode).style.displ
 const pac = id => PAC.find(p => p.id === id);
 
 const PREENCH_FEITO = { id: 'ENV-PRE', descricao: 'preenchimento realizado hoje', codigo: 'RGENV001', respostas: {
-  visita: 'primeira', queixa: 'preench', tipoPenis: 'grower', medPre: { compFlac: '9', diamFlac: '9' },
+  visita: 'primeira', queixa: 'preench', tipoPenis: 'grower', medPre: { diamFlac: '9' },
   prepucio: 'medio', retracao: 'leve', plano: { previsaoML: '6a8', planoBotox: 'nao' }, concordou: 'sim', termo: 'sim',
-  medPos: { compPos: '10', diamPos: '11' }, mlUsado: '6 mL', botox: 'nao', marcaAH: 'Rennova Shape Lido (seringa 2 mL)', notaMedico: 8 } };
+  medPos: { diamPos: '11' }, mlUsado: '6 mL', botox: 'nao', marcaAH: 'Rennova Shape Lido (seringa 2 mL)', notaMedico: 8 } };
 const TEFI = { id: 'ENV-TEFI', descricao: 'TEFI em consultório', codigo: 'RGENV002', respostas: {
   visita: 'primeira', queixa: 'tefi', tefiMed: 'R5 (trimix clássico) — padrão da clínica', tefiDose: '0,1 mL — padrão da clínica',
   t10grau: 3, t20grau: 4, t30grau: 4, tefiFinal: { dorGrau: 0, dorQuando: 'na', curvGrau: 'nao' }, dopplerFeito: 'nao' } };

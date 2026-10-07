@@ -140,6 +140,16 @@ Registro do que já quebrou e por quê. Serve para não refazer o caminho.
   modo Claude; seguindo o README, a fila dava erro 500 e os pacientes de
   demonstração apareciam como desconhecidos. Hoje entra por `--carregar-demo`.
 
+- **Paciente novo sem nome nem nascimento (v2.5-S · 2.5.18)** — a triagem nunca
+  perguntava nome nem nascimento: a tela de contato só tinha iniciais, telefone e
+  email e só aparecia sem telefone+email; os dois dados vinham só da recepção
+  (opcionais lá) ou do modal de exames. Na 1ª avaliação o `carregarHistorico`
+  sai cedo, então nem a recepção de hoje era consultada, e o `limparPaciente`
+  não limpava nome/nascimento (o pedido de exames podia sair com os dados do
+  paciente anterior). Agora a 1ª avaliação mostra "Dados do paciente" com nome
+  completo e nascimento obrigatórios, em todas as entradas; quem veio da
+  recepção com os dois preenchidos segue direto.
+
 ## Navegação e interface
 
 - **Botão Próxima desaparecendo** — o palco tinha largura máxima de 620 px e,

@@ -125,7 +125,7 @@ function fakeDb(m) {
   checa.push(['palco alarga quando o painel aparece', !!doc.querySelector('.stage.largo')]);
   checa.push(['panorama tem acao principal no topo', true]);
   checa.push(['resumo compara PEDT com variacao', /PEDT 11 . 7/.test(txt) && /melhorou 4 pontos/.test(txt)]);
-  checa.push(['resumo classifica o biotensiometro acima de 20', /Biotensi.metro 38 . acima de 20/.test(txt)]);
+  checa.push(['resumo classifica o biotensiometro (38 V = hipossensibilidade importante, v2.5-S)', /Biotensi.metro 38 V\s*Hipossensibilidade importante/.test(txt)]);
   checa.push(['testosterona com marca de faixa normal', /Testosterona total 512/.test(txt)]);
 
   // o que a recepção já respondeu não pode ser perguntado de novo

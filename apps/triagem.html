@@ -121,9 +121,22 @@ html[data-tema="escuro"] .opt .est-a{background:rgba(255,255,255,.08);color:inhe
 .selnum{margin:6px 0 2px}
 .selnum{margin-bottom:18px}
 .selnum .v{font-size:40px;font-weight:700;text-align:center;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.selnum .v .un{font-size:18px;font-weight:500;color:#6b6a66;margin-left:6px}
+.selnum .v .un{font-size:26px;font-weight:600;color:#3d4746;margin-left:6px;letter-spacing:0;font-family:var(--mx-font,system-ui,-apple-system,'Helvetica Neue',sans-serif);vertical-align:baseline}
 .selnum .v.sugerido{color:#9aa3a6}
 .selnum-dica{text-align:center;font-size:12px;color:#6b6a66;margin-top:2px}
+.selnum-faixa{display:table;margin:2px auto 4px;font-size:13px;font-weight:600;padding:2px 12px;border-radius:999px;background:rgba(0,0,0,.05);color:#3a3a38}
+.selnum-faixa.verde{background:rgba(30,130,76,.12);color:#1e6b43}.selnum-faixa.ambar{background:rgba(154,88,0,.12);color:#8a4f00}.selnum-faixa.vermelho{background:rgba(179,38,30,.11);color:#9c2119}
+.selnum-faixa.sugerido{opacity:.55}
+.selnum button.selnum-exato{display:block;height:auto!important;margin:8px auto 0;padding:2px 6px;font:inherit;font-size:12.5px!important;line-height:1.4;border:0!important;border-radius:6px;background:none!important;color:var(--mx-focus,#0e5e6f)!important;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.selnum button.selnum-exato:active{background:none!important;color:var(--mx-focus,#0e5e6f)!important}
+.selnum .selnum-exato-in{display:block;width:150px!important;margin:8px auto 0;text-align:center;font-variant-numeric:tabular-nums}
+.mx-bio{display:inline-block;font-weight:600;font-size:.92em;padding:0 8px;border-radius:999px;line-height:1.5;background:rgba(0,0,0,.05)}
+.mx-bio.verde{background:rgba(30,130,76,.12);color:#1e6b43}.mx-bio.ambar{background:rgba(154,88,0,.12);color:#8a4f00}.mx-bio.vermelho{background:rgba(179,38,30,.11);color:#9c2119}
+html[data-tema="escuro"] .selnum .v .un{color:var(--mx-text2,#b9c4c6)}
+html[data-tema="escuro"] .mx-bio.verde,html[data-tema="escuro"] .selnum-faixa.verde{background:rgba(80,200,130,.16);color:#9fe0b8}
+html[data-tema="escuro"] .mx-bio.ambar,html[data-tema="escuro"] .selnum-faixa.ambar{background:rgba(230,160,60,.16);color:#f2c98a}
+html[data-tema="escuro"] .mx-bio.vermelho,html[data-tema="escuro"] .selnum-faixa.vermelho{background:rgba(240,100,90,.16);color:#f5aaa3}
+.lin .lin-faixa{display:block;font-size:12px;line-height:1.35;margin-top:1px}
 .selnum .row{display:grid;grid-template-columns:64px 1fr 64px;gap:12px;align-items:center;margin-top:6px}
 .selnum button{height:60px;border-radius:14px;border:2px solid #0e5e6f;background:#dcebee;color:#0e5e6f;font-size:28px;line-height:1;cursor:pointer}
 .selnum button:active{background:#0e5e6f;color:#fff}
@@ -773,7 +786,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.5.17" title="v2.5-R (17ª revisão da 2.5)">Vers&atilde;o 2.5.17 &middot; v2.5-R &middot; 06/10/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.5.18" title="v2.5-S (18ª revisão da 2.5)">Vers&atilde;o 2.5.18 &middot; v2.5-S &middot; 06/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <div class="dbtag" id="dbTag">Verificando banco de dados…</div>
@@ -971,6 +984,22 @@ document.documentElement.setAttribute('data-tema',t)})();
   .mx-id-falta{margin-top:6px;font:inherit;font-size:11.5px;padding:3px 9px;border-radius:999px;border:1px dashed var(--mx-warn,#9A5800);
     background:transparent;color:var(--mx-warn,#9A5800);cursor:pointer} .mx-id-falta:hover{background:rgba(154,88,0,.08)}
   .exa-nota{font-size:12.5px;color:var(--mx-text3,#6b6a66);margin:0 0 10px}
+  /* v2.5-S (item 2): tela de dados do paciente — nome completo e nascimento obrigatórios na 1ª avaliação */
+  .mx-dados.com-ident{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px 12px;align-items:start}
+  .mx-dados.com-ident .mx-dado-nome{grid-column:span 7} .mx-dados.com-ident .mx-dado-nascimento{grid-column:span 5}
+  .mx-dados.com-ident .mx-dado-iniciais{grid-column:span 4} .mx-dados.com-ident .mx-dado-telefone{grid-column:span 8}
+  .mx-dados.com-ident .mx-dado-email{grid-column:1/-1}
+  .mx-dado .fld-lab{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+  .fld-obrig{font-size:10.5px;font-weight:500;padding:0 6px;border-radius:999px;line-height:16px;
+    color:var(--mx-warn,#9A5800);background:rgba(154,88,0,.09);opacity:1}
+  .fld-aviso{font-size:12.5px;color:#b3261e;margin:-6px 0 10px}
+  /* v2.5-S (itens 5 e 6): pedido de exames em grupos; ultrassom em folha própria */
+  .exa-grupo{margin:4px 0 2px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mx-text3,#6b6a66);font-weight:600}
+  .exa-lista label small{display:block;font-size:12px;color:var(--mx-text3,#6b6a66);line-height:1.35;margin-top:1px}
+  .exa-lista label.exa-bloco{align-items:flex-start} .exa-lista label.exa-bloco input{margin-top:3px}
+  .pac.exa-folha + .pac.exa-folha{break-before:page;page-break-before:always;margin-top:0}
+  .pac .exa-sub-itens{margin:2px 0 0;padding-left:15px;list-style:disc}
+  .pac .exa-prep{margin-top:8px}
   .pac{font-size:11.6px;line-height:1.42;color:#101826;}
   .pac .cab{display:flex;justify-content:space-between;align-items:flex-end;
             border-bottom:2px solid #0b1f3b;padding-bottom:7px;margin-bottom:9px;}
@@ -2356,6 +2385,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     f.textContent=t; f.classList.toggle('on', !!t); nextBtn.title = t || '';
   }
   if (typeof MutationObserver!=='undefined') new MutationObserver(pintaFalta).observe(nextBtn,{attributes:true,attributeFilter:['disabled']});
+  // v2.5-S: com o botão ainda apagado, o "Falta:" acompanha o que já foi preenchido (ex.: nome ok → falta o nascimento)
+  ['input','change','click'].forEach(ev=>optsWrap.addEventListener(ev,()=>{ pintaFalta(); setTimeout(pintaFalta,0); }));
   const quizCard=el('quizCard'), resultsCard=el('resultsCard');
 
   function preenchido(v){ return !(v===undefined || v===null || String(v).trim()===''); }
@@ -2364,8 +2395,13 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (!sc || val(sc) || sc.optional) return '';
     const rot = f => { const t = (ROT_CAMPO && ROT_CAMPO[f.id]) || f.label || f.short || ''; return String(t).replace(/<[^>]+>/g,'').replace(/\s*\(.*?\)\s*$/,'').trim(); };
     if (sc.kind==='grupo' || sc.kind==='escalas') { const f=(sc.fields||[]).find(f=>!preenchido(S[f.id])); const r=f?rot(f):''; return r ? 'Falta: '+r.charAt(0).toLowerCase()+r.slice(1) : 'Responda todos os itens'; }
-    if (sc.kind==='campos') return 'Preencha ao menos um campo';
-    if (sc.kind==='contato') return (preenchido(S.telefone)&&telOK(S.telefone)) ? 'Falta: email válido' : 'Falta: telefone válido';
+    if (sc.kind==='campos'){ const fs=sc.fields||[]; if (fs.length===1){ const r=rot(fs[0]); if (r) return 'Falta: '+r.charAt(0).toLowerCase()+r.slice(1); } return 'Preencha ao menos um campo'; }
+    if (sc.kind==='contato'){
+      if (sc.ident){ const c=contatoAtual();
+        if (!nomeCompletoOK(c.nome)) return 'Falta: nome completo (nome e sobrenome)';
+        if (!nascISO(c.nascimento)) return 'Falta: data de nascimento (DD/MM/AAAA)'; }
+      return (preenchido(S.telefone)&&telOK(S.telefone)) ? 'Falta: email válido' : 'Falta: telefone válido';
+    }
     if (sc.id==='codigo') return preenchido(S.codigo) ? 'Código incompleto' : 'Informe o código do paciente';
     if (sc.multi) return 'Marque ao menos uma opção';
     if (sc.kind==='opts' || sc.options) return 'Escolha uma opção';
@@ -2373,7 +2409,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   }
   function val(sc){
     if (sc.kind==='nota') return true;
-    if (sc.kind==='contato') return (preenchido(S.telefone) && telOK(S.telefone)) && (preenchido(S.email) && emailOK(S.email));
+    if (sc.kind==='contato') return (preenchido(S.telefone) && telOK(S.telefone)) && (preenchido(S.email) && emailOK(S.email))
+      && (!sc.ident || identOK());
     if (sc.kind==='campos')  return (sc.fields||[]).some(f=>preenchido(S[f.id]));
     if (sc.kind==='escalas') return (sc.fields||[]).every(f=>preenchido(S[f.id]));
     if (sc.kind==='grupo')   return (sc.fields||[]).every(f=>preenchido(S[f.id]));
@@ -2453,6 +2490,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   function telOK(v){ const d=soDigitos(v); return d.length===10 || d.length===11; }
   function emailOK(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(v||'').trim()); }
   function filaDoPaciente(){ return (S.fila||[]).find(x=>x.codigo===S.daFila) || null; }
+  // v2.5-S: aberto sem a fila, mas respondeu na recepção hoje — nome/nascimento/contato de lá valem
+  function recepcaoDeHoje(){ const c=norm(S.codigo||''); return c ? ((S.fila||[]).concat(S.filaAtendidos||[]).find(x=>norm(x.codigo)===c) || null) : null; }
   // contato conhecido: veio da recepção hoje ou está no cadastro
   // v2.5 (item 12): telefone E email são obrigatórios — sem os dois a consulta não
   // chega à conduta (é por eles que orientações, receita e pedido de exames vão)
@@ -2460,8 +2499,17 @@ document.documentElement.setAttribute('data-tema',t)})();
     const c=contatoAtual();
     return !!(c.telefone && telOK(c.telefone) && c.email && emailOK(c.email));
   }
+  // v2.5-S (item 2): paciente novo (primeira avaliação) sem nome completo ou nascimento — vindo
+  // ou não da recepção — tem a tela de dados do paciente com os dois campos obrigatórios.
+  // Causa do defeito: a tela de contato do consultório só tinha iniciais, telefone e email, e
+  // só aparecia sem telefone+email; nome e nascimento vinham apenas da recepção (só paciente
+  // novo que passou pelo tablet) ou do modal do pedido de exames. Sem recepção, nunca eram pedidos.
+  function nomeCompletoOK(v){ return String(v||'').trim().split(/\s+/).filter(x=>x.replace(/[^A-Za-zÀ-ÿ]/g,'').length>=2).length>=2; }
+  function pedeIdent(){ return MODE==='uni' && S.visita==='primeira' && temPaciente(); }
+  function identOK(){ const c=contatoAtual(); return nomeCompletoOK(c.nome) && !!nascISO(c.nascimento); }
+  function iniciaisDoNome(n){ return fmtIniciais(String(n||'').trim().split(/\s+/).filter(x=>x && !/^(de|da|do|das|dos|e)$/i.test(x)).map(x=>x[0]).join('')); }
   function contatoAtual(){
-    const f=filaDoPaciente()||{}, b=S.contatoBanco||{};
+    const f=filaDoPaciente()||recepcaoDeHoje()||{}, b=S.contatoBanco||{};
     return { iniciais: f.iniciais||S.iniciais||b.iniciais||null, telefone: f.telefone||S.telefone||b.telefone||null,
              email: f.email||S.email||b.email||null,
              // v2.5-P: o que o médico corrigiu nesta consulta vale sobre a fila e o cadastro
@@ -2514,7 +2562,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const fx0 = ((sc.kind==='num'||sc.kind==='text') ? faixaDe(sc.id, sc) : null);
     if (fx0){
-      optsWrap.appendChild(montaSeletorNum({id:sc.id, label:sc.text, min:fx0.min, max:fx0.max, passo:fx0.passo, un:fx0.un, fechada:fx0.fechada,
+      optsWrap.appendChild(montaSeletorNum({id:sc.id, label:sc.text, min:fx0.min, max:fx0.max, passo:fx0.passo, un:fx0.un, fechada:fx0.fechada, ini:fx0.ini, faixaRotulo:sc.faixaRotulo, arraste:fx0.arraste,
         aoMudar:()=>{ const e=el('fldErr'); if(e) e.style.display='none'; nextBtn.disabled = sc.optional ? false : !val(sc); }}));
       if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
       const e0=document.createElement('div'); e0.className='fld-err'; e0.id='fldErr'; e0.textContent='Defina um valor para continuar'; optsWrap.appendChild(e0);
@@ -2550,23 +2598,66 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (!preenchido(S.iniciais) && ca.iniciais) S.iniciais=fmtIniciais(ca.iniciais);
       if (!preenchido(S.telefone) && ca.telefone) S.telefone=fmtTel(ca.telefone);
       if (!preenchido(S.email) && ca.email) S.email=String(ca.email).trim();
-      [['iniciais','Iniciais do paciente','ex.: RAM',fmtIniciais,'text'],
-       ['telefone','Telefone com DDD','(21)99999-9999',fmtTel,'tel'],
-       ['email','Email','nome@email.com',v=>String(v||'').trim(),'email']].forEach(([id,rot,ph,fmt,tipo])=>{
-        const lab=document.createElement('div'); lab.className='fld-lab'; lab.textContent=rot; optsWrap.appendChild(lab);
+      // v2.5-S (item 2): nome completo e nascimento — da recepção/cadastro já vêm preenchidos
+      if (sc.ident){
+        if (!preenchido(S.nome) && ca.nome) S.nome=String(ca.nome).trim();
+        if (!preenchido(S.nascimento) && ca.nascimento) S.nascimento=ca.nascimento;
+        if (S.nascTxt===undefined || nascISO(S.nascTxt)!==(S.nascimento||null)) S.nascTxt = S.nascimento ? nascBR(S.nascimento) : (S.nascTxt||'');
+      }
+      const campos = (sc.ident ? [['nome','Nome completo','Nome e sobrenome',fmtNome,'nome'],
+                                  ['nascimento','Data de nascimento','DD/MM/AAAA',mascaraNasc,'nasc']] : [])
+        .concat([['iniciais','Iniciais do paciente','ex.: RAM',fmtIniciais,'text'],
+                 ['telefone','Telefone com DDD','(21)99999-9999',fmtTel,'tel'],
+                 ['email','Email','nome@email.com',v=>String(v||'').trim(),'email']]);
+      const grade=document.createElement('div'); grade.className='mx-dados'+(sc.ident?' com-ident':'');
+      optsWrap.appendChild(grade);
+      const avisoCampo = (id, msg)=>{ const a=grade.querySelector('.fld-aviso[data-de="'+id+'"]'); if (a){ a.textContent=msg||''; a.style.display=msg?'block':'none'; } };
+      campos.forEach(([id,rot,ph,fmt,tipo])=>{
+        const cel=document.createElement('div'); cel.className='mx-dado mx-dado-'+id;
+        const lab=document.createElement('label'); lab.className='fld-lab'; lab.textContent=rot;
+        if (tipo==='nome' || tipo==='nasc'){ const ob=document.createElement('span'); ob.className='fld-obrig'; ob.textContent='obrigatório'; lab.appendChild(ob); }
+        cel.appendChild(lab);
         const i=document.createElement('input'); i.className='fld'; i.type=(tipo==='email'?'email':'text');
         if (tipo==='tel') i.inputMode='tel';
-        i.dataset.campo=id; i.placeholder=ph; i.value=S[id]||''; i.setAttribute('autocomplete','off');
+        if (tipo==='nasc'){ i.inputMode='numeric'; i.maxLength=10; }
+        if (tipo==='nome'){ i.autocapitalize='words'; i.spellcheck=false; }
+        i.dataset.campo=id; i.placeholder=ph; i.setAttribute('autocomplete','off');
+        i.id='mxDado_'+id; lab.htmlFor=i.id;
+        if (tipo==='nome' || tipo==='nasc'){ i.required=true; i.setAttribute('aria-required','true'); }
+        i.value = tipo==='nasc' ? (S.nascTxt||'') : (S[id]||'');
         i.oninput=()=>{
           const v=fmt(i.value); if (tipo!=='email' && v!==i.value) i.value=v;
-          S[id]=v; nextBtn.disabled=!val(sc);
+          if (tipo==='nasc'){
+            S.nascTxt=v; const iso=nascISO(v); S.nascimento=iso||null;
+            const ruim = v.length===10 && !iso;
+            i.classList.toggle('fld-falta', ruim);
+            avisoCampo('nascimento', ruim ? 'Data inválida: use DD/MM/AAAA (idade entre 16 e 110 anos).' : '');
+          } else if (tipo==='nome'){
+            S.nome=v;
+            // iniciais saem do nome enquanto o médico não as digitou (como na recepção)
+            if (!S.iniciaisMexidas){ S.iniciais=iniciaisDoNome(v); const ii=grade.querySelector('[data-campo="iniciais"]'); if (ii) ii.value=S.iniciais; }
+          } else {
+            if (id==='iniciais') S.iniciaisMexidas=true;
+            S[id]=v;
+          }
+          nextBtn.disabled=!val(sc);
           const e=el('fldErr'); if(e) e.style.display='none';
         };
-        i.onblur=()=>{ if (typeof pintaCopiloto==='function') pintaCopiloto(); };
-        optsWrap.appendChild(i);
+        i.onblur=()=>{
+          if (tipo==='nome' && preenchido(S.nome) && !nomeCompletoOK(S.nome)) avisoCampo('nome', 'Informe nome e sobrenome.');
+          else if (tipo==='nome') avisoCampo('nome', '');
+          if (typeof pintaCopiloto==='function') pintaCopiloto();
+          if (typeof mxPintaRail==='function') try{ mxPintaRail(); }catch(e){}
+        };
+        cel.appendChild(i);
+        if (tipo==='nome' || tipo==='nasc'){ const a=document.createElement('div'); a.className='fld-aviso'; a.dataset.de=id; a.style.display='none'; cel.appendChild(a); }
+        grade.appendChild(cel);
       });
       if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; h.textContent=sc.hint; optsWrap.appendChild(h); }
-      const e=document.createElement('div'); e.className='fld-err'; e.id='fldErr'; e.textContent='Informe o telefone com DDD e um email válido — os dois são obrigatórios'; optsWrap.appendChild(e);
+      const e=document.createElement('div'); e.className='fld-err'; e.id='fldErr';
+      e.textContent = sc.ident ? 'Preencha nome completo, data de nascimento, telefone com DDD e um email válido — todos são obrigatórios'
+                               : 'Informe o telefone com DDD e um email válido — os dois são obrigatórios';
+      optsWrap.appendChild(e);
     } else if (sc.kind==='nota'){
       const t=document.createElement('textarea'); t.className='fld fld-nota'; t.rows=5; t.dataset.campo=sc.id;
       t.placeholder='Opcional. Ex.: combinado retorno antecipado; orientação dada fora do protocolo.';
@@ -2579,7 +2670,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         optsWrap.appendChild(lab);
         const fx=faixaDe(f.id, null);
         if (fx){
-          optsWrap.appendChild(montaSeletorNum({id:f.id, label:f.label, min:fx.min, max:fx.max, passo:fx.passo, un:fx.un, fechada:fx.fechada,
+          optsWrap.appendChild(montaSeletorNum({id:f.id, label:f.label, min:fx.min, max:fx.max, passo:fx.passo, un:fx.un, fechada:fx.fechada, ini:fx.ini, arraste:fx.arraste,
             aoMudar:()=>{ nextBtn.disabled = sc.optional ? false : !val(sc); }}));
           return;
         }
@@ -2663,6 +2754,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           }
           else S[sc.id]=o.v;
           paint();
+          if (sc.autoAvanca && !sc.multi && !mxSemAutoAvanco) agendaAutoAvanco(sc.id, o.v);
         };
         optsWrap.appendChild(b);
         if (o.depois){ const d=document.createElement('div'); d.className='opt-sep'; d.textContent=o.depois; optsWrap.appendChild(d); }
@@ -2880,20 +2972,16 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const pp = (prev && prev.preench) || null;
     let bloco = '';
-    const gC = ganhoPreench(S.compFlac, S.compPos), gD = ganhoPreench(S.diamFlac, S.diamPos);
-    if (gC || gD){
-      bloco += linhaFicha('Comprimento', gC ? (S.compFlac+' → '+S.compPos+' cm · '+gC.txt) : null);
-      bloco += linhaFicha('Circunferência', gD ? (S.diamFlac+' → '+S.diamPos+' cm · '+gD.txt) : null);
-    }
+    // v2.5-S (item 8): preenchimento sem comprimento — só circunferência (tela, registro, papel)
+    const gD = ganhoPreench(S.diamFlac, S.diamPos);
+    if (gD) bloco += linhaFicha('Circunferência', S.diamFlac+' → '+S.diamPos+' cm · '+gD.txt);
     if (pp){
-      const gCa = ganhoPreench(pp.compFlac, pp.compPos), gDa = ganhoPreench(pp.diamFlac, pp.diamPos);
+      const gDa = ganhoPreench(pp.diamFlac, pp.diamPos);
       bloco += linhaFicha('Procedimento anterior', [pp.dataBR||null, pp.mlUsado?(pp.mlUsado+' de '+(pp.marca||'produto não registrado')):null].filter(Boolean).join(' · ') || null);
-      bloco += linhaFicha('Ganho no procedimento anterior',
-        [gCa?('comprimento '+gCa.txt):null, gDa?('circunferência '+gDa.txt):null].filter(Boolean).join(' · ') || null);
-      const manC = ganhoPreench(pp.compFlac, S.compRet), manD = ganhoPreench(pp.diamFlac, S.diamRet);
-      if (manC || manD){
-        bloco += linhaFicha('Medida de hoje, contra a medida antes do procedimento',
-          [manC?('comprimento '+manC.txt):null, manD?('circunferência '+manD.txt):null].filter(Boolean).join(' · '));
+      bloco += linhaFicha('Ganho no procedimento anterior', gDa ? ('circunferência '+gDa.txt) : null);
+      const manD = ganhoPreench(pp.diamFlac, S.diamRet);
+      if (manD){
+        bloco += linhaFicha('Medida de hoje, contra a medida antes do procedimento', 'circunferência '+manD.txt);
         if (gDa && manD) bloco += linhaFicha('Manutenção da circunferência',
           (gDa.dif? Math.round((manD.dif/gDa.dif)*100) : 0) + '% do ganho obtido no procedimento');
       }
@@ -2919,7 +3007,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     h += '<h4>Exames e laboratório</h4><table>'
       + linhaFicha('Testosterona total', ultLab&&ultLab.tTotal?ultLab.tTotal:null)
       + linhaFicha('LH', ultLab&&ultLab.lh?ultLab.lh:null)
-      + linhaFicha('Biotensiômetro', (preenchido(S.biotens)?S.biotens:(prev&&prev.biotens!=null?prev.biotens:null)))
+      + linhaFicha('Biotensiômetro', txtBiotens(preenchido(S.biotens)?S.biotens:(prev&&prev.biotens!=null?prev.biotens:null)))
       + linhaFicha('TEFI', (S.tefiBanco? 'realizado' : (prev&&prev.tefi&&prev.tefi.resp?'realizado':null)))
       + linhaFicha('Doppler', (prev&&prev.tefi&&prev.tefi.doppler)||null)
       + '</table>';
@@ -2973,7 +3061,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (sc.kind==='campos'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), num(f.id,S[f.id])]); }); return; }
       if (sc.kind==='grupo'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([tira(f.label), rotOpt(f.options,S[f.id])]); }); return; }
       if (sc.kind==='escalas'){ (sc.fields||[]).forEach(f=>{ if (preenchido(S[f.id])) linhas.push([ROT_CAMPO[f.id] || tira(f.label), S[f.id]+'/10']); }); return; }
-      if (sc.kind==='contato'){ [['iniciais','Iniciais'],['telefone','Telefone'],['email','Email']].forEach(([k,r])=>{ if (preenchido(S[k])) linhas.push([r, S[k]]); }); return; }
+      if (sc.kind==='contato'){
+        if (sc.ident){ if (preenchido(S.nome)) linhas.push(['Nome completo', S.nome]); if (S.nascimento) linhas.push(['Nascimento', nascBR(S.nascimento)]); }
+        [['iniciais','Iniciais'],['telefone','Telefone'],['email','Email']].forEach(([k,r])=>{ if (preenchido(S[k])) linhas.push([r, S[k]]); }); return; }
       if (sc.kind==='nota'){ if (preenchido(S[sc.id])) linhas.push(['Nota do atendimento', S[sc.id]]); return; }
       const v=S[sc.id];
       if (!preenchido(v) || (Array.isArray(v) && !v.length)) return;
@@ -3080,7 +3170,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (c.psiquiatrico==='sim' && mudou('psiquiatrico')) add('Antecedente psiquiátrico', '<span class="pend">sim</span>');
       if (c.fertilidade==='sim' && mudou('fertilidade')) add('Deseja engravidar em 12 meses', 'sim');
       if (c.previaTrat && mudou('previaTrat')) add('Tratamento prévio', R.previaTrat[c.previaTrat]||c.previaTrat);
-      if (c.biotens!=null) add('Biotensiômetro', escH(c.biotens));
+      if (c.biotens!=null) add('Biotensiômetro', escH(txtBiotens(c.biotens)));
       if (c.medidasRecepcao && c.medidasRecepcao.peso)
         add('Medidas', c.medidasRecepcao.peso+' kg'+(c.medidasRecepcao.imc?' · IMC '+c.medidasRecepcao.imc:''));
       add('Laboratório', labsDoCiclo(c.labs) || null);
@@ -3106,13 +3196,12 @@ document.documentElement.setAttribute('data-tema',t)})();
     } else if (c.linha==='preenchimento' && c.preench){
       const p = c.preench;
       if (c.tipo==='preench-inicial'){
-        const gC = ganhoPreench(p.compFlac, p.compPos), gD = ganhoPreench(p.diamFlac, p.diamPos);
-        add('Comprimento', p.compFlac ? (p.compFlac+(p.compPos?' → '+p.compPos:'')+' cm'+(gC?' · '+gC.txt:'')) : null);
+        const gD = ganhoPreench(p.diamFlac, p.diamPos);
         add('Circunferência', p.diamFlac ? (p.diamFlac+(p.diamPos?' → '+p.diamPos:'')+' cm'+(gD?' · '+gD.txt:'')) : null);
         add('Produto', p.mlUsado ? escH(p.mlUsado+' de '+(p.marca||'produto não registrado')) : null);
         if (p.botoxUI) add('Toxina botulínica', escH(p.botoxUI));
       } else {
-        add('Medida no retorno', [p.compRet?'comprimento '+p.compRet+' cm':null, p.diamRet?'circunferência '+p.diamRet+' cm':null].filter(Boolean).join(' · ')||null);
+        add('Medida no retorno', p.diamRet ? 'circunferência '+p.diamRet+' cm' : null);
         if (p.nodulos) add('Nódulos', R.nodulos[p.nodulos]||escH(p.nodulos));
         if (p.notaMedicoRet!=null) add('Impressão do médico', p.notaMedicoRet+'/10');
         if (p.satisfPaciente!=null) add('Satisfação do paciente', p.satisfPaciente+'/10');
@@ -3321,7 +3410,42 @@ document.documentElement.setAttribute('data-tema',t)})();
     quizCard.style.display='none';
     const p=document.getElementById('panoramaCard'); if(p) p.style.display='none';
   }
+  // v2.5-S (itens 1 e 3): um avanço por vez — Enter, clique e avanço da abertura nunca somam dois
+  let avancandoAgora = false;
   async function avancar(){
+    avancandoAgora = true;
+    try { return await avancar0(); } finally { avancandoAgora = false; }
+  }
+  // v2.5-S (item 1): na abertura (origem, fila vazia, paciente da fila) o clique já avança —
+  // não precisa de Próxima. Só nessas telas. O clique feito pelo próprio app (mxEscolhe: concluir
+  // atendimento deixa o próximo da fila marcado) não avança sozinho.
+  let autoAvancoT = null, mxSemAutoAvanco = false;
+  function agendaAutoAvanco(id, v){
+    clearTimeout(autoAvancoT);
+    autoAvancoT = setTimeout(async ()=>{
+      autoAvancoT = null;
+      const sc = screens[si];
+      if (!sc || sc.id!==id || S[id]!==v || avancandoAgora) return;
+      if (quizCard.style.display==='none' || (resultsCard && resultsCard.style.display==='block')) return;
+      await avancar();
+      // escolheu o paciente da fila: entra direto no atendimento (o resumo do histórico fica no painel)
+      if (id==='daFila') await mxPulaConfirmHist('fila');
+    }, 140);
+  }
+  // "Atender" / "Iniciar atendimento" / paciente da fila: o "Histórico — Confirmar e continuar" é só
+  // conferência (o mesmo resumo está no painel) e é confirmado sozinho. Histórico que falhou ao
+  // carregar e paciente do banco sem ciclo clínico continuam pedindo a confirmação do médico.
+  async function mxPulaConfirmHist(tipo){
+    const sc = screens[si];
+    if (!sc || sc.id!=='confirmHist' || S.histErro) return false;
+    if (S.semHistorico && tipo!=='fila') return false;
+    const b = [...document.querySelectorAll('#optsWrap .opt')].find(x=>x.dataset.v==='ok');
+    if (!b) return false;
+    mxSemAutoAvanco = true; try{ b.click(); } finally { mxSemAutoAvanco = false; }
+    await avancar();
+    return true;
+  }
+  async function avancar0(){
     const sc=screens[si];
     if (!sc.optional && !val(sc)){
       const e=el('fldErr'); if(e){ if (sc.id==='codigo') e.textContent=msgCodigo(); e.style.display='block'; }
@@ -3380,8 +3504,25 @@ document.documentElement.setAttribute('data-tema',t)})();
       else if (temPaciente()) mostrarPanorama();
       return;
     }
+    // v2.5-S (item 3): Enter = Próxima, também com o foco num campo do questionário (texto, slider,
+    // lista). Exceções: textarea (Enter é nova linha), botão/link focado (o Enter é dele — Voltar,
+    // opção, Próxima), campo fora do questionário (busca, pedido de exames, diálogo), painel aberto,
+    // tecla segurada (repeat) e avanço já em curso — nunca avança duas vezes.
+    if (e.key==='Enter'){
+      if (e.defaultPrevented || e.repeat || e.isComposing) return;
+      if (quizCard.style.display==='none' || (el('linhaQuiz')||{style:{}}).style.display==='none') return;
+      if (document.querySelector('.mx-dlg-ov, .mx-sheet.on')) return;
+      if (['exaOverlay','fichaOverlay','histOverlay'].some(id=>{ const o=el(id); return o && o.style.display==='flex'; })) return;
+      const t = alvo;
+      if (t && t.tagName==='TEXTAREA') return;
+      if (t && t!==document.body && (t.tagName==='BUTTON' || t.tagName==='A' || t.tagName==='SUMMARY' || t.isContentEditable)) return;
+      if (t && (t.tagName==='INPUT' || t.tagName==='SELECT') && !quizCard.contains(t)) return;
+      e.preventDefault();
+      if (avancandoAgora) return;
+      avancar();   // obrigatória em aberto: avancar() mostra o que falta, sem avançar
+      return;
+    }
     if (digitando) return;
-    if (e.key==='Enter'){ if (!nextBtn.disabled && quizCard.style.display!=='none'){ e.preventDefault(); avancar(); } return; }
     if (/^[1-9]$/.test(e.key)){
       const opcoes = [...document.querySelectorAll('#optsWrap .opt')];
       const alvoOpt = opcoes[Number(e.key)-1];
@@ -3523,7 +3664,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     prev=null;
     ['codigoBuscado','hist','resumoHist','nReav','diasDesde','tefiBanco','medidasRec','autorrelato',
-     'leuTermo','revisarRec','difRec','pendRec','filaAplicada','protAnt','formulasAnt','iiefAnt','pedtAnt']
+     'leuTermo','revisarRec','difRec','pendRec','filaAplicada','protAnt','formulasAnt','iiefAnt','pedtAnt',
+     // v2.5-S: nome/nascimento/contato do paciente anterior não passam para o próximo
+     'contatoBanco','nome','nascimento','nascTxt','iniciais','iniciaisMexidas','telefone','email','telaDados']
       .forEach(k=>{ delete S[k]; });
     if (alvo==='origem' || alvo==='daFila'){ delete S.daFila; delete S.queixa; delete S.trocarQueixa; delete S.queixaFila; delete S.novaQueixa;
       delete S.queixaConfirmada; delete S.codigo; delete S.visita; }
@@ -4007,8 +4150,25 @@ document.documentElement.setAttribute('data-tema',t)})();
     const m = menorEhMelhor ? d<0 : d>0;
     return (m?'melhorou ':'piorou ') + Math.abs(d) + (Math.abs(d)===1?' ponto':' pontos');
   }
-  function classeBiotens(v){ v=+v; if(!(v>=0)) return ''; if (v<10) return 'vermelho'; if (v<=20) return 'verde'; return 'ambar'; }
-  function rotuloBiotens(v){ v=+v; if(!(v>=0)) return ''; if (v<10) return 'abaixo de 10'; if (v<=20) return 'faixa 10 a 20'; return 'acima de 20'; }
+  // v2.5-S (Dr. Marco, 06/10/2026): biotensiômetro em volts, escala 0–40 V.
+  // Faixas: < 5 hipersensibilidade importante · 5 a < 7 hipersensibilidade provável · 7–10 normal (inclusive)
+  //         > 10–15 hipossensibilidade provável · > 15 hipossensibilidade importante.
+  // Conduta: < 7 V = hipersensibilidade · 7–10 V = normal · > 10 V = hipossensibilidade.
+  // (antes: < 10 hipersensibilidade/vermelho, 10–20 verde, > 20 âmbar, escala 0–100)
+  const BIOT_HIPER = 7, BIOT_HIPO = 10;
+  function faixaBiotens(v){
+    v = (typeof v==='string') ? parseFloat(v.replace(',','.')) : +v;
+    if (!(v>=0)) return null;
+    if (v<5)  return {k:'hiperImp',  eixo:'hiper',  t:'Hipersensibilidade importante', c:'vermelho'};
+    if (v<BIOT_HIPER) return {k:'hiperProv', eixo:'hiper', t:'Hipersensibilidade provável', c:'ambar'};
+    if (v<=BIOT_HIPO) return {k:'normal', eixo:'normal', t:'Normal', c:'verde'};
+    if (v<=15) return {k:'hipoProv', eixo:'hipo', t:'Hipossensibilidade provável', c:'ambar'};
+    return {k:'hipoImp', eixo:'hipo', t:'Hipossensibilidade importante', c:'vermelho'};
+  }
+  function classeBiotens(v){ const f=faixaBiotens(v); return f ? f.c : ''; }
+  function rotuloBiotens(v){ const f=faixaBiotens(v); return f ? f.t : ''; }
+  function numBiotens(v){ const n=(typeof v==='string') ? parseFloat(v.replace(',','.')) : +v; return isNaN(n) ? String(v) : String(+n.toFixed(1)).replace('.',',')+' V'; }
+  function txtBiotens(v){ if (v==null || v==='') return null; const f=faixaBiotens(v); return numBiotens(v)+(f?' · '+f.t:''); }
 
   const MODS = [
     {n:'Identifica\u00e7\u00e3o', ids:['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa','novaQueixa']},
@@ -4018,7 +4178,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','iciDor','iciDorImpede','iciPge1Troca','satisf','nps','satisfNps',
       'i0','i1','i2','i3','i4','p0','p1','p2','p3','p4','p5','refazer','usarTotaisRec']},
     {n:'Exames', ids:['labs','tTotal','tLivre','shbg','lh','fsh','prolactina','estradiol','ht','psa','testo','biotens','idade','examesFeitos','tefiFeito','tefiResp','tefiDoppler','tefiConduta','tefiAddIci','tefiMed','tefiDose','t10grau','t20grau','doseComp','doseCompML','t30grau','tefiFinal','dorGrau','dorQuando','curvGrau','dopplerFeito','doppler','psv','edv','ir','iciFormula','iciDose']},
-    {n:'Procedimento', ids:['tipoPenis','medPre','compFlac','diamFlac','prepucio','retracao','plano','previsaoML','planoBotox','concordou','termo','medPos','compPos','diamPos','mlUsado','botox','marcaAH','notaMedico','medRet','compRet','diamRet','retracaoRet','nodulos','notaMedicoRet','satisfPac','conduta','botoxUI','mlRetoque','marcaRetoque','aplicacao','mlHialuro']},
+    {n:'Procedimento', ids:['tipoPenis','medPre','diamFlac','prepucio','retracao','plano','previsaoML','planoBotox','concordou','termo','medPos','diamPos','mlUsado','botox','marcaAH','notaMedico','medRet','diamRet','retracaoRet','nodulos','notaMedicoRet','satisfPac','conduta','botoxUI','mlRetoque','marcaRetoque','aplicacao','mlHialuro']},
     {n:'Escolha da conduta', ids:['escolha','notaFinal']}
   ];
   const MOD_DE = {};
@@ -4138,18 +4298,19 @@ document.documentElement.setAttribute('data-tema',t)})();
   const FAIXAS = {
     idade:[18,99,1,'anos'],
     // escores e índices são fechados por definição: não existe valor fora da faixa
-    iiefAnt:[5,25,1,'',true], pedtAnt:[0,20,1,'',true], biotens:[0,100,1,'',true],
+    // 6º item = valor sugerido ao abrir o seletor (sem ele, a mediana). v2.5-S: biotensiômetro 0–40 V, abre em 7 V
+    // 7º item = passo do arraste (o −/+ e o "digitar valor exato" usam o passo fino do 3º): biotensiômetro arrasta de 0,5 em 0,5 V, −/+ de 0,1 V
+    iiefAnt:[5,25,1,'',true], pedtAnt:[0,20,1,'',true], biotens:[0,40,0.1,'V',true,7,0.5],
     tTotal:[0,1500,5,'ng/dL'], tLivre:[0,60,0.5,'pg/mL'], shbg:[0,200,1,'nmol/L'],
     lh:[0,30,0.1,'UI/L'], fsh:[0,40,0.1,'UI/L'], prolactina:[0,120,0.5,'ng/mL'],
     estradiol:[0,120,1,'pg/mL'], ht:[25,70,0.5,'%'], psa:[0,20,0.1,'ng/mL'],
     psv:[0,120,1,'cm/s'], edv:[0,30,1,'cm/s'], ir:[0,1,0.01,'',true],
-    compFlac:[5,25,0.5,'cm',true], diamFlac:[5,20,0.5,'cm',true],
-    compPos:[5,25,0.5,'cm',true], diamPos:[5,20,0.5,'cm',true],
-    compRet:[5,25,0.5,'cm',true], diamRet:[5,20,0.5,'cm',true],
+    // v2.5-S: circunferência abre em 10 cm; comprimento saiu do preenchimento (item 8)
+    diamFlac:[3,20,0.5,'cm',true,8], diamPos:[3,20,0.5,'cm',true,8], diamRet:[3,20,0.5,'cm',true,8],
     iciDose:[0.05,0.5,0.05,'mL']
   };
   function faixaDe(id, sc){
-    if (FAIXAS[id]) return {min:FAIXAS[id][0], max:FAIXAS[id][1], passo:FAIXAS[id][2], un:FAIXAS[id][3], fechada:!!FAIXAS[id][4]};
+    if (FAIXAS[id]) return {min:FAIXAS[id][0], max:FAIXAS[id][1], passo:FAIXAS[id][2], un:FAIXAS[id][3], fechada:!!FAIXAS[id][4], ini:FAIXAS[id][5], arraste:FAIXAS[id][6]};
     if (sc && sc.min!==undefined && sc.max!==undefined) return {min:+sc.min, max:+sc.max, passo:1, un:''};
     return null;
   }
@@ -4161,7 +4322,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const min=cfg.min, max=cfg.max, passo=cfg.passo||1, dec=casas(passo);
     const bruto = preenchido(S[cfg.id]) ? parseFloat(String(S[cfg.id]).replace(',','.')) : NaN;
     const temValor = !isNaN(bruto);
-    const inicial = temValor ? Math.min(max, Math.max(min, bruto)) : (min+max)/2;
+    const inicial = temValor ? Math.min(max, Math.max(min, bruto)) : (cfg.ini!=null ? cfg.ini : (min+max)/2);
     const box=document.createElement('div'); box.className='selnum';
     const v=document.createElement('div'); v.className='v';
     if (!temValor) v.classList.add('sugerido');
@@ -4170,9 +4331,13 @@ document.documentElement.setAttribute('data-tema',t)})();
     const row=document.createElement('div'); row.className='row';
     const menos=document.createElement('button'); menos.type='button'; menos.textContent='\u2212'; menos.setAttribute('aria-label','Diminuir');
     const mais=document.createElement('button');  mais.type='button';  mais.textContent='+';       mais.setAttribute('aria-label','Aumentar');
-    const r=document.createElement('input'); r.type='range'; r.min=min; r.max=max; r.step=passo;
+    const r=document.createElement('input'); r.type='range'; r.min=min; r.max=max; r.step=cfg.arraste||passo;
     r.value = inicial; r.setAttribute('aria-label', cfg.label||cfg.id); r.dataset.campo = cfg.id;
     let atual = inicial;
+    // v2.5-S: escala com faixas (biotensiômetro) — o nome da faixa acompanha o valor (cinza enquanto é só sugestão)
+    const fxEl = cfg.faixaRotulo ? document.createElement('div') : null;
+    function pintaFaixa(n, sug){ if (!fxEl) return; const f=cfg.faixaRotulo(n); fxEl.className='selnum-faixa'+(f?' '+f.c:'')+(sug?' sugerido':''); fxEl.textContent=f?f.t:''; fxEl.dataset.faixa=f?f.k:''; }
+    pintaFaixa(inicial, !temValor);
     function aplica(n){
       v.classList.remove('sugerido');
       const dicaEl = box.querySelector('.selnum-dica'); if (dicaEl) dicaEl.remove();
@@ -4182,6 +4347,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       v.textContent = mostraNum(atual, passo) + (cfg.un?' ':'');
       if (cfg.un){ const u=document.createElement('span'); u.className='un'; u.textContent=cfg.un; v.appendChild(u); }
       S[cfg.id] = String(atual);
+      pintaFaixa(atual, false);
       if (cfg.aoMudar) cfg.aoMudar();
     }
     r.oninput = ()=>aplica(+r.value);
@@ -4195,8 +4361,17 @@ document.documentElement.setAttribute('data-tema',t)})();
       dica.textContent='Valor sugerido — ajuste no slider ou toque no número para confirmar';
       v.style.cursor='pointer';
       v.onclick=()=>{ aplica(atual); v.classList.remove('sugerido'); dica.remove(); };
-      box.appendChild(v); box.appendChild(dica); box.appendChild(row); box.appendChild(lim);
-    } else { box.appendChild(v); box.appendChild(row); box.appendChild(lim); }
+      box.appendChild(v); if (fxEl) box.appendChild(fxEl); box.appendChild(dica); box.appendChild(row); box.appendChild(lim);
+    } else { box.appendChild(v); if (fxEl) box.appendChild(fxEl); box.appendChild(row); box.appendChild(lim); }
+    // v2.5-S: arraste grosso (cfg.arraste) → valor exato pelo −/+ (passo fino) ou digitado, dentro da escala
+    if (cfg.arraste){
+      const bt=document.createElement('button'); bt.type='button'; bt.className='selnum-exato'; bt.textContent='Digitar valor exato';
+      const ex=document.createElement('input'); ex.type='text'; ex.inputMode='decimal'; ex.className='fld selnum-exato-in'; ex.style.display='none';
+      ex.dataset.exato=cfg.id; ex.placeholder='ex.: '+mostraNum(cfg.ini!=null?cfg.ini:min, passo); ex.setAttribute('aria-label', 'Valor exato'+(cfg.un?' em '+cfg.un:''));
+      bt.onclick=()=>{ bt.style.display='none'; ex.style.display='block'; ex.value = temValor||!v.classList.contains('sugerido') ? mostraNum(atual, passo) : ''; try{ ex.focus(); }catch(e){} };
+      ex.oninput=()=>{ const n=parseFloat(String(ex.value).replace(',','.')); if (isNaN(n) || n<min || n>max) { ex.classList.toggle('fld-falta', String(ex.value).trim()!=='' ); return; } ex.classList.remove('fld-falta'); aplica(n); };
+      box.appendChild(bt); box.appendChild(ex);
+    }
 
     // valor fora da faixa: só onde ele existe. Escore e índice são fechados.
     if (cfg.fechada) return box;
@@ -4351,7 +4526,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     // exames do consultorio
     const ex=[];
     const bt = preenchido(S.biotens) ? +S.biotens : ((prev && prev.biotens!=null) ? +prev.biotens : null);
-    if (bt!=null && !isNaN(bt)) ex.push(lin('Biotensi\u00f4metro '+bt+' \u00b7 '+rotuloBiotens(bt), classeBiotens(bt)));
+    if (bt!=null && !isNaN(bt)) ex.push(lin('Biotensi\u00f4metro '+numBiotens(bt)+'<span class="lin-faixa">'+escH(rotuloBiotens(bt))+'</span>', classeBiotens(bt)));   // v2.5-S: faixa na linha de baixo (não quebra no meio)
     const tb = (S.tefiBanco && S.tefiBanco.tefiExame) || null;
     // v2.5-F: TEFI feito nesta consulta — "realizado hoje" com o resultado, no lugar de "indicado, não realizado"
     if (S.visita==='reav' && S.tefiFeito==='sim') ex.push(lin('TEFI realizado hoje'
@@ -4524,7 +4699,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (MODE==='uni'){
       const n = (S.fila||[]).length;
       const carregando = S.filaEstado===undefined;
-      s.push({id:'origem',plumb:true,kind:'opts',step:'Abertura',eyebrow:'Início do atendimento',
+      s.push({id:'origem',plumb:true,autoAvanca:true,kind:'opts',step:'Abertura',eyebrow:'Início do atendimento',
         text:'Como você quer começar?',
         hint: carregando ? 'Consultando a fila da recepção…'
             : (n ? (n===1 ? '1 paciente aguardando — respondeu o questionário na recepção hoje.'
@@ -4540,7 +4715,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
       if (S.origem==='fila'){
         if (!n){
-          s.push({id:'filaVazia',plumb:true,kind:'opts',step:'Abertura',eyebrow:'Fila da recepção',
+          s.push({id:'filaVazia',plumb:true,autoAvanca:true,kind:'opts',step:'Abertura',eyebrow:'Fila da recepção',
             text:'Não há ninguém na fila de hoje',
             hint: S.filaEstado==='erro'
               ? 'Não foi possível consultar a fila. Veja o estado da conexão no rodapé.'
@@ -4551,7 +4726,7 @@ document.documentElement.setAttribute('data-tema',t)})();
           if (S.filaVazia==='novo') S.origem='novo';
           else { s.forEach(x=>x.parcial=true); screens=s; verificaContrato(screens); si=Math.min(si,s.length-1); return; }
         } else {
-          s.push({id:'daFila',plumb:true,kind:'opts',step:'Abertura',eyebrow:'Fila da recepção',
+          s.push({id:'daFila',plumb:true,autoAvanca:true,kind:'opts',step:'Abertura',eyebrow:'Fila da recepção',
             text:'Qual paciente está entrando?',
             options:S.fila.map(f=>{
               const m=f.medidas||{};
@@ -4629,7 +4804,7 @@ document.documentElement.setAttribute('data-tema',t)})();
             ? 'Próximo código livre: '+S.codigoSug+(norm(S.codigo)===S.codigoSug ? ' (sugerido automaticamente)' : '')+'. Pode ser alterado.'
             : (codigoBuscando ? 'Buscando o próximo código livre no banco…'
                               : 'Não foi possível consultar o banco agora — digite o código do paciente.'))
-           + ' Sem nome ou documento — a ligação com o paciente fica no prontuário.')
+           + ' Nome completo e nascimento são pedidos na tela de dados do paciente.')
         : 'Digite o código ou toque no campo para escolher na lista de pacientes.',
       lista: S.visita==='reav',
       esperando: (S.visita==='reav' ? 'Buscando…' : null),
@@ -4652,9 +4827,19 @@ document.documentElement.setAttribute('data-tema',t)})();
     // ou escores anteriores" aqui (sessão antiga com 'rever' segue como 'ok')
     if (S.confirmHist==='rever') S.confirmHist='ok';
     // contato: se a recepção não coletou e o cadastro não tem, registra-se aqui
-    if (temPaciente() && !contatoConhecido()) s.push({id:'contato',kind:'contato',step:'Abertura',eyebrow:'Identificação',
-      text:'Contato do paciente',
-      hint:'Telefone e email são obrigatórios: sem os dois o atendimento não chega à conduta. É por eles que orientações, receita e pedido de exames são enviados.'});
+    // v2.5-S (item 2): na primeira avaliação, a mesma tela pede nome completo e nascimento
+    // (obrigatórios) quando não vieram da recepção nem do cadastro. Uma vez aberta, a tela fica
+    // no fluxo deste paciente (S.telaDados) — dá para voltar e corrigir.
+    const identPend = pedeIdent() && !identOK();
+    if (temPaciente() && (!contatoConhecido() || identPend || S.telaDados)){
+      const ident = pedeIdent();
+      S.telaDados = true;
+      s.push({id:'contato',kind:'contato',ident:ident,step:'Abertura',eyebrow:'Identificação',
+        text: ident ? 'Dados do paciente' : 'Contato do paciente',
+        hint: ident
+          ? 'Nome completo e data de nascimento são obrigatórios na primeira avaliação: saem no pedido de exames. Telefone e email também: é por eles que orientações, receita e pedido de exames são enviados.'
+          : 'Telefone e email são obrigatórios: sem os dois o atendimento não chega à conduta. É por eles que orientações, receita e pedido de exames são enviados.'});
+    }
 
     // v2.4: retorno vindo da fila com queixas no prontuário — "Alguma nova queixa?"
     // Não = segue o tratamento das queixas registradas (somadas à que ele marcou
@@ -4847,10 +5032,9 @@ document.documentElement.setAttribute('data-tema',t)})();
         s.push({id:'tipoPenis',kind:'opts',step:P,eyebrow:'Avaliação anatômica',text:'Tipo de pênis',
           options:[{v:'shower',badge:'S',label:'Shower — pouca diferença entre flácido e ereto'},
                    {v:'grower',badge:'G',label:'Grower — grande diferença entre flácido e ereto'}]});
-        s.push({id:'medPre',kind:'campos',step:P,eyebrow:'Medidas iniciais',text:'Medidas antes do procedimento',
-          hint:'Medidas em centímetros, em flacidez, com técnica padronizada.',
-          fields:[{id:'compFlac',label:'Comprimento (cm)',ph:'ex.: 9'},
-                  {id:'diamFlac',label:'Circunferência (cm)',ph:'ex.: 9'}]});
+        s.push({id:'medPre',kind:'campos',step:P,eyebrow:'Medidas iniciais',text:'Circunferência antes do procedimento',
+          hint:'Em centímetros, em flacidez, com técnica padronizada.',
+          fields:[{id:'diamFlac',label:'Circunferência (cm)',ph:'ex.: 9'}]});
         s.push({id:'prepucio',kind:'opts',step:P,eyebrow:'Avaliação anatômica',text:'Prepúcio',
           options:[{v:'ausente',badge:'—',label:'Ausente — circuncidado'},{v:'curto',badge:'C',label:'Curto'},
                    {v:'medio',badge:'M',label:'Médio'},{v:'longo',badge:'L',label:'Longo'}]});
@@ -4875,10 +5059,9 @@ document.documentElement.setAttribute('data-tema',t)})();
           text:'Termo de consentimento informado assinado pelo paciente?',
           options:[{v:'sim',badge:'✓',label:'Sim, assinado e arquivado'},{v:'imprimir',badge:'!',label:'Ainda não — imprimir agora'}]});
         if (S.concordou==='sim'){
-          s.push({id:'medPos',kind:'campos',step:P,eyebrow:'Pós-procedimento',text:'Medidas após a aplicação',
-            hint:'As medidas prévias registradas aparecem ao lado de cada campo.',
-            fields:[{id:'compPos',label:'Comprimento (cm)'+(S.compFlac?'   ·   antes: '+S.compFlac:''),ph:'ex.: 10'},
-                    {id:'diamPos',label:'Circunferência (cm)'+(S.diamFlac?'   ·   antes: '+S.diamFlac:''),ph:'ex.: 11'}]});
+          s.push({id:'medPos',kind:'campos',step:P,eyebrow:'Pós-procedimento',text:'Circunferência após a aplicação',
+            hint:'A medida prévia registrada aparece ao lado do campo.',
+            fields:[{id:'diamPos',label:'Circunferência (cm)'+(S.diamFlac?'   ·   antes: '+S.diamFlac:''),ph:'ex.: 11'}]});
           s.push({id:'mlUsado',kind:'select',step:P,eyebrow:'Pós-procedimento',text:'Quantos mL foram utilizados?',
             list:['2 mL','3 mL','4 mL','5 mL','6 mL','7 mL','8 mL','9 mL','10 mL','11 mL','12 mL','13 mL','14 mL','15 mL']});
           s.push({id:'botox',kind:'opts',step:P,eyebrow:'Pós-procedimento',text:'Houve toxina botulínica associada?',
@@ -4895,10 +5078,9 @@ document.documentElement.setAttribute('data-tema',t)})();
           hint:'Não há preenchimento anterior registrado para este paciente. Seguindo como avaliação inicial.',
           options:[{v:'shower',badge:'S',label:'Shower — pouca diferença entre flácido e ereto'},
                    {v:'grower',badge:'G',label:'Grower — grande diferença entre flácido e ereto'}]});
-        s.push({id:'medPre',kind:'campos',step:P,eyebrow:'Medidas iniciais',text:'Medidas antes do procedimento',
+        s.push({id:'medPre',kind:'campos',step:P,eyebrow:'Medidas iniciais',text:'Circunferência antes do procedimento',
           hint:'Registrar em centímetros, com o pênis flácido.',
-          fields:[{id:'compFlac',label:'Comprimento (cm)',ph:'ex.: 9'},
-                  {id:'diamFlac',label:'Circunferência (cm)',ph:'ex.: 9'}]});
+          fields:[{id:'diamFlac',label:'Circunferência (cm)',ph:'ex.: 9'}]});
         s.push({id:'prepucio',kind:'opts',step:P,eyebrow:'Avaliação anatômica',text:'Prepúcio',
           options:[{v:'ausente',badge:'—',label:'Ausente — circuncidado'},{v:'curto',badge:'C',label:'Curto'},
                    {v:'medio',badge:'M',label:'Médio'},{v:'longo',badge:'L',label:'Longo'}]});
@@ -4907,12 +5089,10 @@ document.documentElement.setAttribute('data-tema',t)})();
                    {v:'media',badge:'2',label:'Média'},{v:'importante',badge:'3',label:'Importante'}]});
       } else {
         const pp = (prev && prev.preench) ? prev.preench : {};
-        s.push({id:'medRet',kind:'campos',step:P,eyebrow:'Retorno pós-procedimento',text:'Medidas de hoje',
-          hint:'Procedimento anterior: '+(pp.compFlac?pp.compFlac+' → '+(pp.compPos||'—')+' cm de comprimento':'medidas não registradas')
-               +(pp.diamFlac?' · '+pp.diamFlac+' → '+(pp.diamPos||'—')+' cm de circunferência':'')
+        s.push({id:'medRet',kind:'campos',step:P,eyebrow:'Retorno pós-procedimento',text:'Circunferência hoje',
+          hint:'Procedimento anterior: '+(pp.diamFlac?pp.diamFlac+' → '+(pp.diamPos||'—')+' cm de circunferência':'medida não registrada')
                +(pp.mlUsado?' · '+pp.mlUsado+' de '+(pp.marca||'—'):''),
-          fields:[{id:'compRet',label:'Comprimento (cm)'+(pp.compPos?'   ·   no procedimento: '+pp.compPos:''),ph:'ex.: 10'},
-                  {id:'diamRet',label:'Circunferência (cm)'+(pp.diamPos?'   ·   no procedimento: '+pp.diamPos:''),ph:'ex.: 11'}]});
+          fields:[{id:'diamRet',label:'Circunferência (cm)'+(pp.diamPos?'   ·   no procedimento: '+pp.diamPos:''),ph:'ex.: 11'}]});
         s.push({id:'retracaoRet',kind:'opts',step:P,eyebrow:'Retorno pós-procedimento',text:'Como está a retração peniana agora?',
           options:[{v:'ausente',badge:'—',label:'Ausente'},{v:'leve',badge:'1',label:'Leve'},
                    {v:'media',badge:'2',label:'Média'},{v:'importante',badge:'3',label:'Importante'}]});
@@ -5249,7 +5429,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (est.parceira) itens.push({v:'parceira', q:'Parceria fixa?', a:({fixa:'sim, parceria fixa',eventual:'parcerias eventuais',sem:'sem atividade sexual'}[est.parceira]||est.parceira)});
       if (S.hasEP){
         if (est.freq) itens.push({v:'freq', q:'Relações por semana?', a: est.freq==='alta' ? 'duas ou mais' : 'menos de duas'});
-        if (est.biotens!=null && est.biotens!=='') itens.push({v:'biotens', q:'Biotensiômetro?', a: String(est.biotens)});
+        if (est.biotens!=null && est.biotens!=='') itens.push({v:'biotens', q:'Biotensiômetro?', a: txtBiotens(est.biotens)});
         if (est.depre) itens.push({v:'depre', q:'Depressão maior ou acompanhamento psiquiátrico?', a: est.depre==='sim' ? 'sim' : 'não'});
       }
       itens.push({v:'fert', q:'Deseja engravidar nos próximos 12 meses?', a: est.fert==='sim' ? 'sim' : 'não'});
@@ -5397,9 +5577,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.hasEP){
       if (pede2('freq')) s.push({id:'freq',kind:'opts',step:D,eyebrow:'Frequência',text:'Quantas relações sexuais por semana, em média?',
         options:[{v:'alta',badge:'2+',label:'Duas ou mais'},{v:'baixa',badge:'<2',label:'Menos de duas / esporádico'}]});
-      if (pede2('biotens')) s.push({id:'biotens',kind:'num',min:0,max:100,step:D,eyebrow:'Biotensiômetro',
-        text:'Sensibilidade da glande medida no biotensiômetro (0 a 100)',ph:'ex.: 14',
-        hint:'Abaixo de 10 indica hipersensibilidade e prioriza o anestésico tópico.'});
+      if (pede2('biotens')) s.push({id:'biotens',kind:'num',min:0,max:40,step:D,eyebrow:'Biotensiômetro',
+        text:'Sensibilidade da glande medida no biotensiômetro (0 a 40 V)',ph:'ex.: 8',faixaRotulo:faixaBiotens,
+        hint:'Abaixo de 7 V: hipersensibilidade (prioriza o anestésico tópico). 7 a 10 V: normal. Acima de 10 V: hipossensibilidade.'});
       if (pede2('topico')) s.push({id:'topico',kind:'opts',step:D,eyebrow:'Recursos tópicos',
         text:'Há restrição ao uso de anestésico tópico?',
         options:[{v:'ambos',badge:'✓',label:'Sem restrição'},
@@ -6287,7 +6467,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       }
       if (!pr){
         const pp=(prev&&prev.preench)||{};
-        if (pp.mlUsado) notasP.push('Procedimento anterior: '+pp.mlUsado+' de '+(pp.marca||'produto não registrado')+(pp.compFlac&&pp.compPos?', comprimento '+pp.compFlac+' → '+pp.compPos+' cm':'')+'.');
+        if (pp.mlUsado) notasP.push('Procedimento anterior: '+pp.mlUsado+' de '+(pp.marca||'produto não registrado')+(pp.diamFlac&&pp.diamPos?', circunferência '+pp.diamFlac+' → '+pp.diamPos+' cm':'')+'.');
         if (S.retracaoRet && pp.retracao && S.retracaoRet!==pp.retracao) notasP.push('Retração mudou de <b>'+pp.retracao+'</b> para <b>'+S.retracaoRet+'</b>.');
         if (S.botoxRet==='nao' && (S.retracaoRet==='media'||S.retracaoRet==='importante')) notasP.push('<b>Retração persistente sem toxina botulínica associada.</b> É a causa mais comum de ganho aparente abaixo do real — considerar associar antes de aplicar mais volume.');
         if (S.conduta==='hialuro'){
@@ -6326,13 +6506,11 @@ document.documentElement.setAttribute('data-tema',t)})();
       el('classPill').style.background='var(--sev-midmod)';
       el('classLabel').textContent = prot;
       el('classDesc').textContent = feito
-        ? ((S.compFlac&&S.compPos)?('Comprimento '+S.compFlac+' → '+S.compPos+' cm'
-             +((g=>g?' · '+g.txt:'')(ganhoPreench(S.compFlac,S.compPos)))+'. '):'')
-          + ((S.diamFlac&&S.diamPos)?('Circunferência '+S.diamFlac+' → '+S.diamPos+' cm'
+        ? ((S.diamFlac&&S.diamPos)?('Circunferência '+S.diamFlac+' → '+S.diamPos+' cm'
              +((g=>g?' · '+g.txt:'')(ganhoPreench(S.diamFlac,S.diamPos)))+'. '):'')
           + (S.notaMedico!=null?('Impressão do médico: '+S.notaMedico+'/10.'):'')
         : (pr ? 'Dados anatômicos registrados para planejamento.'
-              : ((S.compRet?'Comprimento atual '+S.compRet+' cm. ':'')+(S.notaMedicoRet!=null?'Médico '+S.notaMedicoRet+'/10. ':'')+(S.satisfPac!=null?'Paciente '+S.satisfPac+'/10.':'')));
+              : ((S.diamRet?'Circunferência atual '+S.diamRet+' cm. ':'')+(S.notaMedicoRet!=null?'Médico '+S.notaMedicoRet+'/10. ':'')+(S.satisfPac!=null?'Paciente '+S.satisfPac+'/10.':'')));
       el('marcador').textContent = [pr?'Avaliação inicial':'Retorno pós-procedimento',
         S.tipoPenis?('perfil '+S.tipoPenis):'', S.retracao?('retração '+S.retracao):'',
         feito?(S.mlUsado+' de '+S.marcaAH):'',
@@ -6356,23 +6534,19 @@ document.documentElement.setAttribute('data-tema',t)})();
       addP('Código do paciente','<b>'+norm(S.codigo)+'</b>'); addP('Data',hoje);
       addP('Tipo de atendimento', pr?'Avaliação inicial para preenchimento':'Retorno pós-procedimento');
       if (S.tipoPenis) addP('Tipo de pênis', S.tipoPenis==='shower'?'Shower':'Grower');
-      if (S.compFlac||S.compEret) addP('Comprimento pré', (S.compFlac||'—')+' cm flácido · '+(S.compEret||'—')+' cm ereto');
       if (S.diamFlac||S.diamEret) addP('Circunferência pré', (S.diamFlac||'—')+' cm');
       if (S.prepucio) addP('Prepúcio', {ausente:'Ausente — circuncidado',curto:'Curto',medio:'Médio',longo:'Longo'}[S.prepucio]);
       if (S.retracao) addP('Retração', {ausente:'Ausente',leve:'Leve',media:'Média',importante:'Importante'}[S.retracao]);
       if (S.previsaoML) addP('Volume previsto', PREV_ML[S.previsaoML]||S.previsaoML);
       if (pr) addP('Procedimento realizado', feito?'Sim':'Não — apenas avaliação');
       if (feito||!pr){
-        if (S.compPos) addP('Comprimento pós', S.compPos+' cm');
         if (S.diamPos) addP('Circunferência pós', S.diamPos+' cm');
       }
       if (feito){ addP('Volume aplicado', S.mlUsado); addP('Termo de consentimento', S.termo==='sim'?'Assinado':'NÃO ASSINADO'); addP('Produto', S.marcaAH||'—'); addP('Impressão do médico', S.notaMedico+'/10'); }
       if (!pr){
         const pp=(prev&&prev.preench)||{};
         addP('Procedimento anterior',(pp.mlUsado||'—')+' de '+(pp.marca||'—'));
-        if (pp.compFlac||pp.compPos) addP('Comprimento antes → pós',(pp.compFlac||'—')+' → '+(pp.compPos||'—')+' cm');
         if (pp.diamFlac||pp.diamPos) addP('Circunferência antes → pós',(pp.diamFlac||'—')+' → '+(pp.diamPos||'—')+' cm');
-        if (S.compRet) addP('Comprimento atual', S.compRet+' cm');
         if (S.diamRet) addP('Circunferência atual', S.diamRet+' cm');
         if (S.retracaoRet) addP('Retração atual',{ausente:'Ausente',leve:'Leve',media:'Média',importante:'Importante'}[S.retracaoRet]);
         if (S.botoxRet) addP('Toxina botulínica associada', S.botoxRet==='sim'?'Sim':'Não');
@@ -6429,11 +6603,11 @@ document.documentElement.setAttribute('data-tema',t)})();
 
       await salvarCiclo({data:new Date().toISOString(),codigo:norm(S.codigo),dataBR:hoje,
         tipo:pr?'preench-inicial':'preench-retorno', protocolo:prot, linha:'preenchimento',
-        preench:{tipoPenis:S.tipoPenis||null,compFlac:S.compFlac||null,compEret:S.compEret||null,
+        preench:{tipoPenis:S.tipoPenis||null,
           diamFlac:S.diamFlac||null,diamEret:S.diamEret||null,prepucio:S.prepucio||null,
           retracao:S.retracao||null,previsaoML:S.previsaoML||null,planoBotox:S.planoBotox||null,botoxUI:S.botoxUI||null,concordou:S.concordou||null,
-          compPos:S.compPos||null,diamPos:S.diamPos||null,mlUsado:S.mlUsado||null,marca:S.marcaAH||null,termo:S.termo||null,
-          compRet:S.compRet||null,diamRet:S.diamRet||null,retracaoRet:S.retracaoRet||null,botox:S.botoxRet||null,
+          diamPos:S.diamPos||null,mlUsado:S.mlUsado||null,marca:S.marcaAH||null,termo:S.termo||null,
+          diamRet:S.diamRet||null,retracaoRet:S.retracaoRet||null,botox:S.botoxRet||null,
           notaMedicoRet:S.notaMedicoRet==null?null:S.notaMedicoRet,relatoRecepcao:S.retornoPreench||null,conduta:S.conduta||null,retoqueML:S.mlRetoque||null,retoqueMarca:S.marcaRetoque||null,hialuronidase:S.mlHialuro||null,novaAplicacaoFutura:S.novaAplic||null,
           notaMedico:S.notaMedico==null?null:S.notaMedico,nodulos:S.nodulos||null,
           satisfPaciente:S.satisfPac==null?null:S.satisfPac,novaAplicacao:S.novaAplic||null}});
@@ -6781,17 +6955,21 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (usaISRS) notas.push('<b>ISRS em uso — toda a via serotoninérgica está bloqueada.</b> Não associar paroxetina, dapoxetina nem clomipramina a um antidepressivo serotoninérgico. Para a ejaculação precoce, ficam o creme retardante, o preservativo e a abordagem comportamental. Se o controle for insuficiente, a conversa é com o psiquiatra sobre trocar o antidepressivo, não sobre somar outro serotoninérgico.');
     const semPomada=S.pomada==='sim'||alg.includes('anest');
     const bio = S.biotens==='' || S.biotens===undefined ? null : parseFloat(String(S.biotens).replace(',','.'));
-    const hipersens = bio!==null && bio<10;
-    if (hipersens) notas.push('<b>Biotensiômetro em '+bio+' — hipersensibilidade da glande.</b> É o perfil que mais responde a anestésico tópico. Priorizar '+(S.topico==='so_preserv'?'o preservativo retardante':(S.topico==='so_pomada'?'a pomada anestésica':(S.topico==='nenhum'?'... mas há restrição às duas vias tópicas, o que limita justamente o recurso mais indicado aqui':'preservativo retardante ou pomada, conforme a preferência do casal')))+'.');
+    // v2.5-S: < 7 V hipersensibilidade · 7–10 V normal · > 10 V hipossensibilidade (antes: < 10 = hipersensibilidade)
+    const fBio = bio===null ? null : faixaBiotens(bio);
+    const hipersens = bio!==null && bio<BIOT_HIPER;
+    // v2.5-S: as três notas do biotensiômetro no mesmo formato — valor em negrito + faixa na cor da faixa
+    const bioCab = fBio ? '<b>Biotensiômetro em '+numBiotens(bio)+'</b> <span class="mx-bio '+fBio.c+'">'+fBio.t+'</span> — ' : '';
+    if (hipersens) notas.push(bioCab+'é o perfil que mais responde a anestésico tópico. Priorizar '+(S.topico==='so_preserv'?'o preservativo retardante':(S.topico==='so_pomada'?'a pomada anestésica':(S.topico==='nenhum'?'... mas há restrição às duas vias tópicas, o que limita justamente o recurso mais indicado aqui':'preservativo retardante ou pomada, conforme a preferência do casal')))+'.');
     if (S.topico==='nenhum' && S.hasEP){
       notas.push('<b>Conflito entre indicação e restrição.</b> '+(hipersens
-        ? 'O biotensiômetro em '+bio+' indica hipersensibilidade da glande, o perfil que mais responde a anestésico tópico — mas o paciente declarou restrição às duas vias.'
+        ? 'O biotensiômetro em '+numBiotens(bio)+' indica hipersensibilidade da glande, o perfil que mais responde a anestésico tópico — mas o paciente declarou restrição às duas vias.'
         : 'Há indicação de recurso tópico para esta queixa, mas o paciente declarou restrição às duas vias.')
         +' Vale reabordar: a restrição costuma vir de experiência ruim com produto errado, de receio da parceria ou de uso incorreto (contato longo demais, sem lavar antes). Explicado o método, boa parte dos pacientes aceita.');
     }
     if (S.topico==='so_pomada' && S.hasEP) notas.push('Paciente prefere a pomada — o preservativo retardante não entra no kit. Se a resposta for parcial, ele continua sendo uma opção a reabordar.');
     if (S.topico==='so_preserv' && S.hasEP) notas.push('Paciente prefere o preservativo — a pomada não entra no kit. Se a resposta for parcial, ela continua sendo uma opção a reabordar.');
-    if (bio!==null && bio>=10 && S.hasEP) notas.push('Biotensiômetro em '+bio+' — sensibilidade dentro do esperado. O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
+    if (bio!==null && bio>=BIOT_HIPER && S.hasEP) notas.push(bioCab+(bio<=BIOT_HIPO ? 'sensibilidade da glande dentro do normal. ' : 'sensibilidade da glande reduzida. ')+'O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
     if (S.depre==='sim') notas.push('<b>História psiquiátrica relevante:</b> evitar o SP-DUO — o frasco guarda 900 mg de clomipramina.');
     if (semPomada) notas.push('<b>Restrição a pomada anestésica:</b> o RET-1 está fora deste paciente.');
     if (semPomada&&S.preserv==='sim') notas.push('<b>Sem recursos tópicos disponíveis</b> — pomada e preservativo retardante estão os dois excluídos. Restam apenas as vias sistêmicas e a abordagem comportamental.');
@@ -7277,7 +7455,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.hasDE){ add(qn('IIEF-5')+' total','<b>'+qv(sIIEF+'/25')+' — '+bDE.label+'</b>'); Q_IIEF.forEach(q=>add('· '+q.short,S[q.id])); }
     if (S.hasEP){ add(qn('PEDT')+' total','<b>'+qv(sPEDT+'/20')+' — '+bEP.label+'</b>'); Q_PEDT.forEach(q=>add('· '+q.short,S[q.id])); }
     const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
-    screens.filter(s=>LBL[s.id]).forEach(s=>{const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
+    screens.filter(s=>LBL[s.id]).forEach(s=>{ if (s.id==='biotens'){ add(LBL[s.id], txtBiotens(S.biotens)||'—'); return; } /* v2.5-S: valor e faixa (antes saía "—": tela numérica não tem opções) */ const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
     const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=itemKit(c, kit);if(!i) return '';
       // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
       // v2.5-H (item 1): sem dose indicada (1ª consulta), a dose inicial padrão da clínica para a R5 (a mesma do TEFI)
@@ -7463,7 +7641,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       </div>`;
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
-      iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),ondasSessoes:((kit.some(e=>(Array.isArray(e)?e[0]:e)==='ONDAS') || S.tefiConduta==='ondas') ? ((prev && Number(prev.ondasSessoes)) || ONDAS_SESSOES) : null),biotens:(bio===null?null:bio),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
+      iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),ondasSessoes:((kit.some(e=>(Array.isArray(e)?e[0]:e)==='ONDAS') || S.tefiConduta==='ondas') ? ((prev && Number(prev.ondasSessoes)) || ONDAS_SESSOES) : null),biotens:(bio===null?null:bio),biotensFaixa:(fBio?fBio.t:null),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
       tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),iciDor:S.iciDor||null,iciDorImpede:S.iciDorImpede||null,iciPge1Troca:S.iciPge1Troca||null,ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);
@@ -7594,7 +7772,20 @@ document.documentElement.setAttribute('data-tema',t)})();
   // hormonal que a clínica pede (o mesmo de LABS: testosterona total e livre, SHBG,
   // LH, FSH, estradiol e prolactina); o médico marca/desmarca e acrescenta antes de imprimir.
   const EXA_BASE = ['Testosterona total','Testosterona livre','SHBG','LH','FSH','Estradiol','Prolactina'];
-  const EXA_OPC  = ['Hemograma completo','PSA total','Perfil hepático (TGO, TGP, GGT, bilirrubinas)','Perfil lipídico','Glicemia de jejum','Espermograma','US abdome total','US de próstata via abdominal (com medida de resíduo urinário)'];
+  // v2.5-S (item 6): opções pedidas pelo Dr. Marco. PSA é sempre total + livre; glicemia é sempre
+  // jejum + HbA1c; sorologias saem em bloco (um item, todos os exames listados no papel).
+  const EXA_SOROLOGIAS = 'Sorologias';
+  const EXA_SORO_ITENS = ['Anti-HIV','Anti-HCV','Anti-HBs','HBsAg','Anti-HBc','VDRL','FTA-ABS IgM e IgG','Herpes simples tipo I e II — IgM e IgG'];
+  const EXA_OPC  = ['Hemograma completo','Coagulograma','Função renal (creatinina e ureia)','PSA total e PSA livre',
+    'Glicemia de jejum e hemoglobina glicada (HbA1c)','Perfil hepático (TGO, TGP, GGT, bilirrubinas)','Perfil lipídico',
+    'Ácido úrico','TSH e T4 livre','Vitamina D (25-hidroxivitamina D)','Vitamina B12',EXA_SOROLOGIAS,
+    'Painel molecular de IST (urina de 1º jato)','Espermograma'];
+  // v2.5-S (itens 4 e 5): ultrassom em folha própria, com o mesmo cabeçalho, indicação e rodapé.
+  // US de abdome total e US de próstata via abdominal entram marcados (antes ficavam desmarcados e
+  // não saíam no pedido se o médico não marcasse).
+  const EXA_US   = ['US de abdome total','US de próstata via abdominal (com resíduo pós-miccional)'];
+  const ehUS = x => EXA_US.indexOf(x)>=0 || /^(US|USG)\b|ultrass/i.test(String(x||''));
+  const exaTodos = ()=>EXA_BASE.concat(EXA_OPC, EXA_US, exaExtra);
   let exaSel = null, exaExtra = [], exaCod = null, exaIndic = null, exaIdMudou = false;
   // v2.5-P: todo pedido leva a indicação clínica — a mais específica que o app conhece, editável
   function exaIndicacaoPadrao(){
@@ -7605,23 +7796,29 @@ document.documentElement.setAttribute('data-tema',t)})();
     return 'Acompanhamento clínico de tratamento';
   }
   function exaPadrao(){
-    const sel = {}; EXA_BASE.forEach(x=>sel[x]=true); EXA_OPC.forEach(x=>sel[x]=false);
+    const sel = {}; EXA_BASE.forEach(x=>sel[x]=true); EXA_OPC.forEach(x=>sel[x]=false); EXA_US.forEach(x=>sel[x]=true);
     // hipogonadismo: hemograma e PSA entram marcados (acompanhamento da reposição)
-    if (S.hasHipo){ sel['Hemograma completo']=true; sel['PSA total']=true; }
+    if (S.hasHipo){ sel['Hemograma completo']=true; sel['PSA total e PSA livre']=true; }
     return sel;
   }
   function pintaExames(){
     const c = el('exaCorpo'); if (!c) return;
-    const todos = EXA_BASE.concat(EXA_OPC, exaExtra);
+    const todos = exaTodos();
     const ca = contatoAtual();
     c.innerHTML = '<div class="exa-id"><div class="exa-id-t">Identificação do paciente <small>'+escH(norm(S.codigo||''))+'</small></div>'
       + '<label>Nome completo<input class="fld" id="exaNome" autocomplete="off" placeholder="Nome e sobrenome" value="'+escH(ca.nome||'')+'"></label>'
       + '<label>Data de nascimento<input class="fld" id="exaNasc" inputmode="numeric" autocomplete="off" placeholder="DD/MM/AAAA" value="'+escH(nascBR(ca.nascimento))+'"></label>'
       + '<div class="exa-id-aviso" id="exaIdAviso"></div></div>'
       + '<label class="exa-ind">Indicação clínica<input class="fld" id="exaIndic" autocomplete="off" value="'+escH(exaIndic||'')+'"></label>'
-      + '<p class="exa-nota">Marque o que vai no pedido. Coleta matinal, em jejum, entre 7h e 10h.</p>'
-      + '<div class="exa-lista">'+todos.map((x,i)=>'<label><input type="checkbox" data-exa="'+i+'"'+(exaSel[x]?' checked':'')+'> '+escH(x)+'</label>').join('')+'</div>'
-      + '<div class="exa-add"><input class="fld" id="exaNovo" placeholder="Outro exame (ex.: TSH)"><button type="button" class="btn btn-ghost" id="exaIncluir">Incluir</button></div>';
+      + '<p class="exa-nota">Marque o que vai no pedido. Laboratório: coleta matinal, em jejum, entre 7h e 10h. Ultrassom sai em folha separada.</p>'
+      + (()=>{ const item = x=>{ const i=todos.indexOf(x), bloco = x===EXA_SOROLOGIAS;
+                 return '<label'+(bloco?' class="exa-bloco"':'')+'><input type="checkbox" data-exa="'+i+'"'+(exaSel[x]?' checked':'')+'> <span>'+escH(x)
+                   +(bloco?'<small>'+escH(EXA_SORO_ITENS.join(' · '))+'</small>':'')+'</span></label>'; };
+               const extraLab = exaExtra.filter(x=>!ehUS(x)), extraUS = exaExtra.filter(ehUS);
+               return '<div class="exa-grupo">Perfil hormonal</div><div class="exa-lista">'+EXA_BASE.map(item).join('')+'</div>'
+                 + '<div class="exa-grupo">Outros exames de laboratório</div><div class="exa-lista">'+EXA_OPC.concat(extraLab).map(item).join('')+'</div>'
+                 + '<div class="exa-grupo">Ultrassonografia · folha separada</div><div class="exa-lista">'+EXA_US.concat(extraUS).map(item).join('')+'</div>'; })()
+      + '<div class="exa-add"><input class="fld" id="exaNovo" placeholder="Outro exame (ex.: ferritina)"><button type="button" class="btn btn-ghost" id="exaIncluir">Incluir</button></div>';
     c.querySelectorAll('input[data-exa]').forEach(cb=>cb.onchange=()=>{ exaSel[todos[+cb.dataset.exa]] = cb.checked; });
     const inc = ()=>{ const v = (el('exaNovo').value||'').trim(); if (!v) return;
       if (todos.indexOf(v)<0){ exaExtra.push(v); } exaSel[v] = true; pintaExames(); };
@@ -7639,28 +7836,36 @@ document.documentElement.setAttribute('data-tema',t)})();
     el('exaNovo').onkeydown = e=>{ if (e.key==='Enter'){ e.preventDefault(); inc(); } };
   }
   function montaPedidoExames(){
-    const lista = EXA_BASE.concat(EXA_OPC, exaExtra).filter(x=>exaSel[x]);
+    const lista = exaTodos().filter(x=>exaSel[x]);
+    const lab = lista.filter(x=>!ehUS(x)), us = lista.filter(ehUS);
     const hoje = new Date().toLocaleDateString('pt-BR');
     const ca = contatoAtual(), nasc = ca.nascimento, idade = nasc ? idadeDe(nasc) : null;
     const indic = String(exaIndic==null ? exaIndicacaoPadrao() : exaIndic).trim() || 'Acompanhamento clínico de tratamento';
     const branco = w => '<span class="linha" style="min-width:'+w+'"></span>';
-    el('printExames').innerHTML = '<div class="pac">'
+    // v2.5-P: identificação (nome completo, nascimento, código) e indicação clínica em todo pedido;
+    // sem o dado, linha em branco para preencher à mão.
+    // v2.5-S (item 5): laboratório e ultrassom em folhas separadas — as duas com o mesmo cabeçalho,
+    // a mesma identificação, a mesma indicação e o mesmo rodapé.
+    const folha = (titulo, itens, rodapeColeta) => '<div class="pac exa-folha">'
       + '<div class="cab"><div class="m">MAXIMUS<small>MEDICINA MASCULINA</small></div><div class="d">'+escH(norm(S.codigo||''))+'<br>'+hoje+'</div></div>'
-      + '<h3>Pedido de exames</h3><div class="sub">Para trazer na próxima consulta</div>'
-      // v2.5-P: identificação (nome completo, nascimento, código) e indicação clínica em todo pedido;
-      // sem o dado, linha em branco para preencher à mão
+      + '<h3>'+titulo+'</h3><div class="sub">Para trazer na próxima consulta</div>'
       + '<table class="exa-ident"><tr><td class="r">Paciente</td><td>'+(ca.nome ? '<b>'+escH(ca.nome)+'</b>' : branco('95mm'))+'</td></tr>'
       + '<tr><td class="r">Nascimento</td><td>'+(nasc ? escH(nascBR(nasc))+(idade!=null?' &middot; '+idade+' anos':'') : '<span class="linha" style="min-width:12mm"></span>/<span class="linha" style="min-width:12mm"></span>/<span class="linha" style="min-width:20mm"></span>')+'</td></tr>'
       + '<tr><td class="r">Código</td><td>'+escH(norm(S.codigo||''))+'</td></tr>'
       + '<tr><td class="r">Indicação clínica</td><td>'+escH(indic)+'</td></tr></table>'
       + '<h4>Exames solicitados</h4>'
-      + '<ul>'+lista.map(x=>'<li>'+escH(x)+'</li>').join('')+'</ul>'
-      + '<div>Coleta matinal, em jejum, entre 7h e 10h.</div>'
+      + '<ul>'+itens.map(x=> x===EXA_SOROLOGIAS
+          ? '<li>Sorologias:<ul class="exa-sub-itens">'+EXA_SORO_ITENS.map(y=>'<li>'+escH(y)+'</li>').join('')+'</ul></li>'
+          : '<li>'+escH(x)+'</li>').join('')+'</ul>'
+      + (rodapeColeta ? '<div class="exa-prep">'+rodapeColeta+'</div>' : '')
       + '<div class="assin">______________________________________<br>Dr. Marco Corsetti · CRM 52.94351-7 · RQE 31969</div>'
       + '<div class="rodape">Clínica Maximus Medicina Masculina · Dr. Marco Corsetti · CRM 52.94351-7 · RQE 31969</div></div>';
+    el('printExames').innerHTML = (lab.length ? folha('Pedido de exames', lab, 'Coleta matinal, em jejum, entre 7h e 10h.') : '')
+      + (us.length ? folha('Pedido de exames — ultrassonografia', us, '') : '');
     return lista.length;
   }
-  window.__mxExames = { abre: ()=>abreExames(), lista: ()=>EXA_BASE.concat(EXA_OPC, exaExtra).filter(x=>exaSel && exaSel[x]), monta: ()=>montaPedidoExames() };
+  window.__mxExames = { abre: ()=>abreExames(), lista: ()=>exaTodos().filter(x=>exaSel && exaSel[x]), monta: ()=>montaPedidoExames(),
+    opcoes: ()=>({base:EXA_BASE.slice(), opc:EXA_OPC.slice(), us:EXA_US.slice(), sorologias:EXA_SORO_ITENS.slice()}) };
   function abreExames(){
     const cod = norm(S.codigo||'') + '|' + ((window.__mxReg||{}).data||'');
     if (!exaSel || exaCod!==cod){ exaSel = exaPadrao(); exaExtra = []; exaCod = cod; exaIndic = exaIndicacaoPadrao(); exaIdMudou = false; }   // novo atendimento = lista padrão
@@ -8131,7 +8336,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     if ((screens[si]||{}).id!==id) return false;
     const b = [...document.querySelectorAll('#optsWrap .opt')].find(x=>x.dataset.v===String(v));
     if (!b) return false;
-    b.click(); return true;
+    mxSemAutoAvanco = true; try{ b.click(); } finally { mxSemAutoAvanco = false; }
+    return true;
   }
   async function mxEscolheBusca(k){
     const it = mxBuscaItens[k]; if (!it) return;
@@ -8187,6 +8393,8 @@ document.documentElement.setAttribute('data-tema',t)})();
         S.codigo = it.cod; paint();
         await avancar();
       }
+      // v2.5-S (item 1): "Atender" / "Iniciar atendimento" entram direto na primeira pergunta
+      await mxPulaConfirmHist(it.tipo);
     }catch(e){ mxToast('Não foi possível abrir '+norm(it.cod)+' pela busca. Siga pela tela inicial.'); }
   }
 

@@ -272,7 +272,8 @@ conduta"); o relatório da consulta não o repete. `tests/teste_conduta.js` conf
 **Seletores numéricos.** Recepção usa roleta (iPad, toque). Consultório usa
 slider com −/+. Nenhum campo numérico é digitado — exceto a saída explícita
 para valor fora da faixa, onde ela existe. O seletor abre mostrando o valor
-mediano em cinza; nada é registrado sem gesto do usuário.
+mediano em cinza (ou o valor inicial da `FAIXAS`, 6º elemento: biotensiômetro
+7 V, circunferência 8 cm — v2.5-S); nada é registrado sem gesto do usuário.
 
 **Panorama e módulos.** O atendimento é uma grade de módulos numerados, não uma
 fila de telas. Contorno verde = módulo completo. Ao terminar um módulo, o app
@@ -394,7 +395,7 @@ depois; cada tela avança uma vez só (`agendaAvanco`): o segundo toque só troc
 resposta e o avanço não acontece se a tela já mudou (Continuar ou Voltar). No
 "novo ou retorno", enquanto confere o banco, um segundo toque é ignorado. Antes
 um toque duplo pulava a pergunta seguinte, inclusive o contato. Teste:
-`tests/teste_toque.js` (etapa 10 do `testar.sh`). Triagem e financeiro não têm avanço sozinho.
+`tests/teste_toque.js` (etapa 10 do `testar.sh`). Financeiro não tem avanço sozinho; a triagem só na abertura (v2.5-S, abaixo).
 O `teste_kiosk.js` tocava de novo 40 ms depois de cada toque e só passava da
 tela de várias escolhas quando o avanço em dobro a pulava (daí a falha
 intermitente "não chegou ao fim em 120 passos"); agora espera a tela trocar,
@@ -410,6 +411,15 @@ de `case` dentro de `$( )` (use uma função), nada de bash 4+ (`wait -n`,
 (`MAXIMUS_SECO=1`) no bash 3.2: `/bin/bash` no Mac, `bash3.2` no box
 (`/usr/local/bin/bash3.2`, compilado do GNU bash 3.2.57) ou `MAXIMUS_BASH32`.
 Sem bash 3.2, só a parte estática, com aviso.
+
+**Pedidos do Dr. Marco (v2.5-S · 2.5.18).**
+- **Paciente novo sem recepção: nome completo e nascimento obrigatórios.** Causa: a triagem nunca perguntava nome nem nascimento; a tela de contato só tinha iniciais/telefone/email e só aparecia sem telefone+email; nome/nascimento vinham só da recepção (opcionais lá) ou do modal de exames; na 1ª avaliação o `carregarHistorico` sai cedo e não procura a recepção de hoje; e o `limparPaciente` não limpava nome/nascimento (vazava do paciente anterior). Agora: `pedeIdent()` (uni + `visita==='primeira'` + paciente) → a tela `contato` vira "Dados do paciente" com Nome completo (nome e sobrenome, `nomeCompletoOK`) e Data de nascimento (DD/MM/AAAA válida), ambos obrigatórios (`identOK`), iniciais saem do nome. Vale para todas as entradas: código digitado, retorno sem histórico, fila sem nome. Paciente da recepção com nome+nascimento+contato: a tela não aparece (`contatoAtual` usa a fila ou `recepcaoDeHoje()`). Gravado em `nome`/`nascimento` (ISO) e usado no pedido de exames.
+- **Abertura direta:** nas telas `origem`, `filaVazia` e `daFila` (`autoAvanca`) o clique avança sozinho 140 ms depois (`agendaAutoAvanco`, uma vez por tela, cancela se a tela mudou). "Atender" na fila, "Iniciar atendimento" na busca e o clique na fila pulam o "Histórico — Confirmar e continuar" (`mxPulaConfirmHist`), exceto se o histórico falhou. Nenhuma outra tela avança sozinha.
+- **Enter = Próxima** (handler global): não age em textarea, em botão/link focado (o Enter é dele), em diálogos/overlays, com auto-repeat ou com avanço em curso (`avancandoAgora`). Obrigatório em aberto: mostra o que falta.
+- **Pedido de exames:** novas opções (coagulograma, função renal, PSA total e livre — PSA nunca sozinho —, glicemia + HbA1c, ácido úrico, TSH e T4 livre, vitamina D, B12, bloco Sorologias com 8 itens, painel molecular de IST). `EXA_US` (US de abdome total, US de próstata via abdominal com resíduo pós-miccional) entram marcados e **sempre** saem numa folha separada (`.pac.exa-folha`, quebra de página), com o mesmo cabeçalho, indicação e rodapé. US digitado à mão (começa com "US ") vai para a folha do US.
+- **Preenchimento sem comprimento** (telas, ficha, histórico, papel, registro `preench`). Circunferência: escala 3–20 cm, abre em 8 cm.
+- **Biotensiômetro em volts (0–40 V, abre em 7 V).** Slider arrasta de 0,5 V; −/+ de 0,1 V; "Digitar valor exato" aceita qualquer valor de 0 a 40 com uma casa (7º elemento da `FAIXAS` = passo do arraste). As três notas da conduta têm o mesmo formato: valor em negrito + faixa em pílula na cor da faixa (`.mx-bio`); no painel a faixa vai na linha de baixo. Faixas (`faixaBiotens`): < 5 hipersensibilidade importante · 5 a < 7 hipersensibilidade provável · 7–10 normal (inclusive) · > 10–15 hipossensibilidade provável · > 15 hipossensibilidade importante. Conduta: `hipersens` = < 7 V (`BIOT_HIPER`; antes < 10) → RET-1/PRESERV e marcador "hipersensibilidade da glande"; 7–10 V nota "sensibilidade normal"; > 10 V (`BIOT_HIPO`) nota de hipossensibilidade (mesma consequência de antes para "não hiper": favorece a via sistêmica). O nome da faixa aparece ao vivo no seletor, no painel, na ficha, no histórico, no relatório impresso (antes saía "Biotensiômetro: —") e no registro (`biotensFaixa`). Antes: escala 0–100, < 10 vermelho, 10–20 verde, > 20 âmbar.
+- Teste: `tests/teste_v25s.js` (etapa 7n).
 
 **Conduta, exames, ICI e protocolo com dose (v2.5-R · 2.5.17).**
 - **Pedido de exames:** nome completo e nascimento já vêm preenchidos da fila/cadastro (`S` hidratado ao aplicar a fila e ao carregar histórico); se faltarem, o modal foca o campo vazio.

@@ -178,24 +178,24 @@ pac('MX9127', 'DUO', 'OVC', 46, 86, 177, [
 pac('MX9128', 'DUO', 'TSM', 51, 90, 175, [], { h: '11:40', q: 'ambos', iief: 13, pedt: 14, novo: true }, 'DUO; paciente NOVO na fila de hoje');
 
 // ---- preenchimento (4)
-const PRE1 = (ml, x) => Object.assign({ visita: 'primeira', queixa: 'preench', tipoPenis: 'grower', medPre: { compFlac: '9', diamFlac: '9' },
+const PRE1 = (ml, x) => Object.assign({ visita: 'primeira', queixa: 'preench', tipoPenis: 'grower', medPre: { diamFlac: '9' },
   prepucio: 'medio', retracao: 'leve', plano: { previsaoML: '6a8', planoBotox: 'nao' }, concordou: 'sim', termo: 'sim',
-  medPos: { compPos: '10', diamPos: '11' }, mlUsado: ml, botox: 'nao', marcaAH: 'Rennova Shape Lido (seringa 2 mL)', notaMedico: 8 }, x || {});
-const PRE_RET = x => Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'preench', medRet: { compRet: '10', diamRet: '11' },
+  medPos: { diamPos: '11' }, mlUsado: ml, botox: 'nao', marcaAH: 'Rennova Shape Lido (seringa 2 mL)', notaMedico: 8 }, x || {});
+const PRE_RET = x => Object.assign({ visita: 'reav', confirmHist: 'ok', queixa: 'preench', medRet: { diamRet: '11' },
   retracaoRet: 'ausente', nodulos: 'nao', notaMedicoRet: 8, satisfPac: 8, conduta: 'nada' }, x || {});
 pac('MX9129', 'preenchimento', 'KWE', 35, 80, 178, [
   { d: 128, h: '13:00', r: PRE1('8 mL') },
   { d: 106, h: '13:30', r: PRE_RET({ conduta: 'retoque', aplicacao: { mlRetoque: '2 mL', marcaRetoque: 'Rennova Shape Lido' }, satisfPac: 7 }) }
 ], null, 'preenchimento 8 mL + retorno de 3 semanas com retoque');
 pac('MX9130', 'preenchimento', 'DRZ', 40, 83, 180, [
-  { d: 23, h: '14:00', r: PRE1('6 mL', { medPre: { compFlac: '8', diamFlac: '9' }, retracao: 'ausente' }) }
+  { d: 23, h: '14:00', r: PRE1('6 mL', { medPre: { diamFlac: '9' }, retracao: 'ausente' }) }
 ], { h: '09:40', q: 'preench', procedimento: true, reacoes: ['inchaco'], desconforto: 'leve', satisfPre: 8, diasProc: 23 }, 'preenchimento há 23 dias; retorno do procedimento na fila de hoje');
 pac('MX9131', 'preenchimento', 'ELU', 44, 87, 176, [
   { d: 210, h: '15:00', r: PRE1('10 mL', { plano: { previsaoML: '8a10', planoBotox: 'nao' } }) },
   { d: 188, h: '15:20', r: PRE_RET({ nodulos: 'sim', conduta: 'hialuro', mlHialuro: '0,5 mL', satisfPac: 6, notaMedicoRet: 6 }) }
 ], null, 'preenchimento 10 mL; nódulo no retorno → hialuronidase');
 pac('MX9132', 'preenchimento', 'FAG', 31, 72, 173, [
-  { d: 18, h: '16:30', r: { visita: 'primeira', queixa: 'preench', tipoPenis: 'shower', medPre: { compFlac: '10', diamFlac: '10' }, prepucio: 'ausente', retracao: 'ausente', plano: { previsaoML: 'ate6', planoBotox: 'nao' }, concordou: 'nao' } }
+  { d: 18, h: '16:30', r: { visita: 'primeira', queixa: 'preench', tipoPenis: 'shower', medPre: { diamFlac: '10' }, prepucio: 'ausente', retracao: 'ausente', plano: { previsaoML: 'ate6', planoBotox: 'nao' }, concordou: 'nao' } }
 ], null, 'avaliação para preenchimento, sem procedimento');
 
 // ---- TEFI (3) — "TAF" não existe no app; TEFI é o teste em consultório mais próximo
@@ -308,7 +308,11 @@ function recepcao(p, d, o) {
         regs.push(recepcao(p, dr, o));
       }
       const c = contato(p);
-      const resp = Object.assign({ contato: { iniciais: c.iniciais, telefone: c.telefone, email: c.email } }, r);
+      // v2.5-S: primeira avaliação pede nome completo e nascimento — os mesmos (inventados) da recepção
+      const nasc = nascimento(p, new Date()).split('-').reverse().join('/');
+      const cont = { iniciais: c.iniciais, telefone: c.telefone, email: c.email, nascimento: nasc };
+      if (NOMES[p.ini]) cont.nome = NOMES[p.ini];
+      const resp = Object.assign({ contato: cont }, r);
       const res = await roda({ id: p.cod, codigo: p.cod, respostas: resp, ciclos: regs.slice() }, true, { antes: relogio(d) });
       if (res.falha || !res.salvo) {
         falhas++;

@@ -74,7 +74,7 @@ function preenche(doc, win) {
   const sel = doc.querySelector('#optsWrap select');
   if (sel) { const vs = [...sel.options].map(o => o.value).filter(Boolean); if (vs.length) { sel.value = pick(vs); sel.dispatchEvent(new win.Event('change', { bubbles: true })); } return; }
   const inputs = [...doc.querySelectorAll('#optsWrap input.fld')];
-  if (inputs.length) { inputs.forEach(i => { i.value = i.inputMode === 'decimal' ? String(intBetween(1, 30)) : (i.inputMode === 'tel' ? '21999990000' : (i.type === 'email' ? 'paciente@exemplo.com' : 'teste')); i.dispatchEvent(new win.Event('input', { bubbles: true })); }); return; }
+  if (inputs.length) { inputs.forEach(i => { i.value = i.dataset.campo === 'nome' ? 'Paciente Sintético Teste' : i.dataset.campo === 'nascimento' ? '15/04/1970' : i.inputMode === 'decimal' ? String(intBetween(1, 30)) : (i.inputMode === 'tel' ? '21999990000' : (i.type === 'email' ? 'paciente@exemplo.com' : 'teste')); i.dispatchEvent(new win.Event('input', { bubbles: true })); }); return; }
   const opts = [...doc.querySelectorAll('#optsWrap .opt')];
   if (opts.length) pick(opts).click();
 }

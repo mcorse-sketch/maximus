@@ -164,14 +164,16 @@ const txt = (doc, sel) => [...doc.querySelectorAll(sel)].map(e => e.textContent.
     bt.click();
     const api = r.win.__mxExames;
     const l0 = api.lista();
-    ok(doc.getElementById('exaOverlay').style.display === 'flex' && JSON.stringify(l0) === JSON.stringify(['Testosterona total', 'Testosterona livre', 'SHBG', 'LH', 'FSH', 'Estradiol', 'Prolactina']),
-      'editor abre com o perfil hormonal da clínica marcado', JSON.stringify(l0));
+    // v2.5-S: perfil hormonal + os dois ultrassons (abdome total e próstata via abdominal) marcados
+    ok(doc.getElementById('exaOverlay').style.display === 'flex' && JSON.stringify(l0) === JSON.stringify(['Testosterona total', 'Testosterona livre', 'SHBG', 'LH', 'FSH', 'Estradiol', 'Prolactina',
+      'US de abdome total', 'US de próstata via abdominal (com resíduo pós-miccional)']),
+      'editor abre com o perfil hormonal da clínica e os ultrassons marcados', JSON.stringify(l0));
     const cbs = [...doc.querySelectorAll('#exaCorpo input[data-exa]')];
     cbs.find(c => /Prolactina/.test(c.parentNode.textContent)).click();
     cbs.find(c => /PSA total/.test(c.parentNode.textContent)).click();
     doc.getElementById('exaNovo').value = 'TSH'; doc.getElementById('exaIncluir').click();
     const l1 = api.lista();
-    ok(l1.indexOf('Prolactina') < 0 && l1.indexOf('PSA total') >= 0 && l1.indexOf('TSH') >= 0, 'médico tira, inclui da lista e acrescenta exame livre', JSON.stringify(l1));
+    ok(l1.indexOf('Prolactina') < 0 && l1.indexOf('PSA total e PSA livre') >= 0 && l1.indexOf('TSH') >= 0, 'médico tira, inclui da lista e acrescenta exame livre', JSON.stringify(l1));
     api.monta();
     const ped = doc.getElementById('printExames').textContent;
     ok(/Pedido de exames/.test(ped) && /TSH/.test(ped) && !/Prolactina/.test(ped) && /jejum/.test(ped), 'pedido impresso traz só o que ficou marcado');
