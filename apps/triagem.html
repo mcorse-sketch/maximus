@@ -124,6 +124,9 @@ html[data-tema="escuro"] .opt .est-a{background:rgba(255,255,255,.08);color:inhe
 .selnum .v .un{font-size:18px;font-weight:500;color:#6b6a66;margin-left:6px}
 .selnum .v.sugerido{color:#9aa3a6}
 .selnum-dica{text-align:center;font-size:12px;color:#6b6a66;margin-top:2px}
+.selnum-faixa{display:table;margin:2px auto 4px;font-size:13px;font-weight:600;padding:2px 12px;border-radius:999px;background:rgba(0,0,0,.05);color:#3a3a38}
+.selnum-faixa.verde{background:rgba(30,130,76,.12);color:#1e6b43}.selnum-faixa.ambar{background:rgba(154,88,0,.12);color:#8a4f00}.selnum-faixa.vermelho{background:rgba(179,38,30,.11);color:#9c2119}
+.selnum-faixa.sugerido{opacity:.55}
 .selnum .row{display:grid;grid-template-columns:64px 1fr 64px;gap:12px;align-items:center;margin-top:6px}
 .selnum button{height:60px;border-radius:14px;border:2px solid #0e5e6f;background:#dcebee;color:#0e5e6f;font-size:28px;line-height:1;cursor:pointer}
 .selnum button:active{background:#0e5e6f;color:#fff}
@@ -2549,7 +2552,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const fx0 = ((sc.kind==='num'||sc.kind==='text') ? faixaDe(sc.id, sc) : null);
     if (fx0){
-      optsWrap.appendChild(montaSeletorNum({id:sc.id, label:sc.text, min:fx0.min, max:fx0.max, passo:fx0.passo, un:fx0.un, fechada:fx0.fechada, ini:fx0.ini,
+      optsWrap.appendChild(montaSeletorNum({id:sc.id, label:sc.text, min:fx0.min, max:fx0.max, passo:fx0.passo, un:fx0.un, fechada:fx0.fechada, ini:fx0.ini, faixaRotulo:sc.faixaRotulo,
         aoMudar:()=>{ const e=el('fldErr'); if(e) e.style.display='none'; nextBtn.disabled = sc.optional ? false : !val(sc); }}));
       if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
       const e0=document.createElement('div'); e0.className='fld-err'; e0.id='fldErr'; e0.textContent='Defina um valor para continuar'; optsWrap.appendChild(e0);
@@ -2994,7 +2997,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     h += '<h4>Exames e laboratório</h4><table>'
       + linhaFicha('Testosterona total', ultLab&&ultLab.tTotal?ultLab.tTotal:null)
       + linhaFicha('LH', ultLab&&ultLab.lh?ultLab.lh:null)
-      + linhaFicha('Biotensiômetro', (preenchido(S.biotens)?S.biotens:(prev&&prev.biotens!=null?prev.biotens:null)))
+      + linhaFicha('Biotensiômetro', txtBiotens(preenchido(S.biotens)?S.biotens:(prev&&prev.biotens!=null?prev.biotens:null)))
       + linhaFicha('TEFI', (S.tefiBanco? 'realizado' : (prev&&prev.tefi&&prev.tefi.resp?'realizado':null)))
       + linhaFicha('Doppler', (prev&&prev.tefi&&prev.tefi.doppler)||null)
       + '</table>';
@@ -3157,7 +3160,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (c.psiquiatrico==='sim' && mudou('psiquiatrico')) add('Antecedente psiquiátrico', '<span class="pend">sim</span>');
       if (c.fertilidade==='sim' && mudou('fertilidade')) add('Deseja engravidar em 12 meses', 'sim');
       if (c.previaTrat && mudou('previaTrat')) add('Tratamento prévio', R.previaTrat[c.previaTrat]||c.previaTrat);
-      if (c.biotens!=null) add('Biotensiômetro', escH(c.biotens));
+      if (c.biotens!=null) add('Biotensiômetro', escH(txtBiotens(c.biotens)));
       if (c.medidasRecepcao && c.medidasRecepcao.peso)
         add('Medidas', c.medidasRecepcao.peso+' kg'+(c.medidasRecepcao.imc?' · IMC '+c.medidasRecepcao.imc:''));
       add('Laboratório', labsDoCiclo(c.labs) || null);
@@ -4137,8 +4140,25 @@ document.documentElement.setAttribute('data-tema',t)})();
     const m = menorEhMelhor ? d<0 : d>0;
     return (m?'melhorou ':'piorou ') + Math.abs(d) + (Math.abs(d)===1?' ponto':' pontos');
   }
-  function classeBiotens(v){ v=+v; if(!(v>=0)) return ''; if (v<10) return 'vermelho'; if (v<=20) return 'verde'; return 'ambar'; }
-  function rotuloBiotens(v){ v=+v; if(!(v>=0)) return ''; if (v<10) return 'abaixo de 10'; if (v<=20) return 'faixa 10 a 20'; return 'acima de 20'; }
+  // v2.5-S (Dr. Marco, 06/10/2026): biotensiômetro em volts, escala 0–40 V.
+  // Faixas: < 5 hipersensibilidade importante · 5 a < 7 hipersensibilidade provável · 7–10 normal (inclusive)
+  //         > 10–15 hipossensibilidade provável · > 15 hipossensibilidade importante.
+  // Conduta: < 7 V = hipersensibilidade · 7–10 V = normal · > 10 V = hipossensibilidade.
+  // (antes: < 10 hipersensibilidade/vermelho, 10–20 verde, > 20 âmbar, escala 0–100)
+  const BIOT_HIPER = 7, BIOT_HIPO = 10;
+  function faixaBiotens(v){
+    v = (typeof v==='string') ? parseFloat(v.replace(',','.')) : +v;
+    if (!(v>=0)) return null;
+    if (v<5)  return {k:'hiperImp',  eixo:'hiper',  t:'Hipersensibilidade importante', c:'vermelho'};
+    if (v<BIOT_HIPER) return {k:'hiperProv', eixo:'hiper', t:'Hipersensibilidade provável', c:'ambar'};
+    if (v<=BIOT_HIPO) return {k:'normal', eixo:'normal', t:'Normal', c:'verde'};
+    if (v<=15) return {k:'hipoProv', eixo:'hipo', t:'Hipossensibilidade provável', c:'ambar'};
+    return {k:'hipoImp', eixo:'hipo', t:'Hipossensibilidade importante', c:'vermelho'};
+  }
+  function classeBiotens(v){ const f=faixaBiotens(v); return f ? f.c : ''; }
+  function rotuloBiotens(v){ const f=faixaBiotens(v); return f ? f.t : ''; }
+  function numBiotens(v){ const n=(typeof v==='string') ? parseFloat(v.replace(',','.')) : +v; return isNaN(n) ? String(v) : String(+n.toFixed(1)).replace('.',',')+' V'; }
+  function txtBiotens(v){ if (v==null || v==='') return null; const f=faixaBiotens(v); return numBiotens(v)+(f?' · '+f.t:''); }
 
   const MODS = [
     {n:'Identifica\u00e7\u00e3o', ids:['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa','novaQueixa']},
@@ -4268,14 +4288,14 @@ document.documentElement.setAttribute('data-tema',t)})();
   const FAIXAS = {
     idade:[18,99,1,'anos'],
     // escores e índices são fechados por definição: não existe valor fora da faixa
-    // 6º item = valor sugerido ao abrir o seletor (sem ele, a mediana). v2.5-S: biotensiômetro abre em 20
-    iiefAnt:[5,25,1,'',true], pedtAnt:[0,20,1,'',true], biotens:[0,100,1,'',true,20],
+    // 6º item = valor sugerido ao abrir o seletor (sem ele, a mediana). v2.5-S: biotensiômetro 0–40 V, abre em 7 V
+    iiefAnt:[5,25,1,'',true], pedtAnt:[0,20,1,'',true], biotens:[0,40,0.1,'V',true,7],
     tTotal:[0,1500,5,'ng/dL'], tLivre:[0,60,0.5,'pg/mL'], shbg:[0,200,1,'nmol/L'],
     lh:[0,30,0.1,'UI/L'], fsh:[0,40,0.1,'UI/L'], prolactina:[0,120,0.5,'ng/mL'],
     estradiol:[0,120,1,'pg/mL'], ht:[25,70,0.5,'%'], psa:[0,20,0.1,'ng/mL'],
     psv:[0,120,1,'cm/s'], edv:[0,30,1,'cm/s'], ir:[0,1,0.01,'',true],
     // v2.5-S: circunferência abre em 10 cm; comprimento saiu do preenchimento (item 8)
-    diamFlac:[5,20,0.5,'cm',true,10], diamPos:[5,20,0.5,'cm',true,10], diamRet:[5,20,0.5,'cm',true,10],
+    diamFlac:[3,20,0.5,'cm',true,8], diamPos:[3,20,0.5,'cm',true,8], diamRet:[3,20,0.5,'cm',true,8],
     iciDose:[0.05,0.5,0.05,'mL']
   };
   function faixaDe(id, sc){
@@ -4303,6 +4323,10 @@ document.documentElement.setAttribute('data-tema',t)})();
     const r=document.createElement('input'); r.type='range'; r.min=min; r.max=max; r.step=passo;
     r.value = inicial; r.setAttribute('aria-label', cfg.label||cfg.id); r.dataset.campo = cfg.id;
     let atual = inicial;
+    // v2.5-S: escala com faixas (biotensiômetro) — o nome da faixa acompanha o valor (cinza enquanto é só sugestão)
+    const fxEl = cfg.faixaRotulo ? document.createElement('div') : null;
+    function pintaFaixa(n, sug){ if (!fxEl) return; const f=cfg.faixaRotulo(n); fxEl.className='selnum-faixa'+(f?' '+f.c:'')+(sug?' sugerido':''); fxEl.textContent=f?f.t:''; fxEl.dataset.faixa=f?f.k:''; }
+    pintaFaixa(inicial, !temValor);
     function aplica(n){
       v.classList.remove('sugerido');
       const dicaEl = box.querySelector('.selnum-dica'); if (dicaEl) dicaEl.remove();
@@ -4312,6 +4336,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       v.textContent = mostraNum(atual, passo) + (cfg.un?' ':'');
       if (cfg.un){ const u=document.createElement('span'); u.className='un'; u.textContent=cfg.un; v.appendChild(u); }
       S[cfg.id] = String(atual);
+      pintaFaixa(atual, false);
       if (cfg.aoMudar) cfg.aoMudar();
     }
     r.oninput = ()=>aplica(+r.value);
@@ -4325,8 +4350,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       dica.textContent='Valor sugerido — ajuste no slider ou toque no número para confirmar';
       v.style.cursor='pointer';
       v.onclick=()=>{ aplica(atual); v.classList.remove('sugerido'); dica.remove(); };
-      box.appendChild(v); box.appendChild(dica); box.appendChild(row); box.appendChild(lim);
-    } else { box.appendChild(v); box.appendChild(row); box.appendChild(lim); }
+      box.appendChild(v); if (fxEl) box.appendChild(fxEl); box.appendChild(dica); box.appendChild(row); box.appendChild(lim);
+    } else { box.appendChild(v); if (fxEl) box.appendChild(fxEl); box.appendChild(row); box.appendChild(lim); }
 
     // valor fora da faixa: só onde ele existe. Escore e índice são fechados.
     if (cfg.fechada) return box;
@@ -4481,7 +4506,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     // exames do consultorio
     const ex=[];
     const bt = preenchido(S.biotens) ? +S.biotens : ((prev && prev.biotens!=null) ? +prev.biotens : null);
-    if (bt!=null && !isNaN(bt)) ex.push(lin('Biotensi\u00f4metro '+bt+' \u00b7 '+rotuloBiotens(bt), classeBiotens(bt)));
+    if (bt!=null && !isNaN(bt)) ex.push(lin('Biotensi\u00f4metro '+txtBiotens(bt), classeBiotens(bt)));
     const tb = (S.tefiBanco && S.tefiBanco.tefiExame) || null;
     // v2.5-F: TEFI feito nesta consulta — "realizado hoje" com o resultado, no lugar de "indicado, não realizado"
     if (S.visita==='reav' && S.tefiFeito==='sim') ex.push(lin('TEFI realizado hoje'
@@ -5384,7 +5409,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (est.parceira) itens.push({v:'parceira', q:'Parceria fixa?', a:({fixa:'sim, parceria fixa',eventual:'parcerias eventuais',sem:'sem atividade sexual'}[est.parceira]||est.parceira)});
       if (S.hasEP){
         if (est.freq) itens.push({v:'freq', q:'Relações por semana?', a: est.freq==='alta' ? 'duas ou mais' : 'menos de duas'});
-        if (est.biotens!=null && est.biotens!=='') itens.push({v:'biotens', q:'Biotensiômetro?', a: String(est.biotens)});
+        if (est.biotens!=null && est.biotens!=='') itens.push({v:'biotens', q:'Biotensiômetro?', a: txtBiotens(est.biotens)});
         if (est.depre) itens.push({v:'depre', q:'Depressão maior ou acompanhamento psiquiátrico?', a: est.depre==='sim' ? 'sim' : 'não'});
       }
       itens.push({v:'fert', q:'Deseja engravidar nos próximos 12 meses?', a: est.fert==='sim' ? 'sim' : 'não'});
@@ -5532,9 +5557,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.hasEP){
       if (pede2('freq')) s.push({id:'freq',kind:'opts',step:D,eyebrow:'Frequência',text:'Quantas relações sexuais por semana, em média?',
         options:[{v:'alta',badge:'2+',label:'Duas ou mais'},{v:'baixa',badge:'<2',label:'Menos de duas / esporádico'}]});
-      if (pede2('biotens')) s.push({id:'biotens',kind:'num',min:0,max:100,step:D,eyebrow:'Biotensiômetro',
-        text:'Sensibilidade da glande medida no biotensiômetro (0 a 100)',ph:'ex.: 14',
-        hint:'Abaixo de 10 indica hipersensibilidade e prioriza o anestésico tópico.'});
+      if (pede2('biotens')) s.push({id:'biotens',kind:'num',min:0,max:40,step:D,eyebrow:'Biotensiômetro',
+        text:'Sensibilidade da glande medida no biotensiômetro (0 a 40 V)',ph:'ex.: 8',faixaRotulo:faixaBiotens,
+        hint:'Abaixo de 7 V: hipersensibilidade (prioriza o anestésico tópico). 7 a 10 V: normal. Acima de 10 V: hipossensibilidade.'});
       if (pede2('topico')) s.push({id:'topico',kind:'opts',step:D,eyebrow:'Recursos tópicos',
         text:'Há restrição ao uso de anestésico tópico?',
         options:[{v:'ambos',badge:'✓',label:'Sem restrição'},
@@ -6910,17 +6935,20 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (usaISRS) notas.push('<b>ISRS em uso — toda a via serotoninérgica está bloqueada.</b> Não associar paroxetina, dapoxetina nem clomipramina a um antidepressivo serotoninérgico. Para a ejaculação precoce, ficam o creme retardante, o preservativo e a abordagem comportamental. Se o controle for insuficiente, a conversa é com o psiquiatra sobre trocar o antidepressivo, não sobre somar outro serotoninérgico.');
     const semPomada=S.pomada==='sim'||alg.includes('anest');
     const bio = S.biotens==='' || S.biotens===undefined ? null : parseFloat(String(S.biotens).replace(',','.'));
-    const hipersens = bio!==null && bio<10;
-    if (hipersens) notas.push('<b>Biotensiômetro em '+bio+' — hipersensibilidade da glande.</b> É o perfil que mais responde a anestésico tópico. Priorizar '+(S.topico==='so_preserv'?'o preservativo retardante':(S.topico==='so_pomada'?'a pomada anestésica':(S.topico==='nenhum'?'... mas há restrição às duas vias tópicas, o que limita justamente o recurso mais indicado aqui':'preservativo retardante ou pomada, conforme a preferência do casal')))+'.');
+    // v2.5-S: < 7 V hipersensibilidade · 7–10 V normal · > 10 V hipossensibilidade (antes: < 10 = hipersensibilidade)
+    const fBio = bio===null ? null : faixaBiotens(bio);
+    const hipersens = bio!==null && bio<BIOT_HIPER;
+    if (hipersens) notas.push('<b>Biotensiômetro em '+numBiotens(bio)+' — '+fBio.t.toLowerCase()+' da glande.</b> É o perfil que mais responde a anestésico tópico. Priorizar '+(S.topico==='so_preserv'?'o preservativo retardante':(S.topico==='so_pomada'?'a pomada anestésica':(S.topico==='nenhum'?'... mas há restrição às duas vias tópicas, o que limita justamente o recurso mais indicado aqui':'preservativo retardante ou pomada, conforme a preferência do casal')))+'.');
     if (S.topico==='nenhum' && S.hasEP){
       notas.push('<b>Conflito entre indicação e restrição.</b> '+(hipersens
-        ? 'O biotensiômetro em '+bio+' indica hipersensibilidade da glande, o perfil que mais responde a anestésico tópico — mas o paciente declarou restrição às duas vias.'
+        ? 'O biotensiômetro em '+numBiotens(bio)+' indica hipersensibilidade da glande, o perfil que mais responde a anestésico tópico — mas o paciente declarou restrição às duas vias.'
         : 'Há indicação de recurso tópico para esta queixa, mas o paciente declarou restrição às duas vias.')
         +' Vale reabordar: a restrição costuma vir de experiência ruim com produto errado, de receio da parceria ou de uso incorreto (contato longo demais, sem lavar antes). Explicado o método, boa parte dos pacientes aceita.');
     }
     if (S.topico==='so_pomada' && S.hasEP) notas.push('Paciente prefere a pomada — o preservativo retardante não entra no kit. Se a resposta for parcial, ele continua sendo uma opção a reabordar.');
     if (S.topico==='so_preserv' && S.hasEP) notas.push('Paciente prefere o preservativo — a pomada não entra no kit. Se a resposta for parcial, ela continua sendo uma opção a reabordar.');
-    if (bio!==null && bio>=10 && S.hasEP) notas.push('Biotensiômetro em '+bio+' — sensibilidade dentro do esperado. O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
+    if (bio!==null && bio>=BIOT_HIPER && bio<=BIOT_HIPO && S.hasEP) notas.push('Biotensiômetro em '+numBiotens(bio)+' — sensibilidade normal da glande. O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
+    if (bio!==null && bio>BIOT_HIPO && S.hasEP) notas.push('Biotensiômetro em '+numBiotens(bio)+' — '+fBio.t.toLowerCase()+' da glande. O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
     if (S.depre==='sim') notas.push('<b>História psiquiátrica relevante:</b> evitar o SP-DUO — o frasco guarda 900 mg de clomipramina.');
     if (semPomada) notas.push('<b>Restrição a pomada anestésica:</b> o RET-1 está fora deste paciente.');
     if (semPomada&&S.preserv==='sim') notas.push('<b>Sem recursos tópicos disponíveis</b> — pomada e preservativo retardante estão os dois excluídos. Restam apenas as vias sistêmicas e a abordagem comportamental.');
@@ -7406,7 +7434,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.hasDE){ add(qn('IIEF-5')+' total','<b>'+qv(sIIEF+'/25')+' — '+bDE.label+'</b>'); Q_IIEF.forEach(q=>add('· '+q.short,S[q.id])); }
     if (S.hasEP){ add(qn('PEDT')+' total','<b>'+qv(sPEDT+'/20')+' — '+bEP.label+'</b>'); Q_PEDT.forEach(q=>add('· '+q.short,S[q.id])); }
     const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
-    screens.filter(s=>LBL[s.id]).forEach(s=>{const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
+    screens.filter(s=>LBL[s.id]).forEach(s=>{ if (s.id==='biotens'){ add(LBL[s.id], txtBiotens(S.biotens)||'—'); return; } /* v2.5-S: valor e faixa (antes saía "—": tela numérica não tem opções) */ const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
     const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=itemKit(c, kit);if(!i) return '';
       // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
       // v2.5-H (item 1): sem dose indicada (1ª consulta), a dose inicial padrão da clínica para a R5 (a mesma do TEFI)
@@ -7592,7 +7620,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       </div>`;
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
-      iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),ondasSessoes:((kit.some(e=>(Array.isArray(e)?e[0]:e)==='ONDAS') || S.tefiConduta==='ondas') ? ((prev && Number(prev.ondasSessoes)) || ONDAS_SESSOES) : null),biotens:(bio===null?null:bio),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
+      iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),ondasSessoes:((kit.some(e=>(Array.isArray(e)?e[0]:e)==='ONDAS') || S.tefiConduta==='ondas') ? ((prev && Number(prev.ondasSessoes)) || ONDAS_SESSOES) : null),biotens:(bio===null?null:bio),biotensFaixa:(fBio?fBio.t:null),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
       tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),iciDor:S.iciDor||null,iciDorImpede:S.iciDorImpede||null,iciPge1Troca:S.iciPge1Troca||null,ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);

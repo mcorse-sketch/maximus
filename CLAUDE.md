@@ -273,7 +273,7 @@ conduta"); o relatório da consulta não o repete. `tests/teste_conduta.js` conf
 slider com −/+. Nenhum campo numérico é digitado — exceto a saída explícita
 para valor fora da faixa, onde ela existe. O seletor abre mostrando o valor
 mediano em cinza (ou o valor inicial da `FAIXAS`, 6º elemento: biotensiômetro
-20, circunferência 10 cm — v2.5-S); nada é registrado sem gesto do usuário.
+7 V, circunferência 8 cm — v2.5-S); nada é registrado sem gesto do usuário.
 
 **Panorama e módulos.** O atendimento é uma grade de módulos numerados, não uma
 fila de telas. Contorno verde = módulo completo. Ao terminar um módulo, o app
@@ -417,7 +417,8 @@ Sem bash 3.2, só a parte estática, com aviso.
 - **Abertura direta:** nas telas `origem`, `filaVazia` e `daFila` (`autoAvanca`) o clique avança sozinho 140 ms depois (`agendaAutoAvanco`, uma vez por tela, cancela se a tela mudou). "Atender" na fila, "Iniciar atendimento" na busca e o clique na fila pulam o "Histórico — Confirmar e continuar" (`mxPulaConfirmHist`), exceto se o histórico falhou. Nenhuma outra tela avança sozinha.
 - **Enter = Próxima** (handler global): não age em textarea, em botão/link focado (o Enter é dele), em diálogos/overlays, com auto-repeat ou com avanço em curso (`avancandoAgora`). Obrigatório em aberto: mostra o que falta.
 - **Pedido de exames:** novas opções (coagulograma, função renal, PSA total e livre — PSA nunca sozinho —, glicemia + HbA1c, ácido úrico, TSH e T4 livre, vitamina D, B12, bloco Sorologias com 8 itens, painel molecular de IST). `EXA_US` (US de abdome total, US de próstata via abdominal com resíduo pós-miccional) entram marcados e **sempre** saem numa folha separada (`.pac.exa-folha`, quebra de página), com o mesmo cabeçalho, indicação e rodapé. US digitado à mão (começa com "US ") vai para a folha do US.
-- **Preenchimento sem comprimento** (telas, ficha, histórico, papel, registro `preench`). Circunferência abre em 10 cm; biotensiômetro em 20.
+- **Preenchimento sem comprimento** (telas, ficha, histórico, papel, registro `preench`). Circunferência: escala 3–20 cm, abre em 8 cm.
+- **Biotensiômetro em volts (0–40 V, abre em 7 V, passo 0,1).** Faixas (`faixaBiotens`): < 5 hipersensibilidade importante · 5 a < 7 hipersensibilidade provável · 7–10 normal (inclusive) · > 10–15 hipossensibilidade provável · > 15 hipossensibilidade importante. Conduta: `hipersens` = < 7 V (`BIOT_HIPER`; antes < 10) → RET-1/PRESERV e marcador "hipersensibilidade da glande"; 7–10 V nota "sensibilidade normal"; > 10 V (`BIOT_HIPO`) nota de hipossensibilidade (mesma consequência de antes para "não hiper": favorece a via sistêmica). O nome da faixa aparece ao vivo no seletor, no painel, na ficha, no histórico, no relatório impresso (antes saía "Biotensiômetro: —") e no registro (`biotensFaixa`). Antes: escala 0–100, < 10 vermelho, 10–20 verde, > 20 âmbar.
 - Teste: `tests/teste_v25s.js` (etapa 7n).
 
 **Conduta, exames, ICI e protocolo com dose (v2.5-R · 2.5.17).**

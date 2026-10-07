@@ -22,10 +22,10 @@ errada, o erro é do app — corrija o app, não esta folha.
 | LIM-013 | PEDT 11 — EP confirmada | EP-1 | SP-DUO, NOITE-1 | — | 11 |
 | LIM-014 | PEDT 15 — topo da confirmada | EP-1 | SP-DUO, NOITE-1 | — | 15 |
 | LIM-015 | PEDT 16 — EP intensa | EP-1 | SP-DUO, NOITE-1 | — | 16 |
-| LIM-016 | Biotensiômetro 9 — hipersensibilidade | EP-1 | SP-DUO, NOITE-1 | — | 12 |
-| LIM-017 | Biotensiômetro 10 — base da faixa verde | EP-1 | SP-DUO, NOITE-1 | — | 12 |
-| LIM-018 | Biotensiômetro 20 — topo da faixa verde | EP-1 | SP-DUO, NOITE-1 | — | 12 |
-| LIM-019 | Biotensiômetro 21 — faixa âmbar | EP-1 | SP-DUO, NOITE-1 | — | 12 |
+| LIM-016 | Biotensiômetro 9 V — normal (era hipersensibilidade com o corte antigo < 10) | EP-1 | SP-DUO, NOITE-1 | — | 12 |
+| LIM-017 | Biotensiômetro 10 V — topo da faixa normal | EP-1 | SP-DUO, NOITE-1 | — | 12 |
+| LIM-018 | Biotensiômetro 20 V — hipossensibilidade importante | EP-1 | SP-DUO, NOITE-1 | — | 12 |
+| LIM-019 | Biotensiômetro 21 V — hipossensibilidade importante | EP-1 | SP-DUO, NOITE-1 | — | 12 |
 | LIM-020 | Libido baixa, testosterona informada normal, sem contraindicação — ramo ioimbina | DE-2L | BASE-T10-I, NOITE-2, SP-DE, LABS | 14 | — |
 | LIM-021 | Libido baixa, testosterona baixa — sem ioimbina | DE-2 | BASE-T10, NOITE-1, SP-DE, LABS | 14 | — |
 | LIM-022 | Libido baixa, testosterona não dosada — sem ioimbina por omissão | DE-2 | BASE-T10, NOITE-1, SP-DE, LABS | 14 | — |

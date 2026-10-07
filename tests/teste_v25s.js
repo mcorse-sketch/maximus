@@ -4,7 +4,8 @@
 //  3. Enter = Próxima (textarea faz nova linha, botão focado é dele, nunca avança duas vezes)
 //  4/5. US de abdome total sai no pedido; ultrassom em folha separada com o mesmo cabeçalho, indicação e rodapé
 //  6. novas opções do pedido de exames
-//  7/9. biotensiômetro abre em 20; circunferência abre em 10 cm
+//  7/9. biotensiômetro 0–40 V, abre em 7 V, faixas e corte da conduta (< 7 hiper · 7–10 normal · > 10 hipo);
+//       circunferência 3–20 cm, abre em 8 cm
 //  8. preenchimento sem comprimento (tela, registro, papel)
 const fs = require('fs');
 const path = require('path');
@@ -276,12 +277,30 @@ const digita = (a, id, v) => { const i = campo(a, id); if (!i) return false; i.v
     const t = await vaiAte(a, resp, 'biotens', 120);
     ok(t === 'biotens', 'chega ao biotensiômetro', t);
     if (t === 'biotens') {
-      // item 7: abre em 20 (sugerido, cinza) e nada é gravado sem gesto
+      // item 7 (v2.5-S, escala nova do Dr. Marco): 0–40 V, abre em 7 V (sugerido, cinza) com o nome da faixa; nada gravado sem gesto
       const v = a.doc.querySelector('#optsWrap .selnum .v');
       const r = a.doc.querySelector('#optsWrap input[type=range]');
-      ok(v && /^20\b/.test(v.textContent.trim()) && v.classList.contains('sugerido') && r.value === '20', 'biotensiômetro abre em 20 (sugerido)', v && v.textContent);
+      const fx = a.doc.querySelector('#optsWrap .selnum-faixa');
+      ok(v && /^7,0\s*V/.test(v.textContent.trim()) && v.classList.contains('sugerido') && +r.value === 7, 'biotensiômetro abre em 7 V (sugerido)', v && v.textContent);
+      ok(r.min === '0' && r.max === '40' && /^0,0.*40,0$/.test(limpo(a.doc.querySelector('#optsWrap .selnum .lim')).replace(/\s/g, '')), 'escala de 0 a 40 V', r.min + '–' + r.max);
+      ok(fx && fx.textContent === 'Normal' && fx.classList.contains('sugerido'), 'mostra a faixa do valor sugerido ("Normal", em cinza)', fx && fx.className + ' ' + fx.textContent);
+      ok(/0 a 40 V/.test(limpo(a.doc.getElementById('qText'))) && /Abaixo de 7 V/.test(limpo(a.doc.getElementById('optsWrap'))), 'pergunta e dica com a escala e o corte novos');
       ok(a.next.disabled, 'nada registrado sem gesto (Próxima apagada até mexer)');
-      r.value = '20'; r.dispatchEvent(new a.win.Event('input', { bubbles: true }));
+      // limites das faixas: < 5 · 5 a < 7 · 7–10 · > 10–15 · > 15
+      const FAIXAS_ESP = [[0, 'Hipersensibilidade importante', 'vermelho'], [4.9, 'Hipersensibilidade importante', 'vermelho'], [5, 'Hipersensibilidade provável', 'ambar'],
+        [6.9, 'Hipersensibilidade provável', 'ambar'], [7, 'Normal', 'verde'], [10, 'Normal', 'verde'], [10.1, 'Hipossensibilidade provável', 'ambar'],
+        [15, 'Hipossensibilidade provável', 'ambar'], [15.1, 'Hipossensibilidade importante', 'vermelho'], [40, 'Hipossensibilidade importante', 'vermelho']];
+      const errados = [];
+      for (const [val, rot, cor] of FAIXAS_ESP) {
+        r.value = String(val); r.dispatchEvent(new a.win.Event('input', { bubbles: true }));
+        const f = a.doc.querySelector('#optsWrap .selnum-faixa');
+        if (!f || f.textContent !== rot || !f.classList.contains(cor) || f.classList.contains('sugerido') || +r.value !== val) errados.push(val + ' → ' + (f && f.textContent) + ' (' + r.value + ')');
+      }
+      ok(!errados.length, 'faixas nos limites 0 · 4,9 · 5 · 6,9 · 7 · 10 · 10,1 · 15 · 15,1 · 40', errados.join(' | '));
+      r.value = '45'; r.dispatchEvent(new a.win.Event('input', { bubbles: true }));
+      ok(+r.value <= 40, 'não passa de 40 V', r.value);
+      ok(!a.doc.querySelector('#optsWrap .fora-faixa'), 'escala fechada (sem digitar valor fora da faixa)');
+      r.value = '7'; r.dispatchEvent(new a.win.Event('input', { bubbles: true }));
       tecla(a.win, r); await assenta(a.win, { quieto: 20 });
       ok(a.tela() !== 'biotens', 'Enter com o slider focado avança', a.tela());
     }
@@ -344,7 +363,7 @@ const digita = (a, id, v) => { const i = campo(a, id); if (!i) return false; i.v
   }
 
   // =====================================================================
-  console.log('--- itens 8 e 9: preenchimento sem comprimento; circunferência abre em 10 cm');
+  console.log('--- itens 8 e 9: preenchimento sem comprimento; circunferência 3–20 cm, abre em 8 cm');
   {
     const a = await abre({ recepcao: [], codigos: [] });
     const t = await vaiAte(a, { origem: 'novo', visita: 'primeira', codigo: 'MXS701', queixa: 'preench', tipoPenis: 'grower' }, 'medPre', 40);
@@ -353,7 +372,9 @@ const digita = (a, id, v) => { const i = campo(a, id); if (!i) return false; i.v
     ok(!/omprimento/.test(tx), 'tela de medidas sem comprimento', tx.slice(0, 200));
     ok(!a.doc.querySelector('#optsWrap [data-campo^="comp"]'), 'nenhum campo de comprimento');
     const v = a.doc.querySelector('#optsWrap .selnum .v');
-    ok(v && /^10,0\s*cm/.test(v.textContent.trim()), 'circunferência abre em 10 cm', v && v.textContent);
+    const rc = a.doc.querySelector('#optsWrap input[type=range]');
+    ok(v && /^8,0\s*cm/.test(v.textContent.trim()) && v.classList.contains('sugerido'), 'circunferência abre em 8 cm (sugerido)', v && v.textContent);
+    ok(rc && rc.min === '3' && rc.max === '20' && /^3,0.*20,0$/.test(limpo(a.doc.querySelector('#optsWrap .selnum .lim')).replace(/\s/g, '')), 'escala de 3 a 20 cm', rc && rc.min + '–' + rc.max);
     a.win.close();
   }
   {
@@ -372,6 +393,33 @@ const digita = (a, id, v) => { const i = campo(a, id); if (!i) return false; i.v
   {
     ok(!/compFlac|compPos|compRet|compEret|[Cc]omprimento/.test(HTML.replace(/\/\/[^\n]*/g, '')), 'o app não tem mais comprimento no preenchimento (fora de comentários)');
     ok(/data-versao="2\.5\.18"/.test(HTML), 'versão 2.5.18');
+  }
+
+  // =====================================================================
+  console.log('--- item 7: biotensiômetro na conduta — < 7 V hiper · 7–10 V normal · > 10 V hipo');
+  {
+    const casos = [[4.9, 'hiper', 'Hipersensibilidade importante'], [5, 'hiper', 'Hipersensibilidade provável'], [6.9, 'hiper', 'Hipersensibilidade provável'],
+      [7, 'normal', 'Normal'], [10, 'normal', 'Normal'], [10.1, 'hipo', 'Hipossensibilidade provável'], [15, 'hipo', 'Hipossensibilidade provável'], [15.1, 'hipo', 'Hipossensibilidade importante']];
+    for (const [bt, eixo, rot] of casos) {
+      const r = await roda({ id: 'S-bt' + bt, codigo: 'MXS8' + String(Math.round(bt * 10)).padStart(3, '0'), respostas: Object.assign({ visita: 'primeira', queixa: 'ep',
+        contato: { nome: 'Biotens Teste Souza', nascimento: '05/05/1985', telefone: '21987654321', email: 'bt@exemplo.invalid' },
+        freq: 'baixa', biotens: bt, topico: 'ambos', parox: 'nao', depre: 'nao', fert: 'nao' }, { p0: 3, p1: 3, p2: 2, p3: 2, p4: 2 }) }, true, { manter: true });
+      if (r.falha) { ok(false, bt + ' V chega à conduta', r.falha); continue; }
+      const d = r.win.document, kit = (r.conduta && r.conduta.kit) || [];
+      const tela = limpo(d.getElementById('resultsCard')), papel = limpo(d.getElementById('printArea'));
+      const vStr = String(bt).replace('.', ',') + ' V';
+      const marcaHiper = /hipersensibilidade da glande/.test(r.texto.split('\n').slice(0, 3).join(' '));
+      const temTopico = kit.indexOf('RET-1') >= 0 || kit.indexOf('PRESERV') >= 0;
+      const nota = { hiper: new RegExp('Biotensiômetro em ' + vStr + ' — ' + rot.toLowerCase() + ' da glande'), normal: new RegExp('Biotensiômetro em ' + vStr + ' — sensibilidade normal'),
+        hipo: new RegExp('Biotensiômetro em ' + vStr + ' — ' + rot.toLowerCase() + ' da glande') }[eixo];
+      ok(nota.test(tela) && (eixo === 'hiper') === marcaHiper && (eixo === 'hiper') === temTopico,
+        bt + ' V → ' + eixo + (eixo === 'hiper' ? ' (anestésico tópico no kit)' : ' (sem o tópico da hipersensibilidade)'), JSON.stringify({ kit, marcaHiper, nota: (tela.match(/Biotensiômetro em[^.]*\./) || [''])[0] }));
+      ok(r.salvo && r.salvo.biotens === bt && r.salvo.biotensFaixa === rot, bt + ' V: registro com valor e faixa "' + rot + '"', r.salvo && (r.salvo.biotens + ' / ' + r.salvo.biotensFaixa));
+      ok(papel.indexOf(vStr + ' · ' + rot) >= 0, bt + ' V: relatório impresso com valor e faixa', papel.slice(0, 200));
+      ok(new RegExp('Biotensiômetro ' + vStr + ' · ' + rot).test(limpo(d.getElementById('mxPainel') || d.body)), bt + ' V: painel do paciente mostra "' + vStr + ' · ' + rot + '"');
+      ok(new RegExp('Biotensiômetro: ' + vStr + ' · ' + rot).test(r.texto), bt + ' V: prontuário (texto) com valor e faixa');
+      r.win.close();
+    }
   }
 
   console.log('\n=== v2.5-S ===\nfalhas: ' + falhas);

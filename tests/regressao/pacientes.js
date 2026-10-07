@@ -64,11 +64,11 @@ module.exports = [
   P('LIM-014', 'PEDT 15 — topo da confirmada', ep(15, { freq: 'baixa' })),
   P('LIM-015', 'PEDT 16 — EP intensa', ep(16, { freq: 'baixa' })),
 
-  // ---- biotensiômetro: vermelho < 10, verde 10–20, âmbar > 20 ---------------
-  P('LIM-016', 'Biotensiômetro 9 — hipersensibilidade', ep(12, { freq: 'baixa', biotens: 9 })),
-  P('LIM-017', 'Biotensiômetro 10 — base da faixa verde', ep(12, { freq: 'baixa', biotens: 10 })),
-  P('LIM-018', 'Biotensiômetro 20 — topo da faixa verde', ep(12, { freq: 'baixa', biotens: 20 })),
-  P('LIM-019', 'Biotensiômetro 21 — faixa âmbar', ep(12, { freq: 'baixa', biotens: 21 })),
+  // ---- biotensiômetro (v2.5-S, 0–40 V): < 7 hiper · 7–10 normal · > 10 hipo ---
+  P('LIM-016', 'Biotensiômetro 9 V — normal (era hipersensibilidade com o corte antigo < 10)', ep(12, { freq: 'baixa', biotens: 9 })),
+  P('LIM-017', 'Biotensiômetro 10 V — topo da faixa normal', ep(12, { freq: 'baixa', biotens: 10 })),
+  P('LIM-018', 'Biotensiômetro 20 V — hipossensibilidade importante', ep(12, { freq: 'baixa', biotens: 20 })),
+  P('LIM-019', 'Biotensiômetro 21 V — hipossensibilidade importante', ep(12, { freq: 'baixa', biotens: 21 })),
 
   // ---- testosterona e ioimbina (corte 340) ----------------------------------
   P('LIM-020', 'Libido baixa, testosterona informada normal, sem contraindicação — ramo ioimbina',
