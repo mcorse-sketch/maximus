@@ -119,7 +119,12 @@ function preenche(doc, win, tela, resp) {
     // tela de um número só: a resposta pode vir direto, sem objeto
     const valores = (typeof resp === 'number' || typeof resp === 'string') ? { [tela]: resp } : r;
     let algum = false;
-    sliders.forEach(s => { if (valores[s.dataset.campo] !== undefined) { ajustaSlider(win, s, valores[s.dataset.campo]); algum = true; } });
+    sliders.forEach(s => { if (valores[s.dataset.campo] !== undefined) {
+      // v2.5-S: seletor com arraste grosso (biotensiômetro, 0,5 V) — o valor declarado entra exato pelo "Digitar valor exato"
+      const ex = wrap.querySelector('input[data-exato="' + s.dataset.campo + '"]');
+      if (ex) { ex.value = String(valores[s.dataset.campo]); ex.dispatchEvent(new win.Event('input', { bubbles: true })); }
+      else ajustaSlider(win, s, valores[s.dataset.campo]);
+      algum = true; } });
     campos.forEach(c => { if (valores[c.dataset.campo] !== undefined) { c.value = String(valores[c.dataset.campo]); c.dispatchEvent(new win.Event('input', { bubbles: true })); algum = true; } });
     if (!algum) {
       // nada declarado: confirma o valor sugerido (mediana) do primeiro seletor

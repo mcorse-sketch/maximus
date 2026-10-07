@@ -290,15 +290,31 @@ const digita = (a, id, v) => { const i = campo(a, id); if (!i) return false; i.v
       const FAIXAS_ESP = [[0, 'Hipersensibilidade importante', 'vermelho'], [4.9, 'Hipersensibilidade importante', 'vermelho'], [5, 'Hipersensibilidade provável', 'ambar'],
         [6.9, 'Hipersensibilidade provável', 'ambar'], [7, 'Normal', 'verde'], [10, 'Normal', 'verde'], [10.1, 'Hipossensibilidade provável', 'ambar'],
         [15, 'Hipossensibilidade provável', 'ambar'], [15.1, 'Hipossensibilidade importante', 'vermelho'], [40, 'Hipossensibilidade importante', 'vermelho']];
+      // ajuste fino (polimento): arraste de 0,5 V, −/+ de 0,1 V e "Digitar valor exato"
+      ok(r.step === '0.5', 'slider arrasta de 0,5 em 0,5 V', r.step);
+      const [bMenos, bMais] = [...a.doc.querySelectorAll('#optsWrap .selnum .row button')];
+      bMais.click();
+      ok(/^7,1\s*V/.test(v.textContent.trim()) && !v.classList.contains('sugerido'), '+ sobe 0,1 V (7,0 → 7,1)', v.textContent);
+      bMenos.click(); bMenos.click();
+      ok(/^6,9\s*V/.test(v.textContent.trim()) && a.doc.querySelector('#optsWrap .selnum-faixa').textContent === 'Hipersensibilidade provável', '− desce 0,1 V (7,1 → 6,9) e a faixa acompanha', v.textContent);
+      const bEx = a.doc.querySelector('#optsWrap .selnum-exato'), inEx = a.doc.querySelector('#optsWrap input[data-exato="biotens"]');
+      ok(!!bEx && /Digitar valor exato/.test(bEx.textContent) && !!inEx && inEx.style.display === 'none', 'link "Digitar valor exato" (campo escondido até tocar)');
+      bEx.click();
+      const exato = val => { inEx.value = String(val).replace('.', ','); inEx.dispatchEvent(new a.win.Event('input', { bubbles: true })); };
+      exato('12,3');
+      ok(/^12,3\s*V/.test(v.textContent.trim()), 'valor digitado (12,3) vira o valor do seletor', v.textContent);
+      exato('41');
+      ok(/^12,3\s*V/.test(v.textContent.trim()) && inEx.classList.contains('fld-falta'), 'digitado fora de 0–40 V não vale (campo marcado)', v.textContent);
       const errados = [];
       for (const [val, rot, cor] of FAIXAS_ESP) {
-        r.value = String(val); r.dispatchEvent(new a.win.Event('input', { bubbles: true }));
+        exato(val);
         const f = a.doc.querySelector('#optsWrap .selnum-faixa');
-        if (!f || f.textContent !== rot || !f.classList.contains(cor) || f.classList.contains('sugerido') || +r.value !== val) errados.push(val + ' → ' + (f && f.textContent) + ' (' + r.value + ')');
+        const mostrado = parseFloat(v.textContent.replace(',', '.'));
+        if (!f || f.textContent !== rot || !f.classList.contains(cor) || f.classList.contains('sugerido') || mostrado !== val) errados.push(val + ' → ' + (f && f.textContent) + ' (' + v.textContent + ')');
       }
       ok(!errados.length, 'faixas nos limites 0 · 4,9 · 5 · 6,9 · 7 · 10 · 10,1 · 15 · 15,1 · 40', errados.join(' | '));
       r.value = '45'; r.dispatchEvent(new a.win.Event('input', { bubbles: true }));
-      ok(+r.value <= 40, 'não passa de 40 V', r.value);
+      ok(+r.value <= 40 && parseFloat(v.textContent.replace(',', '.')) <= 40, 'não passa de 40 V', r.value);
       ok(!a.doc.querySelector('#optsWrap .fora-faixa'), 'escala fechada (sem digitar valor fora da faixa)');
       r.value = '7'; r.dispatchEvent(new a.win.Event('input', { bubbles: true }));
       tecla(a.win, r); await assenta(a.win, { quieto: 20 });
@@ -410,13 +426,20 @@ const digita = (a, id, v) => { const i = campo(a, id); if (!i) return false; i.v
       const vStr = String(bt).replace('.', ',') + ' V';
       const marcaHiper = /hipersensibilidade da glande/.test(r.texto.split('\n').slice(0, 3).join(' '));
       const temTopico = kit.indexOf('RET-1') >= 0 || kit.indexOf('PRESERV') >= 0;
-      const nota = { hiper: new RegExp('Biotensiômetro em ' + vStr + ' — ' + rot.toLowerCase() + ' da glande'), normal: new RegExp('Biotensiômetro em ' + vStr + ' — sensibilidade normal'),
-        hipo: new RegExp('Biotensiômetro em ' + vStr + ' — ' + rot.toLowerCase() + ' da glande') }[eixo];
+      // polimento: as três notas no mesmo formato — "Biotensiômetro em X V" em negrito + faixa em pílula na cor da faixa
+      const corEsp = { 'Hipersensibilidade importante': 'vermelho', 'Hipersensibilidade provável': 'ambar', Normal: 'verde', 'Hipossensibilidade provável': 'ambar', 'Hipossensibilidade importante': 'vermelho' }[rot];
+      const notaEl = [...d.querySelectorAll('#resultsCard .mx-bio')].map(x => x.parentElement).find(x => new RegExp('Biotensiômetro em ' + vStr).test(x.textContent));
+      const fmtOk = !!notaEl && !!notaEl.querySelector('b') && notaEl.querySelector('b').textContent === 'Biotensiômetro em ' + vStr
+        && notaEl.querySelector('.mx-bio').textContent === rot && notaEl.querySelector('.mx-bio').classList.contains(corEsp);
+      ok(fmtOk, bt + ' V: nota no formato único (valor em negrito + faixa "' + rot + '" em ' + corEsp + ')', notaEl ? notaEl.innerHTML.slice(0, 200) : 'sem nota');
+      const nota = { hiper: new RegExp('Biotensiômetro em ' + vStr + ' ' + rot + ' — é o perfil que mais responde a anestésico tópico'), normal: new RegExp('Biotensiômetro em ' + vStr + ' Normal — sensibilidade da glande dentro do normal'),
+        hipo: new RegExp('Biotensiômetro em ' + vStr + ' ' + rot + ' — sensibilidade da glande reduzida') }[eixo];
       ok(nota.test(tela) && (eixo === 'hiper') === marcaHiper && (eixo === 'hiper') === temTopico,
         bt + ' V → ' + eixo + (eixo === 'hiper' ? ' (anestésico tópico no kit)' : ' (sem o tópico da hipersensibilidade)'), JSON.stringify({ kit, marcaHiper, nota: (tela.match(/Biotensiômetro em[^.]*\./) || [''])[0] }));
       ok(r.salvo && r.salvo.biotens === bt && r.salvo.biotensFaixa === rot, bt + ' V: registro com valor e faixa "' + rot + '"', r.salvo && (r.salvo.biotens + ' / ' + r.salvo.biotensFaixa));
       ok(papel.indexOf(vStr + ' · ' + rot) >= 0, bt + ' V: relatório impresso com valor e faixa', papel.slice(0, 200));
-      ok(new RegExp('Biotensiômetro ' + vStr + ' · ' + rot).test(limpo(d.getElementById('mxPainel') || d.body)), bt + ' V: painel do paciente mostra "' + vStr + ' · ' + rot + '"');
+      const linP = [...d.querySelectorAll('.lin')].find(x => x.querySelector('.lin-faixa') && new RegExp('^Biotensiômetro ' + vStr).test(x.textContent));
+      ok(!!linP && linP.querySelector('.lin-faixa').textContent === rot && linP.classList.contains(corEsp), bt + ' V: painel mostra "Biotensiômetro ' + vStr + '" e a faixa "' + rot + '" na linha de baixo', linP ? linP.outerHTML.slice(0, 200) : 'sem linha');
       ok(new RegExp('Biotensiômetro: ' + vStr + ' · ' + rot).test(r.texto), bt + ' V: prontuário (texto) com valor e faixa');
       r.win.close();
     }

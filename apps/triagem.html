@@ -121,12 +121,22 @@ html[data-tema="escuro"] .opt .est-a{background:rgba(255,255,255,.08);color:inhe
 .selnum{margin:6px 0 2px}
 .selnum{margin-bottom:18px}
 .selnum .v{font-size:40px;font-weight:700;text-align:center;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.selnum .v .un{font-size:18px;font-weight:500;color:#6b6a66;margin-left:6px}
+.selnum .v .un{font-size:26px;font-weight:600;color:#3d4746;margin-left:6px;letter-spacing:0;font-family:var(--mx-font,system-ui,-apple-system,'Helvetica Neue',sans-serif);vertical-align:baseline}
 .selnum .v.sugerido{color:#9aa3a6}
 .selnum-dica{text-align:center;font-size:12px;color:#6b6a66;margin-top:2px}
 .selnum-faixa{display:table;margin:2px auto 4px;font-size:13px;font-weight:600;padding:2px 12px;border-radius:999px;background:rgba(0,0,0,.05);color:#3a3a38}
 .selnum-faixa.verde{background:rgba(30,130,76,.12);color:#1e6b43}.selnum-faixa.ambar{background:rgba(154,88,0,.12);color:#8a4f00}.selnum-faixa.vermelho{background:rgba(179,38,30,.11);color:#9c2119}
 .selnum-faixa.sugerido{opacity:.55}
+.selnum button.selnum-exato{display:block;height:auto!important;margin:8px auto 0;padding:2px 6px;font:inherit;font-size:12.5px!important;line-height:1.4;border:0!important;border-radius:6px;background:none!important;color:var(--mx-focus,#0e5e6f)!important;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.selnum button.selnum-exato:active{background:none!important;color:var(--mx-focus,#0e5e6f)!important}
+.selnum .selnum-exato-in{display:block;width:150px!important;margin:8px auto 0;text-align:center;font-variant-numeric:tabular-nums}
+.mx-bio{display:inline-block;font-weight:600;font-size:.92em;padding:0 8px;border-radius:999px;line-height:1.5;background:rgba(0,0,0,.05)}
+.mx-bio.verde{background:rgba(30,130,76,.12);color:#1e6b43}.mx-bio.ambar{background:rgba(154,88,0,.12);color:#8a4f00}.mx-bio.vermelho{background:rgba(179,38,30,.11);color:#9c2119}
+html[data-tema="escuro"] .selnum .v .un{color:var(--mx-text2,#b9c4c6)}
+html[data-tema="escuro"] .mx-bio.verde,html[data-tema="escuro"] .selnum-faixa.verde{background:rgba(80,200,130,.16);color:#9fe0b8}
+html[data-tema="escuro"] .mx-bio.ambar,html[data-tema="escuro"] .selnum-faixa.ambar{background:rgba(230,160,60,.16);color:#f2c98a}
+html[data-tema="escuro"] .mx-bio.vermelho,html[data-tema="escuro"] .selnum-faixa.vermelho{background:rgba(240,100,90,.16);color:#f5aaa3}
+.lin .lin-faixa{display:block;font-size:12px;line-height:1.35;margin-top:1px}
 .selnum .row{display:grid;grid-template-columns:64px 1fr 64px;gap:12px;align-items:center;margin-top:6px}
 .selnum button{height:60px;border-radius:14px;border:2px solid #0e5e6f;background:#dcebee;color:#0e5e6f;font-size:28px;line-height:1;cursor:pointer}
 .selnum button:active{background:#0e5e6f;color:#fff}
@@ -2552,7 +2562,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const fx0 = ((sc.kind==='num'||sc.kind==='text') ? faixaDe(sc.id, sc) : null);
     if (fx0){
-      optsWrap.appendChild(montaSeletorNum({id:sc.id, label:sc.text, min:fx0.min, max:fx0.max, passo:fx0.passo, un:fx0.un, fechada:fx0.fechada, ini:fx0.ini, faixaRotulo:sc.faixaRotulo,
+      optsWrap.appendChild(montaSeletorNum({id:sc.id, label:sc.text, min:fx0.min, max:fx0.max, passo:fx0.passo, un:fx0.un, fechada:fx0.fechada, ini:fx0.ini, faixaRotulo:sc.faixaRotulo, arraste:fx0.arraste,
         aoMudar:()=>{ const e=el('fldErr'); if(e) e.style.display='none'; nextBtn.disabled = sc.optional ? false : !val(sc); }}));
       if (sc.hint){ const h=document.createElement('div'); h.className='fld-hint'; pintaHint(h, sc); optsWrap.appendChild(h); }
       const e0=document.createElement('div'); e0.className='fld-err'; e0.id='fldErr'; e0.textContent='Defina um valor para continuar'; optsWrap.appendChild(e0);
@@ -2660,7 +2670,7 @@ document.documentElement.setAttribute('data-tema',t)})();
         optsWrap.appendChild(lab);
         const fx=faixaDe(f.id, null);
         if (fx){
-          optsWrap.appendChild(montaSeletorNum({id:f.id, label:f.label, min:fx.min, max:fx.max, passo:fx.passo, un:fx.un, fechada:fx.fechada, ini:fx.ini,
+          optsWrap.appendChild(montaSeletorNum({id:f.id, label:f.label, min:fx.min, max:fx.max, passo:fx.passo, un:fx.un, fechada:fx.fechada, ini:fx.ini, arraste:fx.arraste,
             aoMudar:()=>{ nextBtn.disabled = sc.optional ? false : !val(sc); }}));
           return;
         }
@@ -4289,7 +4299,8 @@ document.documentElement.setAttribute('data-tema',t)})();
     idade:[18,99,1,'anos'],
     // escores e índices são fechados por definição: não existe valor fora da faixa
     // 6º item = valor sugerido ao abrir o seletor (sem ele, a mediana). v2.5-S: biotensiômetro 0–40 V, abre em 7 V
-    iiefAnt:[5,25,1,'',true], pedtAnt:[0,20,1,'',true], biotens:[0,40,0.1,'V',true,7],
+    // 7º item = passo do arraste (o −/+ e o "digitar valor exato" usam o passo fino do 3º): biotensiômetro arrasta de 0,5 em 0,5 V, −/+ de 0,1 V
+    iiefAnt:[5,25,1,'',true], pedtAnt:[0,20,1,'',true], biotens:[0,40,0.1,'V',true,7,0.5],
     tTotal:[0,1500,5,'ng/dL'], tLivre:[0,60,0.5,'pg/mL'], shbg:[0,200,1,'nmol/L'],
     lh:[0,30,0.1,'UI/L'], fsh:[0,40,0.1,'UI/L'], prolactina:[0,120,0.5,'ng/mL'],
     estradiol:[0,120,1,'pg/mL'], ht:[25,70,0.5,'%'], psa:[0,20,0.1,'ng/mL'],
@@ -4299,7 +4310,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     iciDose:[0.05,0.5,0.05,'mL']
   };
   function faixaDe(id, sc){
-    if (FAIXAS[id]) return {min:FAIXAS[id][0], max:FAIXAS[id][1], passo:FAIXAS[id][2], un:FAIXAS[id][3], fechada:!!FAIXAS[id][4], ini:FAIXAS[id][5]};
+    if (FAIXAS[id]) return {min:FAIXAS[id][0], max:FAIXAS[id][1], passo:FAIXAS[id][2], un:FAIXAS[id][3], fechada:!!FAIXAS[id][4], ini:FAIXAS[id][5], arraste:FAIXAS[id][6]};
     if (sc && sc.min!==undefined && sc.max!==undefined) return {min:+sc.min, max:+sc.max, passo:1, un:''};
     return null;
   }
@@ -4320,7 +4331,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     const row=document.createElement('div'); row.className='row';
     const menos=document.createElement('button'); menos.type='button'; menos.textContent='\u2212'; menos.setAttribute('aria-label','Diminuir');
     const mais=document.createElement('button');  mais.type='button';  mais.textContent='+';       mais.setAttribute('aria-label','Aumentar');
-    const r=document.createElement('input'); r.type='range'; r.min=min; r.max=max; r.step=passo;
+    const r=document.createElement('input'); r.type='range'; r.min=min; r.max=max; r.step=cfg.arraste||passo;
     r.value = inicial; r.setAttribute('aria-label', cfg.label||cfg.id); r.dataset.campo = cfg.id;
     let atual = inicial;
     // v2.5-S: escala com faixas (biotensiômetro) — o nome da faixa acompanha o valor (cinza enquanto é só sugestão)
@@ -4352,6 +4363,15 @@ document.documentElement.setAttribute('data-tema',t)})();
       v.onclick=()=>{ aplica(atual); v.classList.remove('sugerido'); dica.remove(); };
       box.appendChild(v); if (fxEl) box.appendChild(fxEl); box.appendChild(dica); box.appendChild(row); box.appendChild(lim);
     } else { box.appendChild(v); if (fxEl) box.appendChild(fxEl); box.appendChild(row); box.appendChild(lim); }
+    // v2.5-S: arraste grosso (cfg.arraste) → valor exato pelo −/+ (passo fino) ou digitado, dentro da escala
+    if (cfg.arraste){
+      const bt=document.createElement('button'); bt.type='button'; bt.className='selnum-exato'; bt.textContent='Digitar valor exato';
+      const ex=document.createElement('input'); ex.type='text'; ex.inputMode='decimal'; ex.className='fld selnum-exato-in'; ex.style.display='none';
+      ex.dataset.exato=cfg.id; ex.placeholder='ex.: '+mostraNum(cfg.ini!=null?cfg.ini:min, passo); ex.setAttribute('aria-label', 'Valor exato'+(cfg.un?' em '+cfg.un:''));
+      bt.onclick=()=>{ bt.style.display='none'; ex.style.display='block'; ex.value = temValor||!v.classList.contains('sugerido') ? mostraNum(atual, passo) : ''; try{ ex.focus(); }catch(e){} };
+      ex.oninput=()=>{ const n=parseFloat(String(ex.value).replace(',','.')); if (isNaN(n) || n<min || n>max) { ex.classList.toggle('fld-falta', String(ex.value).trim()!=='' ); return; } ex.classList.remove('fld-falta'); aplica(n); };
+      box.appendChild(bt); box.appendChild(ex);
+    }
 
     // valor fora da faixa: só onde ele existe. Escore e índice são fechados.
     if (cfg.fechada) return box;
@@ -4506,7 +4526,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     // exames do consultorio
     const ex=[];
     const bt = preenchido(S.biotens) ? +S.biotens : ((prev && prev.biotens!=null) ? +prev.biotens : null);
-    if (bt!=null && !isNaN(bt)) ex.push(lin('Biotensi\u00f4metro '+txtBiotens(bt), classeBiotens(bt)));
+    if (bt!=null && !isNaN(bt)) ex.push(lin('Biotensi\u00f4metro '+numBiotens(bt)+'<span class="lin-faixa">'+escH(rotuloBiotens(bt))+'</span>', classeBiotens(bt)));   // v2.5-S: faixa na linha de baixo (não quebra no meio)
     const tb = (S.tefiBanco && S.tefiBanco.tefiExame) || null;
     // v2.5-F: TEFI feito nesta consulta — "realizado hoje" com o resultado, no lugar de "indicado, não realizado"
     if (S.visita==='reav' && S.tefiFeito==='sim') ex.push(lin('TEFI realizado hoje'
@@ -6938,7 +6958,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     // v2.5-S: < 7 V hipersensibilidade · 7–10 V normal · > 10 V hipossensibilidade (antes: < 10 = hipersensibilidade)
     const fBio = bio===null ? null : faixaBiotens(bio);
     const hipersens = bio!==null && bio<BIOT_HIPER;
-    if (hipersens) notas.push('<b>Biotensiômetro em '+numBiotens(bio)+' — '+fBio.t.toLowerCase()+' da glande.</b> É o perfil que mais responde a anestésico tópico. Priorizar '+(S.topico==='so_preserv'?'o preservativo retardante':(S.topico==='so_pomada'?'a pomada anestésica':(S.topico==='nenhum'?'... mas há restrição às duas vias tópicas, o que limita justamente o recurso mais indicado aqui':'preservativo retardante ou pomada, conforme a preferência do casal')))+'.');
+    // v2.5-S: as três notas do biotensiômetro no mesmo formato — valor em negrito + faixa na cor da faixa
+    const bioCab = fBio ? '<b>Biotensiômetro em '+numBiotens(bio)+'</b> <span class="mx-bio '+fBio.c+'">'+fBio.t+'</span> — ' : '';
+    if (hipersens) notas.push(bioCab+'é o perfil que mais responde a anestésico tópico. Priorizar '+(S.topico==='so_preserv'?'o preservativo retardante':(S.topico==='so_pomada'?'a pomada anestésica':(S.topico==='nenhum'?'... mas há restrição às duas vias tópicas, o que limita justamente o recurso mais indicado aqui':'preservativo retardante ou pomada, conforme a preferência do casal')))+'.');
     if (S.topico==='nenhum' && S.hasEP){
       notas.push('<b>Conflito entre indicação e restrição.</b> '+(hipersens
         ? 'O biotensiômetro em '+numBiotens(bio)+' indica hipersensibilidade da glande, o perfil que mais responde a anestésico tópico — mas o paciente declarou restrição às duas vias.'
@@ -6947,8 +6969,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     if (S.topico==='so_pomada' && S.hasEP) notas.push('Paciente prefere a pomada — o preservativo retardante não entra no kit. Se a resposta for parcial, ele continua sendo uma opção a reabordar.');
     if (S.topico==='so_preserv' && S.hasEP) notas.push('Paciente prefere o preservativo — a pomada não entra no kit. Se a resposta for parcial, ela continua sendo uma opção a reabordar.');
-    if (bio!==null && bio>=BIOT_HIPER && bio<=BIOT_HIPO && S.hasEP) notas.push('Biotensiômetro em '+numBiotens(bio)+' — sensibilidade normal da glande. O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
-    if (bio!==null && bio>BIOT_HIPO && S.hasEP) notas.push('Biotensiômetro em '+numBiotens(bio)+' — '+fBio.t.toLowerCase()+' da glande. O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
+    if (bio!==null && bio>=BIOT_HIPER && S.hasEP) notas.push(bioCab+(bio<=BIOT_HIPO ? 'sensibilidade da glande dentro do normal. ' : 'sensibilidade da glande reduzida. ')+'O componente da EP tende a ser mais central que periférico, o que favorece a via sistêmica sobre o anestésico tópico.');
     if (S.depre==='sim') notas.push('<b>História psiquiátrica relevante:</b> evitar o SP-DUO — o frasco guarda 900 mg de clomipramina.');
     if (semPomada) notas.push('<b>Restrição a pomada anestésica:</b> o RET-1 está fora deste paciente.');
     if (semPomada&&S.preserv==='sim') notas.push('<b>Sem recursos tópicos disponíveis</b> — pomada e preservativo retardante estão os dois excluídos. Restam apenas as vias sistêmicas e a abordagem comportamental.');
