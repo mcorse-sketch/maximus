@@ -78,6 +78,10 @@ function ajustaSlider(win, r, valor) {
 function preenche(doc, win, tela, resp) {
   const wrap = doc.getElementById('optsWrap');
   if (resp === undefined && PADRAO_TELA[tela]) resp = PADRAO_TELA[tela];
+  // v2.5-S: na primeira avaliação a tela de dados pede nome completo e nascimento (obrigatórios);
+  // o paciente que não declara recebe um nome fictício — só onde os campos existem
+  if (tela === 'contato' && (resp === undefined || typeof resp === 'object'))
+    resp = Object.assign({ nome: 'Paciente Fictício Teste', nascimento: '01/01/1980' }, resp || {});
   const r = resp === undefined ? {} : resp;
   const q = s => [...wrap.querySelectorAll(s)];
   const area = wrap.querySelector('textarea');

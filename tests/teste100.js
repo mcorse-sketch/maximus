@@ -139,6 +139,9 @@ function preencheTela(doc, win) {
     inputs.forEach(i => {
       const numerico = i.inputMode === 'decimal';
       i.value = numerico ? String(intBetween(1, 30)) : (i.inputMode === 'tel' ? '21999990000' : (i.type === 'email' ? 'paciente@exemplo.com' : 'teste'));
+      // v2.5-S: na 1ª avaliação a tela de dados exige nome completo e nascimento
+      if (i.dataset.campo === 'nome') i.value = 'Paciente Sintético Teste';
+      if (i.dataset.campo === 'nascimento') i.value = '15/04/1970';
       i.dispatchEvent(new win.Event('input', { bubbles: true }));
     });
     return 'campos';

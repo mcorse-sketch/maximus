@@ -41,8 +41,8 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
     const pe = limpo(d.getElementById('printExames'));
     ok(/Nelson Cardoso Rocha/i.test(pe) && /04\/04\/1958/.test(pe), 'impressão do pedido traz nome e nascimento', pe.slice(0, 350));
     const corpo = limpo(d.getElementById('exaCorpo'));
-    ok(/US abdome total/i.test(corpo), 'pedido lista US abdome total', corpo.slice(0, 400));
-    ok(/US de próstata via abdominal/i.test(corpo) && /resíduo urinário/i.test(corpo),
+    ok(/US de abdome total/i.test(corpo), 'pedido lista US de abdome total', corpo.slice(0, 400));
+    ok(/US de próstata via abdominal/i.test(corpo) && /resíduo pós-miccional/i.test(corpo),
       'pedido lista US de próstata via abdominal (com resíduo)', corpo.slice(0, 500));
     r.win.close();
   }
@@ -151,8 +151,8 @@ const iief = t => { const b = Math.floor(t / 5), r = t % 5; const v = [0, 1, 2, 
     ok(/iciDor/.test(html) && /iciDorImpede/.test(html) && /iciPge1Troca/.test(html), 'perguntas de dor local ICI + oferta PGE1');
     ok(/'NOITE-1':''/.test(html) || /"NOITE-1":""/.test(html) || /'NOITE-1':\s*''/.test(html),
       'PAINEL_TXT NOITE-1 sem "composto noturno"');
-    ok(/US abdome total/.test(html) && /US de próstata via abdominal/.test(html), 'EXA_OPC traz US abdome e US próstata');
-    ok(/data-versao="2\.5\.17"/.test(html), 'versão 2.5.17');
+    ok(/US de abdome total/.test(html) && /US de próstata via abdominal/.test(html), 'pedido traz US de abdome total e US de próstata');
+    ok(/data-versao="2\.5\.(1[7-9]|[2-9]\d)"/.test(html), "versão 2.5.17 ou posterior");
   }
 
   console.log('\n=== v2.5-R ===\nfalhas: ' + falhas);
