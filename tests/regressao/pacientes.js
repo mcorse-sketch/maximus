@@ -100,7 +100,7 @@ module.exports = [
   P('TEST-002', 'DE com doença arterial — ondas no protocolo', de(14, { comorb: ['vasc'] })),
   P('TEST-003', 'DE com hipertensão isolada — ondas só como complemento', de(14, { comorb: ['has'] })),
   P('TEST-004', 'DE sem comorbidade — sem ondas', de(14)),
-  P('TEST-005', 'DE com nitrato — bloqueio da tadalafila', de(14, { comorb: ['vasc'], contra: 'sim' }), { espera: { protocolo: 'BLOQUEIO' } }),
+  P('TEST-005', 'DE com nitrato — bloqueio da tadalafila', de(14, { comorb: ['vasc'], comorbCtrl: 'sim', comorbMed: 'sim', contra: 'sim' }), { espera: { protocolo: 'BLOQUEIO' } }),
   P('TEST-006', 'DE com alergia a PDE5 — bloqueio da tadalafila', de(14, { alergia: ['tada'] }), { espera: { protocolo: 'BLOQUEIO' } }),
   P('TEST-007', 'DE com falha prévia em dose plena — TEFI', de(14, { previa: 'falhou', adequado: 'sim' })),
 
