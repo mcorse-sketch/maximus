@@ -40,7 +40,7 @@ errada, o erro é do app — corrija o app, não esta folha.
 | TEST-002 | DE com doença arterial — ondas no protocolo | DE-2 | BASE-T10, NOITE-1, SP-DE, TEFI, ONDAS | 14 | — |
 | TEST-003 | DE com hipertensão isolada — ondas só como complemento | DE-2 | BASE-T10, NOITE-1, SP-DE, ONDAS | 14 | — |
 | TEST-004 | DE sem comorbidade — sem ondas | DE-2 | BASE-T10, NOITE-1, SP-DE | 14 | — |
-| TEST-005 | DE com nitrato — bloqueio da tadalafila | BLOQUEIO | ONDAS | 14 | — |
+| TEST-005 | DE com nitrato — bloqueio da tadalafila | BLOQUEIO | TEFI, ONDAS | 14 | — |
 | TEST-006 | DE com alergia a PDE5 — bloqueio da tadalafila | BLOQUEIO | ONDAS | 14 | — |
 | TEST-007 | DE com falha prévia em dose plena — TEFI | DE-3 | BASE-T20, NOITE-1, SP-DE, TEFI, ONDAS | 14 | — |
 | TEST-008 | DE com desejo de engravidar — linha FERT | FERT | MOD-CLOMI-25, FERT-SUP, SP-DE | 14 | — |
