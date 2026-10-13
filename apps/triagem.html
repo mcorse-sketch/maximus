@@ -2754,6 +2754,9 @@ document.documentElement.setAttribute('data-tema',t)})();
             else S[sc.id] = nada.includes(o.v) ? [o.v] : a.filter(x=>!nada.includes(x)).concat([o.v]);
           }
           else S[sc.id]=o.v;
+          // v2.5.19: comorbidades/medicações abrem ou fecham perguntas de segurança — a lista
+          // das seguintes reflete a marcação na hora (sem esperar a Próxima)
+          if (sc.id==='comorb' || sc.id==='medsRisco'){ build(); const k=screens.findIndex(x=>x.id===sc.id); if (k>=0) si=k; }
           paint();
           if (sc.autoAvanca && !sc.multi && !mxSemAutoAvanco) agendaAutoAvanco(sc.id, o.v);
         };
@@ -3602,7 +3605,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     {v:'disl', label:'Dislipidemia'}, {v:'vasc', label:'Doença coronariana ou arterial periférica'},
     {v:'tabag', label:'Tabagismo atual'}, {v:'obes', label:'Obesidade'},
     {v:'alcool', label:'Álcool em quantidade relevante'}, {v:'drogas', label:'Drogas recreacionais'},
-    {v:'psiq', label:'Problema psiquiátrico ou uso de antidepressivo'},
+    {v:'psiq', label:'Problema psiquiátrico ou antidepressivo'},
     {v:'nenhuma', label:'Nenhuma das anteriores'},
   ];
   const ALERG = [
@@ -4175,7 +4178,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   const MODS = [
     {n:'Identifica\u00e7\u00e3o', ids:['origem','filaVazia','daFila','visita','codigo','confirmHist','contato','trocarQueixa','novaQueixa']},
     {n:'Queixa e protocolo', ids:['queixa','confirma','confirmaEstavel','tempo','parceira','caracteriza','mast','matinal','previa','adequado','protAnt','formulasAnt','iciUso','iciAnt','iciAntDose','iciQual','iciQualidade','iciTempo','iciFreq','iciDoseAtual','refazer']},
-    {n:'Antecedentes', ids:['comorb','comorbCtrl','comorbMed','contra','contraIoim','depre','adam','adamEvol','reversiveis','duasDosagens','sintomas','convive','contexto']},
+    {n:'Antecedentes', ids:['comorb','comorbCtrl','comorbMed','contra','contraIoim','psiqAcomp','bipolar','ideacao','depre','adam','adamEvol','reversiveis','duasDosagens','sintomas','convive','contexto']},
     {n:'Medica\u00e7\u00f5es e alergias', ids:['medsRisco','alergia','parox','topico','freq','fert','querFilho','trtPrevio','contraind','pref','experiencia']},
     {n:'Escores e resposta', ids:['iiefAnt','pedtAnt','adesao','motivo','ea','eaQuais','iciDor','iciDorImpede','iciPge1Troca','satisf','nps','satisfNps',
       'i0','i1','i2','i3','i4','p0','p1','p2','p3','p4','p5','refazer','usarTotaisRec']},
@@ -5487,7 +5490,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       s.push({id:'comorb',kind:'opts',multi:true,step:D,eyebrow:'Comorbidades',
         text:'O paciente tem alguma destas condições? (marque todas)',
         options:COMORB.map(c=>({v:c.v,badge:c.v==='nenhuma'?'—':'•',label:c.label}))});
-      if ((S.comorb||[]).filter(v=>v!=='nenhuma').length){
+      // v2.5.19: "controladas?"/médico externo é para as clínicas; o psiquiátrico tem seguimento próprio
+      if ((S.comorb||[]).filter(v=>v!=='nenhuma' && v!=='psiq').length){
         s.push({id:'comorbCtrl',kind:'opts',step:D,eyebrow:'Comorbidades',
           text:'As condições marcadas estão bem controladas?',
           options:[{v:'sim',badge:'✓',label:'Sim, bem controladas'},{v:'parcial',badge:'~',label:'Parcialmente'},{v:'nao',badge:'!',label:'Não estão controladas'}]});
@@ -5521,6 +5525,21 @@ document.documentElement.setAttribute('data-tema',t)})();
     };
     if (pede2('contra') && autoNao('contra', portaCV)) s.push({id:'contra',kind:'opts',step:D,eyebrow:'Segurança',text:'Usa nitrato ou doador de óxido nítrico? Teve infarto ou AVC nos últimos 6 meses? Angina instável, hipotensão, IC classe III-IV ou neuropatia óptica isquêmica?',
       options:[{v:'sim',badge:'!',label:'SIM a pelo menos um'},{v:'nao',badge:'✓',label:'NÃO a todos'}]});
+    // v2.5.19 (decisão v3 do Dr. Marco): problema psiquiátrico ou antidepressivo/antipsicótico declarado →
+    // perguntar à parte bipolaridade/mania e ideação suicida atual (cada uma sim/não). Qualquer "sim"
+    // bloqueia toda a via serotoninérgica, gera alerta e encaminhamento ao psiquiatra.
+    // Sem comorbidade conhecida não deduz nada; com comorbidades sem o psiquiátrico, ficam "não".
+    const portaPsiMarc = cmb.indexOf('psiq')>=0 || medsR.indexOf('isrs')>=0 || medsR.indexOf('antipsic')>=0;
+    const portaPsiQ = comorbConhecida ? portaPsiMarc : false;
+    if (comorbConhecida && autoNao('psiqAcomp', portaPsiQ)) s.push({id:'psiqAcomp',kind:'opts',step:D,eyebrow:'Saúde mental',
+      text:'Está em acompanhamento psiquiátrico ou psicológico atualmente?',
+      options:[{v:'sim',badge:'✓',label:'Sim, em acompanhamento'},{v:'nao',badge:'—',label:'Não'}]});
+    if (comorbConhecida && autoNao('bipolar', portaPsiQ)) s.push({id:'bipolar',kind:'opts',step:D,eyebrow:'Saúde mental · segurança',
+      text:'Tem diagnóstico ou história de transtorno bipolar ou episódio de mania?',
+      options:[{v:'nao',badge:'—',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
+    if (comorbConhecida && autoNao('ideacao', portaPsiQ)) s.push({id:'ideacao',kind:'opts',step:D,eyebrow:'Saúde mental · segurança',
+      text:'Tem ideação suicida atualmente (pensamentos de se matar nas últimas semanas)?',
+      options:[{v:'nao',badge:'—',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
     if (S.hasDE){
       // v2.4: no retorno com a primeira avaliação registrada, a caracterização vira
       // pergunta de evolução. Os valores continuam os mesmos (sim = satisfatória /
@@ -5608,7 +5627,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (S.visita==='primeira') s.push({id:'parox',kind:'opts',step:D,eyebrow:'Tratamento prévio',
         text:'Já usa paroxetina 20 mg/dia e permanece insatisfeito?',
         options:[{v:'nao',badge:'—',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
-      if (pede2('depre') && autoNao('depre', portaPsi)) s.push({id:'depre',kind:'opts',step:D,eyebrow:'Segurança',text:'História de depressão maior, ideação ou acompanhamento psiquiátrico ativo?',
+      // v2.5.19: com as perguntas de saúde mental feitas, a história psiquiátrica já está declarada — não repete
+      if (portaPsiQ && pede2('depre')){ if (S.depre===undefined || auto.depre){ S.depre='sim'; auto.depre=true; } }
+      else if (pede2('depre') && autoNao('depre', portaPsi)) s.push({id:'depre',kind:'opts',step:D,eyebrow:'Segurança',text:'História de depressão maior, ideação ou acompanhamento psiquiátrico ativo?',
         options:[{v:'nao',badge:'✓',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
     }
     if (pede2('fert')) s.push({id:'fert',kind:'opts',step:D,eyebrow:'Planejamento',text:'Deseja engravidar nos próximos 12 meses?',
@@ -6908,6 +6929,10 @@ document.documentElement.setAttribute('data-tema',t)})();
     const vascGrave = comorb.includes('vasc') || (comorb.includes('dm') && comorb.length>1);
     const meds = (S.medsRisco||[]).filter(v=>v!=='nenhuma');
     const usaISRS = meds.includes('isrs');
+    // v2.5.19: bipolaridade/mania ou ideação suicida atual bloqueiam TODA a via serotoninérgica
+    const bloqPsi = S.bipolar==='sim' || S.ideacao==='sim';
+    const seroBloq = usaISRS || bloqPsi;
+    const motivoPsi = [S.bipolar==='sim'?'transtorno bipolar/mania':'', S.ideacao==='sim'?'ideação suicida atual':''].filter(Boolean).join(' e ');
     if (meds.length){
       notas.push('<b>Medicações que podem estar causando a queixa:</b> '+meds.map(v=>{const m=MEDS.find(x=>x.v===v);return m?m.nota:'';}).join(' '));
       notas.push('<b>Antes de escalonar dose, tentar corrigir a causa.</b> Trocar um fármaco que derruba a ereção costuma render mais que somar outro por cima — e a troca é sempre com o prescritor original, nunca por conta do paciente.');
@@ -6969,8 +6994,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       else { pedirLabs=true; notas.push('<b>Ioimbina não indicada:</b> não há testosterona documentada para sustentar a decisão. Sem o valor, o desejo reduzido pode ser hormonal, e a conduta correta é dosar antes de prescrever.'); }
     }
     const semTada=S.contra==='sim'||alg.includes('tada');
-    const semClomi=semTada||S.depre==='sim'||usaISRS||alg.includes('clomi');
+    const semClomi=semTada||S.depre==='sim'||seroBloq||alg.includes('clomi');
     if (alg.length) notas.push('<b>Alergias declaradas:</b> '+alg.map(v=>({tada:'inibidor de PDE5',clomi:'tricíclico',parox:'ISRS',dapo:'dapoxetina',anest:'anestésico local',ioim:'ioimbina',fito:'fitoterápico da fórmula'}[v])).join(', ')+'. Os componentes correspondentes foram excluídos do protocolo.');
+    if (bloqPsi) notas.push('<b>ALERTA PSIQUIÁTRICO — via serotoninérgica bloqueada ('+motivoPsi+').</b> Paroxetina, dapoxetina, clomipramina (SP-DUO) e qualquer fórmula serotoninérgica estão fora. Ejaculação precoce só por via tópica, preservativo e abordagem comportamental.'+(S.ideacao==='sim'?' <b>Ideação suicida atual: avaliar risco hoje, antes de o paciente sair.</b>':''));
+    if (bloqPsi) notas.push('<b>Encaminhar:</b> psiquiatra — '+motivoPsi+'.'+(S.psiqAcomp==='sim'?' Já está em acompanhamento: comunicar o psiquiatra assistente.':' Sem acompanhamento atual: encaminhamento formal hoje.'));
     if (usaISRS) notas.push('<b>ISRS em uso — toda a via serotoninérgica está bloqueada.</b> Não associar paroxetina, dapoxetina nem clomipramina a um antidepressivo serotoninérgico. Para a ejaculação precoce, ficam o creme retardante, o preservativo e a abordagem comportamental. Se o controle for insuficiente, a conversa é com o psiquiatra sobre trocar o antidepressivo, não sobre somar outro serotoninérgico.');
     const semPomada=S.pomada==='sim'||alg.includes('anest');
     const bio = S.biotens==='' || S.biotens===undefined ? null : parseFloat(String(S.biotens).replace(',','.'));
@@ -7053,7 +7080,7 @@ document.documentElement.setAttribute('data-tema',t)})();
               : (/Reduzir/.test(iciMud||'') ? 'Ereções acima de 2 horas: reduzir a dose, sem escalonar. Reforçar por escrito a conduta de priapismo.'
               : 'Mesma fórmula e mesma dose em uso. Orientação escrita de priapismo mantida.');
     } else if (S.fert==='sim'){
-      prot='FERT'; kit=['MOD-CLOMI-25','FERT-SUP', trataEP?'SP-DUO':'SP-DE'];
+      prot='FERT'; kit=['MOD-CLOMI-25','FERT-SUP', (trataEP&&!seroBloq)?'SP-DUO':'SP-DE'];
       if (trataEP) kit=kit.concat(ret);
       reco='Linha FERT — preservação de fertilidade';
       recoText='Clomifeno preserva espermatogênese. Dosar T total, T livre, LH, FSH, estradiol e hematócrito em 4 a 6 semanas. Nenhum ISRS contínuo nesta linha.';
@@ -7063,18 +7090,18 @@ document.documentElement.setAttribute('data-tema',t)})();
       recoText='Resposta a PDE5i oral é baixa nesta faixa. Teste de ereção fármaco-induzida e titulação em consultório. Orientação escrita de priapismo obrigatória.';
     } else if (trataDE&&trataEP){
       const n=Math.max(lvlDE,1);
-      if (S.parox==='sim' && !usaISRS){
+      if (S.parox==='sim' && !seroBloq){
         prot='DUO-4'; kit=[BT[n-1],'MOD-PAROX-20'].concat(semClomi?[]:[['SP-DUO-1J','Sob demanda']],['NOITE-1'],ret);
         reco='DE + EP refratária à paroxetina 20 mg';
         recoText='Única situação em que se associa clomipramina sublingual a ISRS oral.';
-      } else if (S.freq==='alta' && !usaISRS){
+      } else if (S.freq==='alta' && !seroBloq){
         prot='DUO-3'; kit=[BT[n-1],lvlEP>=3?'MOD-PAROX-20':'MOD-PAROX-10','NOITE-1','SP-DE'].concat(ret);
         reco='Linha DUO com ISRS contínuo — frequência alta';
         recoText='Duas ou mais relações por semana favorecem o ISRS contínuo. Spray só de tadalafila.';
         notas.push('Paroxetina <b>não pode ser suspensa abruptamente</b>.');
-      } else if (usaISRS){
+      } else if (seroBloq){
         prot='DUO-TOPICO'; kit=[BT[n-1],'NOITE-1','SP-DE'].concat(ret, S.preserv==='nao'?['PRESERV']:[]);
-        reco='DE tratada, EP por via tópica — ISRS em uso'; recoText='Cápsula matinal e spray de tadalafila para a ereção. Para a ejaculação, nada de serotoninérgico: creme retardante, preservativo e abordagem comportamental.';
+        reco='DE tratada, EP por via tópica — '+(usaISRS?'ISRS em uso':'via serotoninérgica bloqueada'); recoText='Cápsula matinal e spray de tadalafila para a ereção. Para a ejaculação, nada de serotoninérgico: creme retardante, preservativo e abordagem comportamental.';
       } else if (semClomi){
         prot='DUO-1D'; kit=[BT[n-1],'NOITE-1',(lvlEP>=3?'MOD-DAPO-60':'MOD-DAPO-30'),'SP-DE'].concat(ret);
         reco='Linha DUO sob demanda — opção única';
@@ -7097,10 +7124,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       recoText=ramoL?'Ioimbina 5,4 mg manhã e noite, 10,8 mg/dia. Efeito em 2 a 3 semanas. Aferir PA no retorno.':'Cápsula matinal contínua com spray sublingual sob demanda.';
       notas.push(n===3?'No nível 3 a cápsula traz tadalafila 20 mg: <b>máximo 1 jato</b> do SP-DE.':'SP-DE titulável em 1 ou 2 jatos (10 ou 20 mg).');
     } else if (trataEP){
-      if (S.parox==='sim' && !usaISRS){
+      if (S.parox==='sim' && !seroBloq){
         prot='EP-4'; kit=['MOD-PAROX-20'].concat(semClomi?[]:[['SP-DUO-1J','Sob demanda']],['NOITE-1'],ret);
         reco='EP refratária à paroxetina 20 mg'; recoText='Único protocolo que combina paroxetina oral com clomipramina sublingual.';
-      } else if (S.freq==='alta' && !usaISRS){
+      } else if (S.freq==='alta' && !seroBloq){
         const n=lvlEP>=3?3:2; prot=n===3?'EP-3':'EP-2';
         kit=[n===3?'MOD-PAROX-20':'MOD-PAROX-10','NOITE-1'].concat(ret);
         reco='Paroxetina diária — frequência alta'; recoText='ISRS contínuo tem melhor efeito sobre o tempo intravaginal. Sem spray serotoninérgico associado.';
@@ -7108,9 +7135,9 @@ document.documentElement.setAttribute('data-tema',t)})();
       } else if (lvlEP===1&&S.preserv==='nao'&&!hipersens){
         prot='COMPORTAMENTAL'; kit=['PRESERV','NOITE-1'];
         reco='Primeira tentativa sem prescrição'; recoText='Quadro leve, frequência baixa e sem restrição ao preservativo. Reavaliar em 8 semanas antes de medicar.';
-      } else if (usaISRS){
+      } else if (seroBloq){
         prot='EP-TOPICO'; kit=['NOITE-1'].concat(ret, S.preserv==='nao'?['PRESERV']:[]);
-        reco='Controle tópico — ISRS em uso'; recoText='Nenhum agente serotoninérgico pode ser somado ao antidepressivo. Creme retardante, preservativo e técnica comportamental. Discutir com o psiquiatra a troca do antidepressivo se o controle for insuficiente.';
+        reco='Controle tópico — '+(usaISRS?'ISRS em uso':'via serotoninérgica bloqueada'); recoText=usaISRS?'Nenhum agente serotoninérgico pode ser somado ao antidepressivo. Creme retardante, preservativo e técnica comportamental. Discutir com o psiquiatra a troca do antidepressivo se o controle for insuficiente.':'Nenhum agente serotoninérgico neste paciente. Creme retardante, preservativo e técnica comportamental.';
       } else if (semClomi){
         prot=lvlEP>=3?'EP-2D':'EP-1D'; kit=[(lvlEP>=3?'MOD-DAPO-60':'MOD-DAPO-30'),'NOITE-1'].concat(ret);
         reco='Dapoxetina sob demanda — opção única'; recoText='Testar hipotensão ortostática antes da primeira prescrição.';
@@ -7130,13 +7157,21 @@ document.documentElement.setAttribute('data-tema',t)})();
     const cods = () => kit.map(e=>Array.isArray(e)?e[0]:e);
     if (S.hasEP && !cods().some(c=>/^SP-DUO|^MOD-DAPO|^RET-1|^PRESERV/.test(c))){
       if (!semClomi && !semTada) kit = kit.concat(['SP-DUO']);
-      else if (!usaISRS && alg.indexOf('dapo')<0 && !cods().some(c=>/PAROX/.test(c))) kit = kit.concat(['MOD-DAPO-30']);
+      else if (!seroBloq && alg.indexOf('dapo')<0 && !cods().some(c=>/PAROX/.test(c))) kit = kit.concat(['MOD-DAPO-30']);
       else if (!semPomada) kit = kit.concat(['RET-1']);
       else if (S.preserv==='nao') kit = kit.concat(['PRESERV']);
       // v2.5-E: a nota só diz "aplicado" se algo entrou no kit (TEST-021: ISRS em uso + restrição às duas vias tópicas)
       // v2.5-P: o piso é regra interna da clínica — fica só no motor, sem texto na tela nem na via do paciente
       if (!cods().some(c=>/^SP-DUO|^MOD-DAPO|^RET-1|^PRESERV/.test(c)))
         notas.push('<b>Sem recurso possível para a ejaculação precoce neste paciente.</b> A via serotoninérgica está bloqueada'+(usaISRS?' (ISRS em uso)':'')+' e há restrição às duas vias tópicas. Reabordar a restrição ao creme ou ao preservativo'+(usaISRS?' e conversar com o psiquiatra sobre o antidepressivo':'')+'; até lá, abordagem comportamental.');
+    }
+    // v2.5.19: trava final — com bloqueio psiquiátrico nada serotoninérgico sai no kit, venha de onde vier
+    if (bloqPsi){
+      const SERO = /PAROX|DAPO|SP-DUO|CLOMIP/;
+      const tinha = cods().some(c=>SERO.test(c));
+      kit = kit.filter(e=>!SERO.test(Array.isArray(e)?e[0]:e));
+      if (tinha && S.hasDE && !semTada && !cods().includes('SP-DE')) kit = kit.concat(['SP-DE']);
+      if (S.hasEP && !cods().some(c=>/^RET-1|^PRESERV/.test(c))){ if (!semPomada) kit = kit.concat(['RET-1']); else if (S.preserv==='nao') kit = kit.concat(['PRESERV']); }
     }
     // v2.5-P: o texto "sem spray serotoninérgico" ficava errado quando o piso somava o SP-DUO à paroxetina
     if (paroxComClomi(cods()) && /Sem spray serotoninérgico associado\./.test(recoText||''))
@@ -7325,7 +7360,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (ramoL) marc.push('ramo libido com ioimbina');
     if (psico) marc.push('perfil psicogênico');
     if (organico) marc.push('perfil orgânico');
-    if (usaISRS) marc.push('via serotoninérgica bloqueada');
+    if (seroBloq) marc.push('via serotoninérgica bloqueada');
     if (hipersens) marc.push('hipersensibilidade da glande');
     if (ondas) marc.push('ondas de choque indicadas');
     else if (ondasOpc) marc.push('ondas de choque oferecidas');
@@ -7393,7 +7428,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       else if (S.contraIoim==='sim') rc_fora.push('<b>Ioimbina</b> — contraindicação declarada.');
       else if (trataEP) rc_fora.push('<b>Ioimbina</b> — não se associa a serotoninérgico; a ejaculação precoce é a prioridade.');
     }
-    if (usaISRS) rc_fora.push('<b>Paroxetina, dapoxetina e clomipramina</b> — já usa antidepressivo serotoninérgico.');
+    if (bloqPsi) rc_fora.push('<b>Paroxetina, dapoxetina e clomipramina</b> — '+motivoPsi+': via serotoninérgica bloqueada.');
+    else if (usaISRS) rc_fora.push('<b>Paroxetina, dapoxetina e clomipramina</b> — já usa antidepressivo serotoninérgico.');
     else if (S.hasEP && S.freq==='baixa' && kit.every(e=>!/PAROX/.test(Array.isArray(e)?e[0]:e))) rc_fora.push('<b>ISRS contínuo</b> — relações esporádicas.');
     if (S.depre==='sim') rc_fora.push('<b>Spray com clomipramina</b> — história psiquiátrica relevante.');
     if (semTada && S.hasEP) rc_fora.push('<b>Spray SP-DUO</b> — contém tadalafila, contraindicada neste paciente.');
@@ -7473,11 +7509,12 @@ document.documentElement.setAttribute('data-tema',t)})();
     }
     if (S.hasDE){ add(qn('IIEF-5')+' total','<b>'+qv(sIIEF+'/25')+' — '+bDE.label+'</b>'); Q_IIEF.forEach(q=>add('· '+q.short,S[q.id])); }
     if (S.hasEP){ add(qn('PEDT')+' total','<b>'+qv(sPEDT+'/20')+' — '+bEP.label+'</b>'); Q_PEDT.forEach(q=>add('· '+q.short,S[q.id])); }
-    const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
+    const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',psiqAcomp:'Acompanhamento psiquiátrico',bipolar:'Bipolaridade ou mania',ideacao:'Ideação suicida atual',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
     screens.filter(s=>LBL[s.id]).forEach(s=>{ if (s.id==='biotens'){ add(LBL[s.id], txtBiotens(S.biotens)||'—'); return; } /* v2.5-S: valor e faixa (antes saía "—": tela numérica não tem opções) */ const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
     // v2.5.19: resposta deduzida da tela de comorbidades (a pergunta não apareceu) — fica no relatório, marcada como tal
     if (S._auto && S._auto.contra && S.contra==='nao' && !screens.some(s=>s.id==='contra')) add(LBL.contra, 'NÃO a todos — sem hipertensão nem coronariopatia (não perguntado)');
     if (S._auto && S._auto.depre && S.depre==='nao' && !screens.some(s=>s.id==='depre')) add(LBL.depre, 'Não — sem problema psiquiátrico nem antidepressivo (não perguntado)');
+    if (S._auto && S._auto.depre && S.depre==='sim' && !screens.some(s=>s.id==='depre')) add(LBL.depre, 'Sim — declarada nas comorbidades/medicações');
     const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=itemKit(c, kit);if(!i) return '';
       // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
       // v2.5-H (item 1): sem dose indicada (1ª consulta), a dose inicial padrão da clínica para a R5 (a mesma do TEFI)
@@ -7525,6 +7562,8 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (comorb.some(v=>['dm','disl'].includes(v))) encs.push('endocrinologista');
       if (comorb.some(v=>['obes','disl','dm'].includes(v))) encs.push('nutricionista');
     }
+    // v2.5.19: via do paciente só com o encaminhamento simples, sem o motivo/regra interna
+    if (bloqPsi) encs.push('psiquiatra');
     const agendar=[];
     if (tefi) agendar.push('exame de ereção com Doppler');
     if (ondas) agendar.push('sessões de ondas de choque');   // v2.5-G: oferta opcional não entra no "Agende também"
@@ -7664,7 +7703,7 @@ document.documentElement.setAttribute('data-tema',t)})();
 
     const reg={data:new Date().toISOString(),codigo:norm(S.codigo),tipo:reav?'reavaliacao':'primeira',dataBR:hoje,numeroReavaliacao:reav?(S.nReav||null):0,diasDesdeUltima:reav?(S.diasDesde==null?null:S.diasDesde):null,
       iief:sIIEF,pedt:sPEDT,protocolo:prot,custoIndice:CUS.idx,custoPontos:CUS.total,kitCodes:unicos(kit),ondasSessoes:((kit.some(e=>(Array.isArray(e)?e[0]:e)==='ONDAS') || S.tefiConduta==='ondas') ? ((prev && Number(prev.ondasSessoes)) || ONDAS_SESSOES) : null),biotens:(bio===null?null:bio),biotensFaixa:(fBio?fBio.t:null),protocoloAnterior:(S.protAnt==='Outro / combinação não listada'?protAntExibe(', '):S.protAnt)||null,mudanca:mudanca||'manter',
-      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),iciDor:S.iciDor||null,iciDorImpede:S.iciDorImpede||null,iciPge1Troca:S.iciPge1Troca||null,ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
+      tempo:S.tempo||null,parceria:S.parceira||null,topicoPref:S.topico||null,psiquiatrico:S.depre||null,bipolar:S.bipolar||null,ideacaoSuicida:S.ideacao||null,psiqAcomp:S.psiqAcomp||null,frequencia:S.freq||null,medidasRecepcao:S.medidasRec||null,revisouRecepcao:!!S.revisarRec,contraCV:S.contra||null,fertilidade:S.fert||null,previaTrat:S.previa||null,previaAdequado:S.adequado||null,mast:S.mast||null,matinal:S.matinal||null,adam:S.adam||null,adamPositivo:adamPositivo(S.adam),alergias:alg,drogas:S.drogas||null,medsRisco:meds,comorbidades:comorb,comorbControle:S.comorbCtrl||null,comorbMedico:S.comorbMed||null,iciAnterior:S.iciAnt||(iciPorTefi==='sim'?(S.iciFormula||null):null),iciPorTefi:(iciPorTefi?{acrescentada:iciPorTefi==='sim',formula:iciPorTefi==='sim'?(S.iciFormula||null):null,dose:iciPorTefi==='sim'?(S.iciDose||null):null,protocoloOral:protOralTefi}:null),iciDosePrescrita:S.iciAntDose||null,iciDoseIndicada:iciDoseIndicada,examesSolicitados:pedirLabs,tefiIndicado:tefi,ondasIndicado:ondas,ondasOpcional:ondasOpc,ondasOpcional:ondasOpc,labs:(S.examesFeitos==='sim'?{tTotal:S.tTotal||null,tLivre:S.tLivre||null,lh:S.lh||null,fsh:S.fsh||null,estradiol:S.estradiol||null,prolactina:S.prolactina||null}:(prev&&prev.labs)||null),tefi:(S.tefiFeito==='sim'?{resp:S.tefiResp,doppler:S.tefiDoppler,conduta:S.tefiConduta,formula:S.iciFormula||null,dose:S.iciDose||null}:null),adesao:S.adesao||null,iciCasa:((S.iciQualidade!==undefined||S.iciTempo)?{qualidade:S.iciQualidade===undefined?null:S.iciQualidade,tempo:S.iciTempo||null,freq:S.iciFreq||null,dose:S.iciDoseAtual||null}:null),iciDor:S.iciDor||null,iciDorImpede:S.iciDorImpede||null,iciPge1Troca:S.iciPge1Troca||null,ea:S.ea||null,eaQuais:S.eaQuais||[],satisf:S.satisf===undefined?null:S.satisf,nps:S.nps===undefined?null:S.nps};
     montarTextoCopia();
     const ok=await salvarCiclo(reg);
     pintaStatus(ok?'Ciclo salvo.':'Não foi possível salvar — guarde o relatório impresso.');
@@ -7703,6 +7742,10 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (bloco) nl(1);
     };
     anda(box);
+    // v2.5.19: o email é lido em casa — frases de "antes de sair da clínica" viram orientação de agendamento
+    out = out.replace(/Passe na recepção hoje, antes de sair, para agendar([^.]*)\./g, 'Agende$1 com a recepção da clínica.')
+             .replace(/Agende na recepção antes de sair\./g, 'Agende com a recepção da clínica.')
+             .replace(/,? *(hoje,? )?antes de sair( da clínica)?/g, '');
     return out.replace(/\u00a0/g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
   }
   // mailto no formato do RFC 6068 (quebra de linha %0D%0A), que o Mail do macOS lê.

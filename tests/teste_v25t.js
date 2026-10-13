@@ -37,12 +37,12 @@ const prim = (cod, r) => ({ id: cod, codigo: cod, respostas: Object.assign({ vis
   }
   {
     const r = await roda(prim('MXT105', Object.assign({ queixa: 'ep', comorb: ['psiq'], comorbCtrl: 'sim', comorbMed: 'sim', freq: 'baixa', depre: 'sim' }, pedt(13))), true);
-    ok(!r.falha && r.caminho.indexOf('depre') >= 0, 'problema psiquiátrico marcado: pergunta psiquiátrica aparece', r.falha || r.caminho.join('>'));
+    ok(!r.falha && ['bipolar', 'ideacao'].every(t => r.caminho.indexOf(t) >= 0) && r.caminho.indexOf('depre') < 0, 'problema psiquiátrico marcado: bipolar e ideação perguntados, sem repetir a "história psiquiátrica"', r.falha || r.caminho.join('>'));
     ok(r.conduta && r.conduta.kit.indexOf('SP-DUO') < 0, 'história psiquiátrica: sem SP-DUO (regra mantida)', r.conduta && r.conduta.kit);
   }
   {
     const r = await roda(prim('MXT106', Object.assign({ queixa: 'ep', comorb: ['nenhuma'], medsRisco: ['isrs'], freq: 'baixa', depre: 'nao' }, pedt(13))), true);
-    ok(!r.falha && r.caminho.indexOf('depre') >= 0, 'antidepressivo nas medicações: pergunta psiquiátrica aparece', r.falha || r.caminho.join('>'));
+    ok(!r.falha && ['bipolar', 'ideacao'].every(t => r.caminho.indexOf(t) >= 0), 'antidepressivo nas medicações: perguntas de saúde mental aparecem', r.falha || r.caminho.join('>'));
   }
   {
     // voltar e marcar hipertensão depois: o "não" deduzido sai e a pergunta volta
@@ -80,6 +80,55 @@ const prim = (cod, r) => ({ id: cod, codigo: cod, respostas: Object.assign({ vis
     ok(!r2.falha && (r2.caminho.indexOf('contra') >= 0 || r2.caminho.indexOf('confirmaEstavel') >= 0), 'retorno de hipertenso: nitrato perguntado ou confirmado na ficha estável', r2.falha || r2.caminho.join('>'));
   }
 
+  console.log('--- item 1b: bipolaridade/mania ou ideação suicida → bloqueio serotoninérgico + alerta + psiquiatra');
+  const SERO = /PAROX|DAPO|SP-DUO|CLOMIP/;
+  for (const [nome, bip, ide] of [['bipolar sim', 'sim', 'nao'], ['ideação sim', 'nao', 'sim'], ['ambos não', 'nao', 'nao']]) {
+    for (const [q, extra] of [['EP', Object.assign({ queixa: 'ep', freq: 'alta' }, pedt(14))], ['DE+EP', Object.assign({ queixa: 'ambos', freq: 'baixa' }, iief(14), pedt(14))]]) {
+      const cod = 'MXT2' + (bip === 'sim' ? 1 : ide === 'sim' ? 2 : 3) + (q === 'EP' ? 1 : 2);
+      const r = await roda(prim(cod, Object.assign({ comorb: ['psiq'], medsRisco: ['nenhuma'], psiqAcomp: 'nao', bipolar: bip, ideacao: ide, depre: 'sim' }, extra)), true, { manter: true });
+      if (r.falha) { ok(false, nome + ' ' + q + ': chega à conduta', r.falha + ' | ' + r.caminho.join('>')); continue; }
+      ok(['psiqAcomp', 'bipolar', 'ideacao'].every(t => r.caminho.indexOf(t) >= 0) && r.caminho.indexOf('comorbCtrl') < 0,
+        nome + ' ' + q + ': pergunta acompanhamento, bipolar e ideação (sem "controladas?")', r.caminho.join('>'));
+      const kit = r.conduta.kit.map(e => Array.isArray(e) ? e[0] : e);
+      const d = r.win.document, tela = d.getElementById('resultsCard').textContent, pac = d.getElementById('printPaciente').textContent;
+      if (bip === 'sim' || ide === 'sim') {
+        ok(!kit.some(c => SERO.test(c)), nome + ' ' + q + ': nenhum serotoninérgico no kit', kit.join(','));
+        ok(/ALERTA PSIQUIÁTRICO/.test(tela) && /Encaminhar:\s*psiquiatra/.test(tela), nome + ' ' + q + ': alerta e encaminhamento na tela do médico');
+        ok(/psiquiatra/.test(pac) && !/ALERTA|bipolar|ideação|serotonin/i.test(pac), nome + ' ' + q + ': via do paciente só com o encaminhamento simples');
+        ok(r.salvo.bipolar === bip && r.salvo.ideacaoSuicida === ide, nome + ' ' + q + ': registro grava as respostas');
+      } else {
+        ok(!/ALERTA PSIQUIÁTRICO/.test(tela) && !/psiquiatra/.test(pac), nome + ' ' + q + ': sem alerta nem encaminhamento');
+      }
+      r.win.close();
+    }
+  }
+  {
+    const r = await roda(prim('MXT231', Object.assign({ queixa: 'ep', comorb: ['nenhuma'], medsRisco: ['nenhuma'], freq: 'baixa' }, pedt(13))), true);
+    ok(!r.falha && ['psiqAcomp', 'bipolar', 'ideacao'].every(t => r.caminho.indexOf(t) < 0) && r.salvo.bipolar === 'nao' && r.salvo.ideacaoSuicida === 'nao',
+      'sem psiquiátrico: as perguntas de saúde mental não aparecem e ficam "não"', r.caminho.join('>'));
+  }
+  {
+    // prévia imediata: marcar "Nenhuma" já tira as perguntas puladas da lista de seguintes
+    const { JSDOM, VirtualConsole } = require('jsdom');
+    const { assenta, ate } = require('./assenta');
+    const { preenche } = require('./regressao');
+    const dom = new JSDOM(HTML, { url: 'file:///app/index.html', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: new VirtualConsole(),
+      beforeParse(w) { w.claude = { use: async () => ({ collection: () => { const o = { orderBy() { return o; }, limit() { return o; }, async get() { return { docs: [] }; }, async add() { return true; } }; return o; } }) }; w.print = () => {}; w.open = () => null; w.scrollTo = () => {}; } });
+    const w = dom.window, d = w.document;
+    await ate(w, () => !!d.getElementById('quizCard') && !!d.getElementById('quizCard').getAttribute('data-tela'), 3000); await assenta(w, { quieto: 10 });
+    const resp = Object.assign({ origem: 'novo', visita: 'primeira', codigo: 'MXT240', contato, queixa: 'de' }, iief(14));
+    for (let k = 0; k < 40 && d.getElementById('quizCard').getAttribute('data-tela') !== 'comorb'; k++) {
+      const pan = d.getElementById('panoramaCard'); if (pan && pan.style.display !== 'none') { d.getElementById('panSeguir').click(); await assenta(w); continue; }
+      const t = d.getElementById('quizCard').getAttribute('data-tela'); preenche(d, w, t, resp[t]); d.getElementById('nextBtn').click(); await assenta(w);
+    }
+    const seg = () => (d.getElementById('mxSeguintes') || {}).textContent || '';
+    d.querySelector('#optsWrap .opt[data-v="has"]').click(); await assenta(w);
+    ok(/nitrato/.test(seg()), 'hipertensão marcada: nitrato na lista das seguintes', seg().slice(0, 200));
+    d.querySelector('#optsWrap .opt[data-v="nenhuma"]').click(); await assenta(w);
+    ok(d.getElementById('quizCard').getAttribute('data-tela') === 'comorb' && !/nitrato|controladas/.test(seg()), '"Nenhuma": nitrato e "controladas?" saem da lista na hora (continua na mesma tela)', seg().slice(0, 200));
+    w.close();
+  }
+
   console.log('--- item 2: botão "Continuar de onde parou" legível');
   {
     const css = HTML.match(/\.retomar button[^{]*\{[^}]*\}/g) || [];
@@ -103,6 +152,7 @@ const prim = (cod, r) => ({ id: cod, codigo: cod, respostas: Object.assign({ vis
     ok(par.body.replace(/\s+/g, ' ').indexOf(trecho) >= 0, 'corpo contém a posologia da via do paciente', trecho);
     ok(/O QUE VOCÊ VAI USAR/.test(par.body) && /\n• /.test(par.body), 'corpo legível: seções e tópicos em linhas próprias');
     ok(!/Agendado por|Horário:/.test(par.body), 'sem os campos de agenda em branco do papel');
+    ok(!/antes de sair|Passe na recepção hoje/.test(par.body) && /com a recepção da clínica/.test(par.body), 'sem frases de "antes de sair" no email');
     ok(!/[Rr]egra interna|piso terap/.test(par.body), 'sem regra interna no corpo');
     ok(/Maximus/.test(par.subject) && /\d{2}\/\d{2}\/\d{4}/.test(par.subject), 'assunto com Maximus e data', par.subject);
     ok(em.url.length <= 7500, 'URL dentro do limite', em.url.length);
