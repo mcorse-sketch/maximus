@@ -52,6 +52,7 @@ etapa "7k. ajustes v2.5-P — via do paciente sem regra interna, porquê de cada
 etapa "7l. v2.5-Q — XSS escapado, histórico que falha não vira 1ª avaliação, fila local (timeout/race/código)" "node teste_v25q.js"
 etapa "7m. v2.5-R — exames com ID, EA/PGE1, protocolo com dose, ondas destacadas, conduta ao vivo" "node teste_v25r.js"
 etapa "7n. v2.5-S — dados do paciente novo (nome e nascimento), abertura direta, Enter = Próxima, exames e US em folha separada, biotens 20, preenchimento sem comprimento" "node teste_v25s.js"
+etapa "7o. v2.5-T — comorbidades abrem as perguntas de segurança, botão Continuar legível, email com a via do paciente" "node teste_v25t.js"
 etapa "8. tela de senha dos três apps" "node teste_sessao.js"
 etapa "9. servidor — acesso por perfil e rotas" "servidor"
 etapa "10. recepção — toque duplo avança uma tela só (v2.5-N)" "node teste_toque.js '$RECEP'"

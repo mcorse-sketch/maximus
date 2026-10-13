@@ -408,7 +408,7 @@ const digita = (a, id, v) => { const i = campo(a, id); if (!i) return false; i.v
   }
   {
     ok(!/compFlac|compPos|compRet|compEret|[Cc]omprimento/.test(HTML.replace(/\/\/[^\n]*/g, '')), 'o app não tem mais comprimento no preenchimento (fora de comentários)');
-    ok(/data-versao="2\.5\.18"/.test(HTML), 'versão 2.5.18');
+    ok(/data-versao="2\.5\.(18|19)"/.test(HTML), 'versão 2.5.18+');
   }
 
   // =====================================================================

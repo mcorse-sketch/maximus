@@ -786,7 +786,7 @@ document.documentElement.setAttribute('data-tema',t)})();
   </div>
   <div class="tool-title">
     <div class="t1">Painel de atendimento Maximus</div>
-    <div class="t2" id="versaoApp" data-versao="2.5.18" title="v2.5-S (18ª revisão da 2.5)">Vers&atilde;o 2.5.18 &middot; v2.5-S &middot; 06/10/2026</div>
+    <div class="t2" id="versaoApp" data-versao="2.5.19" title="v2.5-T (19ª revisão da 2.5)">Vers&atilde;o 2.5.19 &middot; v2.5-T &middot; 12/10/2026</div>
   </div>
   <div class="mx-topacts noprint" id="mxTopo">
     <div class="dbtag" id="dbTag">Verificando banco de dados…</div>
@@ -1468,7 +1468,8 @@ document.documentElement.setAttribute('data-tema',t)})();
   .salvo-tag button:hover{background:#fdecea}
   .vigia{background:var(--mx-stopbg)!important;color:var(--mx-stop)!important;border:1px solid var(--mx-stopln)!important}
   .retomar{background:var(--mx-warnbg)!important;color:var(--mx-text)!important;border:1px solid var(--mx-warnln)!important}
-  .retomar button{color:var(--mx-text)!important}
+  .retomar button.btn-ghost{color:var(--mx-text)!important;background:transparent!important;border:1px solid var(--mx-warnln)!important}
+  .retomar button.btn-primary{background:var(--mx-ink)!important;color:var(--mx-inkt)!important}
   .erro-global{background:var(--mx-stopbg)!important;color:var(--mx-stop)!important}
   #quizCard[data-q="iief"],#quizCard[data-q="pedt"]{border-color:var(--mx-line)!important}
   #quizCard[data-q="iief"] .q-eyebrow,#quizCard[data-q="pedt"] .q-eyebrow{color:var(--mx-text3)!important}
@@ -3601,6 +3602,7 @@ document.documentElement.setAttribute('data-tema',t)})();
     {v:'disl', label:'Dislipidemia'}, {v:'vasc', label:'Doença coronariana ou arterial periférica'},
     {v:'tabag', label:'Tabagismo atual'}, {v:'obes', label:'Obesidade'},
     {v:'alcool', label:'Álcool em quantidade relevante'}, {v:'drogas', label:'Drogas recreacionais'},
+    {v:'psiq', label:'Problema psiquiátrico ou uso de antidepressivo'},
     {v:'nenhuma', label:'Nenhuma das anteriores'},
   ];
   const ALERG = [
@@ -5500,7 +5502,24 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (pede1('alergia')) s.push({id:'alergia',kind:'opts',multi:true,step:D,eyebrow:'Alergias',
       text:'O paciente tem alergia conhecida a algum destes? (marque todos; se nenhum, marque a última opção)',
       options:ALERG.map(a=>({v:a.v,badge:a.v==='nenhuma'?'✓':'•',label:a.label}))});
-    if (pede2('contra')) s.push({id:'contra',kind:'opts',step:D,eyebrow:'Segurança',text:'Usa nitrato ou doador de óxido nítrico? Teve infarto ou AVC nos últimos 6 meses? Angina instável, hipotensão, IC classe III-IV ou neuropatia óptica isquêmica?',
+    // v2.5.19: as perguntas de segurança só aparecem quando a resposta de comorbidades
+    // abre a porta. Sem hipertensão nem coronariopatia marcadas, a de nitrato/cardíaca
+    // fica "não" sem tela; sem problema psiquiátrico nem antidepressivo, a psiquiátrica
+    // também. Se a comorbidade ainda não é conhecida, pergunta como antes.
+    // no retorno sem a tela de comorbidades, vale a última resposta registrada (ciclo anterior)
+    const prevArr = k => (S.visita==='reav' && prev && Array.isArray(prev[k]) && prev[k].length) ? prev[k] : null;
+    const cmbBase = (Array.isArray(S.comorb) && S.comorb.length) ? S.comorb : prevArr('comorbidades');
+    const comorbConhecida = !!cmbBase;
+    const cmb = cmbBase||[], medsR = (Array.isArray(S.medsRisco) && S.medsRisco.length) ? S.medsRisco : (prevArr('medsRisco')||[]);
+    const auto = S._auto || (S._auto = {});
+    const portaCV = !comorbConhecida || cmb.indexOf('has')>=0 || cmb.indexOf('vasc')>=0;
+    const portaPsi = !comorbConhecida || cmb.indexOf('psiq')>=0 || medsR.indexOf('isrs')>=0 || medsR.indexOf('antipsic')>=0;
+    const autoNao = (id, porta)=>{
+      if (porta){ if (auto[id]){ delete S[id]; delete auto[id]; } return true; }
+      if (S[id]===undefined || auto[id]){ S[id]='nao'; auto[id]=true; }
+      return false;
+    };
+    if (pede2('contra') && autoNao('contra', portaCV)) s.push({id:'contra',kind:'opts',step:D,eyebrow:'Segurança',text:'Usa nitrato ou doador de óxido nítrico? Teve infarto ou AVC nos últimos 6 meses? Angina instável, hipotensão, IC classe III-IV ou neuropatia óptica isquêmica?',
       options:[{v:'sim',badge:'!',label:'SIM a pelo menos um'},{v:'nao',badge:'✓',label:'NÃO a todos'}]});
     if (S.hasDE){
       // v2.4: no retorno com a primeira avaliação registrada, a caracterização vira
@@ -5589,7 +5608,7 @@ document.documentElement.setAttribute('data-tema',t)})();
       if (S.visita==='primeira') s.push({id:'parox',kind:'opts',step:D,eyebrow:'Tratamento prévio',
         text:'Já usa paroxetina 20 mg/dia e permanece insatisfeito?',
         options:[{v:'nao',badge:'—',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
-      if (pede2('depre')) s.push({id:'depre',kind:'opts',step:D,eyebrow:'Segurança',text:'História de depressão maior, ideação ou acompanhamento psiquiátrico ativo?',
+      if (pede2('depre') && autoNao('depre', portaPsi)) s.push({id:'depre',kind:'opts',step:D,eyebrow:'Segurança',text:'História de depressão maior, ideação ou acompanhamento psiquiátrico ativo?',
         options:[{v:'nao',badge:'✓',label:'Não'},{v:'sim',badge:'!',label:'Sim'}]});
     }
     if (pede2('fert')) s.push({id:'fert',kind:'opts',step:D,eyebrow:'Planejamento',text:'Deseja engravidar nos próximos 12 meses?',
@@ -7456,6 +7475,9 @@ document.documentElement.setAttribute('data-tema',t)})();
     if (S.hasEP){ add(qn('PEDT')+' total','<b>'+qv(sPEDT+'/20')+' — '+bEP.label+'</b>'); Q_PEDT.forEach(q=>add('· '+q.short,S[q.id])); }
     const LBL={tempo:'Tempo de sintomas',parceira:'Parceria',drogas:'Drogas recreacionais',alergia:'Alergias declaradas',alergia:'Alergia medicamentosa',drogas:'Drogas recreacionais',comorbCtrl:'Comorbidades controladas',comorbMed:'Acompanhamento externo',biotens:'Biotensiômetro',topico:'Vias tópicas viáveis',contra:'Contraindicação a tadalafila',mast:'Ereção na masturbação',matinal:'Ereção matinal',previa:'Medicação prévia',adequado:'Tentativa em dose plena',libido:'Queda de libido',testo:'Testosterona',contraIoim:'Contraindicação a ioimbina',freq:'Relações por semana',parox:'Já usa paroxetina 20 mg',depre:'História psiquiátrica',fert:'Deseja fertilidade'};
     screens.filter(s=>LBL[s.id]).forEach(s=>{ if (s.id==='biotens'){ add(LBL[s.id], txtBiotens(S.biotens)||'—'); return; } /* v2.5-S: valor e faixa (antes saía "—": tela numérica não tem opções) */ const o=(s.options||[]).find(x=>x.v===S[s.id]);add(LBL[s.id],o?o.label:'—');});
+    // v2.5.19: resposta deduzida da tela de comorbidades (a pergunta não apareceu) — fica no relatório, marcada como tal
+    if (S._auto && S._auto.contra && S.contra==='nao' && !screens.some(s=>s.id==='contra')) add(LBL.contra, 'NÃO a todos — sem hipertensão nem coronariopatia (não perguntado)');
+    if (S._auto && S._auto.depre && S.depre==='nao' && !screens.some(s=>s.id==='depre')) add(LBL.depre, 'Não — sem problema psiquiátrico nem antidepressivo (não perguntado)');
     const kitTxt=kit.map(e=>{const c=Array.isArray(e)?e[0]:e;const i=itemKit(c, kit);if(!i) return '';
       // v2.5-G: intracavernosa pela fórmula da consulta (e a dose indicada), não o "R5" fixo
       // v2.5-H (item 1): sem dose indicada (1ª consulta), a dose inicial padrão da clínica para a R5 (a mesma do TEFI)
@@ -7655,6 +7677,59 @@ document.documentElement.setAttribute('data-tema',t)})();
   // Impressão numa aba própria, só com o documento pedido. Funciona também onde
   // o diálogo de impressão da página não abre (janelas embutidas, diálogos
   // bloqueados): a aba fica aberta, pronta para imprimir ou salvar em PDF.
+  // v2.5.19: corpo do email = via do paciente (#printPaciente), a mesma da impressão —
+  // sem regra interna nem dose de componente. O elemento fica display:none na tela, e
+  // innerText de nó escondido perde as quebras de linha; por isso mede um clone visível fora da tela.
+  function mxTextoPaciente(){
+    const src = el('printPaciente'); if (!src || !src.innerHTML.trim()) return '';
+    const box = document.createElement('div');
+    box.innerHTML = src.innerHTML;
+    // fora do email: campos de agenda em branco (são para preencher à mão no papel), botões
+    box.querySelectorAll('.noprint,button,script,style,table.ag-tab,.cab').forEach(n=>n.remove());
+    // texto a partir da estrutura (não do layout): funciona com o elemento escondido
+    const BLOCO = /^(DIV|P|H1|H2|H3|H4|H5|H6|UL|OL|LI|SECTION|TABLE|TR|DETAILS|SUMMARY)$/;
+    let out = '';
+    const nl = (n)=>{ out = out.replace(/[ \t]+$/,''); const m = out.match(/\n*$/)[0].length; if (out && m < n) out += '\n'.repeat(n-m); };
+    const anda = node=>{
+      if (node.nodeType===3){ const t=node.nodeValue.replace(/\s+/g,' '); if (t.trim() || (out && !/\s$/.test(out))) out += (/\n$/.test(out) ? t.replace(/^ /,'') : t); return; }
+      if (node.nodeType!==1) return;
+      const tg = node.tagName, cl = node.classList;
+      if (tg==='BR'){ nl(1); return; }
+      const titulo = /^H[1-6]$/.test(tg), bloco = BLOCO.test(tg) || cl.contains('como') || cl.contains('pq');
+      if (bloco) nl(titulo || cl.contains('med') || cl.contains('box') || cl.contains('rodape') ? 2 : 1);
+      if (tg==='LI') out += '• ';
+      if (titulo) { const t=(node.textContent||'').replace(/\s+/g,' ').trim(); out += t.toUpperCase(); nl(1); return; }
+      node.childNodes.forEach(anda);
+      if (bloco) nl(1);
+    };
+    anda(box);
+    return out.replace(/\u00a0/g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+  }
+  // mailto no formato do RFC 6068 (quebra de linha %0D%0A), que o Mail do macOS lê.
+  // URL muito longa pode ser recusada: acima do limite o corpo vai resumido e o
+  // texto completo segue na área de transferência.
+  function mxMontaEmail(para, intro){
+    const nome = (contatoAtual().nome||'').trim().split(/\s+/)[0] || '';
+    const ori = (el('envOri') && el('envOri').checked) || (el('envRec') && el('envRec').checked);
+    const via = ori ? mxTextoPaciente() : '';
+    const corpo = (nome ? 'Olá, '+nome+'!' : 'Olá!') + '\n\n' + intro + (via ? '\n\n' + via : '')
+      + '\n\nQualquer dúvida, é só responder este email.\nMaximus Medicina Masculina';
+    const subj = 'Maximus — orientações e receita da sua consulta de ' + new Date().toLocaleDateString('pt-BR');
+    const enc = x => encodeURIComponent(String(x).replace(/\r?\n/g,'\r\n'));
+    const base = 'mailto:'+encodeURIComponent(para).replace(/%40/g,'@')+'?subject='+enc(subj)+'&body=';
+    const LIM = 7500;
+    let url = base + enc(corpo), cortado = false;
+    if (url.length > LIM){
+      cortado = true;
+      const aviso = '\n\n(continua abaixo)';
+      let n = corpo.length;
+      while (n > 0 && (base + enc(corpo.slice(0,n)+aviso)).length > LIM) n = Math.floor(n*0.9);
+      url = base + enc(corpo.slice(0,n) + aviso);
+    }
+    return { url, corpo, assunto: subj, cortado };
+  }
+  window.mxMontaEmail = mxMontaEmail;
+
   function imprimeEmAba(conteudo, titulo, classe){
     if (!conteudo) return;
     const w = window.open('', '_blank');
@@ -8003,7 +8078,12 @@ document.documentElement.setAttribute('data-tema',t)})();
       const c = contato();
       if (!c.mail){ if(av) av.textContent='Sem email no cadastro — peça antes de o paciente sair.'; return; }
       S.envio = itensEnvio(); if(av) av.textContent='';
-      window.location.href = 'mailto:'+c.mail+'?subject='+encodeURIComponent('Maximus — material da sua consulta')+'&body='+encodeURIComponent(t);
+      const em = mxMontaEmail(c.mail, t);
+      try{ if (navigator.clipboard) navigator.clipboard.writeText(em.corpo).catch(()=>{}); }catch(e){}
+      if(av) av.textContent = em.cortado
+        ? 'O texto é longo para o email: o corpo saiu resumido. O texto completo foi copiado — cole no email (⌘V).'
+        : 'Email aberto com as orientações no corpo. O texto também foi copiado (⌘V), caso o app de email não o mostre.';
+      window.location.href = em.url;
     };
   })();
 

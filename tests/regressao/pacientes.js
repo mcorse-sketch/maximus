@@ -100,7 +100,7 @@ module.exports = [
   P('TEST-002', 'DE com doença arterial — ondas no protocolo', de(14, { comorb: ['vasc'] })),
   P('TEST-003', 'DE com hipertensão isolada — ondas só como complemento', de(14, { comorb: ['has'] })),
   P('TEST-004', 'DE sem comorbidade — sem ondas', de(14)),
-  P('TEST-005', 'DE com nitrato — bloqueio da tadalafila', de(14, { contra: 'sim' }), { espera: { protocolo: 'BLOQUEIO' } }),
+  P('TEST-005', 'DE com nitrato — bloqueio da tadalafila', de(14, { comorb: ['vasc'], contra: 'sim' }), { espera: { protocolo: 'BLOQUEIO' } }),
   P('TEST-006', 'DE com alergia a PDE5 — bloqueio da tadalafila', de(14, { alergia: ['tada'] }), { espera: { protocolo: 'BLOQUEIO' } }),
   P('TEST-007', 'DE com falha prévia em dose plena — TEFI', de(14, { previa: 'falhou', adequado: 'sim' })),
 
@@ -110,7 +110,7 @@ module.exports = [
   P('TEST-010', 'EP intensa com frequência alta — paroxetina 20', ep(17, { freq: 'alta' })),
   P('TEST-011', 'EP refratária à paroxetina 20 — EP-4, limite de 1 jato', ep(13, { parox: 'sim' }), { espera: { protocolo: 'EP-4' } }),
   P('TEST-012', 'EP em uso de ISRS — só via tópica', ep(13, { freq: 'baixa', medsRisco: ['isrs'], topico: 'ambos' })),   // v2.5-E: aceita as vias tópicas (o padrão do teste era "restrição a ambos")
-  P('TEST-013', 'EP com história psiquiátrica — sem SP-DUO', ep(13, { freq: 'baixa', depre: 'sim' })),
+  P('TEST-013', 'EP com história psiquiátrica — sem SP-DUO', ep(13, { comorb: ['psiq'], freq: 'baixa', depre: 'sim' })),
   P('TEST-014', 'EP com restrição a tópicos', ep(13, { freq: 'baixa', topico: 'nenhum' })),
   P('TEST-015', 'EP leve, frequência baixa, aceita preservativo — comportamental', ep(9, { freq: 'baixa', topico: 'ambos', biotens: 15 })),
   P('TEST-016', 'EP abaixo do corte — piso terapêutico', ep(5, { freq: 'baixa' })),
