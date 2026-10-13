@@ -122,8 +122,18 @@ const prim = (cod, r) => ({ id: cod, codigo: cod, respostas: Object.assign({ vis
       const t = d.getElementById('quizCard').getAttribute('data-tela'); preenche(d, w, t, resp[t]); d.getElementById('nextBtn').click(); await assenta(w);
     }
     const seg = () => (d.getElementById('mxSeguintes') || {}).textContent || '';
+    const faltam = () => { const m = (d.getElementById('mxFaltamLink').textContent || '').match(/(\d+)/); return m ? +m[1] : 0; };
+    const pendReal = () => w.document.querySelectorAll('#mxSeguintes .falta').length;
     d.querySelector('#optsWrap .opt[data-v="has"]').click(); await assenta(w);
+    const fHas = faltam();
     ok(/nitrato/.test(seg()), 'hipertensão marcada: nitrato na lista das seguintes', seg().slice(0, 200));
+    d.querySelector('#optsWrap .opt[data-v="nenhuma"]').click(); await assenta(w);
+    const fNada = faltam();
+    ok(fHas - fNada === 3, 'contador "Faltam N" cai na hora ao marcar "Nenhuma" (controladas?, acompanhamento e nitrato saem)', fHas + ' → ' + fNada);
+    d.querySelector('#optsWrap .opt[data-v="psiq"]').click(); await assenta(w);
+    ok(faltam() - fNada === 3, 'marcar o psiquiátrico soma as 3 perguntas de saúde mental ao contador na hora', fNada + ' → ' + faltam());
+    d.querySelector('#optsWrap .opt[data-v="psiq"]').click(); await assenta(w);
+    ok(faltam() > fNada, 'desmarcar tudo (comorbidade sem resposta) volta a contar a própria tela e o nitrato', faltam());
     d.querySelector('#optsWrap .opt[data-v="nenhuma"]').click(); await assenta(w);
     ok(d.getElementById('quizCard').getAttribute('data-tela') === 'comorb' && !/nitrato|controladas/.test(seg()), '"Nenhuma": nitrato e "controladas?" saem da lista na hora (continua na mesma tela)', seg().slice(0, 200));
     w.close();
