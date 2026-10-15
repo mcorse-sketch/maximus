@@ -50,6 +50,42 @@ def metal(mask, escala, claro=(250, 252, 252), escuro=(150, 162, 168), relevo=1.
     base.putalpha(mask)
     return base
 
+def cromo(mask, escala):
+    """Cavalo em prata escovada cromada: textura gerada (Z-Image Turbo, textura_prata.png) +
+    chanfro arredondado com normais, luz de cima-esquerda, reflexo especular e ambiente."""
+    import numpy as np
+    w, h = mask.size
+    m = np.asarray(mask, dtype=np.float32) / 255.0
+    alt = np.zeros_like(m)
+    for r, peso in ((4, .30), (10, .35), (22, .35)):
+        alt += peso * np.asarray(mask.filter(ImageFilter.GaussianBlur(r * escala)), dtype=np.float32) / 255.0
+    alt = np.clip(alt, 0, 1) ** 0.7
+    gy, gx = np.gradient(alt * 70.0 * escala / 2)
+    n = np.dstack((-gx, -gy, np.ones_like(m)))
+    n /= np.linalg.norm(n, axis=2, keepdims=True)
+    L = np.array([-0.45, -0.75, 0.55]); L /= np.linalg.norm(L)
+    dif = np.clip((n * L).sum(2), 0, 1)
+    R = 2 * (n[..., 2:3]) * n - np.array([0, 0, 1.0])
+    esp = np.clip((R * L).sum(2), 0, 1) ** 28
+    # ambiente de estudio: ceu claro em cima, linha escura no horizonte, chao medio
+    amb = np.interp(n[..., 1] + 0.5 * n[..., 0], [-1.5, -0.4, 0.0, 0.35, 1.5], [1.05, 1.0, 0.50, 0.22, 0.40])
+    tex = Image.open(os.path.join(D, "textura_prata.png")).convert("L").resize((w, h), Image.LANCZOS)
+    t = np.asarray(tex, dtype=np.float32) / 255.0
+    t = 0.30 + 0.85 * t
+    plano = n[..., 2] > 0.995
+    base = t * (0.70 + 0.40 * dif)
+    borda = np.clip((1 - n[..., 2]) * 1.6, 0, 1) ** 0.5
+    v = base * (1 - borda) + amb * borda
+    v = v + 0.9 * esp
+    # leve gradiente vertical (topo mais claro)
+    yy, xx = np.mgrid[0:h, 0:w]
+    v *= 1.10 - 0.30 * (0.65 * yy / h + 0.35 * xx / w)
+    v = np.clip(v, 0, 1)
+    rgb = np.dstack((v * 236 + 8, v * 241 + 8, v * 246 + 9)).clip(0, 255).astype(np.uint8)
+    out = Image.fromarray(rgb, "RGB").convert("RGBA")
+    out.putalpha(mask)
+    return out
+
 def sombra(mask, dx, dy, blur, alpha):
     s = Image.new("RGBA", mask.size, (0, 0, 0, 0))
     m = deslocar(mask, dx, dy).filter(ImageFilter.GaussianBlur(blur)).point(lambda v: int(v * alpha))
@@ -134,7 +170,7 @@ def corpo(glifo=None, nome=None):
     y0 = (B - alt) // 2
     mk.paste(cv, (x0, y0))
     im.alpha_composite(sombra(mk, 0, 14 * e, 18 * e, 0.55))
-    im.alpha_composite(metal(mk, e))
+    im.alpha_composite(cromo(mk, e))
     leds = []
     sel = os.path.join(D, "selos", (nome or "") + ".png")
     if glifo and os.path.isfile(sel):
