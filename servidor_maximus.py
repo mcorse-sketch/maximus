@@ -33,7 +33,7 @@ import json, os, re, shutil, socket, sys, threading, datetime
 import getpass, hashlib, hmac, secrets, subprocess, time
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
-PORTA = 8080
+PORTA = int(os.environ.get("MAXIMUS_PORTA") or 8080)
 PASTA = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.join(PASTA, "apps", "triagem.html")
 BANCO = os.path.join(PASTA, "banco_triagem.json")
@@ -776,12 +776,75 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(corpo)
 
+    def _arquivo(self, nome, tipo):
+        alvo = os.path.join(PASTA, nome)
+        if not os.path.isfile(alvo):
+            self.send_error(404, "nao encontrado")
+            return
+        with open(alvo, "rb") as f:
+            corpo = f.read()
+        self.send_response(200)
+        self.send_header("Content-Type", tipo)
+        self.send_header("Content-Length", str(len(corpo)))
+        self.send_header("Cache-Control", "max-age=86400")
+        self.end_headers()
+        self.wfile.write(corpo)
+
+    def _manifesto(self, app):
+        if app == "recepcao":
+            nome, curto, inicio = "Recepção Maximus", "Recepção", "/recepcao"
+        else:
+            nome, curto, inicio = "Consultório Maximus", "Consultório", "/"
+        m = {"name": nome, "short_name": curto, "start_url": inicio, "scope": inicio,
+             "display": "standalone", "background_color": "#01080C", "theme_color": "#01080C",
+             "lang": "pt-BR",
+             "icons": [{"src": "/icones/%s-%d.png" % (app, px), "sizes": "%dx%d" % (px, px),
+                        "type": "image/png"} for px in (180, 192, 512)]}
+        corpo = json.dumps(m, ensure_ascii=False).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/manifest+json; charset=utf-8")
+        self.send_header("Content-Length", str(len(corpo)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(corpo)
+
+    def _folha_ipad(self):
+        """v2.5.20: folha de instalacao da Recepcao no iPad (QR + 3 passos), com o IP da rede."""
+        alvo = os.path.join(PASTA, "apps", "ipad.html")
+        if not os.path.isfile(alvo):
+            self.send_error(404, "apps/ipad.html nao encontrado")
+            return
+        with open(alvo, encoding="utf-8") as f:
+            html = f.read()
+        ip = os.environ.get("MAXIMUS_IP_FOLHA") or ip_da_rede()
+        html = (html.replace("__IP__", ip).replace("__PORTA__", str(PORTA))
+                .replace("__DATA__", time.strftime("%d/%m/%Y")))
+        corpo = html.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(corpo)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(corpo)
+
     def do_GET(self):
         self._protegido(self._do_GET)
 
     def _do_GET(self):
         caminho = self.path.split("?")[0]
 
+        # v2.5.20: icones e manifestos para "Adicionar a Tela de Inicio" (iPad) e Dock (Safari)
+        mi = re.match(r"^/icones/([a-z]+-(?:180|192|512))\.png$", caminho)
+        if mi or caminho in ("/apple-touch-icon.png", "/apple-touch-icon-precomposed.png"):
+            nome = mi.group(1) if mi else "consultorio-180"
+            return self._arquivo(os.path.join("apps", "icones", nome + ".png"), "image/png")
+        mm = re.match(r"^/manifest-(recepcao|consultorio)\.webmanifest$", caminho)
+        if mm:
+            return self._manifesto(mm.group(1))
+        if caminho == "/vendor/qrcode.js":
+            return self._arquivo(os.path.join("apps", "vendor", "qrcode.js"), "application/javascript; charset=utf-8")
+        if caminho in ("/ipad", "/ipad.html"):
+            return self._folha_ipad()
         if caminho in ("/recepcao", "/recepcao.html"):
             return self._pagina(os.path.join("apps", "recepcao.html"))
         if caminho in ("/financeiro", "/financeiro.html"):
@@ -1153,6 +1216,15 @@ def main():
         definir_senha(perfil, senha)
         print("Senha de '%s' gravada. Quem estiver conectado com esse perfil continua" % perfil)
         print("ate a sessao expirar; reinicie o servidor para desconectar todos agora.")
+        return
+    if len(sys.argv) == 2 and sys.argv[1] == "--definir-senha-todos-stdin":
+        # v2.5.20: usado pelo "Maximus Servidor.app" (a senha vem de um dialogo do macOS, por stdin)
+        senha = sys.stdin.readline().rstrip("\n")
+        if len(senha) < SENHA_MINIMA:
+            print("Senha muito curta (minimo %d caracteres)." % SENHA_MINIMA)
+            sys.exit(2)
+        quem = definir_senha_todos(senha)
+        print("Senha gravada para: " + ", ".join(quem) + ".")
         return
     if len(sys.argv) == 2 and sys.argv[1] == "--definir-senha-todos":
         senha = _pede_senha("Nova senha para TODOS os perfis e usuarios: ")

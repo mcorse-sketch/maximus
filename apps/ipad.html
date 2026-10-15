@@ -1,0 +1,50 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recepção no iPad — Maximus</title>
+<link rel="icon" type="image/png" href="/icones/recepcao-192.png">
+<style>
+@page{size:A4;margin:14mm}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;color:#01080C;background:#eef1f2}
+.folha{max-width:760px;margin:24px auto;background:#fff;border-radius:18px;padding:40px 48px;box-shadow:0 2px 18px rgba(1,8,12,.08)}
+.topo{display:flex;align-items:center;gap:18px;border-bottom:2px solid #01080C;padding-bottom:18px}
+.topo img{width:76px;height:76px;border-radius:17px}
+h1{font-size:26px;margin:0;letter-spacing:-.01em}
+.sub{color:#4b5a61;margin-top:2px}
+.qr{display:flex;gap:30px;align-items:center;margin:28px 0 8px}
+#qr{width:230px;height:230px;flex:none;border:1px solid #d6dcdf;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:center}
+#qr img,#qr svg{width:100%;height:100%}
+.url{font:600 19px/1.3 "SF Mono",Menlo,monospace;white-space:nowrap;background:#f2f5f6;border-radius:10px;padding:10px 14px;margin:8px 0 10px}
+ol{padding:0;margin:26px 0 0;list-style:none;counter-reset:p}
+ol li{counter-increment:p;display:flex;gap:16px;align-items:flex-start;margin:0 0 18px}
+ol li:before{content:counter(p);flex:none;width:34px;height:34px;border-radius:50%;background:#01080C;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+ol b{display:block;font-size:17px}
+.ic{display:inline-block;vertical-align:-4px;width:20px;height:20px}
+.nota{margin-top:22px;padding:14px 16px;border-radius:12px;background:#f6f3ea;color:#4a4436;font-size:13.5px}
+.rod{margin-top:22px;color:#7a868b;font-size:12px;text-align:right}
+.acoes{max-width:760px;margin:0 auto 30px;text-align:right}
+.acoes button{font:600 15px -apple-system,sans-serif;background:#01080C;color:#fff;border:0;border-radius:10px;padding:11px 20px;cursor:pointer}
+@media print{body{background:#fff}.folha{box-shadow:none;margin:0;max-width:none;padding:0}.acoes{display:none}}
+</style></head><body>
+<div class="folha">
+  <div class="topo"><img src="/icones/recepcao-180.png" alt=""><div><h1>Recepção no iPad</h1><div class="sub">Instale o questionário da clínica como um app, com ícone na Tela de Início.</div></div></div>
+  <div class="qr"><div id="qr"></div><div>
+    <div>Aponte a câmera do iPad para o código, ou digite no Safari:</div>
+    <div class="url" id="url">http://__IP__:__PORTA__/recepcao</div>
+    <div class="sub">O iPad precisa estar no mesmo Wi‑Fi do Mac servidor.</div>
+  </div></div>
+  <ol>
+    <li><div><b>Abra o endereço no Safari</b>Use o Safari (não o Chrome): só ele instala na Tela de Início do iPad.</div></li>
+    <li><div><b>Toque em Compartilhar</b>O ícone <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#0a7aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M6 11H5v10h14V11h-1"/></svg> fica no alto da tela, ao lado da barra de endereço.</div></li>
+    <li><div><b>Escolha “Adicionar à Tela de Início”</b>Confirme o nome <i>Recepção</i> e toque em Adicionar. O ícone prateado aparece na Tela de Início e abre em tela cheia.</div></li>
+  </ol>
+  <div class="nota">Na primeira vez, o app instalado pede a senha da recepção de novo (ele não compartilha o login do Safari). Se o endereço mudar (IP novo do Mac), apague o ícone e repita os passos com o endereço novo.</div>
+  <div class="rod">Clínica Maximus · gerado em __DATA__</div>
+</div>
+<div class="acoes"><button onclick="print()">Imprimir</button></div>
+<script src="/vendor/qrcode.js"></script>
+<script>
+(function(){var u=document.getElementById('url').textContent.trim();
+try{var q=qrcode(0,'M');q.addData(u);q.make();document.getElementById('qr').innerHTML=q.createSvgTag({cellSize:6,margin:0,scalable:true});}catch(e){document.getElementById('qr').textContent='(QR indisponível)';}})();
+</script>
+</body></html>
