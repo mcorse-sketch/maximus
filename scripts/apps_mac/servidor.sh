@@ -15,7 +15,7 @@ ROTULO="br.com.maximus.servidor"
 PORTA="${MAXIMUS_PORTA:-8080}"
 PLIST="$HOME/Library/LaunchAgents/$ROTULO.plist"
 DOM="gui/$(id -u)"
-SIM=0; [ "${1:-}" = "--simular" ] && SIM=1; [ "${MAXIMUS_SIMULAR:-0}" = "1" ] && SIM=1
+SIM=0; [ "${1:-}" = "--simular" ] && SIM=1; ACAO=""; [ "${1:-}" = "--acao" ] && ACAO="${2:-}"; [ "${MAXIMUS_SIMULAR:-0}" = "1" ] && SIM=1
 SEMDLG="${MAXIMUS_SEM_DIALOGO:-0}"
 TITULO="Maximus Servidor"
 ICONE="$RES/AppIcon.icns"
@@ -112,6 +112,12 @@ RECEPÇÃO (iPad do paciente)
   Instalar o ícone: Compartilhar > Adicionar à Tela de Início
   Folha com QR:     http://localhost:$PORTA/ipad  (imprima e deixe na recepção)
 
+PRIMEIRA VEZ QUE ABRIR UM APP DO MAXIMUS NUM MAC
+  Os apps não são da App Store, então o macOS bloqueia o clique duplo na
+  primeira vez. Clique com o botão direito no app > Abrir > Abrir.
+  (Ou: Ajustes do Sistema > Privacidade e Segurança > «Abrir Mesmo Assim».)
+  Depois disso ele abre normalmente.
+
 SENHAS
   Trocar (no Terminal):
     cd "$DEST"
@@ -144,6 +150,33 @@ Depois abra o Maximus Servidor de novo." '"Fechar","Abrir python.org"' "Abrir py
 fi
 log "python: $PY"
 
+abre_consultorio(){
+  if [ -d "/Applications/Maximus Consultório.app" ]; then abre "/Applications/Maximus Consultório.app"
+  elif [ -d "/Applications/Google Chrome.app" ]; then abre -na "Google Chrome" --args --app="http://localhost:$PORTA/"
+  else abre "http://localhost:$PORTA/"; fi
+}
+atualiza_programa(){
+  VI="$(versao_de "$DEST")"; VP="$(versao_de "$PACOTE")"
+  [ -n "$VP" ] && [ "$VP" != "$VI" ] || return 0
+  [ -f "$DEST/banco_triagem.json" ] && faz cp -p "$DEST/banco_triagem.json" "$HOME/banco_triagem.backup-antes-$VP-$(date +%Y%m%d-%H%M%S).json"
+  copia_programa; reinicia; espera || true
+}
+# acoes do painel (botoes da janela de status): sem dialogos, so executam
+if [ -n "$ACAO" ]; then
+  case "$ACAO" in
+    reiniciar) reinicia; espera ;;
+    parar) para ;;
+    ligar) liga; espera ;;
+    guia) guia "$(ip_rede)"; abre -a TextEdit "$DEST/COMO ACESSAR.txt" ;;
+    folha) abre "http://localhost:$PORTA/ipad" ;;
+    consultorio) abre_consultorio ;;
+    log) abre -a Console "$DEST/servidor.log" ;;
+    atualizar) atualiza_programa ;;
+    *) echo "acao desconhecida: $ACAO"; exit 2 ;;
+  esac
+  exit $?
+fi
+
 # ---------------------------------------------------------------- 2) instalacao (so se falta)
 NOVO=0
 if [ ! -f "$DEST/servidor_maximus.py" ]; then
@@ -160,45 +193,25 @@ elif ! no_ar; then liga; espera || true; fi
 IP="$(ip_rede)"
 if [ "$NOVO" = 1 ]; then guia "$IP"; fi
 
-# ---------------------------------------------------------------- 3) status
-while :; do
-  IP="$(ip_rede)"
-  VI="$(versao_de "$DEST")"; VP="$(versao_de "$PACOTE")"
-  if no_ar; then EST="● No ar  (versão ${VI:-?})"; LIGA="Parar servidor"; else EST="○ Parado — os computadores e o iPad não conseguem entrar"; LIGA="Ligar servidor"; fi
-  [ "$SIM" = 1 ] && EST="$EST  [SIMULAÇÃO]"
-  MSG="$EST
+# ---------------------------------------------------------------- 3) janela de status
+# painel HTML so em 127.0.0.1 (token por abertura), numa janela de app do Chrome/Edge/Brave
+# ou no Safari; se o painel nao subir, cai no dialogo simples do macOS.
+URLF="$(mktemp "${TMPDIR:-/tmp}/maximus-painel.XXXXXX")"
+nohup "$PY" "$RES/painel_servidor.py" "--exe=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")" "--dest=$DEST" "--res=$RES" "--porta-servidor=$PORTA" >"$URLF" 2>/dev/null &
+URL=""; for _ in $(seq 1 30); do URL="$(head -1 "$URLF" 2>/dev/null)"; [ -n "$URL" ] && break; sleep 0.2; done
+rm -f "$URLF"
+if [ -n "$URL" ]; then
+  if [ "$SIM" = 1 ] || [ "$SEMDLG" = 1 ]; then log "PAINEL: $URL"; echo "$URL"; exit 0; fi
+  for nav in "Google Chrome" "Microsoft Edge" "Brave Browser"; do
+    if [ -d "/Applications/$nav.app" ]; then open -na "$nav" --args --app="$URL" --window-size=560,760 && exit 0; fi
+  done
+  open -a Safari "$URL" && exit 0
+fi
+IP="$(ip_rede)"
+if no_ar; then EST="● Ligado (versão $(versao_de "$DEST"))"; else EST="○ Desligado"; fi
+r="$(dialogo "$EST
 
-Consultório (outros Macs):  http://$IP:$PORTA/
-Recepção (iPad):  http://$IP:$PORTA/recepcao
-Neste Mac:  http://localhost:$PORTA/
-
-Pasta: $DEST"
-  r="$(dialogo "$MSG" '"Fechar","Mais opções…","Abrir Consultório"' "Abrir Consultório")"
-  case "$r" in
-    "Abrir Consultório")
-      if [ -d "/Applications/Google Chrome.app" ]; then abre -na "Google Chrome" --args --app="http://localhost:$PORTA/"; else abre "http://localhost:$PORTA/"; fi
-      exit 0 ;;
-    "Mais opções…")
-      OPC='"Abrir COMO ACESSAR","Folha do iPad (QR code)","Copiar endereço da Recepção","Reiniciar servidor","'"$LIGA"'","Ver log"'
-      [ -n "$VP" ] && [ "$VP" != "$VI" ] && OPC="$OPC"',"Atualizar programa ('"$VI"' → '"$VP"')"'
-      if [ "$SEMDLG" = 1 ]; then e="${MAXIMUS_OPCAO:-}"; log "OPCOES: $OPC -> $e"; else
-        e="$(osascript -e "set r to choose from list {$OPC} with title \"$TITULO\" with prompt \"O que deseja fazer?\" OK button name \"Escolher\" cancel button name \"Voltar\"" -e 'if r is false then return ""' -e 'return item 1 of r' 2>/dev/null)"; fi
-      case "$e" in
-        "Abrir COMO ACESSAR") guia "$IP"; abre -a TextEdit "$DEST/COMO ACESSAR.txt" ;;
-        "Folha do iPad (QR code)") abre "http://localhost:$PORTA/ipad" ;;
-        "Copiar endereço da Recepção") printf 'http://%s:%s/recepcao' "$IP" "$PORTA" | pbcopy 2>/dev/null; aviso "Copiado: http://$IP:$PORTA/recepcao" ;;
-        "Reiniciar servidor") reinicia; espera || aviso "O servidor não respondeu. Veja o log em $DEST/servidor.log" ;;
-        "Parar servidor") r2="$(dialogo "Parar o servidor agora? Ninguém consegue usar o Maximus até ligar de novo (ele também volta sozinho no próximo login)." '"Voltar","Parar"' "Voltar")"; [ "$r2" = "Parar" ] && para ;;
-        "Ligar servidor") liga; espera || aviso "O servidor não respondeu. Veja o log em $DEST/servidor.log" ;;
-        "Ver log") abre -a Console "$DEST/servidor.log" ;;
-        "Atualizar programa"*)
-          r2="$(dialogo "Atualizar o programa de $VI para $VP? Os pacientes, senhas e backups ficam como estão (é feita uma cópia do banco antes)." '"Voltar","Atualizar"' "Atualizar")"
-          if [ "$r2" = "Atualizar" ]; then
-            [ -f "$DEST/banco_triagem.json" ] && faz cp -p "$DEST/banco_triagem.json" "$HOME/banco_triagem.backup-antes-$VP-$(date +%Y%m%d-%H%M%S).json"
-            copia_programa; reinicia; espera || true
-          fi ;;
-      esac
-      [ "$SEMDLG" = 1 ] && exit 0 ;;
-    *) exit 0 ;;
-  esac
-done
+Consultório:  http://$IP:$PORTA/
+Recepção (iPad):  http://$IP:$PORTA/recepcao" '"Fechar","Abrir Consultório"' "Abrir Consultório")"
+[ "$r" = "Abrir Consultório" ] && abre_consultorio
+exit 0

@@ -1,0 +1,95 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maximus Servidor</title>
+<link rel="icon" href="/icone.png">
+<style>
+:root{--azul:#01080C;--prata:#e6ebed;--txt:#0d1a21;--sub:#5d6b72;--linha:#e3e8ea}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;color:var(--txt);background:#f3f5f6;-webkit-font-smoothing:antialiased}
+header{background:linear-gradient(180deg,#14242e,#01080C);color:#fff;padding:22px 26px 20px;display:flex;align-items:center;gap:16px}
+header img{width:64px;height:64px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
+header h1{font:600 20px/1.2 -apple-system,"SF Pro Display",sans-serif;margin:0;letter-spacing:-.01em}
+header .v{color:#9fb0b8;font-size:12.5px;margin-top:3px}
+.pill{margin-left:auto;display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 12px;border-radius:999px;font-weight:600;font-size:13px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.pill i{width:9px;height:9px;border-radius:50%;background:#8a979d}
+.pill.on i{background:#30d158;box-shadow:0 0 0 4px rgba(48,209,88,.22)}
+.pill.off i{background:#ff453a;box-shadow:0 0 0 4px rgba(255,69,58,.22)}
+main{padding:18px 22px 22px}
+.card{background:#fff;border-radius:14px;box-shadow:0 1px 2px rgba(1,8,12,.06),0 0 0 .5px rgba(1,8,12,.06);padding:4px 16px;margin-bottom:14px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--linha)}
+.row:last-child{border-bottom:0}
+.row .k{width:118px;color:var(--sub);font-size:13px;flex:none}
+.row .u{font:500 13.5px "SF Mono",Menlo,monospace;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cp{border:0;background:#eef2f4;color:var(--txt);font:500 12px -apple-system,sans-serif;border-radius:7px;padding:5px 10px;cursor:pointer}
+.cp:hover{background:#e2e8eb}
+.qr{display:flex;gap:16px;align-items:center;padding:14px 0}
+#qr{width:118px;height:118px;flex:none;padding:6px;border-radius:10px;background:#fff;box-shadow:0 0 0 1px var(--linha)}
+#qr svg{width:100%;height:100%}
+.qr p{margin:0;color:var(--sub);font-size:13px}
+.qr b{color:var(--txt);display:block;font-size:14px;margin-bottom:3px}
+.acoes{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.acoes .b{grid-column:span 2}.acoes .b.meio{grid-column:span 3}
+.b{border:0;border-radius:10px;padding:10px 8px;font:500 13px -apple-system,sans-serif;background:#fff;color:var(--txt);box-shadow:0 0 0 .5px rgba(1,8,12,.14),0 1px 2px rgba(1,8,12,.06);cursor:pointer}
+.b:hover{background:#f7f9fa}
+.b.pri{background:var(--azul);color:#fff;box-shadow:none;grid-column:span 6!important;padding:12px;font-weight:600;font-size:14px}
+.b.pri:hover{background:#13232d}
+.b.perigo{color:#c4271d}
+.b[hidden]{display:none}
+.b:disabled{opacity:.5;cursor:default}
+.avisos{margin:0 0 12px;padding:10px 14px;border-radius:10px;background:#fff6e0;color:#6b5100;font-size:12.5px}
+.avisos:empty{display:none}
+.rod{color:#8a979d;font-size:11.5px;text-align:center;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;background:rgba(1,8,12,.92);color:#fff;padding:8px 14px;border-radius:9px;font-size:13px;transition:.2s}
+.toast.v{opacity:1;transform:translate(-50%,0)}
+</style></head><body>
+<header><img src="/icone.png" alt=""><div><h1>Maximus Servidor</h1><div class="v" id="ver">—</div></div>
+<span class="pill" id="pill"><i></i><span id="est">Verificando…</span></span></header>
+<main>
+<div class="avisos" id="avisos"></div>
+<div class="card">
+  <div class="row"><span class="k">Consultório</span><span class="u" id="uc">—</span><button class="cp" data-c="uc">Copiar</button></div>
+  <div class="row"><span class="k">Recepção (iPad)</span><span class="u" id="ur">—</span><button class="cp" data-c="ur">Copiar</button></div>
+  <div class="row"><span class="k">Neste Mac</span><span class="u" id="ul">—</span><button class="cp" data-c="ul">Copiar</button></div>
+</div>
+<div class="card"><div class="qr"><div id="qr"></div><p><b>Instalar a Recepção no iPad</b>Aponte a câmera do iPad para o código, abra no Safari e toque em Compartilhar › Adicionar à Tela de Início.</p></div></div>
+<div class="acoes">
+  <button class="b pri" data-a="consultorio">Abrir Consultório</button>
+  <button class="b pri" data-a="atualizar" id="bat" hidden style="background:#0a6cff">Atualizar</button>
+  <button class="b meio" data-a="folha">Folha do iPad</button>
+  <button class="b meio" data-a="guia">Como acessar</button>
+  <button class="b" data-a="reiniciar" id="bre">Reiniciar</button>
+  <button class="b perigo" data-a="parar" id="bpl">Parar</button>
+  <button class="b" data-a="log">Ver log</button>
+</div>
+<div class="rod" id="pasta"></div>
+</main>
+<div class="toast" id="toast"></div>
+<script src="/qrcode.js"></script>
+<script>
+var T=new URLSearchParams(location.search).get('t'),E=null,qrFeito='';
+try{window.resizeTo(560,760)}catch(e){}
+function $(i){return document.getElementById(i)}
+function toast(t){var x=$('toast');x.textContent=t;x.classList.add('v');clearTimeout(x._t);x._t=setTimeout(function(){x.classList.remove('v')},2200)}
+function api(m,u,b){return fetch(u,{method:m,headers:{'X-Token':T,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json()})}
+function pinta(e){E=e;var on=e.ligado;
+ $('pill').className='pill '+(on?'on':'off');$('est').textContent=on?'Ligado':'Desligado';
+ $('ver').textContent='Versão '+e.versao+' · porta '+e.porta;
+ var base='http://'+e.ip+':'+e.porta;$('uc').textContent=base+'/';$('ur').textContent=base+'/recepcao';$('ul').textContent='http://localhost:'+e.porta+'/';
+ var bpl=$('bpl');bpl.textContent=on?'Parar':'Ligar';bpl.dataset.a=on?'parar':'ligar';bpl.className='b'+(on?' perigo':'');
+ $('bre').disabled=!on;
+ var bat=$('bat');bat.hidden=!e.atualizar;bat.style.background='#0a6cff';bat.textContent='Atualizar para '+e.versaoPacote;
+ $('avisos').textContent=on?(e.alertas||[]).join(' · '):'O servidor está desligado: os computadores e o iPad não conseguem entrar.';
+ $('pasta').textContent='Pasta: '+e.pasta;
+ var u=base+'/recepcao';if(u!==qrFeito&&window.qrcode){var q=qrcode(0,'M');q.addData(u);q.make();$('qr').innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true});qrFeito=u}
+}
+function atualiza(){api('GET','/api/estado').then(pinta).catch(function(){$('est').textContent='Painel fechado'})}
+document.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
+ if(b.dataset.c){var t=$(b.dataset.c).textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast('Copiado: '+t)},function(){prompt('Copie o endereço:',t)});return}
+ var a=b.dataset.a;if(!a)return;
+ if(a==='parar'&&!confirm('Parar o servidor agora?\nNinguém consegue usar o Maximus até ligar de novo (ele volta sozinho no próximo login).'))return;
+ if(a==='atualizar'&&!confirm('Atualizar o programa de '+E.versao+' para '+E.versaoPacote+'?\nPacientes, senhas e backups ficam como estão (é feita uma cópia do banco antes).'))return;
+ b.disabled=true;var txt=b.textContent;b.textContent='…';
+ api('POST','/api/acao',{acao:a}).then(function(r){toast(r.ok?({reiniciar:'Servidor reiniciado',parar:'Servidor parado',ligar:'Servidor ligado',atualizar:'Programa atualizado'}[a]||'Pronto'):'Não deu certo — veja o log')})
+ .catch(function(){toast('Painel fechado. Abra o Maximus Servidor de novo.')}).then(function(){b.disabled=false;b.textContent=txt;atualiza()})});
+atualiza();setInterval(atualiza,5000);
+</script></body></html>

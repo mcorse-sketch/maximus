@@ -71,6 +71,9 @@ cp "$RAIZ"/apps/*.html "$P/apps/"
 cp "$RAIZ"/apps/icones/*.png "$P/apps/icones/"
 cp "$RAIZ"/apps/vendor/*.js "$P/apps/vendor/"
 cp "$RAIZ/scripts/instalar_launchd.sh" "$P/scripts/"
+cp "$RAIZ/scripts/apps_mac/painel_servidor.py" "$RAIZ/scripts/apps_mac/painel.html" "$S/Contents/Resources/"
+python3 -c "import sys;from PIL import Image;Image.open(sys.argv[1]).resize((256,256),Image.LANCZOS).save(sys.argv[2])" "$RAIZ/scripts/icones/servidor.png" "$S/Contents/Resources/icone-256.png" 2>/dev/null \
+  || sips -z 256 256 "$RAIZ/scripts/icones/servidor.png" --out "$S/Contents/Resources/icone-256.png" >/dev/null
 C="$(app "Maximus Consultório" br.com.maximus.app.consultorio maximus-consultorio consultorio.sh consultorio)"
 # trava: nada de dado de paciente ou senha dentro dos apps
 if find "$SAIDA" \( -name 'banco_*.json' -o -name 'senhas.json' -o -name '*.log' -o -name 'backups' \) | grep -q .; then

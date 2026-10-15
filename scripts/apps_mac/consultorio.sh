@@ -58,5 +58,8 @@ Confira o endereço, o Wi‑Fi e se o servidor está no ar."; S="$n"
     [ "$SEMDLG" = 1 ] && { echo "SEM SERVIDOR $n"; exit 1; }
   fi
 done
-[ "$ALVO" != "$(salvo)" ] && salva "$ALVO"
+# localhost achado sozinho nao apaga um servidor remoto salvo (so vale nesta abertura)
+if [ "$ALVO" != "$(salvo)" ]; then
+  if [ "$ALVO" != "localhost:$PORTA_PADRAO" ] || [ -z "$(salvo)" ] || [ "$TROCAR" = 1 ]; then salva "$ALVO"; fi
+fi
 abre_app "$ALVO"
