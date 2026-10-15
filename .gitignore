@@ -9,3 +9,4 @@ banco_triagem.json.*
 __pycache__/
 servidor.log
 tests/.tempos_testar
+dist/

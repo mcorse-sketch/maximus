@@ -18,7 +18,7 @@ for c in "${MAXIMUS_BASH32:-}" /bin/bash "$(command -v bash3.2 2>/dev/null)" /us
   case "$("$c" -c 'echo $BASH_VERSION' 2>/dev/null)" in 3.*) B32="$c"; break ;; esac
 done
 
-SCRIPTS="$(ls scripts/*.sh tests/*.sh 2>/dev/null)"
+SCRIPTS="$(ls scripts/*.sh scripts/apps_mac/*.sh tests/*.sh 2>/dev/null)"
 # 1. bash 4+ (comentários fora). wait -n, arrays associativos, ${x,,}/${x^^}, mapfile,
 #    &>>, |&, índice negativo, coproc, ;;& e ;&, ${x@Q}
 achados=""

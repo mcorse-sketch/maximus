@@ -278,6 +278,29 @@ class Servidor(unittest.TestCase):
         self.assertEqual(self.req("GET", "/favicon.ico")[0], 404)
         self.assertEqual(self.req("GET", "/api/nao-existe", token=self.tok["medico"])[0], 404)
 
+    def test_icones_manifesto_e_folha_ipad(self):
+        # v2.5.20: Adicionar a Tela de Inicio (iPad) e Dock (Safari) sem senha e sem vazar arquivos
+        for rota in ("/icones/recepcao-180.png", "/icones/consultorio-512.png", "/apple-touch-icon.png"):
+            st, corpo = self.req("GET", rota)
+            self.assertEqual(st, 200, rota)
+            self.assertTrue(corpo.startswith(b"\x89PNG"), rota)
+        for rota in ("/icones/../senhas.json", "/icones/senhas.png", "/icones/recepcao-64.png"):
+            self.assertEqual(self.req("GET", rota)[0], 404, rota)
+        st, m = self.req("GET", "/manifest-recepcao.webmanifest")
+        self.assertEqual(st, 200)
+        self.assertEqual((m["short_name"], m["start_url"], m["display"]), ("Recepção", "/recepcao", "standalone"))
+        self.assertEqual(self.req("GET", "/manifest-consultorio.webmanifest")[1]["start_url"], "/")
+        st, html = self.req("GET", "/ipad")
+        self.assertEqual(st, 200)
+        self.assertIn(b":%d/recepcao" % srv.PORTA, html)
+        self.assertNotIn(b"__IP__", html)
+        self.assertEqual(self.req("GET", "/vendor/qrcode.js")[0], 200)
+        for rota, titulo in (("/recepcao", "Recepção"), ("/", "Consultório")):
+            html = self.req("GET", rota)[1].decode("utf-8")
+            self.assertIn('<meta name="apple-mobile-web-app-capable" content="yes">', html)
+            self.assertIn('<meta name="apple-mobile-web-app-title" content="%s">' % titulo, html)
+            self.assertIn('rel="apple-touch-icon"', html)
+
     def test_demo_no_formato_do_servidor(self):
         banco_real = srv.BANCO
         srv.BANCO = os.path.join(self.tmp, "demo.json")

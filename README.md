@@ -222,3 +222,13 @@ Hoje os apps rodam como artifacts publicados na Claude:
 Cada artifact tem banco próprio. A versão anterior, ainda em uso, está em
 outros dois links — mantidos intactos de propósito. Em produção na clínica o
 caminho é o servidor local, não os artifacts.
+
+## Apps instaláveis (v2.5.20)
+
+`scripts/criar_apps_mac.sh [pasta]` gera, sem assinatura, `Maximus Servidor.app` e `Maximus Consultório.app` (+ um `.zip` de cada). Na primeira vez o macOS bloqueia app sem assinatura: clique com o botão direito > **Abrir** > Abrir.
+
+- **Maximus Servidor** (Mac servidor): se não houver instalação, instala em `~/Maximus` (programa, senha única dos três perfis, launchd `br.com.maximus.servidor`); depois mostra status e endereços, com *Mais opções…*: COMO ACESSAR, folha do iPad (QR), copiar endereço da recepção, reiniciar, parar/ligar, log e atualizar o programa (com cópia do banco antes). Nunca leva nem sobrescreve banco/senhas. `--simular` mostra o que faria sem mudar nada.
+- **Maximus Consultório** (cada Mac do médico): abre a triagem numa janela de app (Chrome/Edge/Brave `--app`, senão Safari). Usa o servidor salvo, senão `localhost:8080`, senão pergunta o IP uma vez e lembra (`~/Library/Application Support/Maximus/consultorio.conf`). Segure **Option** ao abrir para trocar o servidor.
+- **Recepção no iPad**: Safari > `http://IP:8080/recepcao` > Compartilhar > Adicionar à Tela de Início (ícone, título e manifesto servidos pelo servidor). Folha imprimível com QR: `http://localhost:8080/ipad`.
+
+Ícones: `scripts/icones/` (Consultório e Servidor gerados por `gerar_icones.py` a partir do ícone prateado do Financeiro); PNGs web em `apps/icones/`.

@@ -57,6 +57,7 @@ etapa "8. tela de senha dos três apps" "node teste_sessao.js"
 etapa "9. servidor — acesso por perfil e rotas" "servidor"
 etapa "10. recepção — toque duplo avança uma tela só (v2.5-N)" "node teste_toque.js '$RECEP'"
 etapa "11. scripts no bash 3.2 do macOS — testar.sh roda inteiro em /bin/bash" "bash teste_bash32.sh"
+etapa "12. apps de Mac — Servidor.app e Consultório.app (montagem, --simular, sem dados sensíveis)" "bash teste_apps_mac.sh"
 
 sintaxe(){
   local f t ok=0
